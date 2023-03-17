@@ -1,0 +1,372 @@
+openapi: 3.0.0
+info:
+  title: GeoServer ACL
+  description: GeoServer Access Control List API
+  version: 1.0.0
+servers:
+- url: http://localhost:8080/api
+- url: http://localhost:8080/geoserver/rest/acl
+paths:
+  /fakeapi:
+    get:
+      operationId: fake
+      description: OAS 3.0 does not allow to define a document without at least one path. 3.1 does
+      responses:
+        '200':
+          description: OK
+components:
+  parameters:
+    page:
+      name: page
+      in: query 
+      description: "0-based page size"
+      required: false
+      schema:
+        type: integer
+    size:
+      name: size
+      in: query 
+      description: "Page size"
+      required: false
+      schema:
+        type: integer
+    insertPosition:
+      name: position
+      in: query 
+      description: "Displacement option related to how to interpret the Rule's priority"
+      required: false
+      schema:
+        $ref: '#/components/schemas/InsertPosition'
+    priorityOffset:
+      name: priorityOffset
+      in: query
+      required: false
+      description: Rule id offset
+      schema:
+        type: integer
+        format: int64
+  schemas:
+    CatalogMode:
+      type: string
+      nullable: true
+      enum:
+        - HIDE
+        - CHALLENGE
+        - MIXED
+    SpatialFilterType:
+      type: string
+      nullable: true
+      enum:
+        - INTERSECT
+        - CLIP
+
+    Geom:
+      anyOf:
+      - $ref: '#/components/schemas/wkt'
+      - $ref: '#/components/schemas/wkb'
+
+    wkt:
+      type: object
+      required:
+      - wkt
+      properties:
+        wkt:
+          type: string
+          example: "CRS=EPSG:4326;MULTIPOLYGON(....)"
+    wkb:
+      type: object
+      required:
+      - wkb
+      properties:
+        wkb:
+          type: string
+          format: byte
+
+    AddressRange:
+      type: string
+      nullable: true
+      pattern: '^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$'
+      description: IPv4 address with optional /nn on the end with values from 0 - 32
+      
+    Rule:
+      type: object
+      description: >-
+         A Rule expresses if a given combination of request access is allowed or not.
+      required:
+        - priority
+        - access
+      properties:
+        id:
+          type: string
+          nullable: true
+        priority:
+          type: integer
+          format: int64
+        extId:
+          type: string
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        instance:
+          type: string
+          nullable: true
+        access:
+          $ref: '#/components/schemas/GrantType'
+        limits:
+          $ref: '#/components/schemas/RuleLimits'
+        role:
+          type: string
+          nullable: true
+        user:
+          type: string
+          nullable: true
+        addressRange:
+          $ref: '#/components/schemas/AddressRange'
+        service:
+          type: string
+          nullable: true
+        request:
+          type: string
+          nullable: true
+        subfield:
+          type: string
+          nullable: true
+        workspace:
+          type: string
+          nullable: true
+        layer:
+          type: string
+          nullable: true
+    RuleLimits:
+      type: object
+      description: Defines general limits (such as an Area ) for a Rule, when  access type is LIMIT
+      nullable: true
+      properties:
+        allowedArea:
+          $ref: '#/components/schemas/Geom'
+        spatialFilterType:
+          $ref: '#/components/schemas/SpatialFilterType'
+        catalogMode:
+          $ref: '#/components/schemas/CatalogMode'
+
+    LayerDetails:
+      type: object
+      description: Details may be set only for ules with non-wildcarded profile, instance, workspace, layer
+      nullable: true
+      properties:
+        type:
+          type: string
+          nullable: true
+          enum:
+            - VECTOR
+            - RASTER
+            - LAYERGROUP
+        defaultStyle:
+          type: string
+          nullable: true
+        cqlFilterRead:
+          type: string
+          nullable: true
+        cqlFilterWrite:
+          type: string
+          nullable: true
+        allowedArea:
+          $ref: '#/components/schemas/Geom'
+        spatialFilterType:
+          $ref: '#/components/schemas/SpatialFilterType'
+        catalogMode:
+          $ref: '#/components/schemas/CatalogMode'
+        allowedStyles:
+          type: array
+          nullable: true
+          uniqueItems: true
+          items:
+            type: string
+        layerAttributes:
+          type: array
+          nullable: true
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/LayerAttribute'
+
+    LayerAttribute:
+      type: object
+      description: Access restrictions to a FeatureType attribute
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        dataType:
+          type: string
+          nullable: true
+        access:
+          type: string
+          nullable: true
+          enum:
+            - NONE
+            - READONLY
+            - READWRITE
+    InsertPosition:
+      type: string
+      enum:
+        - FIXED
+        - FROM_START
+        - FROM_END
+
+    GrantType:
+      type: string
+      description: The type of access restriction this rule represents.
+      nullable: true
+      enum:
+        - ALLOW
+        - DENY
+        - LIMIT
+
+    AdminGrantType:
+      type: string
+      description: The type of access restriction to the workspace administration
+      nullable: true
+      enum:
+        - ADMIN
+        - USER
+
+    AdminRule:
+      type: object
+      description: >-
+         An AdminRule expresses if a given combination of request access is allowed or not.
+         It's used for setting admin privileges on workspaces.
+      required:
+        - priority
+        - access
+      properties:
+        id:
+          type: string
+          nullable: true
+        priority:
+          type: integer
+          format: int64
+        access:
+          $ref: '#/components/schemas/AdminGrantType'
+        extId:
+          type: string
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        instance:
+          type: string
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        user:
+          type: string
+          nullable: true
+        workspace:
+          type: string
+          nullable: true
+        addressRange:
+          $ref: '#/components/schemas/AddressRange'
+
+    IdName:
+      type: object
+      nullable: true
+      properties:
+        includeDefault:
+          type: boolean
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        name:
+          type: string
+          nullable: true
+
+    TextFilter:
+      type: object
+      nullable: true
+      properties:
+        includeDefault:
+          type: boolean
+          nullable: true
+        value:
+          type: string
+          nullable: true
+          description: An absent value will match both set and default values for the property,
+                        a value with only the character literal '*' will match only the default values for the property,
+                        any other specific value will match properties with that value 
+
+    SetFilter:
+      type: object
+      nullable: true
+      properties:
+        includeDefault:
+          type: boolean
+          nullable: true
+        values:
+          type: array
+          nullable: true
+          uniqueItems: true
+          items:
+            type: string
+
+    AddressRangeFilter:
+      type: object
+      nullable: true
+      properties:
+        includeDefault:
+          type: boolean
+          nullable: true
+        value:
+          $ref: '#/components/schemas/AddressRange'
+
+    RuleFilter:
+      type: object
+      description: A filter definition to query Rules
+      nullable: true
+      properties:
+        instance:
+          $ref: '#/components/schemas/IdName'
+        user:
+          $ref: '#/components/schemas/TextFilter'
+        roles:
+          $ref: '#/components/schemas/SetFilter'
+        service:
+          $ref: '#/components/schemas/TextFilter'
+        request:
+          $ref: '#/components/schemas/TextFilter'
+        subfield:
+          $ref: '#/components/schemas/TextFilter'
+        workspace:
+          $ref: '#/components/schemas/TextFilter'
+        layer:
+          $ref: '#/components/schemas/TextFilter'
+        sourceAddress:
+          $ref: '#/components/schemas/AddressRangeFilter'
+
+    AdminRuleFilter:
+      type: object
+      description: A filter definition to query Rules
+      nullable: true
+      properties:
+        instance:
+          $ref: '#/components/schemas/IdName'
+        grantType:
+          $ref: '#/components/schemas/AdminGrantType'
+        user:
+          $ref: '#/components/schemas/TextFilter'
+        roles:
+          $ref: '#/components/schemas/SetFilter'
+        workspace:
+          $ref: '#/components/schemas/TextFilter'
+        sourceAddress:
+          $ref: '#/components/schemas/AddressRangeFilter'

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/* (c) 2023 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver.acl.openapi</groupId>
+    <artifactId>openapi</artifactId>
+    <version>${revision}</version>
+  </parent>
+  <artifactId>gs-acl-openapi-client</artifactId>
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver.acl.openapi</groupId>
+      <artifactId>gs-acl-openapi-model</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-commons</artifactId>
+    </dependency>
+    <dependency>
+      <!-- RestTemplate based API client-->
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <!-- @javax.annotation.Generated annotation -->
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-generated-openapi-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <?m2e ignore?>
+            <id>generate-rules-client</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <!-- see https://openapi-generator.tech/docs/generators/spring -->
+              <inputSpec>${project.basedir}/../acl-api.yaml</inputSpec>
+              <generatorName>java</generatorName>
+              <modelPackage>org.geoserver.acl.api.model</modelPackage>
+              <apiPackage>org.geoserver.acl.api.client</apiPackage>
+              <invokerPackage>org.geoserver.acl.api.client</invokerPackage>
+              <generateApis>true</generateApis>
+              <generateModels>false</generateModels>
+              <generateSupportingFiles>true</generateSupportingFiles>
+              <!--supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate-->
+              <generateApiTests>false</generateApiTests>
+              <generateModelTests>false</generateModelTests>
+              <configOptions>
+                <library>resttemplate</library>
+                <useTags>true</useTags>
+                <dateLibrary>java8-localdatetime</dateLibrary>
+                <openApiNullable>false</openApiNullable>
+                <useBeanValidation>true</useBeanValidation>
+                <performBeanValidation>false</performBeanValidation>
+                <withXml>false</withXml>
+              </configOptions>
+              <importMappings>
+                <importMapping>Rule=org.geoserver.acl.api.model.Rule</importMapping>
+                <importMapping>RuleLimits=org.geoserver.acl.api.model.RuleLimits</importMapping>
+                <importMapping>LayerDetails=org.geoserver.acl.api.model.LayerDetails</importMapping>
+                <importMapping>RuleFilter=org.geoserver.acl.api.model.RuleFilter</importMapping>
+                <importMapping>AdminRule=org.geoserver.acl.api.model.AdminRule</importMapping>
+                <importMapping>AdminRuleFilter=org.geoserver.acl.api.model.AdminRuleFilter</importMapping>
+                <importMapping>InsertPosition=org.geoserver.acl.api.model.InsertPosition</importMapping>
+                <importMapping>GeoServerUser=org.geoserver.acl.api.model.GeoServerUser</importMapping>
+                <importMapping>GeoServerUserGroup=org.geoserver.acl.api.model.GeoServerUserGroup</importMapping>
+              </importMappings>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

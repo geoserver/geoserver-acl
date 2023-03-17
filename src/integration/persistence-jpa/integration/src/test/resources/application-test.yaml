@@ -1,0 +1,25 @@
+spring.main.banner-mode: off
+    
+geoserver.acl:
+  datasource:
+    url: jdbc:h2:mem:geoserver-acl
+    username: sa
+    password: sa
+    hikari:
+      minimumIdle: 0
+      maximumPoolSize: 20
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl.auto: create
+        show_sql: false
+
+
+logging:
+  level:
+    root: warn
+    '[org.geoserver.acl]': info
+    '[org.springframework.boot.autoconfigure]': info
+    '[org.springframework.boot.test.context]': info
+    '[org.geoserver.acl.integration.jpa]': debug
+    '[org.testcontainers]': info

@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.geoserver.cloud.acl.autoconfigure.persistence.JPAIntegrationAutoConfiguration,\
+org.geoserver.cloud.acl.autoconfigure.api.RulesApiAutoConfiguration,\
+org.geoserver.cloud.acl.autoconfigure.springdoc.SpringDocHomeRedirectAutoConfiguration

@@ -1,0 +1,668 @@
+openapi: 3.0.0
+info:
+  title: GeoServer ACL
+  description: GeoServer Access Control List API
+  version: 1.0.0
+servers:
+- url: http://localhost:8080/api
+- url: http://localhost:8080/geoserver/rest/acl
+tags:
+  - name: Rules
+    description: CRUD operations on GeoServer ACL Rules.
+  - name: AdminRules
+    description: CRUD operations on GeoServer ACL AdminRules.
+security:
+  - basicAuth: []
+paths:
+  /rules:
+    get:
+      operationId: getRules
+      description: Returns an (optionally) paginated list of rules. See also the count operation.
+      tags:
+        - Rules
+      parameters:
+        - $ref: 'acl-model.yaml#/components/parameters/page'
+        - $ref: 'acl-model.yaml#/components/parameters/size'
+      responses:
+        '200':
+          $ref: '#/components/responses/PageOfRules'
+    post:
+      operationId: createRule
+      tags:
+        - Rules
+      parameters:
+        - $ref: 'acl-model.yaml#/components/parameters/insertPosition'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/Rule'
+          application/x-jackson-smile:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/Rule'
+      responses:
+        '201':
+          $ref: '#/components/responses/Rule'
+        '400':
+          description: Bad request body, for example providing a Rule with a non null id
+        '409':
+          description: A Rule with the same identifier already exists (i.e. with the same values for
+              instanceName, username, rolename, service, request, subfield, workspace, layer, and addressRange)
+          headers:
+           X-Reason:
+             schema:
+               type: string
+               description: Error reason, including offending property names
+
+  /rules/query:
+    post:
+      parameters:
+        - $ref: 'acl-model.yaml#/components/parameters/page'
+        - $ref: 'acl-model.yaml#/components/parameters/size'
+        - $ref: 'acl-model.yaml#/components/parameters/priorityOffset'        
+      operationId: queryRules
+      tags:
+        - Rules
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/RuleFilter'
+          application/x-jackson-smile:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/RuleFilter'
+      responses:
+        '200':
+          $ref: '#/components/responses/PageOfRules'
+  /rules/query/count:
+    get:
+      operationId: countAllRules
+      description: Returns the total number of rules
+      tags:
+        - Rules
+      responses:
+        '200':
+          $ref: '#/components/responses/Count'
+    post:
+      operationId: countRules
+      description: Returns the number of rules that matches the search criteria
+      tags:
+        - Rules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/RuleFilter'
+          application/x-jackson-smile:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/RuleFilter'
+      responses:
+        '200':
+          $ref: '#/components/responses/Count'
+  /rules/query/one/priority/{priority}:
+    get:
+      operationId: findOneRuleByPriority
+      description: Finds the Rule with the given priority
+      tags:
+        - Rules
+      parameters:
+      - name: priority
+        in: path
+        required: true
+        description: The rule priority to search for
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          $ref: '#/components/responses/Rule'
+        '404':
+          description: Not found
+        '409':
+          description: Conflict, there's more than one rule with the requested priority
+
+  /rules/id/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      operationId: getRuleById
+      description: Returns the Rule with the given identifier
+      tags:
+        - Rules
+      responses:
+        '200':
+          $ref: '#/components/responses/Rule'
+        '404':
+          description: Not found
+    patch:
+      operationId: updateRuleById
+      tags:
+        - Rules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/Rule'
+          application/x-jackson-smile:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/Rule'
+      responses:
+        '200':
+          $ref: '#/components/responses/Rule'
+        '400':
+          description: Bad request body
+        '404':
+          description: Not found
+        '409':
+          description: Conflict, tried to update the rule identifier properties to one that belongs to another rule
+    delete:
+      operationId: deleteRuleById
+      tags:
+        - Rules
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not found
+  /rules/id/{id}/exists:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      operationId: ruleExistsById
+      description: Returns the Rule with the given identifier
+      tags:
+        - Rules
+      responses:
+        '200':
+          description: boolean indicating whether the rule with the provided identifier exists
+          content:
+            application/json:
+              schema:
+                type: boolean
+            application/x-jackson-smile:
+              schema:
+                type: boolean
+
+  /rules/id/{id}/layer-details:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      operationId: getLayerDetailsByRuleId
+      description: Returns the LayerDetails for the Rule with the given identifier
+      tags:
+        - Rules
+      responses:
+        '200':
+          $ref: '#/components/responses/LayerDetails'
+        '204':
+          description: The rule has a layer set but does not have LayerDetails set
+        '400':
+          description: Bad request if the rule does not have a layer name set
+        '404':
+          description: Not found if the rule does not exist
+    put:
+      operationId: setRuleLayerDetails
+      tags:
+        - Rules
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/LayerDetails'
+          application/x-jackson-smile:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/LayerDetails'
+      responses:
+        '204':
+          description: Updated
+        '404':
+          description: Not found
+  /rules/id/{id}/limits:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    put:
+      operationId: setRuleLimits
+      tags:
+        - Rules
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/RuleLimits'
+          application/x-jackson-smile:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/RuleLimits'
+      responses:
+        '204':
+          description: Updated
+        '400':
+          description: Bad request, the rule is not of LIMIT type
+        '404':
+          description: Not found
+  /rules/id/{id}/styles:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    put:
+      operationId: setRuleAllowedStyles
+      tags:
+        - Rules
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: array
+              nullable: true
+              uniqueItems: true
+              items:
+                type: string
+          application/x-jackson-smile:
+            schema:
+              type: array
+              nullable: true
+              uniqueItems: true
+              items:
+                type: string
+      responses:
+        '204':
+          description: Updated
+        '404':
+          description: Not found
+
+  /rules/id/{id}/swapwith/{id2}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+      - name: id2
+        in: path
+        required: true
+        description: The rule identifier to swap priorities with
+        schema:
+          type: string
+    post:
+      operationId: swapRules
+      tags:
+        - Rules
+      responses:
+        '204':
+          description: Updated
+        '404':
+          description: Not found
+  /rules/shift:
+    post:
+      operationId: shiftRulesByPriority
+      parameters:
+        - name: priorityStart
+          in: query
+          required: true
+          description: The minimum priority to start shifting at (inclusive)
+          schema:
+            type: integer
+            format: int64
+        - name: offset
+          in: query
+          required: true
+          description: The priority offset to apply to all rules from priorityStart onwards
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      tags:
+        - Rules
+      responses:
+        '200':
+          description: The number of rules whose priority was shifted by the required offset
+          content:
+            application/json:
+              schema:
+                type: integer
+            application/x-jackson-smile:
+              schema:
+                type: integer
+        '404':
+          description: Not found
+  /adminrules:
+    get:
+      operationId: findAllAdminRules
+      description: Returns an (optionally) paginated list of admin rules.
+      tags:
+        - AdminRules
+      parameters:
+        - $ref: 'acl-model.yaml#/components/parameters/page'
+        - $ref: 'acl-model.yaml#/components/parameters/size'
+      responses:
+        '200':
+          $ref: '#/components/responses/PageOfAdminRules'
+    post:
+      operationId: createAdminRule
+      tags:
+        - AdminRules
+      parameters:
+        - $ref: 'acl-model.yaml#/components/parameters/insertPosition'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+          application/x-jackson-smile:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+      responses:
+        '201':
+          $ref: '#/components/responses/AdminRule'
+    delete:
+      operationId: deleteAdminRules
+      description: Delete all AdminRules that match que filter predicate
+      tags:
+        - AdminRules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
+          application/x-jackson-smile:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
+      responses:
+        '200':
+          $ref: '#/components/responses/Count'
+  /adminrules/query:
+    post:
+      parameters:
+        - $ref: 'acl-model.yaml#/components/parameters/page'
+        - $ref: 'acl-model.yaml#/components/parameters/size'
+        - $ref: 'acl-model.yaml#/components/parameters/priorityOffset'        
+      operationId: findAdminRules
+      tags:
+        - AdminRules
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
+          application/x-jackson-smile:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
+      responses:
+        '200':
+          $ref: '#/components/responses/PageOfAdminRules'
+  /adminrules/query/count:
+    get:
+      operationId: countAllAdminRules
+      description: Returns the total number of rules
+      tags:
+        - AdminRules
+      responses:
+        '200':
+          $ref: '#/components/responses/Count'
+    post:
+      operationId: countAdminRules
+      description: Returns the number of rules that matches the search criteria
+      tags:
+        - AdminRules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
+          application/x-jackson-smile:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
+      responses:
+        '200':
+          $ref: '#/components/responses/Count'
+  /adminrules/query/one:
+    post:
+      operationId: findOneAdminRule
+      description: Finds one and only AdminRule matching the filter, fails if the filter matches more than one rule
+      tags:
+        - AdminRules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
+          application/x-jackson-smile:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
+      responses:
+        '200':
+          $ref: '#/components/responses/AdminRule'
+        '404':
+          description: Not found
+  /adminrules/query/one/priority/{priority}:
+    get:
+      operationId: findOneAdminRuleByPriority
+      description: Finds the AdminRule with the given priority
+      tags:
+        - AdminRules
+      parameters:
+      - name: priority
+        in: path
+        required: true
+        description: The rule priority to search for
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          $ref: '#/components/responses/AdminRule'
+        '404':
+          description: Not found
+        '409':
+          description: Conflict, there's more than one rule with the requested priority
+  /adminrules/query/first:
+    post:
+      operationId: findFirstAdminRule
+      description: Finds the first rule that satisfies the query criteria
+      tags:
+        - AdminRules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
+          application/x-jackson-smile:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
+      responses:
+        '200':
+          $ref: '#/components/responses/AdminRule'
+        '404':
+          description: Not found
+
+  /adminrules/id/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      operationId: getAdminRuleById
+      description: Returns the AdminRule with the given identifier
+      tags:
+        - AdminRules
+      responses:
+        '200':
+          $ref: '#/components/responses/AdminRule'
+        '404':
+          description: Not found
+    patch:
+      operationId: updateAdminRule
+      tags:
+        - AdminRules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+          application/x-jackson-smile:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+      responses:
+        '200':
+          $ref: '#/components/responses/AdminRule'
+        '400':
+          description: Bad request body
+        '404':
+          description: Not found
+        '409':
+          description: Conflict, tried to update the rule identifier properties to one that belongs to another rule
+    delete:
+      operationId: deleteAdminRuleById
+      tags:
+        - AdminRules
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not found
+  /adminrules/id/{id}/exists:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      operationId: adminRuleExistsById
+      description: Returns whether the AdminRule with the given identifier exists
+      tags:
+        - AdminRules
+      responses:
+        '200':
+          description: boolean indicating whether the admin rule with the provided identifier exists
+          content:
+            application/json:
+              schema:
+                type: boolean
+            application/x-jackson-smile:
+              schema:
+                type: boolean
+
+  /adminrules/id/{id}/swapwith/{id2}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+      - name: id2
+        in: path
+        required: true
+        description: The admin rule identifier to swap priorities with
+        schema:
+          type: string
+    post:
+      operationId: swapAdminRules
+      tags:
+        - AdminRules
+      responses:
+        '204':
+          description: Updated
+        '404':
+          description: Not found
+  /adminrules/shift:
+    post:
+      operationId: shiftAdminRulesByPiority
+      parameters:
+        - name: priorityStart
+          in: query
+          required: true
+          description: The minimum priority to start shifting at (inclusive)
+          schema:
+            type: integer
+            format: int64
+        - name: offset
+          in: query
+          required: true
+          description: The priority offset to apply to all rules from priorityStart onwards
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      tags:
+        - AdminRules
+      responses:
+        '200':
+          description: The number of admin rules whose priority was shifted by the required offset
+          content:
+            application/json:
+              schema:
+                type: integer
+        '404':
+          description: Not found
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+  responses:
+    Rule:
+      description: The requested or updated Rule
+      content:
+        application/json:
+          schema:
+            $ref: 'acl-model.yaml#/components/schemas/Rule'
+        application/x-jackson-smile:
+          schema:
+            $ref: 'acl-model.yaml#/components/schemas/Rule'
+    LayerDetails:
+      description: The requested or updated Rule LayerDetails
+      content:
+        application/json:
+          schema:
+            $ref: 'acl-model.yaml#/components/schemas/LayerDetails'
+        application/x-jackson-smile:
+          schema:
+            $ref: 'acl-model.yaml#/components/schemas/LayerDetails'
+    AdminRule:
+      description: The requested or updated AdminRule
+      content:
+        application/json:
+          schema:
+            $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+        application/x-jackson-smile:
+          schema:
+            $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+    Count:
+      description: Number of rules matching the request
+      content:
+        application/json:
+          schema:
+            type: integer
+    PageOfRules:
+      description: A page of rules, or an empty response if the requested page is off limits
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: 'acl-model.yaml#/components/schemas/Rule'
+        application/x-jackson-smile:
+          schema:
+            type: array
+            items:
+              $ref: 'acl-model.yaml#/components/schemas/Rule'
+    PageOfAdminRules:
+      description: A page of admin rules, or an empty response if the requested page is off limits
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+        application/x-jackson-smile:
+          schema:
+            type: array
+            items:
+              $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      description: The rule identifier
+      schema:
+        type: string

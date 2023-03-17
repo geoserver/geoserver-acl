@@ -1,0 +1,72 @@
+server:
+  port: 8080
+  # one of never, always, on_trace_param (deprecated), on_param
+  error:
+    include-stacktrace: on-param
+    include-binding-errors: always
+    include-message: always
+spring:
+  config:
+    name: geoserver
+  main:
+    banner-mode: off
+    web-application-type: servlet
+  application:
+    name: acl-service
+  jackson:
+    default-property-inclusion: non-empty
+    serialization:
+      indent-output: true
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+
+  data.web.pageable.default-page-size: 100
+
+openapi.geoServerACL.base-path: /api
+
+geoserver.acl:
+  datasource:
+    url: jdbc:h2:mem:geoserver-acl
+    username: sa
+    password: sa
+    hikari:
+      minimum-idle: 0
+      maximum-pool-size: 20
+  jpa:
+    show-sql: false
+    open-in-view: false
+    generate-ddl: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: public
+        hbm2ddl.auto: validate
+#       dialect: org.hibernate.spatial.dialect.h2geodb.GeoDBDialect
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: ${openapi.geoServerACL.base-path}/api-docs
+  swagger-ui:
+    enabled: true
+    path: ${openapi.geoServerACL.base-path}/swagger-ui.html
+    tryItOutEnabled: false
+
+---
+spring.config.activate.on-profile: dev
+
+geoserver.acl:
+  datasource:
+    url: jdbc:h2:mem:geoserver-acl
+    hikari:
+      minimum-idle: 0
+      maximum-pool-size: 20
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        hbm2ddl.auto: create
+
