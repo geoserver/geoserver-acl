@@ -60,7 +60,6 @@ paths:
       parameters:
         - $ref: 'acl-model.yaml#/components/parameters/page'
         - $ref: 'acl-model.yaml#/components/parameters/size'
-        - $ref: 'acl-model.yaml#/components/parameters/priorityOffset'        
       operationId: queryRules
       tags:
         - Rules
@@ -356,29 +355,11 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/AdminRule'
-    delete:
-      operationId: deleteAdminRules
-      description: Delete all AdminRules that match que filter predicate
-      tags:
-        - AdminRules
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
-          application/x-jackson-smile:
-            schema:
-              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
-      responses:
-        '200':
-          $ref: '#/components/responses/Count'
   /adminrules/query:
     post:
       parameters:
         - $ref: 'acl-model.yaml#/components/parameters/page'
         - $ref: 'acl-model.yaml#/components/parameters/size'
-        - $ref: 'acl-model.yaml#/components/parameters/priorityOffset'        
       operationId: findAdminRules
       tags:
         - AdminRules
@@ -420,26 +401,6 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Count'
-  /adminrules/query/one:
-    post:
-      operationId: findOneAdminRule
-      description: Finds one and only AdminRule matching the filter, fails if the filter matches more than one rule
-      tags:
-        - AdminRules
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
-          application/x-jackson-smile:
-            schema:
-              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
-      responses:
-        '200':
-          $ref: '#/components/responses/AdminRule'
-        '404':
-          description: Not found
   /adminrules/query/one/priority/{priority}:
     get:
       operationId: findOneAdminRuleByPriority

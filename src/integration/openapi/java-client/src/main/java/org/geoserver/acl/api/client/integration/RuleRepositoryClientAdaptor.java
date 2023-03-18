@@ -79,7 +79,7 @@ public class RuleRepositoryClientAdaptor implements RuleRepository {
     }
 
     @Override
-    public boolean delete(@NonNull String id) {
+    public boolean deleteById(@NonNull String id) {
         try {
             apiClient.deleteRuleById(id);
         } catch (HttpClientErrorException.NotFound e) {
@@ -107,22 +107,14 @@ public class RuleRepositoryClientAdaptor implements RuleRepository {
     }
 
     @Override
-    public Stream<Rule> query(RuleQuery<RuleFilter> query) {
+    public Stream<Rule> findAll(RuleQuery<RuleFilter> query) {
 
-        org.geoserver.acl.api.model.RuleFilter filter;
-        Long priorityOffset;
-
-        filter = query.getFilter().map(filterMapper::toApi).orElse(null);
-        priorityOffset =
-                query.getPriorityOffset().isPresent()
-                        ? query.getPriorityOffset().getAsLong()
-                        : null;
-
-        List<org.geoserver.acl.api.model.Rule> rules;
+        org.geoserver.acl.api.model.RuleFilter filter =
+                query.getFilter().map(filterMapper::toApi).orElse(null);
 
         Integer page = query.getPageNumber();
         Integer size = query.getPageSize();
-        rules = apiClient.queryRules(page, size, priorityOffset, filter);
+        List<org.geoserver.acl.api.model.Rule> rules = apiClient.queryRules(page, size, filter);
 
         return rules.stream().map(this::map);
     }
@@ -139,7 +131,7 @@ public class RuleRepositoryClientAdaptor implements RuleRepository {
     }
 
     @Override
-    public Optional<Rule> findByPriority(long priority) {
+    public Optional<Rule> findOneByPriority(long priority) {
         org.geoserver.acl.api.model.Rule rule;
         try {
             rule = apiClient.findOneRuleByPriority(priority);

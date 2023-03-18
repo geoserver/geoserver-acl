@@ -71,17 +71,6 @@ public class AdminRuleRepositoryClientAdaptor implements AdminRuleRepository {
     }
 
     @Override
-    public Optional<AdminRule> findOne(AdminRuleFilter filter) {
-        org.geoserver.acl.api.model.AdminRule rule;
-        try {
-            rule = apiClient.findOneAdminRule(map(filter));
-        } catch (HttpClientErrorException.NotFound e) {
-            rule = null;
-        }
-        return Optional.ofNullable(rule).map(this::map);
-    }
-
-    @Override
     public List<AdminRule> findAll() {
         Integer page = null;
         Integer size = null;
@@ -94,8 +83,7 @@ public class AdminRuleRepositoryClientAdaptor implements AdminRuleRepository {
     public List<AdminRule> findAll(AdminRuleFilter filter) {
         Integer page = null;
         Integer size = null;
-        Long priorityOffset = null;
-        return apiClient.findAdminRules(page, size, priorityOffset, map(filter)).stream()
+        return apiClient.findAdminRules(page, size, map(filter)).stream()
                 .map(this::map)
                 .collect(Collectors.toList());
     }
@@ -106,17 +94,11 @@ public class AdminRuleRepositoryClientAdaptor implements AdminRuleRepository {
 
         Integer page = query.getPageNumber();
         Integer size = query.getPageSize();
-        Long priorityOffset;
 
         filter = query.getFilter().map(filterMapper::map).orElse(null);
-        priorityOffset =
-                query.getPriorityOffset().isPresent()
-                        ? query.getPriorityOffset().getAsLong()
-                        : null;
 
-        List<org.geoserver.acl.api.model.AdminRule> rules;
-
-        rules = apiClient.findAdminRules(page, size, priorityOffset, filter);
+        List<org.geoserver.acl.api.model.AdminRule> rules =
+                apiClient.findAdminRules(page, size, filter);
 
         return rules.stream().map(this::map).collect(Collectors.toList());
     }
@@ -162,11 +144,6 @@ public class AdminRuleRepositoryClientAdaptor implements AdminRuleRepository {
         } catch (HttpClientErrorException.NotFound e) {
             return false;
         }
-    }
-
-    @Override
-    public int delete(AdminRuleFilter filter) {
-        return apiClient.deleteAdminRules(map(filter));
     }
 
     @Override

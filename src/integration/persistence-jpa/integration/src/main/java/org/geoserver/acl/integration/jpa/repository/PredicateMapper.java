@@ -59,14 +59,7 @@ class PredicateMapper {
     }
 
     public Optional<? extends Predicate> toPredicate(RuleQuery<?> query) {
-        Optional<Predicate> predicate = query.getFilter().flatMap(this::toPredicate);
-        Optional<BooleanExpression> pOffset = toPriorityPredicate(query.getPriorityOffset());
-
-        if (predicate.isPresent() && pOffset.isPresent()) {
-            return pOffset.map(p -> p.and(predicate.get()));
-        }
-
-        return predicate.isPresent() ? predicate : pOffset;
+        return query.getFilter().flatMap(this::toPredicate);
     }
 
     Optional<BooleanExpression> toPriorityPredicate(OptionalLong pstart) {

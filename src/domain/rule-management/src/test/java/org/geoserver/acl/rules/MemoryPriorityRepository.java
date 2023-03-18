@@ -65,7 +65,7 @@ public abstract class MemoryPriorityRepository<R> {
         return shiftPrioritiesBetween(priorityStart, stopIncl, offset);
     }
 
-    public abstract Optional<R> findByPriority(long priority);
+    public abstract Optional<R> findOneByPriority(long priority);
 
     protected int shiftPrioritiesBetween(long min, long max, long offset) {
         List<R> matches =

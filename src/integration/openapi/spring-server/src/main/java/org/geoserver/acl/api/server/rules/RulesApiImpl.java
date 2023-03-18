@@ -73,17 +73,12 @@ public class RulesApiImpl implements RulesApiDelegate {
 
     @Override
     public ResponseEntity<List<Rule>> queryRules( //
-            @Nullable Integer page,
-            @Nullable Integer size,
-            @Nullable Long priorityOffset,
-            @Nullable RuleFilter ruleFilter) {
+            @Nullable Integer page, @Nullable Integer size, @Nullable RuleFilter ruleFilter) {
 
         org.geoserver.acl.model.filter.RuleFilter filter = support.map(ruleFilter);
 
-        RuleQuery<org.geoserver.acl.model.filter.RuleFilter> query;
-        query = RuleQuery.of(filter).setPriorityOffset(priorityOffset);
-
-        query.setPageNumber(page).setPageSize(size);
+        RuleQuery<org.geoserver.acl.model.filter.RuleFilter> query =
+                RuleQuery.of(filter).setPageNumber(page).setPageSize(size);
 
         return query(query);
     }
@@ -124,7 +119,7 @@ public class RulesApiImpl implements RulesApiDelegate {
 
     @Override
     public ResponseEntity<Integer> countAllRules() {
-        return ResponseEntity.ok(service.getCountAll());
+        return ResponseEntity.ok(service.count());
     }
 
     @Override

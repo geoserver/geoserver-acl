@@ -159,7 +159,7 @@ class RulesApiImpTest {
 
     @Test
     void testCountAllRules() {
-        when(rules.getCountAll()).thenReturn(37);
+        when(rules.count()).thenReturn(37);
 
         assertThat(api.countAllRules().getStatusCode()).isEqualByComparingTo(OK);
         assertThat(api.countAllRules().getBody()).isEqualByComparingTo(37);

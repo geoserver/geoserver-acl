@@ -49,7 +49,7 @@ public class PriorityResolver<T> {
         if (priorityUnset) {
             return repo.maxPriority().orElse(0L) + 1;
         }
-        repo.findByPriority(requestedPriority)
+        repo.findOneByPriority(requestedPriority)
                 .ifPresent(
                         r -> {
                             repo.shift(requestedPriority, 1);

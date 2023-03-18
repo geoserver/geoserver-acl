@@ -101,21 +101,6 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     }
 
     @Override
-    public Optional<AdminRule> findOne(AdminRuleFilter filter) {
-        Predicate predicate =
-                queryMapper
-                        .toPredicate(filter)
-                        .orElseThrow(
-                                () -> new IllegalArgumentException("No filter predicate provided"));
-
-        try {
-            return jparepo.findOne(predicate).map(modelMapper::toModel);
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new IllegalArgumentException("Filter matches more than one AdminRule", e);
-        }
-    }
-
-    @Override
     public Optional<AdminRule> findOneByPriority(long priority) {
         Predicate predicate = QAdminRule.adminRule.priority.goe(priority);
         try {
@@ -230,21 +215,6 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     @TransactionRequired
     public boolean deleteById(@NonNull String id) {
         return 1 == jparepo.deleteById(decodeId(id).longValue());
-    }
-
-    @Override
-    @TransactionRequired
-    public int delete(AdminRuleFilter filter) {
-        Optional<? extends Predicate> predicate = queryMapper.toPredicate(filter);
-        if (predicate.isPresent()) {
-
-            List<org.geoserver.acl.jpa.model.AdminRule> matches =
-                    jparepo.findAllNaturalOrder(predicate.get());
-            jparepo.deleteAll(matches);
-            return matches.size();
-        }
-        throw new IllegalArgumentException(
-                "A predicate must be provided, deleting all AdminRules is not allowed");
     }
 
     private org.geoserver.acl.jpa.model.AdminRule getOrThrowIAE(@NonNull String ruleId) {

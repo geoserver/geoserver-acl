@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
@@ -33,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 class RuleAdminServiceTest {
@@ -164,59 +162,13 @@ class RuleAdminServiceTest {
 
     @Test
     void delete() {
-        when(repository.delete("1")).thenReturn(false);
-        when(repository.delete("2")).thenReturn(true);
+        when(repository.deleteById("1")).thenReturn(false);
+        when(repository.deleteById("2")).thenReturn(true);
         assertFalse(service.delete("1"));
         assertTrue(service.delete("2"));
-        verify(repository, times(1)).delete("1");
-        verify(repository, times(1)).delete("2");
+        verify(repository, times(1)).deleteById("1");
+        verify(repository, times(1)).deleteById("2");
         verifyNoMoreInteractions(repository);
-    }
-
-    @Test
-    void deleteRulesByUser() {
-        RuleFilter expectedFilter = new RuleFilter().setUser("John");
-        testDeleteWithFilter(expectedFilter, () -> service.deleteRulesByUser("John"));
-        assertThrows(NullPointerException.class, () -> service.deleteRulesByUser(null));
-    }
-
-    @Test
-    void deleteRulesByRole() {
-        RuleFilter expectedFilter = new RuleFilter().setRole("ROLE_EDITOR");
-        testDeleteWithFilter(expectedFilter, () -> service.deleteRulesByRole("ROLE_EDITOR"));
-        assertThrows(NullPointerException.class, () -> service.deleteRulesByRole(null));
-    }
-
-    @Test
-    void testDeleteRulesByInstance() {
-        RuleFilter expectedFilter = new RuleFilter().setInstance(101L);
-        testDeleteWithFilter(expectedFilter, () -> service.deleteRulesByInstance(101L));
-    }
-
-    private void testDeleteWithFilter(
-            RuleFilter expectedFilter, Supplier<List<String>> serviceMethodCall) {
-        // four rules match the filter
-        Rule match1 = Rule.allow().withId("1");
-        Rule match2 = Rule.allow().withId("2");
-        Rule match3 = Rule.allow().withId("3");
-        Rule match4 = Rule.allow().withId("4");
-
-        // but only rules with id 1 and 3 get deleted (lets say someone else deleted them)
-        when(repository.delete(eq("1"))).thenReturn(true);
-        when(repository.delete(eq("2"))).thenReturn(false);
-        when(repository.delete(eq("3"))).thenReturn(true);
-        when(repository.delete(eq("4"))).thenReturn(false);
-
-        when(repository.query(eq(RuleQuery.of(expectedFilter))))
-                .thenReturn(Stream.of(match1, match2, match3, match4));
-
-        List<String> expectedIds = List.of("1", "3");
-        List<String> ret = serviceMethodCall.get();
-
-        verify(repository, times(1)).query(eq(RuleQuery.of(expectedFilter)));
-        verify(repository, times(4)).delete(anyString());
-
-        assertThat(ret).isEqualTo(expectedIds);
     }
 
     @Test
@@ -240,7 +192,7 @@ class RuleAdminServiceTest {
                 NullPointerException.class, () -> service.getList((RuleQuery<RuleFilter>) null));
 
         RuleQuery<RuleFilter> query = RuleQuery.of(new RuleFilter().setRole("role1"));
-        when(repository.query(eq(query))).thenReturn(null);
+        when(repository.findAll(eq(query))).thenReturn(null);
         assertThrows(NullPointerException.class, () -> service.getList(query));
         clearInvocations(repository);
 
@@ -250,10 +202,10 @@ class RuleAdminServiceTest {
                         Rule.deny().withRolename("role1"),
                         Rule.limit().withRolename("role1"));
 
-        when(repository.query(query)).thenReturn(expected.stream());
+        when(repository.findAll(query)).thenReturn(expected.stream());
 
         List<Rule> actual = service.getList(query);
-        verify(repository, times(1)).query(eq(query));
+        verify(repository, times(1)).findAll(eq(query));
         verifyNoMoreInteractions(repository);
         assertThat(actual).isEqualTo(expected);
     }
@@ -268,7 +220,7 @@ class RuleAdminServiceTest {
         RuleFilter filter = new RuleFilter().setInstance("1").setLayer("states");
         RuleQuery<RuleFilter> query = RuleQuery.of(filter).setPageSize(0).setPageSize(2);
 
-        when(repository.query(eq(query))).thenReturn(List.of(Rule.allow(), Rule.deny()).stream());
+        when(repository.findAll(eq(query))).thenReturn(List.of(Rule.allow(), Rule.deny()).stream());
 
         IllegalArgumentException expected =
                 assertThrows(IllegalArgumentException.class, () -> service.getRule(filter));
@@ -280,7 +232,7 @@ class RuleAdminServiceTest {
         RuleFilter filter = new RuleFilter().setInstance("1").setLayer("states");
         RuleQuery<RuleFilter> query = RuleQuery.of(filter).setPageSize(0).setPageSize(2);
 
-        when(repository.query(eq(query))).thenReturn(Stream.of());
+        when(repository.findAll(eq(query))).thenReturn(Stream.of());
         assertThat(service.getRule(filter)).isEmpty();
     }
 
@@ -290,7 +242,7 @@ class RuleAdminServiceTest {
         RuleQuery<RuleFilter> query = RuleQuery.of(filter).setPageSize(0).setPageSize(2);
 
         Rule match = Rule.allow().withId("10L");
-        when(repository.query(eq(query))).thenReturn(Stream.of(match));
+        when(repository.findAll(eq(query))).thenReturn(Stream.of(match));
 
         assertThat(service.getRule(filter)).isPresent().get().isEqualTo(match);
     }
@@ -298,17 +250,17 @@ class RuleAdminServiceTest {
     @Test
     void getRuleByPriority() {
         Optional<Rule> expected = Optional.of(Rule.deny());
-        when(repository.findByPriority(eq(0L))).thenReturn(expected);
+        when(repository.findOneByPriority(eq(0L))).thenReturn(expected);
 
         Optional<Rule> ret = service.getRuleByPriority(0L);
-        verify(repository, times(1)).findByPriority(eq(0L));
+        verify(repository, times(1)).findOneByPriority(eq(0L));
         assertThat(ret).isSameAs(expected);
     }
 
     @Test
     void getCountAll() {
         when(repository.count()).thenReturn(1_000_000);
-        assertThat(service.getCountAll()).isEqualTo(1_000_000);
+        assertThat(service.count()).isEqualTo(1_000_000);
         verify(repository, times(1)).count();
         verifyNoMoreInteractions(repository);
     }

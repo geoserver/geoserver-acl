@@ -63,7 +63,8 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
         if (current.getPriority() != finalPriority) {
             rule = rule.withPriority(finalPriority);
             Optional<AdminRule> positionOccupied =
-                    findByPriority(finalPriority).filter(r -> !r.getId().equals(current.getId()));
+                    findOneByPriority(finalPriority)
+                            .filter(r -> !r.getId().equals(current.getId()));
             if (positionOccupied.isPresent()) {
                 AdminRule other = positionOccupied.get();
                 rules.remove(current);
@@ -111,17 +112,6 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
     @Override
     public Optional<AdminRule> findById(String id) {
         return rules.stream().filter(r -> id.equals(r.getId())).findFirst();
-    }
-
-    @Override
-    public Optional<AdminRule> findOne(AdminRuleFilter filter) {
-        List<AdminRule> matches =
-                streamAll(RuleQuery.of(filter).setPageNumber(0).setPageSize(1))
-                        .collect(Collectors.toList());
-        if (matches.size() > 1) {
-            throw new IllegalArgumentException("Filter matches more than one AdminRule");
-        }
-        return Optional.ofNullable(matches.isEmpty() ? null : matches.get(0));
     }
 
     @Override
@@ -191,19 +181,7 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
     }
 
     @Override
-    public int delete(AdminRuleFilter filter) {
-        List<AdminRule> matches = findAll(filter);
-        rules.removeAll(matches);
-        return matches.size();
-    }
-
-    @Override
     public Optional<AdminRule> findOneByPriority(long priority) {
-        return rules.stream().filter(r -> r.getPriority() == priority).findFirst();
-    }
-
-    @Override
-    public Optional<AdminRule> findByPriority(long priority) {
         return rules.stream().filter(r -> r.getPriority() == priority).findFirst();
     }
 

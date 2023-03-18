@@ -11,7 +11,6 @@ import lombok.experimental.Accessors;
 
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.OptionalLong;
 
 @Data
 @Accessors(chain = true)
@@ -21,9 +20,6 @@ public class RuleQuery<F extends Filter> {
 
     private Integer pageNumber;
     private Integer pageSize;
-
-    /** If present, return the rules with priority greater or equal to this value */
-    private Long priorityOffset;
 
     public static <RF extends Filter> RuleQuery<RF> of(RF filter) {
         return new RuleQuery<RF>().setFilter(filter);
@@ -47,9 +43,5 @@ public class RuleQuery<F extends Filter> {
 
     public OptionalInt pageSize() {
         return pageSize == null ? OptionalInt.empty() : OptionalInt.of(pageSize);
-    }
-
-    public OptionalLong getPriorityOffset() {
-        return priorityOffset == null ? OptionalLong.empty() : OptionalLong.of(priorityOffset);
     }
 }

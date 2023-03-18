@@ -9,7 +9,6 @@ package org.geoserver.acl.adminrules;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import org.geoserver.acl.model.adminrules.AdminRule;
 import org.geoserver.acl.model.filter.AdminRuleFilter;
@@ -25,7 +24,6 @@ import java.util.Optional;
  *
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
  */
-@Slf4j
 @RequiredArgsConstructor
 public class AdminRuleAdminService {
 
@@ -88,59 +86,12 @@ public class AdminRuleAdminService {
         return repository.findById(id);
     }
 
-    /**
-     * Return a single Rule according to the filter.
-     *
-     * <p>Search for a precise rule match. No ANY filter is allowed. Name/id specification with
-     * default inclusion is not allowed.
-     *
-     * @return the matching rule or null if not found
-     * @throws IllegalArgumentException if a wildcard type is used in filter or matches more than
-     *     one rule
-     */
-    public Optional<AdminRule> getRule(AdminRuleFilter filter) {
-        return repository.findOne(filter);
-    }
-
     public Optional<AdminRule> getFirstMatch(AdminRuleFilter filter) {
         return repository.findFirst(filter);
     }
 
     public boolean delete(@NonNull String id) {
         return repository.deleteById(id);
-    }
-
-    public int deleteRulesByUser(@NonNull String username) {
-        AdminRuleFilter filter = new AdminRuleFilter();
-        filter.setUser(username);
-        filter.getUser().setIncludeDefault(false);
-        int deletedCount = repository.delete(filter);
-        log.info("Removed {} AdminRules for user {}", deletedCount, username);
-        return deletedCount;
-    }
-
-    public int deleteRulesByRole(String rolename) {
-        AdminRuleFilter filter = new AdminRuleFilter();
-        filter.setRole(rolename);
-        filter.getRole().setIncludeDefault(false);
-        int deletedCount = repository.delete(filter);
-        log.info("Removed {} AdminRules for role {}", deletedCount, rolename);
-        return deletedCount;
-    }
-
-    public int deleteRulesByInstance(long instanceId) {
-        AdminRuleFilter filter = new AdminRuleFilter();
-        filter.setInstance(instanceId);
-        filter.getInstance().setIncludeDefault(false);
-        int deletedCount = repository.delete(filter);
-        log.info("Removed {} AdminRules for instance {}", deletedCount, instanceId);
-        return deletedCount;
-    }
-
-    public int deleteRules(@NonNull AdminRuleFilter filter) {
-        int deletedCount = repository.delete(filter);
-        log.info("Removed {} AdminRules for matching {}", deletedCount, filter);
-        return deletedCount;
     }
 
     public List<AdminRule> getAll() {
@@ -164,24 +115,6 @@ public class AdminRuleAdminService {
     }
 
     /**
-     * Return the Rules according to the priority.
-     *
-     * <p>Returns the rules having priority greater or equal to <code>priority</code>
-     *
-     * @param page used for retrieving paged data, may be null if not used. If not null, also
-     *     <TT>entries</TT> should be defined.
-     * @param entries used for retrieving paged data, may be null if not used. If not null, also
-     *     <TT>page</TT> should be defined.
-     */
-    public List<AdminRule> getRulesByPriority(long priority, Integer page, Integer entries) {
-
-        RuleQuery<AdminRuleFilter> query = RuleQuery.of();
-        query.setPriorityOffset(priority).setPageNumber(page).setPageSize(entries);
-
-        return repository.findAll(query);
-    }
-
-    /**
      * Search a Rule by priority.
      *
      * <p>Returns the rule having the requested priority, or empty if none found.
@@ -190,7 +123,7 @@ public class AdminRuleAdminService {
         return repository.findOneByPriority(priority);
     }
 
-    public int getCountAll() {
+    public int count() {
         return repository.count();
     }
 
@@ -202,40 +135,4 @@ public class AdminRuleAdminService {
     public boolean exists(@NonNull String id) {
         return repository.findById(id).isPresent();
     }
-
-    // =========================================================================
-    // Search stuff
-
-    // private Search buildRuleSearch(RuleFilter filter) {
-    // Search searchCriteria = new Search(AdminRule.class);
-    //
-    // if (filter != null) {
-    // addStringCriteria(searchCriteria, "username", filter.getUser());
-    // addStringCriteria(searchCriteria, "rolename", filter.getRole());
-    // addCriteria(searchCriteria, "instance", filter.getInstance());
-    //
-    // addStringCriteria(searchCriteria, "workspace", filter.getWorkspace());
-    // }
-    //
-    // return searchCriteria;
-    // }
-
-    // =========================================================================
-
-    // private Search buildFixedRuleSearch(RuleFilter filter) {
-    // Search searchCriteria = new Search(AdminRule.class);
-    //
-    // if (filter != null) {
-    // addFixedStringCriteria(searchCriteria, "username", filter.getUser());
-    // addFixedStringCriteria(searchCriteria, "rolename", filter.getRole());
-    // addFixedCriteria(searchCriteria, "instance", filter.getInstance());
-    //
-    // addFixedStringCriteria(searchCriteria, "workspace", filter.getWorkspace());
-    // }
-    //
-    // return searchCriteria;
-    // }
-
-    // ==========================================================================
-
 }

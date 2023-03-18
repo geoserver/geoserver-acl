@@ -77,7 +77,8 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
         if (current.getPriority() != finalPriority) {
             rule = rule.withPriority(finalPriority);
             Optional<Rule> positionOccupied =
-                    findByPriority(finalPriority).filter(r -> !r.getId().equals(current.getId()));
+                    findOneByPriority(finalPriority)
+                            .filter(r -> !r.getId().equals(current.getId()));
             if (positionOccupied.isPresent()) {
                 Rule other = positionOccupied.get();
                 rules.remove(current);
@@ -112,7 +113,7 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
     }
 
     @Override
-    public boolean delete(@NonNull String id) {
+    public boolean deleteById(@NonNull String id) {
         layerDetails.remove(id);
         return rules.removeIf(r -> id.equals(r.getId()));
     }
@@ -133,7 +134,7 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
     }
 
     @Override
-    public Stream<Rule> query(RuleQuery<RuleFilter> query) {
+    public Stream<Rule> findAll(RuleQuery<RuleFilter> query) {
         RuleFilter filter = query.getFilter().orElse(RuleFilter.any());
         Stream<Rule> matches = rules.stream().filter(filter);
         Integer page = query.getPageNumber();
@@ -146,7 +147,7 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
     }
 
     @Override
-    public Optional<Rule> findByPriority(long priority) {
+    public Optional<Rule> findOneByPriority(long priority) {
         return rules.stream().filter(r -> r.getPriority() == priority).findFirst();
     }
 

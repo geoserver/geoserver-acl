@@ -29,17 +29,6 @@ public interface AdminRuleRepository {
 
     Optional<AdminRule> findById(String id);
 
-    /**
-     * Returns a single entity matching the given {@link AdminRuleFilter} or {@link
-     * Optional#empty()} if none was found.
-     *
-     * @param filter must not be {@literal null}.
-     * @return a single entity matching the given {@link AdminRuleFilter} or {@link
-     *     Optional#empty()} if none was found.
-     * @throws IllegalArgumentException if the filter produces more than one result
-     */
-    Optional<AdminRule> findOne(AdminRuleFilter filter);
-
     List<AdminRule> findAll();
 
     List<AdminRule> findAll(AdminRuleFilter filter);
@@ -57,8 +46,6 @@ public interface AdminRuleRepository {
     void swap(String id1, String id2);
 
     boolean deleteById(String id);
-
-    int delete(AdminRuleFilter filter);
 
     Optional<AdminRule> findOneByPriority(long priority);
 }

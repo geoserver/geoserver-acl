@@ -31,7 +31,7 @@ public interface RuleRepository {
 
     Rule save(Rule rule);
 
-    boolean delete(String id);
+    boolean deleteById(String id);
 
     int count();
 
@@ -45,14 +45,14 @@ public interface RuleRepository {
     /**
      * @return all rules matching the query in natural order (priority)
      */
-    Stream<Rule> query(RuleQuery<RuleFilter> query);
+    Stream<Rule> findAll(RuleQuery<RuleFilter> query);
 
     Optional<Rule> findById(String id);
 
     /**
      * @throws IllegalStateException if there are multiple rules with the requested priority
      */
-    Optional<Rule> findByPriority(long priority);
+    Optional<Rule> findOneByPriority(long priority);
 
     int shift(long priorityStart, long offset);
 

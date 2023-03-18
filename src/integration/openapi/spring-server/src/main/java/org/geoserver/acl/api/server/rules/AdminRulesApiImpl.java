@@ -33,7 +33,7 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
     private final @NonNull AdminRulesApiSupport support;
 
     public @Override ResponseEntity<Integer> countAllAdminRules() {
-        return ResponseEntity.ok(service.getCountAll());
+        return ResponseEntity.ok(service.count());
     }
 
     public @Override ResponseEntity<Integer> countAdminRules(AdminRuleFilter adminRuleFilter) {
@@ -50,10 +50,6 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
             rule = service.insert(support.toModel(adminRule), support.toModel(position));
         }
         return ResponseEntity.ok(support.toApi(rule));
-    }
-
-    public @Override ResponseEntity<Integer> deleteAdminRules(AdminRuleFilter filter) {
-        return ResponseEntity.ok(service.deleteRules(support.map(filter)));
     }
 
     public @Override ResponseEntity<Void> deleteAdminRuleById(@NonNull String id) {
@@ -83,14 +79,6 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
         return ResponseEntity.status(null == match ? NOT_FOUND : OK).body(support.toApi(match));
     }
 
-    public @Override ResponseEntity<AdminRule> findOneAdminRule(AdminRuleFilter adminRuleFilter) {
-        Optional<org.geoserver.acl.model.adminrules.AdminRule> found =
-                service.getFirstMatch(support.map(adminRuleFilter));
-
-        return ResponseEntity.status(found.isPresent() ? OK : NOT_FOUND)
-                .body(found.map(support::toApi).orElse(null));
-    }
-
     public @Override ResponseEntity<AdminRule> findOneAdminRuleByPriority(Long priority) {
         Optional<org.geoserver.acl.model.adminrules.AdminRule> found =
                 service.getRuleByPriority(priority);
@@ -100,12 +88,12 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
     }
 
     public @Override ResponseEntity<List<AdminRule>> findAdminRules(
-            Integer page, Integer size, Long priorityOffset, AdminRuleFilter adminRuleFilter) {
+            Integer page, Integer size, AdminRuleFilter adminRuleFilter) {
 
         org.geoserver.acl.model.filter.AdminRuleFilter filter = support.map(adminRuleFilter);
 
-        List<org.geoserver.acl.model.adminrules.AdminRule> matches;
-        matches = service.getList(filter, page, size);
+        List<org.geoserver.acl.model.adminrules.AdminRule> matches =
+                service.getList(filter, page, size);
         return ResponseEntity.ok(matches.stream().map(support::toApi).collect(Collectors.toList()));
     }
 

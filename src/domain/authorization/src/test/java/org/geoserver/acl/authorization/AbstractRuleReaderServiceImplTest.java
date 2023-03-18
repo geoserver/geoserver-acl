@@ -254,7 +254,7 @@ public abstract class AbstractRuleReaderServiceImplTest extends ServiceTestBase 
 
     @Test
     public void testResolveLazy() {
-        assertEquals(0, ruleAdminService.getCountAll());
+        assertEquals(0, ruleAdminService.count());
 
         List<Rule> rules = new ArrayList<>();
 
@@ -326,7 +326,7 @@ public abstract class AbstractRuleReaderServiceImplTest extends ServiceTestBase 
 
     @Test
     public void testGroups() {
-        assertEquals(0, ruleAdminService.getCountAll());
+        assertEquals(0, ruleAdminService.count());
 
         final User u1 = createUser("u1", "p1");
         final User u2 = createUser("u2", "p2");
@@ -347,7 +347,7 @@ public abstract class AbstractRuleReaderServiceImplTest extends ServiceTestBase 
         // LOGGER.info("SETUP ENDED, STARTING TESTS");
         // ===
 
-        assertEquals(rules.size(), ruleAdminService.getCountAll());
+        assertEquals(rules.size(), ruleAdminService.count());
 
         {
             RuleFilter filter = new RuleFilter(SpecialFilterType.ANY).setUser(u1.getName());
@@ -374,7 +374,7 @@ public abstract class AbstractRuleReaderServiceImplTest extends ServiceTestBase 
 
     @Test
     public void testGroupOrder01() throws UnknownHostException {
-        assertEquals(0, ruleAdminService.getCountAll());
+        assertEquals(0, ruleAdminService.count());
 
         final User u1 = createUser("u1", "p1");
         final User u2 = createUser("u2", "p2");
@@ -386,7 +386,7 @@ public abstract class AbstractRuleReaderServiceImplTest extends ServiceTestBase 
         // LOGGER.info("SETUP ENDED, STARTING TESTS");
         // ===
 
-        assertEquals(rules.size(), ruleAdminService.getCountAll());
+        assertEquals(rules.size(), ruleAdminService.count());
 
         RuleFilter filterU1 = new RuleFilter(SpecialFilterType.ANY).setUser(u1.getName());
         AccessRequest req1 = AccessRequest.builder().user(u1).filter(filterU1).build();
@@ -403,7 +403,7 @@ public abstract class AbstractRuleReaderServiceImplTest extends ServiceTestBase 
 
     @Test
     public void testGroupOrder02() {
-        assertEquals(0, ruleAdminService.getCountAll());
+        assertEquals(0, ruleAdminService.count());
 
         final User u1 = createUser("u1", "p1");
         final User u2 = createUser("u2", "p2");
@@ -415,7 +415,7 @@ public abstract class AbstractRuleReaderServiceImplTest extends ServiceTestBase 
         // LOGGER.info("SETUP ENDED, STARTING TESTS");
         // ===
 
-        assertEquals(rules.size(), ruleAdminService.getCountAll());
+        assertEquals(rules.size(), ruleAdminService.count());
 
         RuleFilter filterU1 = new RuleFilter(SpecialFilterType.ANY).setUser(u1.getName());
         AccessRequest req1 = AccessRequest.builder().user(u1).filter(filterU1).build();
@@ -432,7 +432,7 @@ public abstract class AbstractRuleReaderServiceImplTest extends ServiceTestBase 
 
     @Test
     public void testAttrib() {
-        assertEquals(0, ruleAdminService.getCountAll());
+        assertEquals(0, ruleAdminService.count());
         final User u1 = createUser("u1", "g1");
         final User u2 = createUser("u2", "g2");
         final User u12 = createUser("u12", "g1", "g2");
@@ -480,7 +480,7 @@ public abstract class AbstractRuleReaderServiceImplTest extends ServiceTestBase 
         // LOGGER.info("SETUP ENDED, STARTING
         // TESTS========================================");
 
-        assertEquals(4, ruleAdminService.getCountAll());
+        assertEquals(4, ruleAdminService.count());
 
         // ===
 
@@ -571,7 +571,7 @@ public abstract class AbstractRuleReaderServiceImplTest extends ServiceTestBase 
     /** Added for issue #23 */
     @Test
     public void testNullAllowableStyles() {
-        assertEquals(0, ruleAdminService.getCountAll());
+        assertEquals(0, ruleAdminService.count());
 
         final User u1 = createUser("u1", "g1", "g2");
 
@@ -592,7 +592,7 @@ public abstract class AbstractRuleReaderServiceImplTest extends ServiceTestBase 
         // LOGGER.info("SETUP ENDED, STARTING
         // TESTS========================================");
 
-        assertEquals(2, ruleAdminService.getCountAll());
+        assertEquals(2, ruleAdminService.count());
 
         // ===
 
@@ -681,7 +681,7 @@ public abstract class AbstractRuleReaderServiceImplTest extends ServiceTestBase 
 
     @Test
     public void testGetRulesForUserOnly() {
-        assertEquals(0, ruleAdminService.getCountAll());
+        assertEquals(0, ruleAdminService.count());
 
         final User u1 = createUser("TestUser1", "g1");
 
@@ -773,7 +773,7 @@ public abstract class AbstractRuleReaderServiceImplTest extends ServiceTestBase 
     // @Disabled
     @Test
     public void testMultiRoles() {
-        assertEquals(0, ruleAdminService.getCountAll());
+        assertEquals(0, ruleAdminService.count());
 
         final User u1 = createUser("TestUser1", "p1");
         final User u2 = createUser("TestUser2", "p2");

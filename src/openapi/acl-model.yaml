@@ -37,14 +37,6 @@ components:
       required: false
       schema:
         $ref: '#/components/schemas/InsertPosition'
-    priorityOffset:
-      name: priorityOffset
-      in: query
-      required: false
-      description: Rule id offset
-      schema:
-        type: integer
-        format: int64
   schemas:
     CatalogMode:
       type: string

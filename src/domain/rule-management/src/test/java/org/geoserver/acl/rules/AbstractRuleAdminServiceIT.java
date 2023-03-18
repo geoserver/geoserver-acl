@@ -282,7 +282,7 @@ public abstract class AbstractRuleAdminServiceIT {
         IntStream.range(0, 10)
                 .forEach(
                         i -> {
-                            assertThat(ruleAdminService.getCountAll()).isEqualTo(i);
+                            assertThat(ruleAdminService.count()).isEqualTo(i);
                             addOneForLayer(i);
                         });
     }
@@ -583,7 +583,7 @@ public abstract class AbstractRuleAdminServiceIT {
         Rule r3 = addOneForLayer(3);
         Rule r4 = addOneForLayer(4);
         Rule r5 = addOneForLayer(5);
-        assertThat(ruleAdminService.getCountAll()).isEqualTo(5);
+        assertThat(ruleAdminService.count()).isEqualTo(5);
 
         assertThat(ruleAdminService.shift(1, 10)).isEqualTo(5);
         List<Rule> expected = List.of(r1, r2, r3, r4, r5);

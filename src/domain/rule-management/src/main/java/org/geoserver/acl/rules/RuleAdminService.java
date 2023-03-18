@@ -133,37 +133,10 @@ public class RuleAdminService {
         return ruleRepository.findById(id);
     }
 
-    // gr: used to return boolean but threw a NotFoundServiceEx, changed to return false instead for
-    // consistency
     public boolean delete(@NonNull String id) {
-        return ruleRepository.delete(id);
+        return ruleRepository.deleteById(id);
     }
 
-    // gr: is it a good idea to delete by user without forcing a geoserver instance?
-    public List<String> deleteRulesByUser(@NonNull String username) {
-        return delete(new RuleFilter().setUser(username));
-    }
-
-    // gr: is it a good idea to delete by role without forcing a geoserver instance?
-    public List<String> deleteRulesByRole(@NonNull String rolename) {
-        return delete(new RuleFilter().setRole(rolename));
-    }
-
-    public List<String> deleteRulesByInstance(long instanceId) {
-        return delete(new RuleFilter().setInstance(instanceId));
-    }
-
-    /** Deletes all rules matching the filter and returns their ids */
-    private List<String> delete(RuleFilter filter) {
-        return this.ruleRepository
-                .query(RuleQuery.of(filter))
-                .map(Rule::getId)
-                .map(id -> ruleRepository.delete(id) ? id : null)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
-
-    // REVISIT: return Stream?
     public List<Rule> getAll() {
         return ruleRepository.findAll().collect(Collectors.toList());
     }
@@ -178,7 +151,7 @@ public class RuleAdminService {
      * @param query provides a filter predicate, paging, and priority offset
      */
     public List<Rule> getList(@NonNull RuleQuery<RuleFilter> query) {
-        return ruleRepository.query(query).collect(Collectors.toList());
+        return ruleRepository.findAll(query).collect(Collectors.toList());
     }
 
     /**
@@ -192,7 +165,7 @@ public class RuleAdminService {
      */
     public Optional<Rule> getRule(@NonNull RuleFilter filter) throws IllegalArgumentException {
         RuleQuery<RuleFilter> query = RuleQuery.of(filter).setPageSize(0).setPageSize(2);
-        List<Rule> found = ruleRepository.query(query).collect(Collectors.toList());
+        List<Rule> found = ruleRepository.findAll(query).collect(Collectors.toList());
         if (found.size() > 1) {
             // LOGGER.error("Unexpected rule count for filter " + filter + " : " + found);
             throw new IllegalArgumentException(
@@ -208,10 +181,10 @@ public class RuleAdminService {
      * <p>Returns the rule having the requested priority, or null if none found.
      */
     public Optional<Rule> getRuleByPriority(long priority) throws IllegalArgumentException {
-        return ruleRepository.findByPriority(priority);
+        return ruleRepository.findOneByPriority(priority);
     }
 
-    public int getCountAll() {
+    public int count() {
         return ruleRepository.count();
     }
 

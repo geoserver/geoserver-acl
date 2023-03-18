@@ -64,7 +64,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     }
 
     @Override
-    public Optional<Rule> findByPriority(long priority) {
+    public Optional<Rule> findOneByPriority(long priority) {
         try {
             return jparepo.findOne(QRule.rule.priority.eq(priority)).map(modelMapper::toModel);
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -90,7 +90,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     }
 
     @Override
-    public Stream<Rule> query(@NonNull RuleQuery<RuleFilter> query) {
+    public Stream<Rule> findAll(@NonNull RuleQuery<RuleFilter> query) {
 
         Optional<? extends Predicate> predicate = queryMapper.toPredicate(query);
         Pageable pageRequest = queryMapper.toPageable(query);
@@ -171,7 +171,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
 
     @Override
     @TransactionRequired
-    public boolean delete(@NonNull String id) {
+    public boolean deleteById(@NonNull String id) {
         return 1 == jparepo.deleteById(decodeId(id).longValue());
     }
 
