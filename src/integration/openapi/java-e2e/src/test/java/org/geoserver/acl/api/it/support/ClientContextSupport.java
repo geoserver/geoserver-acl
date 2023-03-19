@@ -7,10 +7,14 @@ package org.geoserver.acl.api.it.support;
 import org.geoserver.acl.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.api.client.AdminRulesApi;
 import org.geoserver.acl.api.client.ApiClient;
+import org.geoserver.acl.api.client.AuthorizationApi;
 import org.geoserver.acl.api.client.RulesApi;
 import org.geoserver.acl.api.client.config.ApiClientConfiguration;
 import org.geoserver.acl.api.client.config.RepositoryClientAdaptorsConfiguration;
-import org.geoserver.acl.authorization.RuleReaderServiceImpl;
+import org.geoserver.acl.api.client.integration.AuthorizationServiceClientAdaptor;
+import org.geoserver.acl.api.mapper.AuthorizationModelApiMapper;
+import org.geoserver.acl.api.mapper.RuleApiMapper;
+import org.geoserver.acl.authorization.AuthorizationServiceImpl;
 import org.geoserver.acl.config.domain.AdminRuleAdminServiceConfiguration;
 import org.geoserver.acl.config.domain.RuleAdminServiceConfiguration;
 import org.geoserver.acl.rules.RuleAdminService;
@@ -91,10 +95,17 @@ public class ClientContextSupport {
         return clientContext.getBean(AdminRuleAdminService.class);
     }
 
-    public RuleReaderServiceImpl getRuleReaderServiceImpl() {
+    public AuthorizationServiceImpl getAuthorizationService() {
         AdminRuleAdminService adminRuleService = getAdminRuleAdminServiceClient();
         RuleAdminService ruleService = getRuleAdminServiceClient();
-        return new RuleReaderServiceImpl(adminRuleService, ruleService);
-        // return clientContext.getBean(RuleReaderServiceImpl.class);
+        return new AuthorizationServiceImpl(adminRuleService, ruleService);
+    }
+
+    public AuthorizationServiceClientAdaptor getAuthorizationServiceClientAdaptor() {
+        RuleApiMapper ruleMapper = clientContext.getBean(RuleApiMapper.class);
+        AuthorizationModelApiMapper authMapper =
+                clientContext.getBean(AuthorizationModelApiMapper.class);
+        AuthorizationApi apiClient = clientContext.getBean(AuthorizationApi.class);
+        return new AuthorizationServiceClientAdaptor(apiClient, authMapper, ruleMapper);
     }
 }

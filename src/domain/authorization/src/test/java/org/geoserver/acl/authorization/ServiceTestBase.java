@@ -8,22 +8,38 @@ package org.geoserver.acl.authorization;
 
 import org.geoserver.acl.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.model.adminrules.AdminRule;
+import org.geoserver.acl.model.authorization.AuthorizationService;
+import org.geoserver.acl.model.authorization.User;
 import org.geoserver.acl.model.rules.GrantType;
 import org.geoserver.acl.model.rules.IPAddressRange;
 import org.geoserver.acl.model.rules.Rule;
 import org.geoserver.acl.model.rules.RuleIdentifier;
 import org.geoserver.acl.rules.RuleAdminService;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Set;
 
 /**
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
  */
-public class ServiceTestBase {
+public abstract class ServiceTestBase {
 
     protected RuleAdminService ruleAdminService;
     protected AdminRuleAdminService adminruleAdminService;
-    protected RuleReaderService ruleReaderService;
+    protected AuthorizationService authorizationService;
+
+    @BeforeEach
+    protected void setUp() throws Exception {
+        ruleAdminService = getRuleAdminService();
+        adminruleAdminService = getAdminRuleAdminService();
+        authorizationService = getAuthorizationService();
+    }
+
+    protected abstract RuleAdminService getRuleAdminService();
+
+    protected abstract AdminRuleAdminService getAdminRuleAdminService();
+
+    protected abstract AuthorizationService getAuthorizationService();
 
     protected User createUser(String name, String... groups) {
         return User.builder().name(name).roles(Set.of(groups)).build();

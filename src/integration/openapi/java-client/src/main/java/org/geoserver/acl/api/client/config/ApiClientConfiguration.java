@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import org.geoserver.acl.api.client.AdminRulesApi;
 import org.geoserver.acl.api.client.ApiClient;
+import org.geoserver.acl.api.client.AuthorizationApi;
 import org.geoserver.acl.api.client.RulesApi;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -34,9 +35,9 @@ import java.util.stream.Collectors;
 public class ApiClientConfiguration {
 
     @Bean
-    ApiClient authorizationApiClient(
+    ApiClient aclApiClient(
             ApiClientProperties config,
-            @Qualifier("authorizationClientRestTemplate") RestTemplate restTemplate) {
+            @Qualifier("aclClientRestTemplate") RestTemplate restTemplate) {
 
         String basePath = config.getBasePath();
         String username = config.getUsername();
@@ -57,20 +58,26 @@ public class ApiClientConfiguration {
     }
 
     @Bean
-    RulesApi authorizationRulesApiClient(ApiClient client) {
+    RulesApi aclRulesApiClient(ApiClient client) {
         return new RulesApi(client);
     }
 
     @Bean
-    AdminRulesApi authorizationAdminRulesApiClient(ApiClient client) {
+    AdminRulesApi aclAdminRulesApiClient(ApiClient client) {
         return new AdminRulesApi(client);
     }
 
     @Bean
-    RestTemplate authorizationClientRestTemplate(
-            @Qualifier("authorizationClientObjectMapper") ObjectMapper objectMapper) {
+    AuthorizationApi aclAuthorizationApiClient(ApiClient client) {
+        return new AuthorizationApi(client);
+    }
 
-        // Use Apache HttpComponents HttpClient, otherwise SimpleClientHttpRequestFactory fails on
+    @Bean
+    RestTemplate aclClientRestTemplate(
+            @Qualifier("aclClientObjectMapper") ObjectMapper objectMapper) {
+
+        // Use Apache HttpComponents HttpClient, otherwise
+        // SimpleClientHttpRequestFactory fails on
         // PATCH requests
         ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
         RestTemplate restTemplate = new RestTemplate(requestFactory);
@@ -95,7 +102,7 @@ public class ApiClientConfiguration {
     }
 
     @Bean
-    ObjectMapper authorizationClientObjectMapper() {
+    ObjectMapper aclClientObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         return mapper;

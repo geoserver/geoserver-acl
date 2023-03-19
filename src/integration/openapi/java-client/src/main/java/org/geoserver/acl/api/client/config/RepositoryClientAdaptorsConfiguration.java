@@ -6,14 +6,18 @@ package org.geoserver.acl.api.client.config;
 
 import org.geoserver.acl.adminrules.AdminRuleRepository;
 import org.geoserver.acl.api.client.AdminRulesApi;
+import org.geoserver.acl.api.client.AuthorizationApi;
 import org.geoserver.acl.api.client.RulesApi;
 import org.geoserver.acl.api.client.integration.AdminRuleRepositoryClientAdaptor;
+import org.geoserver.acl.api.client.integration.AuthorizationServiceClientAdaptor;
 import org.geoserver.acl.api.client.integration.RuleRepositoryClientAdaptor;
 import org.geoserver.acl.api.mapper.AdminRuleApiMapper;
+import org.geoserver.acl.api.mapper.AuthorizationModelApiMapper;
 import org.geoserver.acl.api.mapper.EnumsApiMapper;
 import org.geoserver.acl.api.mapper.LayerDetailsApiMapper;
 import org.geoserver.acl.api.mapper.RuleApiMapper;
 import org.geoserver.acl.api.mapper.RuleLimitsApiMapper;
+import org.geoserver.acl.model.authorization.AuthorizationService;
 import org.geoserver.acl.rules.RuleRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -24,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
 public class RepositoryClientAdaptorsConfiguration {
 
     @Bean
-    RuleRepository authorizationRepositoryClientAdaptor(
+    RuleRepository aclRuleRepositoryClientAdaptor(
             RulesApi apiClient,
             RuleApiMapper mapper,
             EnumsApiMapper enumsMapper,
@@ -36,8 +40,16 @@ public class RepositoryClientAdaptorsConfiguration {
     }
 
     @Bean
-    AdminRuleRepository authorizationAdminRuleRepositoryClientAdaptor(
+    AdminRuleRepository aclAdminRuleRepositoryClientAdaptor(
             AdminRulesApi apiClient, AdminRuleApiMapper mapper, EnumsApiMapper enumsMapper) {
         return new AdminRuleRepositoryClientAdaptor(apiClient, mapper, enumsMapper);
+    }
+
+    @Bean
+    AuthorizationService aclAuthorizationServiceClientAdaptor(
+            AuthorizationApi apiClient,
+            AuthorizationModelApiMapper mapper,
+            RuleApiMapper rulesMapper) {
+        return new AuthorizationServiceClientAdaptor(apiClient, mapper, rulesMapper);
     }
 }

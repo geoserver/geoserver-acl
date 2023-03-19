@@ -5,7 +5,7 @@
  * Original from GeoFence 3.6 under LGPL 2.0 license
  */
 
-package org.geoserver.acl.authorization;
+package org.geoserver.acl.model.authorization;
 
 import org.geoserver.acl.model.rules.Rule;
 
@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
  */
-public interface RuleReaderService {
+public interface AuthorizationService {
 
     /** Return info on resource accessibility. */
     AccessInfo getAccessInfo(AccessRequest request);
@@ -35,7 +35,4 @@ public interface RuleReaderService {
      * coalesced access info.
      */
     List<Rule> getMatchingRules(AccessRequest request);
-
-    // ==========================================================================
-
 }

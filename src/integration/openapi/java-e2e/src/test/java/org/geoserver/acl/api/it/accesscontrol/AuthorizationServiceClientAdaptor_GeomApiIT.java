@@ -2,22 +2,31 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.acl.api.it.rules;
+package org.geoserver.acl.api.it.accesscontrol;
 
+import org.geoserver.acl.adminrules.AdminRuleAdminService;
+import org.geoserver.acl.api.client.integration.AuthorizationServiceClientAdaptor;
 import org.geoserver.acl.api.it.support.ClientContextSupport;
 import org.geoserver.acl.api.it.support.IntegrationTestsApplication;
-import org.geoserver.acl.jpa.repository.JpaRuleRepository;
+import org.geoserver.acl.api.it.support.ServerContextSupport;
+import org.geoserver.acl.authorization.AuthorizationServiceImpl_GeomTest;
+import org.geoserver.acl.model.authorization.AuthorizationService;
 import org.geoserver.acl.rules.RuleAdminService;
-import org.geoserver.acl.rules.RuleAdminServiceIT;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 
+/**
+ * {@link AuthorizationService} end to end integration test for {@link
+ * AuthorizationServiceClientAdaptor} calls involving geometry operations.
+ *
+ * @see AuthorizationServiceImplApiIT
+ * @see AuthorizationServiceImpl_GeomTest
+ */
 @DirtiesContext
 @SpringBootTest(
         webEnvironment = WebEnvironment.RANDOM_PORT,
@@ -27,9 +36,9 @@ import org.springframework.test.annotation.DirtiesContext;
             "geoserver.acl.datasource.url=jdbc:h2:mem:geoserver-acl"
         },
         classes = {IntegrationTestsApplication.class})
-class RuleAdminServiceApiIT extends RuleAdminServiceIT {
+public class AuthorizationServiceClientAdaptor_GeomApiIT extends AuthorizationServiceImpl_GeomTest {
 
-    private @Autowired ApplicationContext serverContext;
+    private @Autowired ServerContextSupport serverContext;
     private @LocalServerPort int serverPort;
 
     private ClientContextSupport clientContext;
@@ -37,16 +46,14 @@ class RuleAdminServiceApiIT extends RuleAdminServiceIT {
     @Override
     @BeforeEach
     protected void setUp() throws Exception {
-        clientContext =
-                new ClientContextSupport()
-                        // logging breaks client exception handling, only enable if need to see the
-                        // request/response bodies
-                        .log(false)
-                        .serverPort(serverPort)
-                        .setUp();
-        JpaRuleRepository jparepo = serverContext.getBean(JpaRuleRepository.class);
-        jparepo.deleteAll();
+        clientContext = new ClientContextSupport().log(true).serverPort(serverPort).setUp();
+        serverContext.setUp();
         super.setUp();
+    }
+
+    @AfterEach
+    void tearDown() {
+        clientContext.close();
     }
 
     @Override
@@ -54,8 +61,13 @@ class RuleAdminServiceApiIT extends RuleAdminServiceIT {
         return clientContext.getRuleAdminServiceClient();
     }
 
-    @AfterEach
-    void tearDown() {
-        clientContext.close();
+    @Override
+    protected AdminRuleAdminService getAdminRuleAdminService() {
+        return clientContext.getAdminRuleAdminServiceClient();
+    }
+
+    @Override
+    protected AuthorizationService getAuthorizationService() {
+        return clientContext.getAuthorizationServiceClientAdaptor();
     }
 }

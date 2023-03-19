@@ -10,6 +10,7 @@ package org.geoserver.acl.rules;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import org.geoserver.acl.model.authorization.AuthorizationService;
 import org.geoserver.acl.model.filter.RuleFilter;
 import org.geoserver.acl.model.filter.RuleQuery;
 import org.geoserver.acl.model.rules.GrantType;
@@ -31,7 +32,7 @@ import java.util.stream.Stream;
  *
  * <p><B>Note:</B> <TT>service</TT> and <TT>request</TT> params are usually set by the client, and
  * by OGC specs they are not case sensitive, so we're going to turn all of them uppercase. See also
- * {@link RuleReaderServiceImpl}.
+ * {@link AuthorizationService}.
  *
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
  */
@@ -112,7 +113,7 @@ public class RuleAdminService {
     /**
      * <TT>service</TT> and <TT>request</TT> params are usually set by the client, and by OGC specs
      * they are not case sensitive, so we're going to turn all of them uppercase. See also {@link
-     * RuleReaderServiceImpl}.
+     * AuthorizationService}.
      */
     protected Rule sanitizeFields(Rule rule) {
         if (rule.getPriority() < 0)

@@ -5,7 +5,7 @@
  * Original from GeoFence 3.6 under LGPL 2.0 license
  */
 
-package org.geoserver.acl.authorization;
+package org.geoserver.acl.model.authorization;
 
 import lombok.Builder;
 import lombok.Builder.Default;

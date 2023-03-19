@@ -4,10 +4,12 @@
  */
 package org.geoserver.acl.api.it.support;
 
+import org.geoserver.acl.api.server.config.AuthorizationApiConfiguration;
 import org.geoserver.acl.api.server.config.RulesApiConfiguration;
 import org.geoserver.acl.config.domain.AdminRuleAdminServiceConfiguration;
+import org.geoserver.acl.config.domain.AuthorizationServiceConfiguration;
 import org.geoserver.acl.config.domain.RuleAdminServiceConfiguration;
-import org.geoserver.acl.integration.jpa.config.AuthorizationJPAIntegrationConfiguration;
+import org.geoserver.acl.integration.jpa.config.JPAIntegrationConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
@@ -16,9 +18,11 @@ import org.springframework.context.annotation.Import;
 @Import({
     ConfigurationPropertiesTestConfiguration.class,
     RulesApiConfiguration.class,
+    AuthorizationApiConfiguration.class,
     RuleAdminServiceConfiguration.class,
+    AuthorizationServiceConfiguration.class,
     AdminRuleAdminServiceConfiguration.class,
-    AuthorizationJPAIntegrationConfiguration.class
+    JPAIntegrationConfiguration.class
 })
 public class IntegrationTestsApplication {
 

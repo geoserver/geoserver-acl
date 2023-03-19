@@ -10,4 +10,5 @@
     </root>
 
 	<logger name="org.springframework.context.annotation.AnnotationConfigApplicationContext" level="error"/>
+	<logger name="org.geoserver.acl.api.client" level="info"/>
 </configuration>

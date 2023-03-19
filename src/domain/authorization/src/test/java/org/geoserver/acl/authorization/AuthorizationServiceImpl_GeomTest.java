@@ -5,6 +5,8 @@
 package org.geoserver.acl.authorization;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.geoserver.acl.model.rules.GrantType.ALLOW;
+import static org.geoserver.acl.model.rules.GrantType.LIMIT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,21 +17,43 @@ import org.geolatte.geom.Geometry;
 import org.geolatte.geom.MultiPolygon;
 import org.geolatte.geom.codec.Wkt;
 import org.geolatte.geom.jts.JTS;
+import org.geoserver.acl.adminrules.AdminRuleAdminService;
+import org.geoserver.acl.adminrules.MemoryAdminRuleRepository;
+import org.geoserver.acl.model.authorization.AccessInfo;
+import org.geoserver.acl.model.authorization.AccessRequest;
+import org.geoserver.acl.model.authorization.AuthorizationService;
+import org.geoserver.acl.model.authorization.User;
 import org.geoserver.acl.model.filter.RuleFilter;
 import org.geoserver.acl.model.filter.predicate.SpecialFilterType;
 import org.geoserver.acl.model.rules.CatalogMode;
-import org.geoserver.acl.model.rules.GrantType;
 import org.geoserver.acl.model.rules.Rule;
 import org.geoserver.acl.model.rules.RuleLimits;
 import org.geoserver.acl.model.rules.SpatialFilterType;
+import org.geoserver.acl.rules.MemoryRuleRepository;
+import org.geoserver.acl.rules.RuleAdminService;
 import org.junit.jupiter.api.Test;
 
 /**
- * Abstract {@link RuleReaderService} integration/conformance test working with geometries
+ * {@link AuthorizationService} integration/conformance test working with geometries
  *
  * <p>Concrete implementations must supply the required services in {@link ServiceTestBase}
  */
-public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTestBase {
+public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
+
+    @Override
+    protected RuleAdminService getRuleAdminService() {
+        return new RuleAdminService(new MemoryRuleRepository());
+    }
+
+    @Override
+    protected AdminRuleAdminService getAdminRuleAdminService() {
+        return new AdminRuleAdminService(new MemoryAdminRuleRepository());
+    }
+
+    @Override
+    protected AuthorizationService getAuthorizationService() {
+        return new AuthorizationServiceImpl(super.adminruleAdminService, super.ruleAdminService);
+    }
 
     @Test
     public void testRuleLimitsAllowedAreaSRIDIsPreserved() {
@@ -37,37 +61,12 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         // when retrieving it from the AccessInfo object
         String id;
         {
-            Rule r1 =
-                    ruleAdminService.insert(
-                            rule(
-                                    10,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    "s1",
-                                    "r1",
-                                    null,
-                                    "w1",
-                                    "l1",
-                                    GrantType.LIMIT));
+            Rule r1 = insert(10, null, null, null, null, "s1", "r1", null, "w1", "l1", LIMIT);
             id = r1.getId();
         }
 
         {
-            ruleAdminService.insert(
-                    rule(
-                            11,
-                            null,
-                            null,
-                            null,
-                            null,
-                            "s1",
-                            "r1",
-                            null,
-                            "w1",
-                            "l1",
-                            GrantType.ALLOW));
+            insert(11, null, null, null, null, "s1", "r1", null, "w1", "l1", ALLOW);
         }
 
         // save limits and check it has been saved
@@ -87,7 +86,7 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
             filter.setRequest("r1");
             filter.setLayer("l1");
             AccessRequest request = AccessRequest.builder().filter(filter).build();
-            AccessInfo accessInfo = ruleReaderService.getAccessInfo(request);
+            AccessInfo accessInfo = authorizationService.getAccessInfo(request);
             Geometry<?> area = accessInfo.getArea();
             assertEquals(3857, area.getCoordinateReferenceSystem().getCrsId().getCode());
         }
@@ -100,36 +99,11 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         String id2;
         String id3;
         {
-            ruleAdminService.insert(
-                    rule(
-                            999,
-                            null,
-                            null,
-                            null,
-                            null,
-                            "s1",
-                            "r1",
-                            null,
-                            "w1",
-                            "l1",
-                            GrantType.ALLOW));
+            insert(999, null, null, null, null, "s1", "r1", null, "w1", "l1", ALLOW);
         }
 
         {
-            Rule r2 =
-                    ruleAdminService.insert(
-                            rule(
-                                    11,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    "s1",
-                                    "r1",
-                                    null,
-                                    "w1",
-                                    "l1",
-                                    GrantType.LIMIT));
+            Rule r2 = insert(11, null, null, null, null, "s1", "r1", null, "w1", "l1", LIMIT);
             id2 = r2.getId();
         }
 
@@ -144,20 +118,7 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         }
 
         {
-            Rule r3 =
-                    ruleAdminService.insert(
-                            rule(
-                                    12,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    "s1",
-                                    "r1",
-                                    null,
-                                    "w1",
-                                    "l1",
-                                    GrantType.LIMIT));
+            Rule r3 = insert(12, null, null, null, null, "s1", "r1", null, "w1", "l1", LIMIT);
             id3 = r3.getId();
         }
 
@@ -178,7 +139,7 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
             filter.setRequest("r1");
             filter.setLayer("l1");
             AccessRequest request = AccessRequest.builder().filter(filter).build();
-            AccessInfo accessInfo = ruleReaderService.getAccessInfo(request);
+            AccessInfo accessInfo = authorizationService.getAccessInfo(request);
             Geometry<?> area = accessInfo.getArea();
             assertEquals(3003, area.getCoordinateReferenceSystem().getCrsId().getCode());
         }
@@ -192,34 +153,20 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         // the result is a clip area obtained by the intersection of the two.
         final User user = createUser("auth11", "group11", "group12");
 
-        ruleAdminService.insert(
-                rule(
-                        9999,
-                        null,
-                        null,
-                        null,
-                        null,
-                        "s11",
-                        "r11",
-                        null,
-                        "w11",
-                        "l11",
-                        GrantType.ALLOW));
+        insert(9999, null, null, null, null, "s11", "r11", null, "w11", "l11", ALLOW);
         String id =
-                ruleAdminService
-                        .insert(
-                                rule(
-                                        10,
-                                        user.getName(),
-                                        "group11",
-                                        null,
-                                        null,
-                                        "s11",
-                                        "r11",
-                                        null,
-                                        "w11",
-                                        "l11",
-                                        GrantType.LIMIT))
+                insert(
+                                10,
+                                user.getName(),
+                                "group11",
+                                null,
+                                null,
+                                "s11",
+                                "r11",
+                                null,
+                                "w11",
+                                "l11",
+                                LIMIT)
                         .getId();
 
         String areaWKT =
@@ -235,20 +182,18 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         ruleAdminService.setLimits(id, limits);
 
         String id2 =
-                ruleAdminService
-                        .insert(
-                                rule(
-                                        11,
-                                        user.getName(),
-                                        "group12",
-                                        null,
-                                        null,
-                                        "s11",
-                                        "r11",
-                                        null,
-                                        "w11",
-                                        "l11",
-                                        GrantType.LIMIT))
+                insert(
+                                11,
+                                user.getName(),
+                                "group12",
+                                null,
+                                null,
+                                "s11",
+                                "r11",
+                                null,
+                                "w11",
+                                "l11",
+                                LIMIT)
                         .getId();
         String areaWKT2 =
                 "MultiPolygon (((-1.78181818181818308 5.95227272727272894, -0.16927272727272813 5.4711818181818197, 1.97781818181818148 3.81409090909090986, 1.93327272727272748 2.05009090909090919, -2.6638181818181832 2.64700000000000069, -1.78181818181818308 5.95227272727272894)))";
@@ -266,8 +211,8 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         filter.setLayer("l11");
 
         AccessRequest request = AccessRequest.builder().user(user).filter(filter).build();
-        AccessInfo accessInfo = ruleReaderService.getAccessInfo(request);
-        assertEquals(GrantType.ALLOW, accessInfo.getGrant());
+        AccessInfo accessInfo = authorizationService.getAccessInfo(request);
+        assertEquals(ALLOW, accessInfo.getGrant());
         assertFalse(accessInfo.isAdminRights());
 
         // area in same group, the result should an itersection of the
@@ -290,34 +235,20 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         // the result is an intersect area obtained by the intersection of the two.
         final User user = createUser("auth12", "group13", "group14");
 
-        ruleAdminService.insert(
-                rule(
-                        9999,
-                        null,
-                        null,
-                        null,
-                        null,
-                        "s11",
-                        "r11",
-                        null,
-                        "w11",
-                        "l11",
-                        GrantType.ALLOW));
+        insert(9999, null, null, null, null, "s11", "r11", null, "w11", "l11", ALLOW);
         String id =
-                ruleAdminService
-                        .insert(
-                                rule(
-                                        13,
-                                        user.getName(),
-                                        "group13",
-                                        null,
-                                        null,
-                                        "s11",
-                                        "r11",
-                                        null,
-                                        "w11",
-                                        "l11",
-                                        GrantType.LIMIT))
+                insert(
+                                13,
+                                user.getName(),
+                                "group13",
+                                null,
+                                null,
+                                "s11",
+                                "r11",
+                                null,
+                                "w11",
+                                "l11",
+                                LIMIT)
                         .getId();
         String areaWKT =
                 "MultiPolygon (((-1.93327272727272859 5.5959090909090925, 2.22727272727272707 5.67609090909091041, 2.00454545454545441 4.07245454545454599, -1.92436363636363761 4.54463636363636425, -1.92436363636363761 4.54463636363636425, -1.93327272727272859 5.5959090909090925)))";
@@ -333,20 +264,18 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         ruleAdminService.setLimits(id, limits);
 
         String id2 =
-                ruleAdminService
-                        .insert(
-                                rule(
-                                        14,
-                                        user.getName(),
-                                        "group14",
-                                        null,
-                                        null,
-                                        "s11",
-                                        "r11",
-                                        null,
-                                        "w11",
-                                        "l11",
-                                        GrantType.LIMIT))
+                insert(
+                                14,
+                                user.getName(),
+                                "group14",
+                                null,
+                                null,
+                                "s11",
+                                "r11",
+                                null,
+                                "w11",
+                                "l11",
+                                LIMIT)
                         .getId();
         String areaWKT2 =
                 "MultiPolygon (((-1.78181818181818308 5.95227272727272894, -0.16927272727272813 5.4711818181818197, 1.97781818181818148 3.81409090909090986, 1.93327272727272748 2.05009090909090919, -2.6638181818181832 2.64700000000000069, -1.78181818181818308 5.95227272727272894)))";
@@ -365,8 +294,8 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         filter.setLayer("l11");
 
         AccessRequest request = AccessRequest.builder().user(user).filter(filter).build();
-        AccessInfo accessInfo = ruleReaderService.getAccessInfo(request);
-        assertEquals(GrantType.ALLOW, accessInfo.getGrant());
+        AccessInfo accessInfo = authorizationService.getAccessInfo(request);
+        assertEquals(ALLOW, accessInfo.getGrant());
         assertFalse(accessInfo.isAdminRights());
 
         // area in same group, the result should an itersection of the
@@ -389,35 +318,10 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         // separately in the final rule.
         final User user = createUser("auth22", "group22", "group23");
 
-        ruleAdminService.insert(
-                rule(
-                        999,
-                        null,
-                        null,
-                        null,
-                        null,
-                        "s22",
-                        "r22",
-                        null,
-                        "w22",
-                        "l22",
-                        GrantType.ALLOW));
+        insert(999, null, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
 
         String id =
-                ruleAdminService
-                        .insert(
-                                rule(
-                                        15,
-                                        null,
-                                        "group22",
-                                        null,
-                                        null,
-                                        "s22",
-                                        "r22",
-                                        null,
-                                        "w22",
-                                        "l22",
-                                        GrantType.LIMIT))
+                insert(15, null, "group22", null, null, "s22", "r22", null, "w22", "l22", LIMIT)
                         .getId();
         String areaWKT =
                 "MultiPolygon (((-1.93327272727272859 5.5959090909090925, 2.22727272727272707 5.67609090909091041, 2.00454545454545441 4.07245454545454599, -1.92436363636363761 4.54463636363636425, -1.92436363636363761 4.54463636363636425, -1.93327272727272859 5.5959090909090925)))";
@@ -431,20 +335,7 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         ruleAdminService.setLimits(id, limits);
 
         String id2 =
-                ruleAdminService
-                        .insert(
-                                rule(
-                                        16,
-                                        null,
-                                        "group23",
-                                        null,
-                                        null,
-                                        "s22",
-                                        "r22",
-                                        null,
-                                        "w22",
-                                        "l22",
-                                        GrantType.LIMIT))
+                insert(16, null, "group23", null, null, "s22", "r22", null, "w22", "l22", LIMIT)
                         .getId();
         String areaWKT2 =
                 "MultiPolygon (((-1.78181818181818308 5.95227272727272894, -0.16927272727272813 5.4711818181818197, 1.97781818181818148 3.81409090909090986, 1.93327272727272748 2.05009090909090919, -2.6638181818181832 2.64700000000000069, -1.78181818181818308 5.95227272727272894)))";
@@ -461,8 +352,8 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         filter.setLayer("l22");
         filter.setUser(user.getName());
         AccessRequest request = AccessRequest.builder().user(user).filter(filter).build();
-        AccessInfo accessInfo = ruleReaderService.getAccessInfo(request);
-        assertEquals(GrantType.ALLOW, accessInfo.getGrant());
+        AccessInfo accessInfo = authorizationService.getAccessInfo(request);
+        assertEquals(ALLOW, accessInfo.getGrant());
         assertFalse(accessInfo.isAdminRights());
 
         // we got a user in two groups one with an intersect spatialFilterType
@@ -489,43 +380,20 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         // the user belongs to two groups and there are two rules for each group:
         // INTERSECTS and CLIP for the first, and CLIP CLIP for the second.
         // The expected result is only one allowedArea of type clip
-        // obtained by the intersection of the firs two, united with the intersection of the second
+        // obtained by the intersection of the firs two, united with the intersection of
+        // the second
         // two.
-        // the first INTERSECTS is resolve as CLIP because during constraint resolution the more
+        // the first INTERSECTS is resolve as CLIP because during constraint resolution
+        // the more
         // restrictive
         // type is chosen.
 
         final User user = createUser("auth33", "group31", "group32");
 
-        ruleAdminService.insert(
-                rule(
-                        999,
-                        null,
-                        null,
-                        null,
-                        null,
-                        "s22",
-                        "r22",
-                        null,
-                        "w22",
-                        "l22",
-                        GrantType.ALLOW));
+        insert(999, null, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
 
         String id =
-                ruleAdminService
-                        .insert(
-                                rule(
-                                        17,
-                                        null,
-                                        "group31",
-                                        null,
-                                        null,
-                                        "s22",
-                                        "r22",
-                                        null,
-                                        "w22",
-                                        "l22",
-                                        GrantType.LIMIT))
+                insert(17, null, "group31", null, null, "s22", "r22", null, "w22", "l22", LIMIT)
                         .getId();
         String areaWKT =
                 "SRID=4326;MultiPolygon (((-1.93327272727272859 5.5959090909090925, 2.22727272727272707 5.67609090909091041, 2.00454545454545441 4.07245454545454599, -1.92436363636363761 4.54463636363636425, -1.92436363636363761 4.54463636363636425, -1.93327272727272859 5.5959090909090925)))";
@@ -541,20 +409,7 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         assertThat(ruleAdminService.get(id).get().getRuleLimits()).isEqualTo(limits);
 
         String id2 =
-                ruleAdminService
-                        .insert(
-                                rule(
-                                        18,
-                                        null,
-                                        "group31",
-                                        null,
-                                        null,
-                                        "s22",
-                                        "r22",
-                                        null,
-                                        "w22",
-                                        "l22",
-                                        GrantType.LIMIT))
+                insert(18, null, "group31", null, null, "s22", "r22", null, "w22", "l22", LIMIT)
                         .getId();
         String areaWKT2 =
                 "SRID=4326;MultiPolygon (((-1.46109090909091011 5.68500000000000139, -0.68600000000000083 5.7651818181818193, -0.73945454545454625 2.00554545454545519, -1.54127272727272846 1.9610000000000003, -1.46109090909091011 5.68500000000000139)))";
@@ -569,20 +424,7 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         assertThat(ruleAdminService.get(id2).get().getRuleLimits()).isEqualTo(limits2);
 
         String id3 =
-                ruleAdminService
-                        .insert(
-                                rule(
-                                        19,
-                                        null,
-                                        "group32",
-                                        null,
-                                        null,
-                                        "s22",
-                                        "r22",
-                                        null,
-                                        "w22",
-                                        "l22",
-                                        GrantType.LIMIT))
+                insert(19, null, "group32", null, null, "s22", "r22", null, "w22", "l22", LIMIT)
                         .getId();
         String areaWKT3 =
                 "SRID=4326;MultiPolygon (((-1.78181818181818308 5.95227272727272894, -0.16927272727272813 5.4711818181818197, 1.97781818181818148 3.81409090909090986, 1.93327272727272748 2.05009090909090919, -2.6638181818181832 2.64700000000000069, -1.78181818181818308 5.95227272727272894)))";
@@ -598,20 +440,7 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         assertThat(ruleAdminService.get(id3).get().getRuleLimits()).isEqualTo(limits3);
 
         String id4 =
-                ruleAdminService
-                        .insert(
-                                rule(
-                                        20,
-                                        null,
-                                        "group32",
-                                        null,
-                                        null,
-                                        "s22",
-                                        "r22",
-                                        null,
-                                        "w22",
-                                        "l22",
-                                        GrantType.LIMIT))
+                insert(20, null, "group32", null, null, "s22", "r22", null, "w22", "l22", LIMIT)
                         .getId();
         String areaWKT4 =
                 "SRID=4326;MultiPolygon (((-1.30963636363636482 5.96118181818181991, 1.78181818181818175 4.84754545454545571, -0.90872727272727349 2.26390909090909132, -1.30963636363636482 5.96118181818181991)))";
@@ -630,8 +459,8 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         filter.setUser(user.getName());
 
         AccessRequest request = AccessRequest.builder().user(user).filter(filter).build();
-        AccessInfo accessInfo = ruleReaderService.getAccessInfo(request);
-        assertEquals(GrantType.ALLOW, accessInfo.getGrant());
+        AccessInfo accessInfo = authorizationService.getAccessInfo(request);
+        assertEquals(ALLOW, accessInfo.getGrant());
         assertFalse(accessInfo.isAdminRights());
         // we should have only the clip geometry
         assertNull(accessInfo.getArea());
@@ -653,40 +482,16 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
     public void testRuleSpatialFilterTypeFourRules2() {
         // the user belongs to two groups and there are two rules for each group:
         // CLIP and CLIP for the first, and INTERSECTS INTERSECTS for the second.
-        // The expected result are two allowedArea the first of type clip and second of type
+        // The expected result are two allowedArea the first of type clip and second of
+        // type
         // intersects.
 
         final User user = createUser("auth44", "group41", "group42");
 
-        ruleAdminService.insert(
-                rule(
-                        999,
-                        null,
-                        null,
-                        null,
-                        null,
-                        "s22",
-                        "r22",
-                        null,
-                        "w22",
-                        "l22",
-                        GrantType.ALLOW));
+        insert(999, null, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
 
         String id =
-                ruleAdminService
-                        .insert(
-                                rule(
-                                        21,
-                                        null,
-                                        "group41",
-                                        null,
-                                        null,
-                                        "s22",
-                                        "r22",
-                                        null,
-                                        "w22",
-                                        "l22",
-                                        GrantType.LIMIT))
+                insert(21, null, "group41", null, null, "s22", "r22", null, "w22", "l22", LIMIT)
                         .getId();
         String areaWKT =
                 "MultiPolygon (((-1.93327272727272859 5.5959090909090925, 2.22727272727272707 5.67609090909091041, 2.00454545454545441 4.07245454545454599, -1.92436363636363761 4.54463636363636425, -1.92436363636363761 4.54463636363636425, -1.93327272727272859 5.5959090909090925)))";
@@ -696,20 +501,7 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         ruleAdminService.setLimits(id, limits);
 
         String id2 =
-                ruleAdminService
-                        .insert(
-                                rule(
-                                        22,
-                                        null,
-                                        "group41",
-                                        null,
-                                        null,
-                                        "s22",
-                                        "r22",
-                                        null,
-                                        "w22",
-                                        "l22",
-                                        GrantType.LIMIT))
+                insert(22, null, "group41", null, null, "s22", "r22", null, "w22", "l22", LIMIT)
                         .getId();
         String areaWKT2 =
                 "MultiPolygon (((-1.46109090909091011 5.68500000000000139, -0.68600000000000083 5.7651818181818193, -0.73945454545454625 2.00554545454545519, -1.54127272727272846 1.9610000000000003, -1.46109090909091011 5.68500000000000139)))";
@@ -719,20 +511,7 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         ruleAdminService.setLimits(id2, limits2);
 
         String id3 =
-                ruleAdminService
-                        .insert(
-                                rule(
-                                        23,
-                                        null,
-                                        "group42",
-                                        null,
-                                        null,
-                                        "s22",
-                                        "r22",
-                                        null,
-                                        "w22",
-                                        "l22",
-                                        GrantType.LIMIT))
+                insert(23, null, "group42", null, null, "s22", "r22", null, "w22", "l22", LIMIT)
                         .getId();
         String areaWKT3 =
                 "MultiPolygon (((-1.78181818181818308 5.95227272727272894, -0.16927272727272813 5.4711818181818197, 1.97781818181818148 3.81409090909090986, 1.93327272727272748 2.05009090909090919, -2.6638181818181832 2.64700000000000069, -1.78181818181818308 5.95227272727272894)))";
@@ -742,20 +521,7 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         ruleAdminService.setLimits(id3, limits3);
 
         String id4 =
-                ruleAdminService
-                        .insert(
-                                rule(
-                                        24,
-                                        null,
-                                        "group42",
-                                        null,
-                                        null,
-                                        "s22",
-                                        "r22",
-                                        null,
-                                        "w22",
-                                        "l22",
-                                        GrantType.LIMIT))
+                insert(24, null, "group42", null, null, "s22", "r22", null, "w22", "l22", LIMIT)
                         .getId();
         String areaWKT4 =
                 "MultiPolygon (((-1.30963636363636482 5.96118181818181991, 1.78181818181818175 4.84754545454545571, -0.90872727272727349 2.26390909090909132, -1.30963636363636482 5.96118181818181991)))";
@@ -769,8 +535,8 @@ public abstract class AbstractRuleReaderServiceImpl_GeomTest extends ServiceTest
         filter.setLayer("l22");
         filter.setUser(user.getName());
         AccessRequest request = AccessRequest.builder().user(user).filter(filter).build();
-        AccessInfo accessInfo = ruleReaderService.getAccessInfo(request);
-        assertEquals(GrantType.ALLOW, accessInfo.getGrant());
+        AccessInfo accessInfo = authorizationService.getAccessInfo(request);
+        assertEquals(ALLOW, accessInfo.getGrant());
         assertFalse(accessInfo.isAdminRights());
 
         // we should have both

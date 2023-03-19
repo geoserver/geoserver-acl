@@ -9,7 +9,7 @@ import org.geoserver.acl.rules.RuleRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
-class AuthorizationJPAIntegrationConfigurationTest {
+class JPAIntegrationConfigurationTest {
 
     private ApplicationContextRunner runner =
             new ApplicationContextRunner()
@@ -17,7 +17,7 @@ class AuthorizationJPAIntegrationConfigurationTest {
                             "geoserver.acl.datasource.url=jdbc:h2:mem:geoserver-acl-test")
                     .withUserConfiguration(
                             AuthorizationJPAPropertiesTestConfiguration.class,
-                            AuthorizationJPAIntegrationConfiguration.class);
+                            JPAIntegrationConfiguration.class);
 
     @Test
     void testAuthorizationRuleRepositoryJpaAdaptor() {

@@ -348,3 +348,58 @@ components:
           $ref: '#/components/schemas/TextFilter'
         sourceAddress:
           $ref: '#/components/schemas/AddressRangeFilter'
+
+    AccessRequest:
+      type: object
+      description: A request by a given authenticated user to access the resources matching a given RuleFilter
+      required:
+      - filter
+      properties:
+        username:
+          description: the authentication user name performing the request for which the authorization is being requested
+          type: string
+        roles:
+          description: The roles the requesting user belongs to
+          type: array
+          nullable: true
+          uniqueItems: true
+          items:
+            type: string
+        filter:
+          $ref: '#/components/schemas/RuleFilter'
+        
+    AccessInfo:
+      type: object
+      description: The compiled access limits for a given user/RuleFilter combination
+      required:
+      - grant
+      - adminRights
+      properties:
+        grant:
+          $ref: '#/components/schemas/GrantType'
+        adminRights:
+           type: boolean
+        area:
+          $ref: '#/components/schemas/Geom'
+        clipArea:
+          $ref: '#/components/schemas/Geom'
+        catalogMode:
+          $ref: '#/components/schemas/CatalogMode'
+        defaultStyle:
+          type: string
+        allowedStyles:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        cqlFilterRead:
+          type: string
+        cqlFilterWrite:
+          type: string
+        attributes:
+          type: array
+          nullable: true
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/LayerAttribute'
+        

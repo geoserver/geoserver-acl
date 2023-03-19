@@ -9,8 +9,8 @@ import org.geoserver.acl.adminrules.AdminRuleRepository;
 import org.geoserver.acl.api.it.support.ClientContextSupport;
 import org.geoserver.acl.api.it.support.IntegrationTestsApplication;
 import org.geoserver.acl.api.it.support.ServerContextSupport;
-import org.geoserver.acl.authorization.AbstractRuleReaderServiceImplTest;
-import org.geoserver.acl.authorization.RuleReaderService;
+import org.geoserver.acl.authorization.AuthorizationServiceImplTest;
+import org.geoserver.acl.model.authorization.AuthorizationService;
 import org.geoserver.acl.rules.RuleAdminService;
 import org.geoserver.acl.rules.RuleRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -22,13 +22,13 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 
 /**
- * RuleReaderServiceImpl end to end integration test with {@link RuleReaderService} hitting {@link
- * RuleAdminService} and {@link AdminRuleAdminService} backed by OpenAPI Java Client adaptors for
- * {@link RuleRepository} and {@link AdminRuleRepository}, which in turn make real HTTP calls to a
- * running server API.
+ * {@link AuthorizationService} end to end integration test with {@link AuthorizationService}
+ * hitting {@link RuleAdminService} and {@link AdminRuleAdminService} backed by OpenAPI Java Client
+ * adaptors for {@link RuleRepository} and {@link AdminRuleRepository}, which in turn make real HTTP
+ * calls to a running server API.
  *
  * <pre>{@code
- * CLIENT:                      RuleReaderService
+ * CLIENT:                     AuthorizationService
  *                                |          |
  *                                v          v
  *                     RuleAdminService  AdminRuleAdminService
@@ -64,7 +64,7 @@ import org.springframework.test.annotation.DirtiesContext;
  * }</pre>
  *
  * @since 1.0
- * @see AbstractRuleReaderServiceImplTest
+ * @see AuthorizationServiceImplTest
  */
 @DirtiesContext
 @SpringBootTest(
@@ -75,15 +75,16 @@ import org.springframework.test.annotation.DirtiesContext;
             "geoserver.acl.datasource.url=jdbc:h2:mem:geoserver-acl"
         },
         classes = {IntegrationTestsApplication.class})
-public class RuleReaderServiceImplApiIT extends AbstractRuleReaderServiceImplTest {
+public class AuthorizationServiceImplApiIT extends AuthorizationServiceImplTest {
 
     private @Autowired ServerContextSupport serverContext;
     private @LocalServerPort int serverPort;
 
     private ClientContextSupport clientContext;
 
+    @Override
     @BeforeEach
-    void setUp() throws Exception {
+    protected void setUp() throws Exception {
         clientContext =
                 new ClientContextSupport()
                         // logging breaks client exception handling, only enable if need to see the
@@ -91,14 +92,27 @@ public class RuleReaderServiceImplApiIT extends AbstractRuleReaderServiceImplTes
                         .log(false)
                         .serverPort(serverPort)
                         .setUp();
-        super.ruleAdminService = clientContext.getRuleAdminServiceClient();
-        super.adminruleAdminService = clientContext.getAdminRuleAdminServiceClient();
-        super.ruleReaderService = clientContext.getRuleReaderServiceImpl();
         serverContext.setUp();
+        super.setUp();
     }
 
     @AfterEach
     void tearDown() {
         clientContext.close();
+    }
+
+    @Override
+    protected RuleAdminService getRuleAdminService() {
+        return clientContext.getRuleAdminServiceClient();
+    }
+
+    @Override
+    protected AdminRuleAdminService getAdminRuleAdminService() {
+        return clientContext.getAdminRuleAdminServiceClient();
+    }
+
+    @Override
+    protected AuthorizationService getAuthorizationService() {
+        return clientContext.getAuthorizationService();
     }
 }

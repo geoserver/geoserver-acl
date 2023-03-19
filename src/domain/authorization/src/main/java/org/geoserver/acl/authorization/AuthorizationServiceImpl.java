@@ -13,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.geoserver.acl.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.model.adminrules.AdminGrantType;
 import org.geoserver.acl.model.adminrules.AdminRule;
+import org.geoserver.acl.model.authorization.AccessInfo;
+import org.geoserver.acl.model.authorization.AccessRequest;
+import org.geoserver.acl.model.authorization.AuthorizationService;
 import org.geoserver.acl.model.filter.AdminRuleFilter;
 import org.geoserver.acl.model.filter.RuleFilter;
 import org.geoserver.acl.model.filter.RuleQuery;
@@ -58,9 +61,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class RuleReaderServiceImpl implements RuleReaderService {
-
-    // private final static Logger LOGGER = LogManager.getLogger(RuleReaderServiceImpl.class);
+public class AuthorizationServiceImpl implements AuthorizationService {
 
     private final AdminRuleAdminService adminRuleService;
     private final RuleAdminService ruleService;

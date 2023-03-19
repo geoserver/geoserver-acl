@@ -11,6 +11,8 @@ tags:
     description: CRUD operations on GeoServer ACL Rules.
   - name: AdminRules
     description: CRUD operations on GeoServer ACL AdminRules.
+  - name: Authorization
+    description: Access Control List based authorization requests
 security:
   - basicAuth: []
 paths:
@@ -554,6 +556,63 @@ paths:
                 type: integer
         '404':
           description: Not found
+
+  /authorization/admin:
+    post:
+      operationId: getAdminAuthorization
+      description: Computes info about admin authorization on a given workspace.
+                   Returned AccessInfo will always be ALLOW, with the computed adminRights. 
+      tags:
+        - Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AccessRequest'
+          application/x-jackson-smile:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AccessRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/AccessInfo'
+  /authorization/resources:
+    post:
+      operationId: getAccessInfo
+      description: Computes the grant access info for the given request 
+      tags:
+        - Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AccessRequest'
+          application/x-jackson-smile:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AccessRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/AccessInfo'
+  /authorization/resources/matchingrules:
+    post:
+      operationId: getMatchingRules
+      description: Obtains the plain list of matching rules that are applied to the given AccessRequest when computing the AccessInfo 
+      tags:
+        - Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AccessRequest'
+          application/x-jackson-smile:
+            schema:
+              $ref: 'acl-model.yaml#/components/schemas/AccessRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/PageOfRules'
+
 components:
   securitySchemes:
     basicAuth:
@@ -633,6 +692,15 @@ components:
            description: Identifier used to fetch the next set of rules, usually in tandem with the
                         limit query parameter. Null or absent of there are no more rules to fetch
                         that satisfy the request filter.
+    AccessInfo:
+      description: The compiled access grant for a given resource or admin access request
+      content:
+        application/json:
+          schema:
+            $ref: 'acl-model.yaml#/components/schemas/AccessInfo'
+        application/x-jackson-smile:
+          schema:
+            $ref: 'acl-model.yaml#/components/schemas/AccessInfo'
   parameters:
     id:
       name: id

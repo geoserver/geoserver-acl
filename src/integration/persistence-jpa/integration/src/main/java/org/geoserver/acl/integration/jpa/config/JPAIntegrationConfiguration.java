@@ -24,7 +24,7 @@ import javax.persistence.EntityManager;
 @Configuration(proxyBeanMethods = false)
 @Import({AuthorizationDataSourceConfiguration.class, AuthorizationJPAConfiguration.class})
 @ComponentScan(basePackageClasses = {RuleJpaMapper.class, AdminRuleJpaMapper.class})
-public class AuthorizationJPAIntegrationConfiguration {
+public class JPAIntegrationConfiguration {
 
     @Bean
     public RuleRepository authorizationRuleRepositoryJpaAdaptor(

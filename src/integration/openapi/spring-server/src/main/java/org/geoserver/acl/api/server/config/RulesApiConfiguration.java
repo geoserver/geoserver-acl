@@ -19,6 +19,7 @@ import org.geoserver.acl.api.server.support.AdminRulesApiSupport;
 import org.geoserver.acl.api.server.support.RequestBodyBufferingServletFilter;
 import org.geoserver.acl.api.server.support.RulesApiSupport;
 import org.geoserver.acl.config.domain.AdminRuleAdminServiceConfiguration;
+import org.geoserver.acl.config.domain.AuthorizationServiceConfiguration;
 import org.geoserver.acl.config.domain.RuleAdminServiceConfiguration;
 import org.geoserver.acl.rules.RuleAdminService;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +32,8 @@ import org.springframework.web.context.request.NativeWebRequest;
     ApiObjectModelMappersConfiguration.class,
     JacksonObjectMapperConfiguration.class,
     RuleAdminServiceConfiguration.class,
-    AdminRuleAdminServiceConfiguration.class
+    AdminRuleAdminServiceConfiguration.class,
+    AuthorizationServiceConfiguration.class
 })
 public class RulesApiConfiguration {
 

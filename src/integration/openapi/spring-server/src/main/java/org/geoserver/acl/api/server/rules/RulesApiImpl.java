@@ -96,6 +96,7 @@ public class RulesApiImpl implements RulesApiDelegate {
         String nextCursor;
         if (requestedLimit != null && body.size() > requestedLimit) {
             nextCursor = body.get(requestedLimit).getId();
+            body = body.subList(0, requestedLimit);
         } else {
             nextCursor = null;
         }

@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.geoserver.acl.model.adminrules.AdminRule;
 import org.geoserver.acl.model.filter.AdminRuleFilter;
-import org.geoserver.acl.model.filter.RuleFilter;
 import org.geoserver.acl.model.filter.RuleQuery;
 import org.geoserver.acl.model.rules.InsertPosition;
 
@@ -105,7 +104,6 @@ public class AdminRuleAdminService {
      *     <TT>entries</TT> should be defined.
      * @param entries used for retrieving paged data, may be null if not used. If not null, also
      *     <TT>page</TT> should be defined.
-     * @see RuleReaderService#getMatchingRules(RuleFilter)
      */
     public Stream<AdminRule> getAll(RuleQuery<AdminRuleFilter> query) {
         return repository.findAll(query);

@@ -11,9 +11,11 @@ import org.geoserver.acl.api.model.TextFilter;
 import org.geoserver.acl.model.filter.AdminRuleFilter;
 import org.geoserver.acl.model.filter.RuleFilter;
 import org.geoserver.acl.model.filter.predicate.SpecialFilterType;
+import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
+@Component
 public class RuleFilterApiMapper {
 
     public org.geoserver.acl.api.model.AdminRuleFilter map(AdminRuleFilter filter) {

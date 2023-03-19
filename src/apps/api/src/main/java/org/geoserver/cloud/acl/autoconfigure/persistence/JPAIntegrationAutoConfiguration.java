@@ -1,6 +1,6 @@
 package org.geoserver.cloud.acl.autoconfigure.persistence;
 
-import org.geoserver.acl.integration.jpa.config.AuthorizationJPAIntegrationConfiguration;
+import org.geoserver.acl.integration.jpa.config.JPAIntegrationConfiguration;
 import org.geoserver.acl.jpa.config.AuthorizationJPAProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Import;
 
 @AutoConfiguration
 @EnableConfigurationProperties
-@Import({AuthorizationJPAIntegrationConfiguration.class})
+@Import({JPAIntegrationConfiguration.class})
 public class JPAIntegrationAutoConfiguration {
 
     @Bean

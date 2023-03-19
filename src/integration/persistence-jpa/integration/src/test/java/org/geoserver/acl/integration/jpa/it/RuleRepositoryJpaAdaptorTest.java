@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.geolatte.geom.MultiPolygon;
 import org.geolatte.geom.codec.Wkt;
-import org.geoserver.acl.integration.jpa.config.AuthorizationJPAIntegrationConfiguration;
 import org.geoserver.acl.integration.jpa.config.AuthorizationJPAPropertiesTestConfiguration;
+import org.geoserver.acl.integration.jpa.config.JPAIntegrationConfiguration;
 import org.geoserver.acl.jpa.repository.JpaRuleRepository;
 import org.geoserver.acl.model.filter.RuleQuery;
 import org.geoserver.acl.model.rules.CatalogMode;
@@ -33,7 +33,7 @@ import java.util.stream.IntStream;
 @SpringBootTest(
         classes = {
             AuthorizationJPAPropertiesTestConfiguration.class,
-            AuthorizationJPAIntegrationConfiguration.class
+            JPAIntegrationConfiguration.class
         })
 @ActiveProfiles("test") // see config props in src/test/resource/application-test.yaml
 class RuleRepositoryJpaAdaptorTest {

@@ -52,13 +52,6 @@ class RulesApiImpTest {
     private @Autowired RulesApiSupport support;
     private @Autowired RulesApiImpl api;
 
-    // @BeforeEach
-    // void setUp() throws Exception {
-    // service = mock(RuleAdminService.class);
-    // api = new RulesApiImpl(service, mapper, detailsMapper, ruleLimits,
-    // enumsMapper);
-    // }
-
     @Test
     void testCreateRule() {
         Rule ret = Rule.allow().withId("1");

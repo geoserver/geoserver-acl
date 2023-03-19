@@ -4,7 +4,7 @@ import lombok.Getter;
 
 import org.geoserver.acl.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.adminrules.AdminRuleRepository;
-import org.geoserver.acl.authorization.RuleReaderServiceImpl;
+import org.geoserver.acl.authorization.AuthorizationServiceImpl;
 import org.geoserver.acl.jpa.repository.JpaAdminRuleRepository;
 import org.geoserver.acl.jpa.repository.JpaRuleRepository;
 import org.geoserver.acl.rules.RuleAdminService;
@@ -23,7 +23,7 @@ public class JpaIntegrationTestSupport {
 
     private @Getter AdminRuleAdminService adminruleAdminService;
     private @Getter RuleAdminService ruleAdminService;
-    private @Getter RuleReaderServiceImpl ruleReaderService;
+    private @Getter AuthorizationServiceImpl authorizationService;
 
     public void setUp() {
         jpaAdminRules.deleteAll();
@@ -32,7 +32,8 @@ public class JpaIntegrationTestSupport {
         adminruleAdminService = new AdminRuleAdminService(adminRuleRepository);
         ruleAdminService = new RuleAdminService(ruleRepository);
 
-        ruleReaderService = new RuleReaderServiceImpl(adminruleAdminService, ruleAdminService);
+        authorizationService =
+                new AuthorizationServiceImpl(adminruleAdminService, ruleAdminService);
     }
 
     public void tearDown() {}
