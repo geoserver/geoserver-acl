@@ -26,8 +26,8 @@ jobs:
 
     - name: Build
       run: |
-        ./mvnw package -DskipTests -T1C -ntp
+        ./mvnw package -DskipTests -T1C -ntp -Dfmt.skip
 
     - name: Test
       run: |
-        ./mvnw verify -Dopenapi-codegen-skip=true -T1C -ntp
+        ./mvnw verify -Dopenapi-codegen-skip=true -T1C -ntp -Dfmt.skip
