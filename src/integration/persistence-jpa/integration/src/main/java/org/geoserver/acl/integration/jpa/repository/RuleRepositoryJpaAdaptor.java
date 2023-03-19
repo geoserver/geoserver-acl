@@ -6,7 +6,11 @@ package org.geoserver.acl.integration.jpa.repository;
 
 import static org.geoserver.acl.integration.jpa.mapper.RuleJpaMapper.decodeId;
 
+import com.mysema.commons.lang.CloseableIterator;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.jpa.impl.JPAQuery;
 
 import lombok.NonNull;
 
@@ -28,19 +32,23 @@ import org.geoserver.acl.model.rules.RuleLimits;
 import org.geoserver.acl.rules.RuleIdentifierConflictException;
 import org.geoserver.acl.rules.RuleRepository;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Spliterators;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 
 @TransactionSupported
 public class RuleRepositoryJpaAdaptor implements RuleRepository {
+
+    private final EntityManager em;
 
     private final JpaRuleRepository jparepo;
     private final RuleJpaMapper modelMapper;
@@ -48,9 +56,12 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
 
     private final PriorityResolver<org.geoserver.acl.jpa.model.Rule> priorityResolver;
 
-    public RuleRepositoryJpaAdaptor(JpaRuleRepository jparepo, RuleJpaMapper mapper) {
+    public RuleRepositoryJpaAdaptor(
+            EntityManager em, JpaRuleRepository jparepo, RuleJpaMapper mapper) {
+        Objects.requireNonNull(em);
         Objects.requireNonNull(jparepo);
         Objects.requireNonNull(mapper);
+        this.em = em;
         this.modelMapper = mapper;
         this.jparepo = jparepo;
         this.queryMapper = new PredicateMapper();
@@ -86,24 +97,66 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
 
     @Override
     public Stream<Rule> findAll() {
-        return jparepo.findAllNaturalOrder().stream().map(modelMapper::toModel);
+        return findAll(RuleQuery.of());
     }
 
+    // @Override
+    //	public Stream<Rule> findAllOld(@NonNull RuleQuery<RuleFilter> query) {
+    //
+    //		Predicate predicate = queryMapper.toPredicate(query);
+    //		Pageable pageRequest = queryMapper.toPageable(query);
+    //
+    //		Page<org.geoserver.acl.jpa.model.Rule> page;
+    //		if (predicate.isPresent()) {
+    //			page = jparepo.findAllNaturalOrder(predicate.get(), pageRequest);
+    //		} else {
+    //			page = jparepo.findAllNaturalOrder(pageRequest);
+    //		}
+    //
+    //		List<org.geoserver.acl.jpa.model.Rule> found = page.getContent();
+    //		return found.stream().map(modelMapper::toModel).filter(filterByAddress(query.getFilter()));
+    //	}
+
     @Override
+    @TransactionReadOnly
     public Stream<Rule> findAll(@NonNull RuleQuery<RuleFilter> query) {
 
-        Optional<? extends Predicate> predicate = queryMapper.toPredicate(query);
-        Pageable pageRequest = queryMapper.toPageable(query);
+        Predicate predicate = queryMapper.toPredicate(query);
+        final java.util.function.Predicate<? super Rule> postFilter =
+                filterByAddress(query.getFilter());
 
-        Page<org.geoserver.acl.jpa.model.Rule> page;
-        if (predicate.isPresent()) {
-            page = jparepo.findAllNaturalOrder(predicate.get(), pageRequest);
-        } else {
-            page = jparepo.findAllNaturalOrder(pageRequest);
+        if (query.getNextCursor() != null) {
+            Long nextId = decodeId(query.getNextCursor());
+            predicate = QRule.rule.id.goe(nextId).and(predicate);
         }
 
-        List<org.geoserver.acl.jpa.model.Rule> found = page.getContent();
-        return found.stream().map(modelMapper::toModel).filter(filterByAddress(query.getFilter()));
+        CloseableIterator<org.geoserver.acl.jpa.model.Rule> iterator = query(predicate);
+
+        try (Stream<org.geoserver.acl.jpa.model.Rule> stream = stream(iterator)) {
+            Stream<Rule> rules = stream.map(modelMapper::toModel).filter(postFilter);
+            final Integer pageSize = query.getPageSize();
+            if (null != pageSize) {
+                rules = rules.limit(query.getPageSize());
+            }
+            return rules.collect(Collectors.toList()).stream();
+        }
+    }
+
+    private CloseableIterator<org.geoserver.acl.jpa.model.Rule> query(Predicate predicate) {
+
+        CloseableIterator<org.geoserver.acl.jpa.model.Rule> iterator =
+                new JPAQuery<org.geoserver.acl.jpa.model.Rule>(em)
+                        .from(QRule.rule)
+                        .where(predicate)
+                        .orderBy(new OrderSpecifier<>(Order.ASC, QRule.rule.priority))
+                        .iterate();
+        return iterator;
+    }
+
+    private Stream<org.geoserver.acl.jpa.model.Rule> stream(
+            CloseableIterator<org.geoserver.acl.jpa.model.Rule> iterator) {
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false)
+                .onClose(iterator::close);
     }
 
     private java.util.function.Predicate<? super Rule> filterByAddress(

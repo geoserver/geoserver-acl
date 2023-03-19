@@ -189,11 +189,11 @@ class RuleAdminServiceTest {
     @Test
     void getList() {
         assertThrows(
-                NullPointerException.class, () -> service.getList((RuleQuery<RuleFilter>) null));
+                NullPointerException.class, () -> service.getAll((RuleQuery<RuleFilter>) null));
 
         RuleQuery<RuleFilter> query = RuleQuery.of(new RuleFilter().setRole("role1"));
         when(repository.findAll(eq(query))).thenReturn(null);
-        assertThrows(NullPointerException.class, () -> service.getList(query));
+        assertThrows(NullPointerException.class, () -> service.getAll(query));
         clearInvocations(repository);
 
         List<Rule> expected =
@@ -204,7 +204,7 @@ class RuleAdminServiceTest {
 
         when(repository.findAll(query)).thenReturn(expected.stream());
 
-        List<Rule> actual = service.getList(query);
+        List<Rule> actual = service.getAll(query);
         verify(repository, times(1)).findAll(eq(query));
         verifyNoMoreInteractions(repository);
         assertThat(actual).isEqualTo(expected);
@@ -267,7 +267,7 @@ class RuleAdminServiceTest {
 
     @Test
     void countFilter() {
-        RuleFilter filter = new RuleFilter().setInstance(3L);
+        RuleFilter filter = new RuleFilter().setInstance("gs1");
 
         when(repository.count(eq(filter))).thenReturn(1_000_000);
         assertThat(service.count(filter)).isEqualTo(1_000_000);

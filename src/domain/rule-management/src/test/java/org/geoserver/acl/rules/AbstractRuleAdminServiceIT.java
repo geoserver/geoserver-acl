@@ -217,13 +217,13 @@ public abstract class AbstractRuleAdminServiceIT {
         query.setPageSize(pageSize);
         for (int page = 0; page < maxPages; page++) {
             query.setPageNumber(page);
-            List<Rule> result = ruleAdminService.getList(query);
+            List<Rule> result = ruleAdminService.getAll(query);
             int fromIndex = page * pageSize;
             List<Rule> expected = all.subList(fromIndex, pageSize + fromIndex);
             assertThat(result).isEqualTo(expected);
         }
         query.setPageNumber(1 + maxPages);
-        assertThat(ruleAdminService.getList(query)).isEmpty();
+        assertThat(ruleAdminService.getAll(query)).isEmpty();
     }
 
     @Disabled("not yet implemented")

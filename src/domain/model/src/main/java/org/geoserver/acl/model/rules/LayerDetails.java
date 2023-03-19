@@ -17,7 +17,7 @@ import org.geolatte.geom.MultiPolygon;
 import java.util.Set;
 
 /**
- * @since 4.0
+ * @since 1.0
  */
 @Value
 @With

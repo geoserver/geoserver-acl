@@ -9,9 +9,6 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import java.io.Serializable;
 
 import javax.persistence.AttributeOverride;
@@ -21,17 +18,13 @@ import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 /**
  * Uniquely identifies a {@link Rule}, all properties are mandatory in order for the {@link Rule}'s
  * unique constraint to be enforced by the database, which otherwise will consider {@literal NULL !=
  * NULL}.
  *
- * @since 4.0
+ * @since 1.0
  */
 @Data
 @Accessors(chain = true)
@@ -47,13 +40,8 @@ public class RuleIdentifier implements Serializable, Cloneable {
     @Column(name = "grant_type", nullable = false)
     private GrantType access = GrantType.DENY;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(
-            insertable = true,
-            updatable = false,
-            foreignKey = @ForeignKey(name = "fk_rule_instance"))
-    @Fetch(FetchMode.JOIN)
-    private GeoServerInstance instance;
+    @Column(name = "instance", nullable = false)
+    private String instance = ANY;
 
     @NonNull
     @Column(name = "username", nullable = false)
@@ -101,6 +89,10 @@ public class RuleIdentifier implements Serializable, Cloneable {
         }
         clone.addressRange = addressRange.clone();
         return clone;
+    }
+
+    public String instance() {
+        return ANY.equals(instance) ? null : instance;
     }
 
     public String username() {

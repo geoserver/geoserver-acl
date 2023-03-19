@@ -13,7 +13,6 @@ import org.geoserver.acl.model.adminrules.AdminRule;
 import org.geoserver.acl.model.adminrules.AdminRuleIdentifier;
 import org.geoserver.acl.model.filter.predicate.FilterType;
 import org.geoserver.acl.model.filter.predicate.IPAddressRangeFilter;
-import org.geoserver.acl.model.filter.predicate.IdNameFilter;
 import org.geoserver.acl.model.filter.predicate.InSetPredicate;
 import org.geoserver.acl.model.filter.predicate.SpecialFilterType;
 import org.geoserver.acl.model.filter.predicate.TextFilter;
@@ -28,7 +27,7 @@ public class AdminRuleFilter extends Filter implements Cloneable, Predicate<Admi
 
     private final @Getter TextFilter user;
     private final @Getter InSetPredicate<String> role;
-    private final @Getter IdNameFilter instance;
+    private final @Getter TextFilter instance;
     private final @Getter IPAddressRangeFilter sourceAddress;
     private final @Getter TextFilter workspace;
 
@@ -50,7 +49,7 @@ public class AdminRuleFilter extends Filter implements Cloneable, Predicate<Admi
 
         user = new TextFilter(ft);
         role = new InSetPredicate<String>(ft);
-        instance = new IdNameFilter(ft);
+        instance = new TextFilter(ft);
         sourceAddress = new IPAddressRangeFilter(ft);
         workspace = new TextFilter(ft);
     }
@@ -104,8 +103,7 @@ public class AdminRuleFilter extends Filter implements Cloneable, Predicate<Admi
         return AdminRuleFilter.of(RuleFilter.any());
     }
 
-    public AdminRuleFilter setUser(String name) {
-        if (name == null) throw new NullPointerException();
+    public AdminRuleFilter setUser(@NonNull String name) {
         user.setText(name);
         return this;
     }
@@ -115,8 +113,7 @@ public class AdminRuleFilter extends Filter implements Cloneable, Predicate<Admi
         return this;
     }
 
-    public AdminRuleFilter setRole(Set<String> roles) {
-        if (roles == null) throw new NullPointerException();
+    public AdminRuleFilter setRole(@NonNull Set<String> roles) {
         role.setValues(roles);
         return this;
     }
@@ -132,13 +129,8 @@ public class AdminRuleFilter extends Filter implements Cloneable, Predicate<Admi
         return this;
     }
 
-    public AdminRuleFilter setInstance(Long id) {
-        instance.setId(id);
-        return this;
-    }
-
-    public AdminRuleFilter setInstance(String name) {
-        instance.setName(name);
+    public AdminRuleFilter setInstance(@NonNull String name) {
+        instance.setText(name);
         return this;
     }
 

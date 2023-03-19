@@ -17,7 +17,6 @@ import org.geoserver.acl.jpa.config.AuthorizationDataSourceConfiguration;
 import org.geoserver.acl.jpa.config.AuthorizationJPAConfiguration;
 import org.geoserver.acl.jpa.config.AuthorizationJPAPropertiesTestConfiguration;
 import org.geoserver.acl.jpa.model.CatalogMode;
-import org.geoserver.acl.jpa.model.GeoServerInstance;
 import org.geoserver.acl.jpa.model.GrantType;
 import org.geoserver.acl.jpa.model.IPAddressRange;
 import org.geoserver.acl.jpa.model.LayerAttribute;
@@ -29,14 +28,12 @@ import org.geoserver.acl.jpa.model.Rule;
 import org.geoserver.acl.jpa.model.RuleIdentifier;
 import org.geoserver.acl.jpa.model.RuleLimits;
 import org.geoserver.acl.jpa.model.SpatialFilterType;
-import org.hibernate.TransientObjectException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -66,21 +63,15 @@ public class JpaRuleRepositoryTest {
     private static final String WORLD =
             "MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))";
 
-    private @Autowired JpaGeoServerInstanceRepository instanceRepo;
     private @Autowired JpaRuleRepository repo;
 
     private @Autowired EntityManager em;
-
-    private GeoServerInstance anyInstance;
 
     private Rule entity;
 
     @BeforeEach
     void beforeEach() {
-        anyInstance = instanceRepo.getInstanceAny();
-
         entity = new Rule();
-        entity.getIdentifier().setInstance(anyInstance);
     }
 
     @Test
@@ -88,6 +79,7 @@ public class JpaRuleRepositoryTest {
         Rule rule = new Rule();
         assertNotNull(rule.getIdentifier());
         RuleIdentifier identifier = rule.getIdentifier();
+        assertEquals("*", identifier.getInstance());
         assertEquals("*", identifier.getLayer());
         assertEquals("*", identifier.getRequest());
         assertEquals("*", identifier.getRolename());
@@ -97,7 +89,6 @@ public class JpaRuleRepositoryTest {
         assertEquals("*", identifier.getWorkspace());
         assertEquals(GrantType.DENY, identifier.getAccess());
         assertEquals(IPAddressRange.noData(), identifier.getAddressRange());
-        assertNull(identifier.getInstance());
     }
 
     @Test
@@ -134,7 +125,7 @@ public class JpaRuleRepositoryTest {
         entity.getIdentifier()
                 .setAccess(GrantType.LIMIT)
                 .setAddressRange(new IPAddressRange(1000L, 2000L, 32))
-                .setInstance(anyInstance)
+                .setInstance("default")
                 .setLayer("layer")
                 .setRequest("GetCapabilities")
                 .setRolename("ROLE_USER")
@@ -169,21 +160,11 @@ public class JpaRuleRepositoryTest {
 
     @Test
     void testSave_Identifier() {
-        GeoServerInstance gsInstance2 =
-                new GeoServerInstance()
-                        .setName("secondInstance")
-                        .setBaseURL("http://localhost:9090/geoserver")
-                        .setDescription("Default geoserver instance")
-                        .setUsername("admin")
-                        .setPassword("geoserver");
-
-        em.persist(gsInstance2);
-
         RuleIdentifier expected =
                 entity.getIdentifier()
                         .setAccess(GrantType.DENY)
                         .setAddressRange(new IPAddressRange(1000L, 2000L, 32))
-                        .setInstance(gsInstance2)
+                        .setInstance("gsInstance")
                         .setLayer("layer")
                         .setRequest("GetCapabilities")
                         .setRolename("ROLE_USER")
@@ -198,25 +179,6 @@ public class JpaRuleRepositoryTest {
 
         Rule found = repo.getReferenceById(saved.getId());
         assertThat(found.getIdentifier()).isNotSameAs(saved.getIdentifier()).isEqualTo(expected);
-    }
-
-    @Test
-    void testSave_fails_on_dettached_GeoServerInstance() {
-
-        GeoServerInstance unsavedGsInstance =
-                new GeoServerInstance()
-                        .setName("unsaved")
-                        .setBaseURL("http://localhost:8080/geoserver");
-
-        entity.getIdentifier().setInstance(unsavedGsInstance).clone();
-
-        InvalidDataAccessApiUsageException expected =
-                assertThrows(
-                        InvalidDataAccessApiUsageException.class, () -> repo.saveAndFlush(entity));
-        assertThat(expected.getCause())
-                .isInstanceOf(IllegalStateException.class)
-                .getCause()
-                .isInstanceOf(TransientObjectException.class);
     }
 
     @Test

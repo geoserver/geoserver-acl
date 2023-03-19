@@ -11,7 +11,6 @@ import lombok.NonNull;
 
 import org.geoserver.acl.model.filter.predicate.FilterType;
 import org.geoserver.acl.model.filter.predicate.IPAddressRangeFilter;
-import org.geoserver.acl.model.filter.predicate.IdNameFilter;
 import org.geoserver.acl.model.filter.predicate.InSetPredicate;
 import org.geoserver.acl.model.filter.predicate.SpecialFilterType;
 import org.geoserver.acl.model.filter.predicate.TextFilter;
@@ -41,7 +40,7 @@ public class RuleFilter extends Filter implements Cloneable, Predicate<Rule> {
 
     private final TextFilter user;
     private final InSetPredicate<String> role;
-    private final IdNameFilter instance;
+    private final TextFilter instance;
     private final IPAddressRangeFilter sourceAddress;
     private final TextFilter service;
     private final TextFilter request;
@@ -67,7 +66,7 @@ public class RuleFilter extends Filter implements Cloneable, Predicate<Rule> {
 
         user = new TextFilter(ft);
         role = new InSetPredicate<>(ft);
-        instance = new IdNameFilter(ft);
+        instance = new TextFilter(ft);
         sourceAddress = new IPAddressRangeFilter(ft);
         service = new TextFilter(ft, true);
         request = new TextFilter(ft, true);
@@ -83,7 +82,7 @@ public class RuleFilter extends Filter implements Cloneable, Predicate<Rule> {
         user.setIncludeDefault(includeDefault);
         role = new InSetPredicate<>(ft);
         role.setIncludeDefault(includeDefault);
-        instance = new IdNameFilter(ft, includeDefault);
+        instance = new TextFilter(ft, includeDefault);
         sourceAddress = new IPAddressRangeFilter(ft);
         sourceAddress.setIncludeDefault(includeDefault);
         service = new TextFilter(ft, true);
@@ -180,13 +179,8 @@ public class RuleFilter extends Filter implements Cloneable, Predicate<Rule> {
         return this;
     }
 
-    public RuleFilter setInstance(Long id) {
-        instance.setId(id);
-        return this;
-    }
-
     public RuleFilter setInstance(String name) {
-        instance.setName(name);
+        instance.setText(name);
         return this;
     }
 
@@ -255,7 +249,7 @@ public class RuleFilter extends Filter implements Cloneable, Predicate<Rule> {
         return this;
     }
 
-    public IdNameFilter getInstance() {
+    public TextFilter getInstance() {
         return instance;
     }
 

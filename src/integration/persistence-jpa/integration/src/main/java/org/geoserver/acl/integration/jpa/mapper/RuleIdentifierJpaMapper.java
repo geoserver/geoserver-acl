@@ -18,12 +18,12 @@ import org.mapstruct.ReportingPolicy;
         // in case something changes in the model, make the code generation fail so we make sure the
         // mapper stays in sync
         unmappedTargetPolicy = ReportingPolicy.ERROR,
-        uses = {GeoServerInstanceMapper.class, IPAddressRangeJpaMapper.class})
+        uses = {IPAddressRangeJpaMapper.class})
 abstract class RuleIdentifierJpaMapper {
 
     static final String ANY = org.geoserver.acl.jpa.model.RuleIdentifier.ANY;
 
-    @Mapping(target = "instanceName", source = "instance")
+    @Mapping(target = "instanceName", expression = "java(i.instance())")
     @Mapping(target = "username", expression = "java(i.username())")
     @Mapping(target = "rolename", expression = "java(i.rolename())")
     @Mapping(target = "service", expression = "java(i.service())")
@@ -33,7 +33,7 @@ abstract class RuleIdentifierJpaMapper {
     @Mapping(target = "layer", expression = "java(i.layer())")
     public abstract RuleIdentifier toModel(org.geoserver.acl.jpa.model.RuleIdentifier i);
 
-    @Mapping(target = "instance", source = "instanceName")
+    @Mapping(target = "instance", source = "instanceName", defaultValue = ANY)
     @Mapping(target = "username", defaultValue = ANY)
     @Mapping(target = "rolename", defaultValue = ANY)
     @Mapping(target = "service", defaultValue = ANY)

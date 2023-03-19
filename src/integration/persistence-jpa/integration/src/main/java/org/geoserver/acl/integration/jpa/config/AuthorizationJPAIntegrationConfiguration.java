@@ -19,6 +19,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import javax.persistence.EntityManager;
+
 @Configuration(proxyBeanMethods = false)
 @Import({AuthorizationDataSourceConfiguration.class, AuthorizationJPAConfiguration.class})
 @ComponentScan(basePackageClasses = {RuleJpaMapper.class, AdminRuleJpaMapper.class})
@@ -26,14 +28,16 @@ public class AuthorizationJPAIntegrationConfiguration {
 
     @Bean
     public RuleRepository authorizationRuleRepositoryJpaAdaptor(
-            JpaRuleRepository jpaRuleRepository, RuleJpaMapper modelMapper) {
+            EntityManager em, JpaRuleRepository jpaRuleRepository, RuleJpaMapper modelMapper) {
 
-        return new RuleRepositoryJpaAdaptor(jpaRuleRepository, modelMapper);
+        return new RuleRepositoryJpaAdaptor(em, jpaRuleRepository, modelMapper);
     }
 
     @Bean
     public AdminRuleRepository authorizationAdminRuleRepositoryJpaAdaptor(
-            JpaAdminRuleRepository jpaAdminRuleRepo, AdminRuleJpaMapper modelMapper) {
-        return new AdminRuleRepositoryJpaAdaptor(jpaAdminRuleRepo, modelMapper);
+            EntityManager em,
+            JpaAdminRuleRepository jpaAdminRuleRepo,
+            AdminRuleJpaMapper modelMapper) {
+        return new AdminRuleRepositoryJpaAdaptor(em, jpaAdminRuleRepo, modelMapper);
     }
 }

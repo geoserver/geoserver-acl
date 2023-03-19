@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 /**
  * Reference {@link RuleRepository} implementation, only for tests
  *
- * @since 4.0
+ * @since 1.0
  */
 public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> implements RuleRepository {
 

@@ -5,15 +5,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.geolatte.geom.MultiPolygon;
+import org.geolatte.geom.codec.Wkt;
 import org.geoserver.acl.integration.jpa.config.AuthorizationJPAIntegrationConfiguration;
 import org.geoserver.acl.integration.jpa.config.AuthorizationJPAPropertiesTestConfiguration;
-import org.geoserver.acl.jpa.model.GeoServerInstance;
-import org.geoserver.acl.jpa.repository.JpaGeoServerInstanceRepository;
 import org.geoserver.acl.jpa.repository.JpaRuleRepository;
+import org.geoserver.acl.model.filter.RuleQuery;
+import org.geoserver.acl.model.rules.CatalogMode;
 import org.geoserver.acl.model.rules.GrantType;
 import org.geoserver.acl.model.rules.IPAddressRange;
 import org.geoserver.acl.model.rules.InsertPosition;
 import org.geoserver.acl.model.rules.Rule;
+import org.geoserver.acl.model.rules.RuleLimits;
+import org.geoserver.acl.model.rules.SpatialFilterType;
 import org.geoserver.acl.rules.RuleIdentifierConflictException;
 import org.geoserver.acl.rules.RuleRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +28,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @SpringBootTest(
         classes = {
@@ -34,33 +39,19 @@ import java.util.stream.Collectors;
 class RuleRepositoryJpaAdaptorTest {
 
     private static final String WORLD =
-            "MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))";
-
-    private @Autowired JpaGeoServerInstanceRepository jpaInstances;
+            "SRID=4326;MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))";
 
     private @Autowired RuleRepository repo;
     private @Autowired JpaRuleRepository jpaRepo;
 
-    private String geoserverInstanceName;
-
     @BeforeEach
     void setup() {
         jpaRepo.deleteAll();
-        jpaInstances.deleteAll();
-
-        GeoServerInstance jpaGs =
-                new GeoServerInstance()
-                        .setName("defaultInstance")
-                        .setBaseURL("http://localhost")
-                        .setUsername("admin")
-                        .setPassword("gs");
-        jpaInstances.saveAndFlush(jpaGs);
-        this.geoserverInstanceName = jpaGs.getName();
     }
 
     @Test
     void create_fixedPriorityPosition() {
-        Rule r1 = Rule.allow().withPriority(1).withInstanceName(geoserverInstanceName);
+        Rule r1 = Rule.allow().withPriority(1).withInstanceName("default-gs");
 
         Rule r1Created = repo.create(r1, InsertPosition.FIXED);
         assertThat(repo.count()).isOne();
@@ -73,8 +64,7 @@ class RuleRepositoryJpaAdaptorTest {
     void create_duplicateKey() {
         Rule r = Rule.allow();
         testCreateDuplicateIdentifier(r);
-        testCreateDuplicateIdentifier(
-                r = r.withPriority(1).withInstanceName(geoserverInstanceName));
+        testCreateDuplicateIdentifier(r = r.withPriority(1).withInstanceName("default-gs"));
         testCreateDuplicateIdentifier(r = r.withPriority(2).withUsername("user"));
         testCreateDuplicateIdentifier(r = r.withPriority(3).withRolename("role"));
         testCreateDuplicateIdentifier(r = r.withPriority(4).withService("WMS"));
@@ -99,7 +89,7 @@ class RuleRepositoryJpaAdaptorTest {
     @Test
     void count() {
         assertThat(repo.count()).isZero();
-        Rule r1 = Rule.allow().withPriority(1).withInstanceName(geoserverInstanceName);
+        Rule r1 = Rule.allow().withPriority(1).withInstanceName("default-gs");
 
         r1 = repo.create(r1, InsertPosition.FIXED);
         assertThat(repo.count()).isOne();
@@ -115,5 +105,41 @@ class RuleRepositoryJpaAdaptorTest {
 
         List<Rule> collect = repo.findAll().collect(Collectors.toList());
         assertEquals(2, collect.size());
+    }
+
+    @Test
+    void streamAll() {
+        List<Rule> all =
+                IntStream.rangeClosed(1, 100).mapToObj(this::addFull).collect(Collectors.toList());
+        List<Rule> result = repo.findAll(RuleQuery.of()).collect(Collectors.toList());
+        assertThat(result).isEqualTo(all);
+    }
+
+    private Rule addFull(int priority) {
+        return repo.create(createFull(priority), InsertPosition.FIXED);
+    }
+
+    private Rule createFull(int priority) {
+        return Rule.limit().toBuilder()
+                .priority(priority)
+                .name("p" + priority)
+                .description("desc " + priority)
+                .extId("extId-" + priority)
+                .identifier(
+                        Rule.limit().getIdentifier().toBuilder()
+                                .addressRange(IPAddressRange.fromCidrSignature("10.1.1.1/32"))
+                                .layer("layer-" + priority)
+                                .workspace("ws-" + priority)
+                                .build())
+                .ruleLimits(limits())
+                .build();
+    }
+
+    private RuleLimits limits() {
+        return RuleLimits.builder()
+                .allowedArea((MultiPolygon<?>) Wkt.fromWkt(WORLD))
+                .catalogMode(CatalogMode.CHALLENGE)
+                .spatialFilterType(SpatialFilterType.CLIP)
+                .build();
     }
 }

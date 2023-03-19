@@ -47,7 +47,7 @@ import javax.persistence.UniqueConstraint;
         uniqueConstraints = {
             @UniqueConstraint(
                     columnNames = {
-                        "instance_id",
+                        "instance",
                         "username",
                         "rolename",
                         "workspace",

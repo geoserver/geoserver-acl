@@ -34,7 +34,7 @@ import javax.persistence.Lob;
 import javax.persistence.UniqueConstraint;
 
 /**
- * @since 4.0
+ * @since 1.0
  */
 @Data
 @Accessors(chain = true)

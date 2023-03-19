@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 /**
  * Reference {@link AdminRuleRepository} implementation, only for tests
  *
- * @since 4.0
+ * @since 1.0
  */
 public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRule>
         implements AdminRuleRepository {

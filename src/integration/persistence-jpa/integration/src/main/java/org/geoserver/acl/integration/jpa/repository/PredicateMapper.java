@@ -12,10 +12,8 @@ import com.querydsl.core.types.dsl.StringPath;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.geoserver.acl.jpa.model.GeoServerInstance;
 import org.geoserver.acl.jpa.model.QAdminRule;
 import org.geoserver.acl.jpa.model.QAdminRuleIdentifier;
-import org.geoserver.acl.jpa.model.QGeoServerInstance;
 import org.geoserver.acl.jpa.model.QRule;
 import org.geoserver.acl.jpa.model.QRuleIdentifier;
 import org.geoserver.acl.model.adminrules.AdminGrantType;
@@ -24,7 +22,6 @@ import org.geoserver.acl.model.filter.Filter;
 import org.geoserver.acl.model.filter.RuleFilter;
 import org.geoserver.acl.model.filter.RuleQuery;
 import org.geoserver.acl.model.filter.predicate.FilterType;
-import org.geoserver.acl.model.filter.predicate.IdNameFilter;
 import org.geoserver.acl.model.filter.predicate.InSetPredicate;
 import org.geoserver.acl.model.filter.predicate.TextFilter;
 import org.springframework.data.domain.PageRequest;
@@ -58,8 +55,8 @@ class PredicateMapper {
         return Pageable.unpaged();
     }
 
-    public Optional<? extends Predicate> toPredicate(RuleQuery<?> query) {
-        return query.getFilter().flatMap(this::toPredicate);
+    public Predicate toPredicate(RuleQuery<?> query) {
+        return query.getFilter().flatMap(this::toPredicate).orElseGet(BooleanBuilder::new);
     }
 
     Optional<BooleanExpression> toPriorityPredicate(OptionalLong pstart) {
@@ -82,41 +79,18 @@ class PredicateMapper {
         Predicate role = map(filter.getRole(), qIdentifier.rolename);
         // Predicate address = map(filter.getSourceAddress(), identifier.addressRange);
         Predicate ws = map(filter.getWorkspace(), qIdentifier.workspace);
-        Predicate predicate =
+        BooleanBuilder predicate =
                 new BooleanBuilder()
                         .and(grantType)
                         .and(gsInstance)
                         .and(user)
                         .and(role)
                         // .and(address)
-                        .and(ws)
-                        .getValue();
+                        .and(ws);
 
         log.debug("Filter    : {}", filter);
         log.debug("Predicate : {}", predicate);
         return Optional.ofNullable(predicate);
-    }
-
-    private Predicate map(IdNameFilter filter, QGeoServerInstance qinstance) {
-        switch (filter.getType()) {
-            case ANY:
-                return null;
-            case DEFAULT:
-                return qinstance.name.eq(GeoServerInstance.ANY);
-            case IDVALUE:
-                return filter.isIncludeDefault()
-                        ? qinstance
-                                .name
-                                .eq(GeoServerInstance.ANY)
-                                .or(qinstance.id.eq(filter.getId()))
-                        : qinstance.id.eq(filter.getId());
-            case NAMEVALUE:
-                return filter.isIncludeDefault()
-                        ? qinstance.name.in(GeoServerInstance.ANY, filter.getName())
-                        : qinstance.name.eq(filter.getName());
-            default:
-                throw new IllegalStateException();
-        }
     }
 
     private Predicate map(
@@ -159,7 +133,7 @@ class PredicateMapper {
         Predicate ws = map(filter.getWorkspace(), qIdentifier.workspace);
         Predicate layer = map(filter.getLayer(), qIdentifier.layer);
 
-        Predicate predicate =
+        BooleanBuilder predicate =
                 new BooleanBuilder()
                         .and(gsInstance)
                         .and(user)
@@ -169,8 +143,7 @@ class PredicateMapper {
                         .and(subfield)
                         // .and(address)
                         .and(ws)
-                        .and(layer)
-                        .getValue();
+                        .and(layer);
 
         log.trace("Filter    : {}", filter);
         log.trace("Predicate : {}", predicate);

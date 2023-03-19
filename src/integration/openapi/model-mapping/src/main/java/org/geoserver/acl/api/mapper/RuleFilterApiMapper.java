@@ -6,13 +6,10 @@ package org.geoserver.acl.api.mapper;
 
 import org.geoserver.acl.api.model.AddressRangeFilter;
 import org.geoserver.acl.api.model.AdminGrantType;
-import org.geoserver.acl.api.model.IdName;
 import org.geoserver.acl.api.model.SetFilter;
 import org.geoserver.acl.api.model.TextFilter;
 import org.geoserver.acl.model.filter.AdminRuleFilter;
 import org.geoserver.acl.model.filter.RuleFilter;
-import org.geoserver.acl.model.filter.predicate.FilterType;
-import org.geoserver.acl.model.filter.predicate.IdNameFilter;
 import org.geoserver.acl.model.filter.predicate.SpecialFilterType;
 
 import java.util.Set;
@@ -25,7 +22,7 @@ public class RuleFilterApiMapper {
                 new org.geoserver.acl.api.model.AdminRuleFilter();
 
         api.setGrantType(map(filter.getGrantType()));
-        api.setInstance(idNameToApi(filter.getInstance()));
+        api.setInstance(textFilterToApi(filter.getInstance()));
         api.setRoles(setFilterToApi(filter.getRole()));
         api.setSourceAddress(addressRangeToApi(filter.getSourceAddress()));
         api.setUser(textFilterToApi(filter.getUser()));
@@ -37,7 +34,7 @@ public class RuleFilterApiMapper {
         if (filter == null) return null;
         AdminRuleFilter model = new AdminRuleFilter();
         model.setGrantType(map(filter.getGrantType()));
-        idNameToModel(model.getInstance(), filter.getInstance());
+        textFilterToModel(model.getInstance(), filter.getInstance());
         setFilterToModel(model.getRole(), filter.getRoles());
         addressRangeToModel(model.getSourceAddress(), filter.getSourceAddress());
         textFilterToModel(model.getUser(), filter.getUser());
@@ -76,7 +73,7 @@ public class RuleFilterApiMapper {
         if (filter == null) return null;
         org.geoserver.acl.api.model.RuleFilter api = new org.geoserver.acl.api.model.RuleFilter();
 
-        api.setInstance(idNameToApi(filter.getInstance()));
+        api.setInstance(textFilterToApi(filter.getInstance()));
         api.setLayer(textFilterToApi(filter.getLayer()));
         api.setRoles(setFilterToApi(filter.getRole()));
         api.setRequest(textFilterToApi(filter.getRequest()));
@@ -91,7 +88,7 @@ public class RuleFilterApiMapper {
     public RuleFilter toModel(org.geoserver.acl.api.model.RuleFilter filter) {
         if (filter == null) return null;
         RuleFilter model = new RuleFilter();
-        idNameToModel(model.getInstance(), filter.getInstance());
+        textFilterToModel(model.getInstance(), filter.getInstance());
         textFilterToModel(model.getLayer(), filter.getLayer());
         textFilterToModel(model.getRequest(), filter.getRequest());
         setFilterToModel(model.getRole(), filter.getRoles());
@@ -214,45 +211,6 @@ public class RuleFilterApiMapper {
 
             if (value != null) {
                 target.setHeuristically(value);
-                if (includeDefault != null) target.setIncludeDefault(includeDefault);
-            } else {
-                if (includeDefault != null && includeDefault.booleanValue())
-                    target.setType(SpecialFilterType.DEFAULT);
-                else target.setType(SpecialFilterType.ANY);
-            }
-        }
-    }
-
-    private IdName idNameToApi(IdNameFilter source) {
-        if (source.getType() == FilterType.DEFAULT) return null;
-        ;
-
-        IdName idName = new IdName();
-        if (!source.isIncludeDefault()) {
-            // true is the default value, only set it if false
-            idName.includeDefault(false);
-        }
-        if (source.getType() == FilterType.ANY) {
-            idName.name("*");
-        } else if (source.getType() == FilterType.IDVALUE) {
-            idName.id(source.getId());
-        } else if (source.getType() == FilterType.NAMEVALUE) {
-            idName.name(source.getName());
-        }
-        return idName;
-    }
-
-    private void idNameToModel(IdNameFilter target, IdName source) {
-        if (source != null) {
-            Boolean includeDefault = source.getIncludeDefault();
-            Long id = source.getId();
-            String name = source.getName();
-
-            if (id != null) {
-                target.setId(id);
-                if (includeDefault != null) target.setIncludeDefault(includeDefault);
-            } else if (name != null) {
-                target.setHeuristically(name);
                 if (includeDefault != null) target.setIncludeDefault(includeDefault);
             } else {
                 if (includeDefault != null && includeDefault.booleanValue())

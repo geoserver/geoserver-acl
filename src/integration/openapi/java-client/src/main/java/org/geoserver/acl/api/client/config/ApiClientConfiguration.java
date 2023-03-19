@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 /**
  * Include this configuration to contribute an {@link org.geoserver.acl.api.client.ApiClient}
  *
- * @since 4.0
+ * @since 1.0
  */
 @Configuration(proxyBeanMethods = false)
 public class ApiClientConfiguration {

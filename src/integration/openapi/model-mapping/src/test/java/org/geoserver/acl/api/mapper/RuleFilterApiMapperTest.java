@@ -43,29 +43,6 @@ class RuleFilterApiMapperTest {
     }
 
     @Test
-    void testIdName_id() {
-        filter.setInstance(1000L);
-        testRoundtrip(filter);
-        filter.getInstance().setIncludeDefault(false);
-        testRoundtrip(filter);
-    }
-
-    @Test
-    void testIdName_name() {
-        filter.setInstance("instance1");
-        testRoundtrip(filter);
-        filter.getInstance().setIncludeDefault(false);
-        testRoundtrip(filter);
-    }
-
-    @Test
-    void testIdName_any() {
-        filter.getInstance().setHeuristically("*");
-        assertEquals(FilterType.ANY, filter.getInstance().getType());
-        testRoundtrip(filter);
-    }
-
-    @Test
     void testRoles_default() {
         filter.getRole().setType(SpecialFilterType.DEFAULT);
         testRoundtrip(filter);
@@ -103,7 +80,7 @@ class RuleFilterApiMapperTest {
     @Test
     void testFull() {
         RuleFilter model = new RuleFilter();
-        model.setInstance(33L);
+        model.setInstance("33L");
         model.getInstance().setIncludeDefault(false);
         model.setLayer("layer");
         model.getRequest().setHeuristically("*");

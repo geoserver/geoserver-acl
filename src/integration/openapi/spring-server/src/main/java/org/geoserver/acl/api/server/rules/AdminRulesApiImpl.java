@@ -19,6 +19,7 @@ import org.geoserver.acl.api.model.AdminRuleFilter;
 import org.geoserver.acl.api.model.InsertPosition;
 import org.geoserver.acl.api.server.AdminRulesApiDelegate;
 import org.geoserver.acl.api.server.support.AdminRulesApiSupport;
+import org.geoserver.acl.model.filter.RuleQuery;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -63,9 +64,8 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
 
     public @Override ResponseEntity<List<AdminRule>> findAllAdminRules(Integer page, Integer size) {
 
-        org.geoserver.acl.model.filter.AdminRuleFilter filter = null;
-        List<org.geoserver.acl.model.adminrules.AdminRule> matches;
-        matches = service.getList(filter, page, size);
+        List<org.geoserver.acl.model.adminrules.AdminRule> matches =
+                service.getAll(RuleQuery.of(page, size));
 
         List<AdminRule> body = matches.stream().map(support::toApi).collect(Collectors.toList());
         return ResponseEntity.ok(body);
@@ -93,7 +93,7 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
         org.geoserver.acl.model.filter.AdminRuleFilter filter = support.map(adminRuleFilter);
 
         List<org.geoserver.acl.model.adminrules.AdminRule> matches =
-                service.getList(filter, page, size);
+                service.getAll(RuleQuery.of(filter, page, size));
         return ResponseEntity.ok(matches.stream().map(support::toApi).collect(Collectors.toList()));
     }
 

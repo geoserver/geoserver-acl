@@ -39,7 +39,7 @@ import javax.persistence.Table;
         //            @UniqueConstraint(
         //                   name = "acl_rule_identifier",
         //                    columnNames = {
-        //                        "instance_id",
+        //                        "instance",
         //                        "username",
         //                        "rolename",
         //                        "service",

@@ -17,7 +17,6 @@ import org.geoserver.acl.model.filter.AdminRuleFilter;
 import org.geoserver.acl.model.filter.RuleFilter;
 import org.geoserver.acl.model.filter.RuleQuery;
 import org.geoserver.acl.model.filter.predicate.FilterType;
-import org.geoserver.acl.model.filter.predicate.IdNameFilter;
 import org.geoserver.acl.model.filter.predicate.InSetPredicate;
 import org.geoserver.acl.model.filter.predicate.SpecialFilterType;
 import org.geoserver.acl.model.filter.predicate.TextFilter;
@@ -288,7 +287,7 @@ public class RuleReaderServiceImpl implements RuleReaderService {
                     break;
 
                 case ALLOW:
-                    ret = buildAllowAccessInfo(rule, limits, null);
+                    ret = buildAllowAccessInfo(rule, limits);
                     break;
 
                 default:
@@ -332,8 +331,7 @@ public class RuleReaderServiceImpl implements RuleReaderService {
         }
     }
 
-    private AccessInfo buildAllowAccessInfo(
-            Rule rule, List<RuleLimits> limits, IdNameFilter userFilter) {
+    private AccessInfo buildAllowAccessInfo(Rule rule, List<RuleLimits> limits) {
         AccessInfo.Builder accessInfo = AccessInfo.builder().grant(GrantType.ALLOW);
 
         // first intersects geometry of same type
@@ -508,7 +506,7 @@ public class RuleReaderServiceImpl implements RuleReaderService {
                 filter = filter.clone();
                 filter.getRole().setType(SpecialFilterType.DEFAULT);
             }
-            List<Rule> found = ruleService.getList(filter);
+            List<Rule> found = ruleService.getAll(RuleQuery.of(filter));
             ret.put(null, found);
         } else {
             for (String role : finalRoleFilter) {
@@ -523,7 +521,7 @@ public class RuleReaderServiceImpl implements RuleReaderService {
         filter = filter.clone();
         filter.setRole(role);
         filter.getRole().setIncludeDefault(true);
-        return ruleService.getList(RuleQuery.of(filter));
+        return ruleService.getAll(RuleQuery.of(filter));
     }
 
     /**

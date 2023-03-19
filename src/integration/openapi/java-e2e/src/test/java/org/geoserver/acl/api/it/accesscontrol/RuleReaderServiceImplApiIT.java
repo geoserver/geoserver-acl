@@ -63,7 +63,7 @@ import org.springframework.test.annotation.DirtiesContext;
  *
  * }</pre>
  *
- * @since 4.0
+ * @since 1.0
  * @see AbstractRuleReaderServiceImplTest
  */
 @DirtiesContext

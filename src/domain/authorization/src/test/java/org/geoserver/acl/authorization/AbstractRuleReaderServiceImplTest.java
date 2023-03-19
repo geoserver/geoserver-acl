@@ -17,6 +17,7 @@ import lombok.NonNull;
 
 import org.geoserver.acl.model.adminrules.AdminRule;
 import org.geoserver.acl.model.filter.RuleFilter;
+import org.geoserver.acl.model.filter.RuleQuery;
 import org.geoserver.acl.model.filter.predicate.SpecialFilterType;
 import org.geoserver.acl.model.rules.GrantType;
 import org.geoserver.acl.model.rules.IPAddressRange;
@@ -280,7 +281,8 @@ public abstract class AbstractRuleReaderServiceImplTest extends ServiceTestBase 
             ruleFilter.setService("s1");
             ruleFilter.setLayer("l2");
             final AccessRequest req = AccessRequest.builder().filter(ruleFilter).build();
-            assertEquals(2, ruleAdminService.getList(new RuleFilter(SpecialFilterType.ANY)).size());
+            RuleQuery<RuleFilter> query = RuleQuery.of(new RuleFilter(SpecialFilterType.ANY));
+            assertEquals(2, ruleAdminService.getAll(query).size());
             List<Rule> matchingRules = ruleReaderService.getMatchingRules(req);
             // LOGGER.info("Matching rules: " + matchingRules);
             assertEquals(1, matchingRules.size());

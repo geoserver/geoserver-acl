@@ -29,7 +29,7 @@ import org.springframework.test.context.ActiveProfiles;
  *
  * }</pre>
  *
- * @since 4.0
+ * @since 1.0
  */
 @SpringBootTest(
         classes = {

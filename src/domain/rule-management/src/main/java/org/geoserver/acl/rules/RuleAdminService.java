@@ -140,17 +140,12 @@ public class RuleAdminService {
     public List<Rule> getAll() {
         return ruleRepository.findAll().collect(Collectors.toList());
     }
-
-    public List<Rule> getList(@NonNull RuleFilter filter) {
-        return getList(RuleQuery.of(filter));
-    }
-
     /**
      * Return the Rules according to the query.
      *
      * @param query provides a filter predicate, paging, and priority offset
      */
-    public List<Rule> getList(@NonNull RuleQuery<RuleFilter> query) {
+    public List<Rule> getAll(@NonNull RuleQuery<RuleFilter> query) {
         return ruleRepository.findAll(query).collect(Collectors.toList());
     }
 

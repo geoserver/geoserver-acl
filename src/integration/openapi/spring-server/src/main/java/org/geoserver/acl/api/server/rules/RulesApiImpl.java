@@ -78,7 +78,7 @@ public class RulesApiImpl implements RulesApiDelegate {
         org.geoserver.acl.model.filter.RuleFilter filter = support.map(ruleFilter);
 
         RuleQuery<org.geoserver.acl.model.filter.RuleFilter> query =
-                RuleQuery.of(filter).setPageNumber(page).setPageSize(size);
+                RuleQuery.of(filter, page, size);
 
         return query(query);
     }
@@ -87,7 +87,7 @@ public class RulesApiImpl implements RulesApiDelegate {
             RuleQuery<org.geoserver.acl.model.filter.RuleFilter> query) {
         List<org.geoserver.acl.model.rules.Rule> list;
         try {
-            list = service.getList(query);
+            list = service.getAll(query);
         } catch (IllegalArgumentException e) {
             return error(BAD_REQUEST, e.getMessage());
         }

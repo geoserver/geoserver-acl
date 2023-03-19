@@ -13,16 +13,13 @@ import org.geoserver.acl.jpa.config.AuthorizationJPAPropertiesTestConfiguration;
 import org.geoserver.acl.jpa.model.AdminGrantType;
 import org.geoserver.acl.jpa.model.AdminRule;
 import org.geoserver.acl.jpa.model.AdminRuleIdentifier;
-import org.geoserver.acl.jpa.model.GeoServerInstance;
 import org.geoserver.acl.jpa.model.IPAddressRange;
 import org.geoserver.acl.jpa.model.QAdminRule;
-import org.hibernate.TransientObjectException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,28 +45,23 @@ import javax.transaction.Transactional;
 @ActiveProfiles("test")
 public class JpaAdminRuleRepositoryTest {
 
-    private @Autowired JpaGeoServerInstanceRepository instanceRepo;
     private @Autowired JpaAdminRuleRepository repo;
 
     private @Autowired EntityManager em;
-
-    private GeoServerInstance anyInstance;
 
     private AdminRule entity;
 
     @BeforeEach
     void beforeEach() {
-        anyInstance = instanceRepo.getInstanceAny();
-
         entity = new AdminRule();
-        entity.getIdentifier().setInstance(anyInstance);
     }
 
     @Test
     void testDefaultValues() {
         AdminRule rule = new AdminRule();
         assertNotNull(rule.getIdentifier());
-        AdminRuleIdentifier identifier = rule.getIdentifier().setInstance(anyInstance);
+        AdminRuleIdentifier identifier = rule.getIdentifier();
+        assertEquals("*", identifier.getInstance());
         assertEquals("*", identifier.getRolename());
         assertEquals("*", identifier.getUsername());
         assertEquals("*", identifier.getWorkspace());
@@ -109,7 +101,7 @@ public class JpaAdminRuleRepositoryTest {
         entity.setAccess(AdminGrantType.ADMIN)
                 .getIdentifier()
                 .setAddressRange(new IPAddressRange(1000L, 2000L, 32))
-                .setInstance(anyInstance)
+                .setInstance("default")
                 .setRolename("ROLE_USER")
                 .setWorkspace("workspace");
 
@@ -128,20 +120,10 @@ public class JpaAdminRuleRepositoryTest {
 
     @Test
     void testSave_Identifier() {
-        GeoServerInstance gsInstance2 =
-                new GeoServerInstance()
-                        .setName("secondInstance")
-                        .setBaseURL("http://localhost:9090/geoserver")
-                        .setDescription("Default geoserver instance")
-                        .setUsername("admin")
-                        .setPassword("geoserver");
-
-        gsInstance2 = instanceRepo.saveAndFlush(gsInstance2);
-
         AdminRuleIdentifier expected =
                 entity.getIdentifier()
                         .setAddressRange(new IPAddressRange(1000L, 2000L, 32))
-                        .setInstance(gsInstance2)
+                        .setInstance("secondInstance")
                         .setRolename("ROLE_USER")
                         .setUsername("user")
                         .setWorkspace("workspace")
@@ -152,25 +134,6 @@ public class JpaAdminRuleRepositoryTest {
 
         AdminRule found = repo.getReferenceById(saved.getId());
         assertThat(found.getIdentifier()).isNotSameAs(saved.getIdentifier()).isEqualTo(expected);
-    }
-
-    @Test
-    void testSave_fails_on_dettached_GeoServerInstance() {
-
-        GeoServerInstance unsavedGsInstance =
-                new GeoServerInstance()
-                        .setName("unsaved")
-                        .setBaseURL("http://localhost:8080/geoserver");
-
-        entity.getIdentifier().setInstance(unsavedGsInstance).clone();
-
-        InvalidDataAccessApiUsageException expected =
-                assertThrows(
-                        InvalidDataAccessApiUsageException.class, () -> repo.saveAndFlush(entity));
-        assertThat(expected.getCause())
-                .isInstanceOf(IllegalStateException.class)
-                .getCause()
-                .isInstanceOf(TransientObjectException.class);
     }
 
     @Test
@@ -259,19 +222,9 @@ public class JpaAdminRuleRepositoryTest {
         AdminRule rule = this.entity;
         List<AdminRule> expected = new ArrayList<>();
 
-        GeoServerInstance gsInstance2 =
-                new GeoServerInstance()
-                        .setName("secondInstance")
-                        .setBaseURL("http://localhost:9090/geoserver")
-                        .setDescription("Default geoserver instance")
-                        .setUsername("admin")
-                        .setPassword("geoserver");
-
-        gsInstance2 = instanceRepo.saveAndFlush(gsInstance2);
-
         expected.add(rule.clone());
 
-        rule.setAccess(AdminGrantType.ADMIN).getIdentifier().setInstance(gsInstance2);
+        rule.setAccess(AdminGrantType.ADMIN).getIdentifier().setInstance("secondInstance");
         expected.add(rule.clone());
 
         rule.getIdentifier().setAddressRange(new IPAddressRange(1000L, 2000L, 32));

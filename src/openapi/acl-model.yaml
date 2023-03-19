@@ -268,21 +268,6 @@ components:
         addressRange:
           $ref: '#/components/schemas/AddressRange'
 
-    IdName:
-      type: object
-      nullable: true
-      properties:
-        includeDefault:
-          type: boolean
-          nullable: true
-        id:
-          type: integer
-          format: int64
-          nullable: true
-        name:
-          type: string
-          nullable: true
-
     TextFilter:
       type: object
       nullable: true
@@ -327,7 +312,7 @@ components:
       nullable: true
       properties:
         instance:
-          $ref: '#/components/schemas/IdName'
+          $ref: '#/components/schemas/TextFilter'
         user:
           $ref: '#/components/schemas/TextFilter'
         roles:
@@ -351,7 +336,7 @@ components:
       nullable: true
       properties:
         instance:
-          $ref: '#/components/schemas/IdName'
+          $ref: '#/components/schemas/TextFilter'
         grantType:
           $ref: '#/components/schemas/AdminGrantType'
         user:

@@ -113,11 +113,11 @@ class RulesApiImpTest {
     void testGetRules() {
         RuleQuery<RuleFilter> expectedQuery = RuleQuery.of(1, 10);
         List<Rule> expected = List.of(Rule.allow(), Rule.deny());
-        when(rules.getList(eq(expectedQuery))).thenReturn(expected);
+        when(rules.getAll(eq(expectedQuery))).thenReturn(expected);
 
         List<Rule> actual = assertList(() -> api.getRules(1, 10), OK);
         assertThat(actual).isEqualTo(expected);
-        verify(rules, times(1)).getList(eq(expectedQuery));
+        verify(rules, times(1)).getAll(eq(expectedQuery));
     }
 
     private List<Rule> assertList(

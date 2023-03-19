@@ -5,7 +5,6 @@
 package org.geoserver.acl.api.it.support;
 
 import org.geoserver.acl.jpa.repository.JpaAdminRuleRepository;
-import org.geoserver.acl.jpa.repository.JpaGeoServerInstanceRepository;
 import org.geoserver.acl.jpa.repository.JpaRuleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -15,11 +14,9 @@ public class ServerContextSupport {
 
     private @Autowired JpaRuleRepository jpaRuleRepository;
     private @Autowired JpaAdminRuleRepository jpaAdminRuleRepository;
-    private @Autowired JpaGeoServerInstanceRepository jpaGeoServerInstanceRepository;
 
     public void setUp() {
         jpaRuleRepository.deleteAll();
         jpaAdminRuleRepository.deleteAll();
-        jpaGeoServerInstanceRepository.deleteAll();
     }
 }

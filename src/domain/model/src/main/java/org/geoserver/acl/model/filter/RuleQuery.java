@@ -20,10 +20,7 @@ public class RuleQuery<F extends Filter> {
 
     private Integer pageNumber;
     private Integer pageSize;
-
-    public static <RF extends Filter> RuleQuery<RF> of(RF filter) {
-        return new RuleQuery<RF>().setFilter(filter);
-    }
+    private String nextCursor;
 
     public static <RF extends Filter> RuleQuery<RF> of() {
         return new RuleQuery<RF>();
@@ -31,6 +28,18 @@ public class RuleQuery<F extends Filter> {
 
     public static <RF extends Filter> RuleQuery<RF> of(Integer pageNumber, Integer pageSize) {
         return new RuleQuery<RF>().setPageNumber(pageNumber).setPageSize(pageSize);
+    }
+
+    public static <RF extends Filter> RuleQuery<RF> of(RF filter) {
+        return new RuleQuery<RF>().setFilter(filter);
+    }
+
+    public static <RF extends Filter> RuleQuery<RF> of(
+            RF filter, Integer pageNumber, Integer pageSize) {
+        return new RuleQuery<RF>()
+                .setFilter(filter)
+                .setPageNumber(pageNumber)
+                .setPageSize(pageSize);
     }
 
     public Optional<F> getFilter() {

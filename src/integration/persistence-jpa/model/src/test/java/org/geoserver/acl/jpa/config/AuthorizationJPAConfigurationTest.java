@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import org.geoserver.acl.jpa.repository.JpaAdminRuleRepository;
-import org.geoserver.acl.jpa.repository.JpaGeoServerInstanceRepository;
 import org.geoserver.acl.jpa.repository.JpaRuleRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -81,7 +80,6 @@ class AuthorizationJPAConfigurationTest {
                         context -> {
                             assertThat(context)
                                     .hasNotFailed()
-                                    .hasSingleBean(JpaGeoServerInstanceRepository.class)
                                     .hasSingleBean(JpaRuleRepository.class)
                                     .hasSingleBean(JpaAdminRuleRepository.class);
                         });

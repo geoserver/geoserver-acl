@@ -107,10 +107,7 @@ public class AdminRuleAdminService {
      *     <TT>page</TT> should be defined.
      * @see RuleReaderService#getMatchingRules(RuleFilter)
      */
-    public List<AdminRule> getList(AdminRuleFilter filter, Integer page, Integer entries) {
-
-        RuleQuery<AdminRuleFilter> query =
-                RuleQuery.of(filter).setPageNumber(page).setPageSize(entries);
+    public List<AdminRule> getAll(RuleQuery<AdminRuleFilter> query) {
         return repository.findAll(query);
     }
 
