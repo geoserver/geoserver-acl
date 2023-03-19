@@ -27,6 +27,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
+              <skip>${openapi-codegen-skip}</skip>
               <!-- see https://openapi-generator.tech/docs/generators/python -->
               <inputSpec>${project.basedir}/../acl-api.yaml</inputSpec>
               <generatorName>python-legacy</generatorName>

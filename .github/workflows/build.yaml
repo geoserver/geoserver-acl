@@ -22,7 +22,7 @@ jobs:
         cache: 'maven'
 
     - name: Validate source code formatting
-      run: ./mvnw sortpom:verify fmt:check -ntp
+      run: ./mvnw sortpom:verify fmt:check -Dopenapi-codegen-skip=true -ntp
 
     - name: Build
       run: |
@@ -30,4 +30,4 @@ jobs:
 
     - name: Test
       run: |
-        ./mvnw verify -T1C -ntp
+        ./mvnw verify -Dopenapi-codegen-skip=true -T1C -ntp

@@ -25,6 +25,7 @@
   <properties>
     <openapi-generator-maven-plugin.version>6.3.0</openapi-generator-maven-plugin.version>
     <jakarta-annotation-version>1.3.5</jakarta-annotation-version>
+    <openapi-codegen-skip>false</openapi-codegen-skip>
   </properties>
   <dependencyManagement>
     <dependencies>

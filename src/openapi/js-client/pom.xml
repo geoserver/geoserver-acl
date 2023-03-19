@@ -27,6 +27,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
+              <skip>${openapi-codegen-skip}</skip>
               <!-- https://openapi-generator.tech/docs/generators/javascript/ -->
               <inputSpec>${project.basedir}/../acl-api.yaml</inputSpec>
               <generatorName>javascript</generatorName>

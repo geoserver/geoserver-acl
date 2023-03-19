@@ -84,6 +84,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
+              <skip>${openapi-codegen-skip}</skip>
               <!-- see https://openapi-generator.tech/docs/generators/java/ -->
               <generatorName>spring</generatorName>
               <inputSpec>${project.basedir}/../acl-model.yaml</inputSpec>

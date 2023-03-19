@@ -79,11 +79,12 @@
         <executions>
           <execution>
             <?m2e ignore?>
-            <id>generate-rules-spring-server-stub</id>
+            <id>generate-spring-server-stub</id>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
+              <skip>${openapi-codegen-skip}</skip>
               <!-- see https://openapi-generator.tech/docs/generators/spring -->
               <inputSpec>${project.basedir}/../acl-api.yaml</inputSpec>
               <generatorName>spring</generatorName>
