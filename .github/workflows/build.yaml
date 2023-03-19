@@ -1,0 +1,33 @@
+# Builds and pushes docker images on main and tags
+
+name: Build on any branch
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Setup Java
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        cache: 'maven'
+
+    - name: Validate source code formatting
+      run: ./mvnw sortpom:verify fmt:check -ntp
+
+    - name: Build
+      run: |
+        ./mvnw package -DskipTests -T1C -ntp
+
+    - name: Test
+      run: |
+        ./mvnw verify -T1C -ntp
