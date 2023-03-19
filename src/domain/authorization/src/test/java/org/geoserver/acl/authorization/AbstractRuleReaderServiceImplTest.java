@@ -282,7 +282,7 @@ public abstract class AbstractRuleReaderServiceImplTest extends ServiceTestBase 
             ruleFilter.setLayer("l2");
             final AccessRequest req = AccessRequest.builder().filter(ruleFilter).build();
             RuleQuery<RuleFilter> query = RuleQuery.of(new RuleFilter(SpecialFilterType.ANY));
-            assertEquals(2, ruleAdminService.getAll(query).size());
+            assertEquals(2, ruleAdminService.getAll(query).count());
             List<Rule> matchingRules = ruleReaderService.getMatchingRules(req);
             // LOGGER.info("Matching rules: " + matchingRules);
             assertEquals(1, matchingRules.size());

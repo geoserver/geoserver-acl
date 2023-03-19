@@ -29,21 +29,17 @@ import org.geoserver.acl.jpa.model.RuleIdentifier;
 import org.geoserver.acl.jpa.model.RuleLimits;
 import org.geoserver.acl.jpa.model.SpatialFilterType;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -111,40 +107,6 @@ public class JpaRuleRepositoryTest {
         assertThat(expected)
                 .hasMessageContaining("not-null property references a null or transient value")
                 .hasMessageContaining("identifier.instance");
-    }
-
-    @Disabled
-    @Test
-    void testSaveDuplicateIdentifier_default_values() {
-        testSaveDuplicateIdentifier(entity);
-    }
-
-    @Disabled
-    @Test
-    void testSaveDuplicateIdentifier() {
-        entity.getIdentifier()
-                .setAccess(GrantType.LIMIT)
-                .setAddressRange(new IPAddressRange(1000L, 2000L, 32))
-                .setInstance("default")
-                .setLayer("layer")
-                .setRequest("GetCapabilities")
-                .setRolename("ROLE_USER")
-                .setService("WCS")
-                .setSubfield("subfield")
-                .setUsername("user")
-                .setWorkspace("workspace");
-
-        testSaveDuplicateIdentifier(entity);
-    }
-
-    private void testSaveDuplicateIdentifier(Rule rule) {
-        rule = rule.clone().setId(null);
-        Rule duplicateKey = rule.clone().setPriority(rule.getPriority() + 1000);
-        assertEquals(rule.getIdentifier(), duplicateKey.getIdentifier());
-
-        repo.saveAndFlush(rule);
-
-        assertThrows(DataIntegrityViolationException.class, () -> repo.saveAndFlush(duplicateKey));
     }
 
     @Test
@@ -281,10 +243,10 @@ public class JpaRuleRepositoryTest {
 
     /** {@link JpaRuleRepository#findAllNaturalOrder()} */
     @Test
-    void findAllNaturalOrder() {
+    void findAll() {
         List<Rule> expected = addSamplesInReverseNaturalOrder();
-        List<Rule> actual = repo.findAllNaturalOrder();
-        assertEquals(expected, actual);
+        List<Rule> actual = repo.findAll();
+        assertEquals(Set.copyOf(expected), Set.copyOf(actual));
     }
 
     /** {@link JpaRuleRepository#findAllNaturalOrder(Predicate)} */
@@ -303,64 +265,11 @@ public class JpaRuleRepositoryTest {
                                                 && "*".equals(r.getIdentifier().getLayer()))
                         .collect(Collectors.toList());
 
-        List<Rule> actual = repo.findAllNaturalOrder(predicate);
+        Iterable<Rule> res = repo.findAll(predicate, Sort.by("priority"));
+        List<Rule> actual = new ArrayList<>();
+        res.forEach(actual::add);
         assertThat(actual.size()).isEqualTo(expected.size());
         assertThat(actual).isEqualTo(expected);
-    }
-
-    /** {@link JpaRuleRepository#findAllNaturalOrder(Pageable)} */
-    @Test
-    void findAllNaturalOrderPaged() {
-        final List<Rule> expected = addSamplesInReverseNaturalOrder();
-
-        assertNaturalOrderPaged(
-                expected,
-                (Predicate) null,
-                (predicate, pageable) -> repo.findAllNaturalOrder(pageable));
-    }
-
-    /** {@link JpaRuleRepository#findAllNaturalOrder(Predicate, Pageable)} */
-    @Test
-    void findAllNaturalOrderFilteredAndPaged() {
-        final List<Rule> all = addSamplesInReverseNaturalOrder();
-
-        QRule qRule = QRule.rule;
-        Predicate predicate = qRule.priority.gt(2L).and(qRule.identifier.layer.eq("*"));
-
-        List<Rule> expected =
-                all.stream()
-                        .filter(
-                                r ->
-                                        r.getPriority() > 2L
-                                                && "*".equals(r.getIdentifier().getLayer()))
-                        .collect(Collectors.toList());
-
-        assertNaturalOrderPaged(expected, predicate, repo::findAllNaturalOrder);
-    }
-
-    private void assertNaturalOrderPaged(
-            final List<Rule> all,
-            Predicate predicate,
-            BiFunction<Predicate, Pageable, Page<Rule>> function) {
-        final int size = all.size();
-        final int pageSize = 2;
-        final int pages = 1 + size / pageSize;
-        assertThat(pages).isGreaterThan(1);
-
-        for (int pageN = 0; pageN < pages; pageN++) {
-            PageRequest request = PageRequest.of(pageN, pageSize);
-            Page<Rule> page = function.apply(predicate, request);
-            int offset = pageN * pageSize;
-            int toIndex = Math.min(offset + pageSize, all.size());
-            List<Rule> expectedContents = all.subList(offset, toIndex);
-            assertEquals(expectedContents, page.getContent());
-        }
-
-        PageRequest request = PageRequest.of(1 + pages, pageSize);
-        assertThat(function.apply(predicate, request).getContent()).isEmpty();
-
-        Pageable unpaged = Pageable.unpaged();
-        assertThat(function.apply(predicate, unpaged).getContent()).isEqualTo(all);
     }
 
     /** Adds sample rules in reverse natural order and returns them in natural order */

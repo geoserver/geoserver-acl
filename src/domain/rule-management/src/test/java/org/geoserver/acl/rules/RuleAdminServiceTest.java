@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class RuleAdminServiceTest {
@@ -173,14 +174,11 @@ class RuleAdminServiceTest {
 
     @Test
     void getAll() {
-        when(repository.findAll()).thenReturn(null);
-        assertThrows(NullPointerException.class, service::getAll);
-        clearInvocations(repository);
 
         List<Rule> expected = List.of(Rule.allow(), Rule.deny(), Rule.limit());
         when(repository.findAll()).thenReturn(expected.stream());
 
-        List<Rule> actual = service.getAll();
+        List<Rule> actual = service.getAll().collect(Collectors.toList());
         verify(repository, times(1)).findAll();
         verifyNoMoreInteractions(repository);
         assertThat(actual).isEqualTo(expected);
@@ -192,9 +190,6 @@ class RuleAdminServiceTest {
                 NullPointerException.class, () -> service.getAll((RuleQuery<RuleFilter>) null));
 
         RuleQuery<RuleFilter> query = RuleQuery.of(new RuleFilter().setRole("role1"));
-        when(repository.findAll(eq(query))).thenReturn(null);
-        assertThrows(NullPointerException.class, () -> service.getAll(query));
-        clearInvocations(repository);
 
         List<Rule> expected =
                 List.of(
@@ -204,7 +199,7 @@ class RuleAdminServiceTest {
 
         when(repository.findAll(query)).thenReturn(expected.stream());
 
-        List<Rule> actual = service.getAll(query);
+        List<Rule> actual = service.getAll(query).collect(Collectors.toList());
         verify(repository, times(1)).findAll(eq(query));
         verifyNoMoreInteractions(repository);
         assertThat(actual).isEqualTo(expected);
@@ -218,7 +213,7 @@ class RuleAdminServiceTest {
     @Test
     void getRule_multiple_matches() {
         RuleFilter filter = new RuleFilter().setInstance("1").setLayer("states");
-        RuleQuery<RuleFilter> query = RuleQuery.of(filter).setPageSize(0).setPageSize(2);
+        RuleQuery<RuleFilter> query = RuleQuery.of(filter).setLimit(2);
 
         when(repository.findAll(eq(query))).thenReturn(List.of(Rule.allow(), Rule.deny()).stream());
 
@@ -230,7 +225,7 @@ class RuleAdminServiceTest {
     @Test
     void getRule_no_match() {
         RuleFilter filter = new RuleFilter().setInstance("1").setLayer("states");
-        RuleQuery<RuleFilter> query = RuleQuery.of(filter).setPageSize(0).setPageSize(2);
+        RuleQuery<RuleFilter> query = RuleQuery.of(filter).setLimit(2);
 
         when(repository.findAll(eq(query))).thenReturn(Stream.of());
         assertThat(service.getRule(filter)).isEmpty();
@@ -239,7 +234,7 @@ class RuleAdminServiceTest {
     @Test
     void getRule() {
         RuleFilter filter = new RuleFilter().setInstance("1").setLayer("states");
-        RuleQuery<RuleFilter> query = RuleQuery.of(filter).setPageSize(0).setPageSize(2);
+        RuleQuery<RuleFilter> query = RuleQuery.of(filter).setLimit(2);
 
         Rule match = Rule.allow().withId("10L");
         when(repository.findAll(eq(query))).thenReturn(Stream.of(match));

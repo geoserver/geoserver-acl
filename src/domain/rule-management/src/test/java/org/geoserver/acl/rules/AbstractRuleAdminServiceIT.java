@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public abstract class AbstractRuleAdminServiceIT {
@@ -214,16 +215,21 @@ public abstract class AbstractRuleAdminServiceIT {
         final int pageSize = 25;
         final int maxPages = all.size() / pageSize;
         RuleQuery<RuleFilter> query = RuleQuery.of();
-        query.setPageSize(pageSize);
+        query.setLimit(1 + pageSize);
+        String nextCursorId = null;
         for (int page = 0; page < maxPages; page++) {
-            query.setPageNumber(page);
-            List<Rule> result = ruleAdminService.getAll(query);
+            query.setNextId(nextCursorId);
+            List<Rule> result = ruleAdminService.getAll(query).collect(Collectors.toList());
+            if (result.size() > pageSize) {
+                assertThat(result.size()).isEqualTo(1 + pageSize);
+                nextCursorId = result.get(pageSize).getId();
+                result = result.subList(0, pageSize);
+            }
+
             int fromIndex = page * pageSize;
             List<Rule> expected = all.subList(fromIndex, pageSize + fromIndex);
             assertThat(result).isEqualTo(expected);
         }
-        query.setPageNumber(1 + maxPages);
-        assertThat(ruleAdminService.getAll(query)).isEmpty();
     }
 
     @Disabled("not yet implemented")
@@ -507,7 +513,8 @@ public abstract class AbstractRuleAdminServiceIT {
         assertEquals(3, r3.getPriority());
         assertEquals(4, r4.getPriority());
 
-        // moving r2 one slot up, should only swap with r1, ending in r2(1),r1(2),r3(3),r4(4)
+        // moving r2 one slot up, should only swap with r1, ending in
+        // r2(1),r1(2),r3(3),r4(4)
         r2 = r2.withPriority(1);
         assertThat(ruleAdminService.update(r2)).isEqualTo(r2);
 
@@ -519,7 +526,8 @@ public abstract class AbstractRuleAdminServiceIT {
 
         assertGet(r4).as("r4 should have kept priority 4").isEqualTo(r4);
 
-        // moving r3 three slots up, should shift r1 and r2 only, ending in r3(1),r2(2),r1(3),r4(4)
+        // moving r3 three slots up, should shift r1 and r2 only, ending in
+        // r3(1),r2(2),r1(3),r4(4)
         r3 = r3.withPriority(1);
         assertThat(ruleAdminService.update(r3)).isEqualTo(r3);
 
@@ -607,7 +615,7 @@ public abstract class AbstractRuleAdminServiceIT {
         assertThat(expectedOrder.size())
                 .as("mismatch in expectations")
                 .isEqualTo(expectedPriorities.size());
-        List<Rule> all = ruleAdminService.getAll();
+        List<Rule> all = ruleAdminService.getAll().collect(Collectors.toList());
         assertThat(all.size()).isEqualTo(expectedPriorities.size());
 
         for (int i = 0; i < expectedOrder.size(); i++) {

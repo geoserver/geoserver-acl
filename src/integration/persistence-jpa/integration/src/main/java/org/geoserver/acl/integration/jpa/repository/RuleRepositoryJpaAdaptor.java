@@ -100,23 +100,6 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
         return findAll(RuleQuery.of());
     }
 
-    // @Override
-    //	public Stream<Rule> findAllOld(@NonNull RuleQuery<RuleFilter> query) {
-    //
-    //		Predicate predicate = queryMapper.toPredicate(query);
-    //		Pageable pageRequest = queryMapper.toPageable(query);
-    //
-    //		Page<org.geoserver.acl.jpa.model.Rule> page;
-    //		if (predicate.isPresent()) {
-    //			page = jparepo.findAllNaturalOrder(predicate.get(), pageRequest);
-    //		} else {
-    //			page = jparepo.findAllNaturalOrder(pageRequest);
-    //		}
-    //
-    //		List<org.geoserver.acl.jpa.model.Rule> found = page.getContent();
-    //		return found.stream().map(modelMapper::toModel).filter(filterByAddress(query.getFilter()));
-    //	}
-
     @Override
     @TransactionReadOnly
     public Stream<Rule> findAll(@NonNull RuleQuery<RuleFilter> query) {
@@ -125,8 +108,8 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
         final java.util.function.Predicate<? super Rule> postFilter =
                 filterByAddress(query.getFilter());
 
-        if (query.getNextCursor() != null) {
-            Long nextId = decodeId(query.getNextCursor());
+        if (query.getNextId() != null) {
+            Long nextId = decodeId(query.getNextId());
             predicate = QRule.rule.id.goe(nextId).and(predicate);
         }
 
@@ -134,9 +117,9 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
 
         try (Stream<org.geoserver.acl.jpa.model.Rule> stream = stream(iterator)) {
             Stream<Rule> rules = stream.map(modelMapper::toModel).filter(postFilter);
-            final Integer pageSize = query.getPageSize();
+            final Integer pageSize = query.getLimit();
             if (null != pageSize) {
-                rules = rules.limit(query.getPageSize());
+                rules = rules.limit(query.getLimit());
             }
             return rules.collect(Collectors.toList()).stream();
         }

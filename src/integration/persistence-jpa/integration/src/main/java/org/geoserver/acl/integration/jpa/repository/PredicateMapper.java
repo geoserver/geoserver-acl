@@ -24,8 +24,6 @@ import org.geoserver.acl.model.filter.RuleQuery;
 import org.geoserver.acl.model.filter.predicate.FilterType;
 import org.geoserver.acl.model.filter.predicate.InSetPredicate;
 import org.geoserver.acl.model.filter.predicate.TextFilter;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 import java.util.OptionalLong;
@@ -35,25 +33,6 @@ import java.util.stream.Stream;
 
 @Slf4j
 class PredicateMapper {
-
-    public Pageable toPageable(RuleQuery<?> query) {
-        if (query.pageNumber().isPresent() || query.pageSize().isPresent()) {
-            int page =
-                    query.pageNumber()
-                            .orElseThrow(
-                                    () ->
-                                            new IllegalArgumentException(
-                                                    "Page number is mandatory if page size is present"));
-            int size =
-                    query.pageSize()
-                            .orElseThrow(
-                                    () ->
-                                            new IllegalArgumentException(
-                                                    "Page size is mandatory if page number is present"));
-            return PageRequest.of(page, size);
-        }
-        return Pageable.unpaged();
-    }
 
     public Predicate toPredicate(RuleQuery<?> query) {
         return query.getFilter().flatMap(this::toPredicate).orElseGet(BooleanBuilder::new);

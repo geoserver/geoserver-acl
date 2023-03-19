@@ -20,15 +20,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -137,10 +135,10 @@ public class JpaAdminRuleRepositoryTest {
     }
 
     @Test
-    void findAllNaturalOrder() {
+    void findAll() {
         List<AdminRule> expected = addSamplesInReverseNaturalOrder();
-        List<AdminRule> actual = repo.findAllNaturalOrder();
-        assertEquals(expected, actual);
+        List<AdminRule> actual = repo.findAll();
+        assertEquals(Set.copyOf(expected), Set.copyOf(actual));
     }
 
     @Test
@@ -158,63 +156,11 @@ public class JpaAdminRuleRepositoryTest {
                                                 && "*".equals(r.getIdentifier().getWorkspace()))
                         .collect(Collectors.toList());
 
-        List<AdminRule> actual = repo.findAllNaturalOrder(predicate);
+        Iterable<AdminRule> res = repo.findAll(predicate, Sort.by("priority"));
+        List<AdminRule> actual = new ArrayList<>();
+        res.forEach(actual::add);
         assertThat(actual.size()).isEqualTo(expected.size());
         assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    void findAllNaturalOrderPaged() {
-        final List<AdminRule> expected = addSamplesInReverseNaturalOrder();
-
-        assertNaturalOrderPaged(
-                expected,
-                (Predicate) null,
-                (predicate, pageable) -> repo.findAllNaturalOrder(pageable));
-    }
-
-    @Test
-    void findAllNaturalOrderFilteredAndPaged() {
-        final List<AdminRule> all = addSamplesInReverseNaturalOrder();
-
-        QAdminRule qadmr = QAdminRule.adminRule;
-        com.querydsl.core.types.Predicate predicate =
-                qadmr.priority.gt(2L).and(qadmr.identifier.workspace.eq("*"));
-
-        List<AdminRule> expected =
-                all.stream()
-                        .filter(
-                                r ->
-                                        r.getPriority() > 2L
-                                                && "*".equals(r.getIdentifier().getWorkspace()))
-                        .collect(Collectors.toList());
-
-        assertNaturalOrderPaged(expected, predicate, repo::findAllNaturalOrder);
-    }
-
-    private void assertNaturalOrderPaged(
-            final List<AdminRule> all,
-            Predicate predicate,
-            BiFunction<Predicate, Pageable, Page<AdminRule>> function) {
-        final int size = all.size();
-        final int pageSize = 2;
-        final int pages = 1 + size / pageSize;
-        assertThat(pages).isGreaterThan(1);
-
-        for (int pageN = 0; pageN < pages; pageN++) {
-            PageRequest request = PageRequest.of(pageN, pageSize);
-            Page<AdminRule> page = function.apply(predicate, request);
-            int offset = pageN * pageSize;
-            int toIndex = Math.min(offset + pageSize, all.size());
-            List<AdminRule> expectedContents = all.subList(offset, toIndex);
-            assertEquals(expectedContents, page.getContent());
-        }
-
-        PageRequest request = PageRequest.of(1 + pages, pageSize);
-        assertThat(function.apply(predicate, request).getContent()).isEmpty();
-
-        Pageable unpaged = Pageable.unpaged();
-        assertThat(function.apply(predicate, unpaged).getContent()).isEqualTo(all);
     }
 
     /** Adds sample rules in reverse natural order and returns them in natural order */

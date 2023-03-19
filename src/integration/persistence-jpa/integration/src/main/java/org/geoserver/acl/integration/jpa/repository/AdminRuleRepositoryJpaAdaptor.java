@@ -18,7 +18,6 @@ import org.geoserver.acl.adminrules.AdminRuleIdentifierConflictException;
 import org.geoserver.acl.adminrules.AdminRuleRepository;
 import org.geoserver.acl.integration.jpa.mapper.AdminRuleJpaMapper;
 import org.geoserver.acl.jpa.model.QAdminRule;
-import org.geoserver.acl.jpa.model.QRule;
 import org.geoserver.acl.jpa.repository.JpaAdminRuleRepository;
 import org.geoserver.acl.jpa.repository.TransactionReadOnly;
 import org.geoserver.acl.jpa.repository.TransactionRequired;
@@ -30,9 +29,6 @@ import org.geoserver.acl.model.filter.predicate.IPAddressRangeFilter;
 import org.geoserver.acl.model.rules.InsertPosition;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -84,7 +80,8 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
 
         org.geoserver.acl.jpa.model.AdminRule saved;
         try {
-            // gotta use saveAndFlush to catch the exception before the method returns and the tx is
+            // gotta use saveAndFlush to catch the exception before the method returns and
+            // the tx is
             // committed
             jparepo.flush();
             saved = jparepo.saveAndFlush(entity);
@@ -125,18 +122,8 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
 
     @Override
     public Optional<AdminRule> findFirst(AdminRuleFilter adminRuleFilter) {
-
-        Optional<Predicate> predicate = queryMapper.toPredicate(adminRuleFilter);
-        PageRequest first = PageRequest.of(0, 1);
-        Page<org.geoserver.acl.jpa.model.AdminRule> found;
-        if (predicate.isPresent()) {
-            found = jparepo.findAllNaturalOrder(predicate.get(), first);
-        } else {
-            found = jparepo.findAllNaturalOrder(first);
-        }
-        List<org.geoserver.acl.jpa.model.AdminRule> contents = found.getContent();
-        return Optional.ofNullable(contents.isEmpty() ? null : contents.get(0))
-                .map(modelMapper::toModel);
+        RuleQuery<AdminRuleFilter> query = RuleQuery.of(adminRuleFilter).setLimit(1);
+        return this.findAll(query).findFirst();
     }
 
     @Override
@@ -163,63 +150,43 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     }
 
     @Override
-    public List<AdminRule> findAll() {
+    public Stream<AdminRule> findAll() {
         return findAll(RuleQuery.of());
     }
 
     @Override
-    public List<AdminRule> findAll(@NonNull AdminRuleFilter filter) {
-        return findAll(RuleQuery.of(filter));
-    }
-
-    //    @Override
-    public List<AdminRule> findAllOld(RuleQuery<AdminRuleFilter> query) {
-        Predicate predicate = queryMapper.toPredicate(query);
-        Pageable pageRequest = queryMapper.toPageable(query);
-
-        // REVISIT: if filter contains a non-any address range filter, can't apply paging to the db
-        // query
-        Page<org.geoserver.acl.jpa.model.AdminRule> page;
-        page = jparepo.findAllNaturalOrder(predicate, pageRequest);
-
-        List<org.geoserver.acl.jpa.model.AdminRule> found = page.getContent();
-        return found.stream()
-                .map(modelMapper::toModel)
-                .filter(filterByAddress(query.getFilter()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     @TransactionReadOnly
-    public List<AdminRule> findAll(@NonNull RuleQuery<AdminRuleFilter> query) {
+    public Stream<AdminRule> findAll(@NonNull RuleQuery<AdminRuleFilter> query) {
 
         Predicate predicate = queryMapper.toPredicate(query);
         final java.util.function.Predicate<? super AdminRule> postFilter =
                 filterByAddress(query.getFilter());
 
-        if (query.getNextCursor() != null) {
-            Long nextId = decodeId(query.getNextCursor());
-            predicate = QRule.rule.id.goe(nextId).and(predicate);
+        if (query.getNextId() != null) {
+            Long nextId = decodeId(query.getNextId());
+            predicate = QAdminRule.adminRule.id.goe(nextId).and(predicate);
         }
 
-        CloseableIterator<org.geoserver.acl.jpa.model.AdminRule> iterator = query(predicate);
+        CloseableIterator<org.geoserver.acl.jpa.model.AdminRule> iterator =
+                queryOrderByPriority(predicate);
 
         try (Stream<org.geoserver.acl.jpa.model.AdminRule> stream = stream(iterator)) {
             Stream<AdminRule> rules = stream.map(modelMapper::toModel).filter(postFilter);
-            if (null != query.getPageSize()) {
-                rules = rules.limit(query.getPageSize());
+            if (null != query.getLimit()) {
+                rules = rules.limit(query.getLimit());
             }
-            return rules.collect(Collectors.toList());
+            return rules.collect(Collectors.toList()).stream();
         }
     }
 
-    private CloseableIterator<org.geoserver.acl.jpa.model.AdminRule> query(Predicate predicate) {
+    private CloseableIterator<org.geoserver.acl.jpa.model.AdminRule> queryOrderByPriority(
+            Predicate predicate) {
 
         CloseableIterator<org.geoserver.acl.jpa.model.AdminRule> iterator =
                 new JPAQuery<org.geoserver.acl.jpa.model.AdminRule>(em)
                         .from(QAdminRule.adminRule)
                         .where(predicate)
-                        .orderBy(new OrderSpecifier<>(Order.ASC, QRule.rule.priority))
+                        .orderBy(new OrderSpecifier<>(Order.ASC, QAdminRule.adminRule.priority))
                         .iterate();
         return iterator;
     }

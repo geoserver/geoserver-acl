@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.Optional;
-import java.util.OptionalInt;
 
 @Data
 @Accessors(chain = true)
@@ -18,39 +17,26 @@ public class RuleQuery<F extends Filter> {
 
     private F filter;
 
-    private Integer pageNumber;
-    private Integer pageSize;
-    private String nextCursor;
+    private Integer limit;
+    private String nextId;
 
     public static <RF extends Filter> RuleQuery<RF> of() {
         return new RuleQuery<RF>();
     }
 
-    public static <RF extends Filter> RuleQuery<RF> of(Integer pageNumber, Integer pageSize) {
-        return new RuleQuery<RF>().setPageNumber(pageNumber).setPageSize(pageSize);
+    public static <RF extends Filter> RuleQuery<RF> of(Integer limit, String nextId) {
+        return new RuleQuery<RF>().setLimit(limit).setNextId(nextId);
     }
 
     public static <RF extends Filter> RuleQuery<RF> of(RF filter) {
         return new RuleQuery<RF>().setFilter(filter);
     }
 
-    public static <RF extends Filter> RuleQuery<RF> of(
-            RF filter, Integer pageNumber, Integer pageSize) {
-        return new RuleQuery<RF>()
-                .setFilter(filter)
-                .setPageNumber(pageNumber)
-                .setPageSize(pageSize);
+    public static <RF extends Filter> RuleQuery<RF> of(RF filter, Integer limit, String nextId) {
+        return new RuleQuery<RF>().setLimit(limit).setNextId(nextId).setFilter(filter);
     }
 
     public Optional<F> getFilter() {
         return ofNullable(filter);
-    }
-
-    public OptionalInt pageNumber() {
-        return pageNumber == null ? OptionalInt.empty() : OptionalInt.of(pageNumber);
-    }
-
-    public OptionalInt pageSize() {
-        return pageSize == null ? OptionalInt.empty() : OptionalInt.of(pageSize);
     }
 }

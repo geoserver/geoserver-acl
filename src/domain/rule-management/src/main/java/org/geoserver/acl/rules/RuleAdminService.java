@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Operations on {@link Rule Rule}s.
@@ -137,16 +138,16 @@ public class RuleAdminService {
         return ruleRepository.deleteById(id);
     }
 
-    public List<Rule> getAll() {
-        return ruleRepository.findAll().collect(Collectors.toList());
+    public Stream<Rule> getAll() {
+        return ruleRepository.findAll();
     }
     /**
      * Return the Rules according to the query.
      *
      * @param query provides a filter predicate, paging, and priority offset
      */
-    public List<Rule> getAll(@NonNull RuleQuery<RuleFilter> query) {
-        return ruleRepository.findAll(query).collect(Collectors.toList());
+    public Stream<Rule> getAll(@NonNull RuleQuery<RuleFilter> query) {
+        return ruleRepository.findAll(query);
     }
 
     /**
@@ -159,10 +160,9 @@ public class RuleAdminService {
      * @throws BadRequestServiceEx if a wildcard type is used in filter
      */
     public Optional<Rule> getRule(@NonNull RuleFilter filter) throws IllegalArgumentException {
-        RuleQuery<RuleFilter> query = RuleQuery.of(filter).setPageSize(0).setPageSize(2);
+        RuleQuery<RuleFilter> query = RuleQuery.of(filter).setLimit(2);
         List<Rule> found = ruleRepository.findAll(query).collect(Collectors.toList());
         if (found.size() > 1) {
-            // LOGGER.error("Unexpected rule count for filter " + filter + " : " + found);
             throw new IllegalArgumentException(
                     "Unexpected rule count for filter " + filter + " : " + found.size());
         }

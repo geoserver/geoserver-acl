@@ -100,9 +100,7 @@ public class RuleRepositoryClientAdaptor implements RuleRepository {
 
     @Override
     public Stream<Rule> findAll() {
-        Integer page = null;
-        Integer size = null;
-        List<org.geoserver.acl.api.model.Rule> rules = apiClient.getRules(page, size);
+        List<org.geoserver.acl.api.model.Rule> rules = apiClient.getRules(null, null);
         return rules.stream().map(this::map);
     }
 
@@ -112,9 +110,10 @@ public class RuleRepositoryClientAdaptor implements RuleRepository {
         org.geoserver.acl.api.model.RuleFilter filter =
                 query.getFilter().map(filterMapper::toApi).orElse(null);
 
-        Integer page = query.getPageNumber();
-        Integer size = query.getPageSize();
-        List<org.geoserver.acl.api.model.Rule> rules = apiClient.queryRules(page, size, filter);
+        Integer limit = query.getLimit();
+        String nextCursor = query.getNextId();
+        List<org.geoserver.acl.api.model.Rule> rules =
+                apiClient.queryRules(limit, nextCursor, filter);
 
         return rules.stream().map(this::map);
     }

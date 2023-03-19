@@ -21,8 +21,8 @@ paths:
       tags:
         - Rules
       parameters:
-        - $ref: 'acl-model.yaml#/components/parameters/page'
-        - $ref: 'acl-model.yaml#/components/parameters/size'
+        - $ref: 'acl-model.yaml#/components/parameters/limit'
+        - $ref: 'acl-model.yaml#/components/parameters/nextCursor'
       responses:
         '200':
           $ref: '#/components/responses/PageOfRules'
@@ -58,8 +58,8 @@ paths:
   /rules/query:
     post:
       parameters:
-        - $ref: 'acl-model.yaml#/components/parameters/page'
-        - $ref: 'acl-model.yaml#/components/parameters/size'
+        - $ref: 'acl-model.yaml#/components/parameters/limit'
+        - $ref: 'acl-model.yaml#/components/parameters/nextCursor'
       operationId: queryRules
       tags:
         - Rules
@@ -332,8 +332,8 @@ paths:
       tags:
         - AdminRules
       parameters:
-        - $ref: 'acl-model.yaml#/components/parameters/page'
-        - $ref: 'acl-model.yaml#/components/parameters/size'
+        - $ref: 'acl-model.yaml#/components/parameters/limit'
+        - $ref: 'acl-model.yaml#/components/parameters/nextCursor'
       responses:
         '200':
           $ref: '#/components/responses/PageOfAdminRules'
@@ -358,8 +358,8 @@ paths:
   /adminrules/query:
     post:
       parameters:
-        - $ref: 'acl-model.yaml#/components/parameters/page'
-        - $ref: 'acl-model.yaml#/components/parameters/size'
+        - $ref: 'acl-model.yaml#/components/parameters/limit'
+        - $ref: 'acl-model.yaml#/components/parameters/nextCursor'
       operationId: findAdminRules
       tags:
         - AdminRules
@@ -606,6 +606,13 @@ components:
             type: array
             items:
               $ref: 'acl-model.yaml#/components/schemas/Rule'
+      headers:
+       X-ACL-NEXTCURSOR:
+         schema:
+           type: string
+           description: Identifier used to fetch the next set of rules, usually in tandem with the
+                        limit query parameter. Null or absent of there are no more rules to fetch
+                        that satisfy the request filter.
     PageOfAdminRules:
       description: A page of admin rules, or an empty response if the requested page is off limits
       content:
@@ -619,6 +626,13 @@ components:
             type: array
             items:
               $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+      headers:
+       X-ACL-NEXTCURSOR:
+         schema:
+           type: string
+           description: Identifier used to fetch the next set of rules, usually in tandem with the
+                        limit query parameter. Null or absent of there are no more rules to fetch
+                        that satisfy the request filter.
   parameters:
     id:
       name: id

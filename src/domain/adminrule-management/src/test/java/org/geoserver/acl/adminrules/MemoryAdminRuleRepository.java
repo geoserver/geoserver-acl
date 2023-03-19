@@ -15,8 +15,8 @@ import org.geoserver.acl.rules.PriorityResolver;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -115,38 +115,39 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
     }
 
     @Override
-    public List<AdminRule> findAll() {
-        return List.copyOf(rules);
+    public Stream<AdminRule> findAll() {
+        return findAll(RuleQuery.of());
     }
 
     @Override
-    public List<AdminRule> findAll(AdminRuleFilter filter) {
-        return findAll(RuleQuery.of(filter));
-    }
-
-    @Override
-    public List<AdminRule> findAll(RuleQuery<AdminRuleFilter> query) {
-        return streamAll(query).collect(Collectors.toList());
-    }
-
-    private Stream<AdminRule> streamAll(RuleQuery<AdminRuleFilter> query) {
+    public Stream<AdminRule> findAll(RuleQuery<AdminRuleFilter> query) {
         Stream<AdminRule> matches = rules.stream();
         if (query.getFilter().isPresent()) {
             AdminRuleFilter filter = query.getFilter().orElseThrow();
             matches = matches.filter(filter);
         }
-        Integer page = query.getPageNumber();
-        Integer size = query.getPageSize();
-        if (page != null && size != null) {
-            int offset = page * size;
-            matches = matches.skip(offset).limit(size);
+        String nextId = query.getNextId();
+        if (nextId != null) {
+            final AtomicBoolean nextIdFound = new AtomicBoolean();
+            matches =
+                    matches.peek(
+                                    r -> {
+                                        if (r.getId().equals(nextId)) {
+                                            nextIdFound.set(true);
+                                        }
+                                    })
+                            .filter(r -> nextIdFound.get());
+        }
+        Integer limit = query.getLimit();
+        if (limit != null) {
+            matches = matches.limit(limit);
         }
         return matches;
     }
 
     @Override
     public Optional<AdminRule> findFirst(AdminRuleFilter adminRuleFilter) {
-        return streamAll(RuleQuery.of(adminRuleFilter)).findFirst();
+        return findAll(RuleQuery.of(adminRuleFilter).setLimit(1)).findFirst();
     }
 
     @Override
@@ -156,7 +157,7 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
 
     @Override
     public int count(AdminRuleFilter filter) {
-        return (int) streamAll(RuleQuery.of(filter)).count();
+        return (int) findAll(RuleQuery.of(filter)).count();
     }
 
     @Override

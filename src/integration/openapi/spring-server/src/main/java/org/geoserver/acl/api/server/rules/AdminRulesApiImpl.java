@@ -62,13 +62,9 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
         return ResponseEntity.ok(service.exists(id));
     }
 
-    public @Override ResponseEntity<List<AdminRule>> findAllAdminRules(Integer page, Integer size) {
-
-        List<org.geoserver.acl.model.adminrules.AdminRule> matches =
-                service.getAll(RuleQuery.of(page, size));
-
-        List<AdminRule> body = matches.stream().map(support::toApi).collect(Collectors.toList());
-        return ResponseEntity.ok(body);
+    public @Override ResponseEntity<List<AdminRule>> findAllAdminRules(
+            Integer limit, String nextCursor) {
+        return query(RuleQuery.of(limit, nextCursor));
     }
 
     public @Override ResponseEntity<AdminRule> findFirstAdminRule(AdminRuleFilter adminRuleFilter) {
@@ -88,13 +84,38 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
     }
 
     public @Override ResponseEntity<List<AdminRule>> findAdminRules(
-            Integer page, Integer size, AdminRuleFilter adminRuleFilter) {
+            Integer limit, String nextCursor, AdminRuleFilter adminRuleFilter) {
 
         org.geoserver.acl.model.filter.AdminRuleFilter filter = support.map(adminRuleFilter);
 
-        List<org.geoserver.acl.model.adminrules.AdminRule> matches =
-                service.getAll(RuleQuery.of(filter, page, size));
-        return ResponseEntity.ok(matches.stream().map(support::toApi).collect(Collectors.toList()));
+        return query(RuleQuery.of(filter, limit, nextCursor));
+    }
+
+    private ResponseEntity<List<AdminRule>> query(
+            RuleQuery<org.geoserver.acl.model.filter.AdminRuleFilter> query) {
+
+        List<org.geoserver.acl.model.adminrules.AdminRule> list;
+
+        // handle cursor-based pagination.
+        final Integer requestedLimit = query.getLimit();
+        if (requestedLimit != null) {
+            query.setLimit(query.getLimit() + 1);
+        }
+        try {
+            list = service.getAll(query).collect(Collectors.toList());
+            query.setLimit(requestedLimit); // avoid side effect once the method returns
+        } catch (IllegalArgumentException e) {
+            return support.error(BAD_REQUEST, e.getMessage());
+        }
+
+        List<AdminRule> body = list.stream().map(support::toApi).collect(Collectors.toList());
+        String nextCursor;
+        if (requestedLimit != null && body.size() > requestedLimit) {
+            nextCursor = body.get(requestedLimit).getId();
+        } else {
+            nextCursor = null;
+        }
+        return ResponseEntity.ok().header("X-ACL-NEXTCURSOR", nextCursor).body(body);
     }
 
     public @Override ResponseEntity<AdminRule> getAdminRuleById(@NonNull String id) {
@@ -121,7 +142,7 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
                 service.get(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 
         if (null == rule) {
-            return support.error(NOT_FOUND, "Rule " + id + " does not exist");
+            return support.error(NOT_FOUND, "AdminRule " + id + " does not exist");
         }
         if (null != patchBody.getId() && !id.equals(patchBody.getId())) {
             return support.error(

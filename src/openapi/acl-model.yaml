@@ -16,17 +16,18 @@ paths:
           description: OK
 components:
   parameters:
-    page:
-      name: page
+    nextCursor:
+      name: nextCursor
       in: query 
-      description: "0-based page size"
+      description: The next cursor identifier when doing cursor paging, as returned by the X-ACL-NEXTCURSOR response header
       required: false
       schema:
-        type: integer
-    size:
-      name: size
-      in: query 
-      description: "Page size"
+        type: string
+    limit:
+      name: limit
+      in: query
+      description: Maximum number of rules to return from the query. If there are more rules, the response will return an X-ACL-NEXTCURSOR header
+                   with a value that can be used for the nextCursor parameter on a subsequent request, until X-ACL-NEXTCURSOR is null
       required: false
       schema:
         type: integer

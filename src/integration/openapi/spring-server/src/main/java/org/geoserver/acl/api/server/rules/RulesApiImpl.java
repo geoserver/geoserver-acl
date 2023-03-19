@@ -49,13 +49,9 @@ public class RulesApiImpl implements RulesApiDelegate {
                 created = service.insert(model, support.toModel(position));
             }
         } catch (RuleIdentifierConflictException conflict) {
-            return error(CONFLICT, conflict.getMessage());
+            return support.error(CONFLICT, conflict.getMessage());
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(support.toApi(created));
-    }
-
-    private <T> ResponseEntity<T> error(HttpStatus code, String reason) {
-        return ResponseEntity.status(code).header("X-Reason", reason).build();
     }
 
     @Override
@@ -67,34 +63,43 @@ public class RulesApiImpl implements RulesApiDelegate {
     }
 
     @Override
-    public ResponseEntity<List<Rule>> getRules(Integer page, Integer size) {
-        return query(RuleQuery.of(page, size));
+    public ResponseEntity<List<Rule>> getRules(Integer limit, String nextCursor) {
+        return query(RuleQuery.of(limit, nextCursor));
     }
 
     @Override
     public ResponseEntity<List<Rule>> queryRules( //
-            @Nullable Integer page, @Nullable Integer size, @Nullable RuleFilter ruleFilter) {
+            @Nullable Integer limit, @Nullable String nextCursor, @Nullable RuleFilter ruleFilter) {
 
         org.geoserver.acl.model.filter.RuleFilter filter = support.map(ruleFilter);
 
-        RuleQuery<org.geoserver.acl.model.filter.RuleFilter> query =
-                RuleQuery.of(filter, page, size);
-
-        return query(query);
+        return query(RuleQuery.of(filter, limit, nextCursor));
     }
 
     private ResponseEntity<List<Rule>> query(
             RuleQuery<org.geoserver.acl.model.filter.RuleFilter> query) {
         List<org.geoserver.acl.model.rules.Rule> list;
+
+        // handle cursor-based pagination.
+        final Integer requestedLimit = query.getLimit();
+        if (requestedLimit != null) {
+            query.setLimit(query.getLimit() + 1);
+        }
         try {
-            list = service.getAll(query);
+            list = service.getAll(query).collect(Collectors.toList());
+            query.setLimit(requestedLimit); // avoid side effect once the method returns
         } catch (IllegalArgumentException e) {
-            return error(BAD_REQUEST, e.getMessage());
+            return support.error(BAD_REQUEST, e.getMessage());
         }
 
         List<Rule> body = list.stream().map(support::toApi).collect(Collectors.toList());
-
-        return ResponseEntity.ok(body);
+        String nextCursor;
+        if (requestedLimit != null && body.size() > requestedLimit) {
+            nextCursor = body.get(requestedLimit).getId();
+        } else {
+            nextCursor = null;
+        }
+        return ResponseEntity.ok().header("X-ACL-NEXTCURSOR", nextCursor).body(body);
     }
 
     @Override
@@ -138,7 +143,7 @@ public class RulesApiImpl implements RulesApiDelegate {
         try {
             service.setAllowedStyles(id, requestBody);
         } catch (IllegalArgumentException e) {
-            return error(BAD_REQUEST, e.getMessage());
+            return support.error(BAD_REQUEST, e.getMessage());
         }
         return ResponseEntity.status(OK).build();
     }
@@ -149,7 +154,7 @@ public class RulesApiImpl implements RulesApiDelegate {
             LayerDetails details = service.getLayerDetails(id).map(support::toApi).orElse(null);
             return ResponseEntity.status(details == null ? NO_CONTENT : OK).body(details);
         } catch (IllegalArgumentException e) {
-            return error(BAD_REQUEST, e.getMessage());
+            return support.error(BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -160,7 +165,7 @@ public class RulesApiImpl implements RulesApiDelegate {
             service.setLayerDetails(id, ld);
             return ResponseEntity.status(OK).build();
         } catch (IllegalArgumentException e) {
-            return error(BAD_REQUEST, e.getMessage());
+            return support.error(BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -170,7 +175,7 @@ public class RulesApiImpl implements RulesApiDelegate {
             service.setLimits(id, support.toModel(ruleLimits));
             return ResponseEntity.status(NO_CONTENT).build();
         } catch (IllegalArgumentException e) {
-            return error(BAD_REQUEST, e.getMessage());
+            return support.error(BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -180,7 +185,7 @@ public class RulesApiImpl implements RulesApiDelegate {
             int affectedCount = service.shift(priorityStart, offset);
             return ResponseEntity.ok(affectedCount);
         } catch (IllegalArgumentException e) {
-            return error(BAD_REQUEST, e.getMessage());
+            return support.error(BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -190,7 +195,7 @@ public class RulesApiImpl implements RulesApiDelegate {
             service.swapPriority(id, id2);
             return ResponseEntity.status(NO_CONTENT).build();
         } catch (IllegalArgumentException e) {
-            return error(BAD_REQUEST, e.getMessage());
+            return support.error(BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -198,10 +203,10 @@ public class RulesApiImpl implements RulesApiDelegate {
     public ResponseEntity<Rule> updateRuleById(@NonNull String id, Rule patchBody) {
         final org.geoserver.acl.model.rules.Rule rule = service.get(id).orElse(null);
         if (null == rule) {
-            return error(NOT_FOUND, "Rule " + id + " does not exist");
+            return support.error(NOT_FOUND, "Rule " + id + " does not exist");
         }
         if (null != patchBody.getId() && !id.equals(patchBody.getId())) {
-            return error(
+            return support.error(
                     BAD_REQUEST,
                     "Request body supplied a different id ("
                             + patchBody.getId()
@@ -215,9 +220,9 @@ public class RulesApiImpl implements RulesApiDelegate {
             org.geoserver.acl.model.rules.Rule updated = service.update(patched);
             return ResponseEntity.status(OK).body(support.toApi(updated));
         } catch (RuleIdentifierConflictException e) {
-            return error(CONFLICT, e.getMessage());
+            return support.error(CONFLICT, e.getMessage());
         } catch (IllegalArgumentException e) {
-            return error(BAD_REQUEST, e.getMessage());
+            return support.error(BAD_REQUEST, e.getMessage());
         }
     }
 }

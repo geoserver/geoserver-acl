@@ -86,10 +86,6 @@ public class LayerDetails implements Serializable, Cloneable {
     @Column(name = "ld_styleName")
     private Set<String> allowedStyles;
 
-    /**
-     * We'll use the pair <TT>(details_id, name)</TT> as PK for the associated table. To do so, we
-     * have to perform some trick on the <TT>{@link LayerAttribute#access}</TT> field.
-     */
     @ElementCollection(fetch = FetchType.LAZY)
     @JoinTable(
             name = "acl_layer_attributes",

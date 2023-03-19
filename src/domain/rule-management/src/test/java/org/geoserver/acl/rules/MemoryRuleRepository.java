@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
@@ -137,11 +138,22 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
     public Stream<Rule> findAll(RuleQuery<RuleFilter> query) {
         RuleFilter filter = query.getFilter().orElse(RuleFilter.any());
         Stream<Rule> matches = rules.stream().filter(filter);
-        Integer page = query.getPageNumber();
-        Integer size = query.getPageSize();
-        if (page != null && size != null) {
-            int offset = page * size;
-            matches = matches.skip(offset).limit(size);
+
+        String nextId = query.getNextId();
+        if (nextId != null) {
+            final AtomicBoolean nextIdFound = new AtomicBoolean();
+            matches =
+                    matches.peek(
+                                    r -> {
+                                        if (r.getId().equals(nextId)) {
+                                            nextIdFound.set(true);
+                                        }
+                                    })
+                            .filter(r -> nextIdFound.get());
+        }
+        Integer limit = query.getLimit();
+        if (limit != null) {
+            matches = matches.limit(limit);
         }
         return matches;
     }

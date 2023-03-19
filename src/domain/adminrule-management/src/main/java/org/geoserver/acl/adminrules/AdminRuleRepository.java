@@ -9,8 +9,8 @@ import org.geoserver.acl.model.filter.AdminRuleFilter;
 import org.geoserver.acl.model.filter.RuleQuery;
 import org.geoserver.acl.model.rules.InsertPosition;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface AdminRuleRepository {
 
@@ -29,11 +29,9 @@ public interface AdminRuleRepository {
 
     Optional<AdminRule> findById(String id);
 
-    List<AdminRule> findAll();
+    Stream<AdminRule> findAll();
 
-    List<AdminRule> findAll(AdminRuleFilter filter);
-
-    List<AdminRule> findAll(RuleQuery<AdminRuleFilter> query);
+    Stream<AdminRule> findAll(RuleQuery<AdminRuleFilter> query);
 
     Optional<AdminRule> findFirst(AdminRuleFilter adminRuleFilter);
 

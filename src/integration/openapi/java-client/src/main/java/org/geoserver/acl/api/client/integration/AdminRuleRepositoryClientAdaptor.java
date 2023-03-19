@@ -21,10 +21,9 @@ import org.geoserver.acl.model.filter.RuleQuery;
 import org.geoserver.acl.model.rules.InsertPosition;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class AdminRuleRepositoryClientAdaptor implements AdminRuleRepository {
@@ -71,36 +70,20 @@ public class AdminRuleRepositoryClientAdaptor implements AdminRuleRepository {
     }
 
     @Override
-    public List<AdminRule> findAll() {
-        Integer page = null;
-        Integer size = null;
-        return apiClient.findAllAdminRules(page, size).stream()
-                .map(this::map)
-                .collect(Collectors.toList());
+    public Stream<AdminRule> findAll() {
+        Integer limit = null;
+        String nextCursor = null;
+        return apiClient.findAllAdminRules(limit, nextCursor).stream().map(this::map);
     }
 
     @Override
-    public List<AdminRule> findAll(AdminRuleFilter filter) {
-        Integer page = null;
-        Integer size = null;
-        return apiClient.findAdminRules(page, size, map(filter)).stream()
-                .map(this::map)
-                .collect(Collectors.toList());
-    }
+    public Stream<AdminRule> findAll(RuleQuery<AdminRuleFilter> query) {
+        org.geoserver.acl.api.model.AdminRuleFilter filter =
+                query.getFilter().map(filterMapper::map).orElse(null);
 
-    @Override
-    public List<AdminRule> findAll(RuleQuery<AdminRuleFilter> query) {
-        org.geoserver.acl.api.model.AdminRuleFilter filter;
-
-        Integer page = query.getPageNumber();
-        Integer size = query.getPageSize();
-
-        filter = query.getFilter().map(filterMapper::map).orElse(null);
-
-        List<org.geoserver.acl.api.model.AdminRule> rules =
-                apiClient.findAdminRules(page, size, filter);
-
-        return rules.stream().map(this::map).collect(Collectors.toList());
+        Integer limit = query.getLimit();
+        String nextCursor = query.getNextId();
+        return apiClient.findAdminRules(limit, nextCursor, filter).stream().map(this::map);
     }
 
     @Override

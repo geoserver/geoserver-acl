@@ -16,8 +16,8 @@ import org.geoserver.acl.model.filter.RuleFilter;
 import org.geoserver.acl.model.filter.RuleQuery;
 import org.geoserver.acl.model.rules.InsertPosition;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Operations on {@link AdminRule AdminRule}s.
@@ -94,7 +94,7 @@ public class AdminRuleAdminService {
         return repository.deleteById(id);
     }
 
-    public List<AdminRule> getAll() {
+    public Stream<AdminRule> getAll() {
         return repository.findAll();
     }
 
@@ -107,7 +107,7 @@ public class AdminRuleAdminService {
      *     <TT>page</TT> should be defined.
      * @see RuleReaderService#getMatchingRules(RuleFilter)
      */
-    public List<AdminRule> getAll(RuleQuery<AdminRuleFilter> query) {
+    public Stream<AdminRule> getAll(RuleQuery<AdminRuleFilter> query) {
         return repository.findAll(query);
     }
 

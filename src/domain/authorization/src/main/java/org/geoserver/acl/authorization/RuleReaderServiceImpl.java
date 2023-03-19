@@ -506,7 +506,8 @@ public class RuleReaderServiceImpl implements RuleReaderService {
                 filter = filter.clone();
                 filter.getRole().setType(SpecialFilterType.DEFAULT);
             }
-            List<Rule> found = ruleService.getAll(RuleQuery.of(filter));
+            List<Rule> found =
+                    ruleService.getAll(RuleQuery.of(filter)).collect(Collectors.toList());
             ret.put(null, found);
         } else {
             for (String role : finalRoleFilter) {
@@ -521,7 +522,7 @@ public class RuleReaderServiceImpl implements RuleReaderService {
         filter = filter.clone();
         filter.setRole(role);
         filter.getRole().setIncludeDefault(true);
-        return ruleService.getAll(RuleQuery.of(filter));
+        return ruleService.getAll(RuleQuery.of(filter)).collect(Collectors.toList());
     }
 
     /**
