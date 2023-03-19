@@ -4,7 +4,7 @@
  */
 package org.geoserver.acl.jpa.config;
 
-import org.geoserver.acl.jpa.config.AuthorizationJPAProperties.JpaProperties;
+import org.geoserver.acl.jpa.config.AclJpaProperties.JpaProperties;
 import org.geoserver.acl.jpa.model.Rule;
 import org.geoserver.acl.jpa.repository.JpaAdminRuleRepository;
 import org.geoserver.acl.jpa.repository.JpaRuleRepository;
@@ -34,7 +34,7 @@ import javax.sql.DataSource;
 public class AuthorizationJPAConfiguration {
 
     @Bean("authorizationVendorAdapter")
-    HibernateJpaVendorAdapter authorizationVendorAdapter(AuthorizationJPAProperties configProps) {
+    HibernateJpaVendorAdapter authorizationVendorAdapter(AclJpaProperties configProps) {
         JpaProperties jpaConfig = configProps.getJpa();
         HibernateJpaVendorAdapter va = new HibernateJpaVendorAdapter();
 
@@ -54,7 +54,7 @@ public class AuthorizationJPAConfiguration {
             @Qualifier("authorizationVendorAdapter")
                     HibernateJpaVendorAdapter authorizationVendorAdapter,
             @Qualifier("authorizationDataSource") DataSource dataSource,
-            AuthorizationJPAProperties configProps) {
+            AclJpaProperties configProps) {
 
         Map<String, String> jpaProperties = configProps.getJpa().getProperties();
 

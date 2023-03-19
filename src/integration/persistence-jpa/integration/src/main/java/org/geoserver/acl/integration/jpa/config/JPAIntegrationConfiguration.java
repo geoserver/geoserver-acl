@@ -5,39 +5,57 @@
 package org.geoserver.acl.integration.jpa.config;
 
 import org.geoserver.acl.adminrules.AdminRuleRepository;
+import org.geoserver.acl.domain.event.AdminRuleEvent;
+import org.geoserver.acl.domain.event.RuleEvent;
 import org.geoserver.acl.integration.jpa.mapper.AdminRuleJpaMapper;
 import org.geoserver.acl.integration.jpa.mapper.RuleJpaMapper;
 import org.geoserver.acl.integration.jpa.repository.AdminRuleRepositoryJpaAdaptor;
 import org.geoserver.acl.integration.jpa.repository.RuleRepositoryJpaAdaptor;
-import org.geoserver.acl.jpa.config.AuthorizationDataSourceConfiguration;
+import org.geoserver.acl.jpa.config.AclDataSourceConfiguration;
 import org.geoserver.acl.jpa.config.AuthorizationJPAConfiguration;
 import org.geoserver.acl.jpa.repository.JpaAdminRuleRepository;
 import org.geoserver.acl.jpa.repository.JpaRuleRepository;
 import org.geoserver.acl.rules.RuleRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import java.util.function.Consumer;
+
 import javax.persistence.EntityManager;
 
 @Configuration(proxyBeanMethods = false)
-@Import({AuthorizationDataSourceConfiguration.class, AuthorizationJPAConfiguration.class})
+@Import({AclDataSourceConfiguration.class, AuthorizationJPAConfiguration.class})
 @ComponentScan(basePackageClasses = {RuleJpaMapper.class, AdminRuleJpaMapper.class})
 public class JPAIntegrationConfiguration {
 
     @Bean
-    public RuleRepository authorizationRuleRepositoryJpaAdaptor(
-            EntityManager em, JpaRuleRepository jpaRuleRepository, RuleJpaMapper modelMapper) {
+    public RuleRepository aclRuleRepositoryJpaAdaptor(
+            EntityManager em,
+            JpaRuleRepository jpaRuleRepository,
+            RuleJpaMapper modelMapper,
+            ApplicationEventPublisher eventPublisher) {
 
-        return new RuleRepositoryJpaAdaptor(em, jpaRuleRepository, modelMapper);
+        RuleRepositoryJpaAdaptor adaptor =
+                new RuleRepositoryJpaAdaptor(em, jpaRuleRepository, modelMapper);
+        Consumer<RuleEvent> publisher = eventPublisher::publishEvent;
+        adaptor.setEventPublisher(publisher);
+        return adaptor;
     }
 
     @Bean
-    public AdminRuleRepository authorizationAdminRuleRepositoryJpaAdaptor(
+    public AdminRuleRepository aclAdminRuleRepositoryJpaAdaptor(
             EntityManager em,
             JpaAdminRuleRepository jpaAdminRuleRepo,
-            AdminRuleJpaMapper modelMapper) {
-        return new AdminRuleRepositoryJpaAdaptor(em, jpaAdminRuleRepo, modelMapper);
+            AdminRuleJpaMapper modelMapper,
+            ApplicationEventPublisher eventPublisher) {
+
+        AdminRuleRepositoryJpaAdaptor adaptor =
+                new AdminRuleRepositoryJpaAdaptor(em, jpaAdminRuleRepo, modelMapper);
+        Consumer<AdminRuleEvent> publisher = eventPublisher::publishEvent;
+        adaptor.setEventPublisher(publisher);
+        return adaptor;
     }
 }

@@ -73,7 +73,10 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     @Override
     public List<Rule> getMatchingRules(AccessRequest request) {
         Map<String, List<Rule>> found = getMatchingRulesByRole(request);
+        return flatten(found);
+    }
 
+    private List<Rule> flatten(Map<String, List<Rule>> found) {
         return found.values().stream()
                 .flatMap(List::stream)
                 .sorted((r1, r2) -> Long.compare(r1.getPriority(), r2.getPriority()))
@@ -109,17 +112,26 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             ret = currAccessInfo;
         }
 
+        Optional<AdminRule> adminAuth = Optional.empty();
         if (ret.getGrant() == GrantType.ALLOW) {
-            ret = ret.withAdminRights(getAdminAuth(request));
+            adminAuth = getAdminAuth(request);
+            ret = ret.withAdminRights(isAdminAuth(adminAuth));
         }
 
         log.debug("Returning {} for {}", ret, request);
-        return ret;
+        List<String> matchingIds =
+                flatten(groupedRules).stream().map(Rule::getId).collect(Collectors.toList());
+        return ret.withMatchingRules(matchingIds)
+                .withMatchingAdminRule(adminAuth.map(AdminRule::getId).orElse(null));
     }
 
     @Override
     public AccessInfo getAdminAuthorization(AccessRequest request) {
-        return AccessInfo.ALLOW_ALL.withAdminRights(getAdminAuth(request));
+        Optional<AdminRule> adminAuth = getAdminAuth(request);
+        String adminRuleId = adminAuth.map(AdminRule::getId).orElse(null);
+        return AccessInfo.ALLOW_ALL
+                .withAdminRights(isAdminAuth(adminAuth))
+                .withMatchingAdminRule(adminRuleId);
     }
 
     private AccessInfo enlargeAccessInfo(AccessInfo baseAccess, AccessInfo moreAccess) {
@@ -593,28 +605,27 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     // ==========================================================================
 
-    private boolean getAdminAuth(AccessRequest request) {
+    private boolean isAdminAuth(Optional<AdminRule> rule) {
+        return rule.isEmpty() ? false : rule.orElseThrow().getAccess() == AdminGrantType.ADMIN;
+    }
+
+    private Optional<AdminRule> getAdminAuth(AccessRequest request) {
         Set<String> finalRoleFilter = validateUserRoles(request);
 
         if (finalRoleFilter == null) {
-            return false;
+            return Optional.empty();
         }
 
         AdminRuleFilter adminRuleFilter = AdminRuleFilter.of(request.getFilter());
 
         if (finalRoleFilter.isEmpty()) {
-            return adminRuleService
-                    .getFirstMatch(adminRuleFilter)
-                    .map(AdminRule::getAccess)
-                    .map(AdminGrantType.ADMIN::equals)
-                    .orElse(false);
+            return adminRuleService.getFirstMatch(adminRuleFilter);
         }
 
         adminRuleFilter.setRole(RuleFilter.asTextValue(finalRoleFilter));
         adminRuleFilter.getRole().setIncludeDefault(true);
-        adminRuleFilter.setGrantType(AdminGrantType.ADMIN);
         Optional<AdminRule> found = adminRuleService.getFirstMatch(adminRuleFilter);
-        return found.isPresent();
+        return found;
     }
 
     private Geometry reprojectGeometry(int targetSRID, Geometry geom) {

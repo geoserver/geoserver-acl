@@ -13,7 +13,9 @@ import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import lombok.NonNull;
+import lombok.Setter;
 
+import org.geoserver.acl.domain.event.RuleEvent;
 import org.geoserver.acl.integration.jpa.mapper.RuleJpaMapper;
 import org.geoserver.acl.jpa.model.GrantType;
 import org.geoserver.acl.jpa.model.LayerDetails;
@@ -38,6 +40,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Spliterators;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -54,7 +57,11 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     private final RuleJpaMapper modelMapper;
     private final PredicateMapper queryMapper;
 
-    private final PriorityResolver<org.geoserver.acl.jpa.model.Rule> priorityResolver;
+    @Setter
+    private @NonNull Consumer<RuleEvent> eventPublisher =
+            r -> {
+                // no-op
+            };
 
     public RuleRepositoryJpaAdaptor(
             EntityManager em, JpaRuleRepository jparepo, RuleJpaMapper mapper) {
@@ -65,8 +72,10 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
         this.modelMapper = mapper;
         this.jparepo = jparepo;
         this.queryMapper = new PredicateMapper();
-        this.priorityResolver =
-                new PriorityResolver<>(jparepo, org.geoserver.acl.jpa.model.Rule::getPriority);
+    }
+
+    private PriorityResolver<org.geoserver.acl.jpa.model.Rule> priorityResolver() {
+        return new PriorityResolver<>(jparepo, org.geoserver.acl.jpa.model.Rule::getPriority);
     }
 
     @Override
@@ -156,6 +165,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
         Objects.requireNonNull(rule.getId());
         org.geoserver.acl.jpa.model.Rule entity = getOrThrowIAE(rule.getId());
 
+        PriorityResolver<org.geoserver.acl.jpa.model.Rule> priorityResolver = priorityResolver();
         long finalPriority =
                 priorityResolver.resolvePriorityUpdate(entity.getPriority(), rule.getPriority());
 
@@ -168,6 +178,8 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
         }
 
         org.geoserver.acl.jpa.model.Rule saved = jparepo.save(entity);
+
+        notifyCollateralUpdates(priorityResolver.getUpdatedIds());
         return modelMapper.toModel(saved);
     }
 
@@ -179,6 +191,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
             throw new IllegalArgumentException(
                     "Negative priority is not allowed: " + rule.getPriority());
 
+        PriorityResolver<org.geoserver.acl.jpa.model.Rule> priorityResolver = priorityResolver();
         final long finalPriority =
                 priorityResolver.resolveFinalPriority(rule.getPriority(), position);
 
@@ -192,7 +205,18 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
 
         org.geoserver.acl.jpa.model.Rule saved = jparepo.save(entity);
 
+        notifyCollateralUpdates(priorityResolver.getUpdatedIds());
+
         return modelMapper.toModel(saved);
+    }
+
+    // send an updated event for all collaterally updated rule
+    private void notifyCollateralUpdates(Set<Long> ids) {
+        if (!ids.isEmpty()) {
+            Set<String> updatedIds =
+                    ids.stream().map(RuleJpaMapper::encodeId).collect(Collectors.toSet());
+            this.eventPublisher.accept(RuleEvent.updated(updatedIds));
+        }
     }
 
     private boolean checkForDups(org.geoserver.acl.jpa.model.Rule rule) {
@@ -222,7 +246,13 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
         if (offset <= 0) {
             throw new IllegalArgumentException("Positive offset required");
         }
+        Set<Long> shiftedIds =
+                jparepo.streamIdsByShiftPriority(priorityStart).collect(Collectors.toSet());
+        if (shiftedIds.isEmpty()) {
+            return -1;
+        }
         int affectedCount = jparepo.shiftPriority(priorityStart, offset);
+        notifyCollateralUpdates(shiftedIds);
         return affectedCount > 0 ? affectedCount : -1;
     }
 

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Repository
 @TransactionSupported
@@ -42,11 +43,21 @@ public interface JpaAdminRuleRepository
 
     @Override
     @TransactionRequired
+    @Query("SELECT r.id FROM AdminRule r WHERE priority >= :priorityStart")
+    Stream<Long> streamIdsByShiftPriority(@Param("priorityStart") long priorityStart);
+
+    @Override
+    @TransactionRequired
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query(
             "UPDATE AdminRule SET priority = priority + :offset WHERE priority BETWEEN :min AND :max")
     void shiftPrioritiesBetween(
             @Param("min") long min, @Param("max") long max, @Param("offset") long offset);
+
+    @Override
+    @TransactionRequired
+    @Query("SELECT r.id FROM AdminRule r WHERE priority BETWEEN :min AND :max")
+    Stream<Long> streamIdsByShiftPriorityBetween(@Param("min") long min, @Param("max") long max);
 
     @Override
     @Query("SELECT MAX(r.priority) FROM AdminRule r")

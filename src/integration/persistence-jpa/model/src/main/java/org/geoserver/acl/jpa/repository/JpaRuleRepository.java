@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @TransactionSupported
 public interface JpaRuleRepository
@@ -37,10 +38,20 @@ public interface JpaRuleRepository
 
     @Override
     @TransactionRequired
+    @Query("SELECT r.id FROM Rule r WHERE priority >= :priorityStart")
+    Stream<Long> streamIdsByShiftPriority(@Param("priorityStart") long priorityStart);
+
+    @Override
+    @TransactionRequired
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("UPDATE Rule SET priority = priority + :offset WHERE priority BETWEEN :min AND :max")
     void shiftPrioritiesBetween(
             @Param("min") long min, @Param("max") long max, @Param("offset") long offset);
+
+    @Override
+    @TransactionRequired
+    @Query("SELECT r.id FROM Rule r WHERE priority BETWEEN :min AND :max")
+    Stream<Long> streamIdsByShiftPriorityBetween(@Param("min") long min, @Param("max") long max);
 
     @Override
     @Query("SELECT MAX(r.priority) FROM Rule r")

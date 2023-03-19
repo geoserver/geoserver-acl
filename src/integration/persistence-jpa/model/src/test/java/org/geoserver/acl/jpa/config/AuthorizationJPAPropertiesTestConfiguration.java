@@ -11,7 +11,7 @@ public class AuthorizationJPAPropertiesTestConfiguration {
 
     @Bean
     @ConfigurationProperties(prefix = "geoserver.acl")
-    AuthorizationJPAProperties authorizationJPAProperties() {
-        return new AuthorizationJPAProperties();
+    AclJpaProperties authorizationJPAProperties() {
+        return new AclJpaProperties();
     }
 }

@@ -1,6 +1,6 @@
 package org.geoserver.acl.jpa.it;
 
-import org.geoserver.acl.jpa.config.AuthorizationDataSourceConfiguration;
+import org.geoserver.acl.jpa.config.AclDataSourceConfiguration;
 import org.geoserver.acl.jpa.config.AuthorizationJPAConfiguration;
 import org.geoserver.acl.jpa.config.AuthorizationJPAPropertiesTestConfiguration;
 import org.geoserver.acl.jpa.repository.JpaRuleRepositoryTest;
@@ -20,7 +20,7 @@ import javax.transaction.Transactional;
 @SpringBootTest(
         classes = {
             AuthorizationJPAPropertiesTestConfiguration.class,
-            AuthorizationDataSourceConfiguration.class,
+            AclDataSourceConfiguration.class,
             AuthorizationJPAConfiguration.class
         })
 // see config props in src/test/resource/application-test.yaml

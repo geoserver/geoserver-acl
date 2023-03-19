@@ -5,7 +5,7 @@
 package org.geoserver.acl.api.it.support;
 
 import org.geoserver.acl.api.client.config.ApiClientProperties;
-import org.geoserver.acl.jpa.config.AuthorizationJPAProperties;
+import org.geoserver.acl.jpa.config.AclJpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +17,8 @@ public class ConfigurationPropertiesTestConfiguration {
 
     @Bean
     @ConfigurationProperties(prefix = "geoserver.acl")
-    AuthorizationJPAProperties authorizationJPAProperties() {
-        return new AuthorizationJPAProperties();
+    AclJpaProperties authorizationJPAProperties() {
+        return new AclJpaProperties();
     }
 
     @Bean

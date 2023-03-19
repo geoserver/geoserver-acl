@@ -76,10 +76,11 @@ class RuleAdminServiceTest {
     void insertRule_sanitizeFields() {
         Rule rule = Rule.allow().withPriority(10).withService("wms").withRequest("getcapabilities");
         Rule expected = rule.withService("WMS").withRequest("GETCAPABILITIES");
+        Rule returned = expected.withId("1");
 
-        when(repository.create(eq(expected), eq(InsertPosition.FIXED))).thenReturn(expected);
+        when(repository.create(eq(expected), eq(InsertPosition.FIXED))).thenReturn(returned);
 
-        assertSame(expected, service.insert(rule));
+        assertSame(returned, service.insert(rule));
         verify(repository, times(1)).create(eq(expected), eq(InsertPosition.FIXED));
         verifyNoMoreInteractions(repository);
     }
@@ -88,9 +89,12 @@ class RuleAdminServiceTest {
     void insertRuleInsertPosition() {
         Rule rule = Rule.allow();
 
-        when(repository.create(eq(rule), eq(InsertPosition.FROM_START))).thenReturn(rule);
+        when(repository.create(eq(rule), eq(InsertPosition.FROM_START)))
+                .thenReturn(rule.withId("1"));
 
-        assertSame(rule, service.insert(rule, InsertPosition.FROM_START));
+        Rule created = service.insert(rule, InsertPosition.FROM_START);
+        assertThat(created).isEqualTo(rule.withId("1"));
+
         verify(repository, times(1)).create(eq(rule), eq(InsertPosition.FROM_START));
         verifyNoMoreInteractions(repository);
     }

@@ -402,4 +402,10 @@ components:
           uniqueItems: true
           items:
             $ref: '#/components/schemas/LayerAttribute'
+        matchingRules:
+          type: array
+          items:
+            type: string
+        matchingAdminRule:
+          type: string
         

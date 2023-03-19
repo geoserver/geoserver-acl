@@ -13,10 +13,13 @@ import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import lombok.NonNull;
+import lombok.Setter;
 
 import org.geoserver.acl.adminrules.AdminRuleIdentifierConflictException;
 import org.geoserver.acl.adminrules.AdminRuleRepository;
+import org.geoserver.acl.domain.event.AdminRuleEvent;
 import org.geoserver.acl.integration.jpa.mapper.AdminRuleJpaMapper;
+import org.geoserver.acl.integration.jpa.mapper.RuleJpaMapper;
 import org.geoserver.acl.jpa.model.QAdminRule;
 import org.geoserver.acl.jpa.repository.JpaAdminRuleRepository;
 import org.geoserver.acl.jpa.repository.TransactionReadOnly;
@@ -34,7 +37,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Spliterators;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -49,7 +54,12 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     private final JpaAdminRuleRepository jparepo;
     private final AdminRuleJpaMapper modelMapper;
     private final PredicateMapper queryMapper;
-    private final PriorityResolver<org.geoserver.acl.jpa.model.AdminRule> priorityResolver;
+
+    @Setter
+    private @NonNull Consumer<AdminRuleEvent> eventPublisher =
+            r -> {
+                // no-op
+            };
 
     public AdminRuleRepositoryJpaAdaptor(
             EntityManager em, JpaAdminRuleRepository jparepo, AdminRuleJpaMapper mapper) {
@@ -60,8 +70,19 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
         this.modelMapper = mapper;
         this.jparepo = jparepo;
         this.queryMapper = new PredicateMapper();
-        this.priorityResolver =
-                new PriorityResolver<>(jparepo, org.geoserver.acl.jpa.model.AdminRule::getPriority);
+    }
+
+    private PriorityResolver<org.geoserver.acl.jpa.model.AdminRule> priorityResolver() {
+        return new PriorityResolver<>(jparepo, org.geoserver.acl.jpa.model.AdminRule::getPriority);
+    }
+
+    // send an updated event for all collaterally updated rule
+    private void notifyCollateralUpdates(Set<Long> ids) {
+        if (!ids.isEmpty()) {
+            Set<String> updatedIds =
+                    ids.stream().map(RuleJpaMapper::encodeId).collect(Collectors.toSet());
+            this.eventPublisher.accept(AdminRuleEvent.updated(updatedIds));
+        }
     }
 
     @Override
@@ -72,6 +93,8 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
             throw new IllegalArgumentException(
                     "Negative priority is not allowed: " + rule.getPriority());
 
+        PriorityResolver<org.geoserver.acl.jpa.model.AdminRule> priorityResolver =
+                priorityResolver();
         final long finalPriority =
                 priorityResolver.resolveFinalPriority(rule.getPriority(), position);
 
@@ -81,8 +104,7 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
         org.geoserver.acl.jpa.model.AdminRule saved;
         try {
             // gotta use saveAndFlush to catch the exception before the method returns and
-            // the tx is
-            // committed
+            // the tx is committed
             jparepo.flush();
             saved = jparepo.saveAndFlush(entity);
         } catch (DataIntegrityViolationException e) {
@@ -90,6 +112,7 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
                     "An AdminRule with the same identifier already exists: " + rule.toShortString(),
                     e);
         }
+        notifyCollateralUpdates(priorityResolver.getUpdatedIds());
         return modelMapper.toModel(saved);
     }
 
@@ -132,6 +155,8 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
         Objects.requireNonNull(rule.getId());
         org.geoserver.acl.jpa.model.AdminRule entity = getOrThrowIAE(rule.getId());
 
+        PriorityResolver<org.geoserver.acl.jpa.model.AdminRule> priorityResolver =
+                priorityResolver();
         long finalPriority =
                 priorityResolver.resolvePriorityUpdate(entity.getPriority(), rule.getPriority());
 
@@ -141,6 +166,7 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
         try {
             jparepo.flush();
             org.geoserver.acl.jpa.model.AdminRule saved = jparepo.saveAndFlush(entity);
+            notifyCollateralUpdates(priorityResolver.getUpdatedIds());
             return modelMapper.toModel(saved);
         } catch (DataIntegrityViolationException e) {
             throw new AdminRuleIdentifierConflictException(
@@ -208,7 +234,14 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     @Override
     @TransactionRequired
     public int shiftPriority(long priorityStart, long offset) {
-        return jparepo.shiftPriority(priorityStart, offset);
+        Set<Long> shiftedIds =
+                jparepo.streamIdsByShiftPriority(priorityStart).collect(Collectors.toSet());
+        if (shiftedIds.isEmpty()) {
+            return -1;
+        }
+        int affectedCount = jparepo.shiftPriority(priorityStart, offset);
+        notifyCollateralUpdates(shiftedIds);
+        return affectedCount > 0 ? affectedCount : -1;
     }
 
     @Override

@@ -9,7 +9,9 @@ package org.geoserver.acl.rules;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
+import org.geoserver.acl.domain.event.RuleEvent;
 import org.geoserver.acl.model.authorization.AuthorizationService;
 import org.geoserver.acl.model.filter.RuleFilter;
 import org.geoserver.acl.model.filter.RuleQuery;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,6 +43,12 @@ import java.util.stream.Stream;
 public class RuleAdminService {
 
     private final @NonNull RuleRepository ruleRepository;
+
+    @Setter
+    private @NonNull Consumer<RuleEvent> eventPublisher =
+            r -> {
+                // no-op
+            };
 
     // =========================================================================
     // Basic operations
@@ -67,7 +76,9 @@ public class RuleAdminService {
             throw new IllegalArgumentException("a new Rule must not have id, got " + rule.getId());
 
         rule = sanitizeFields(rule);
-        return ruleRepository.create(rule, position);
+        Rule created = ruleRepository.create(rule, position);
+        eventPublisher.accept(RuleEvent.created(created));
+        return created;
     }
 
     /**
@@ -82,7 +93,9 @@ public class RuleAdminService {
         }
 
         rule = sanitizeFields(rule);
-        return ruleRepository.save(rule);
+        Rule updated = ruleRepository.save(rule);
+        eventPublisher.accept(RuleEvent.updated(updated));
+        return updated;
     }
 
     /**
@@ -108,6 +121,7 @@ public class RuleAdminService {
      */
     public void swapPriority(String id1, String id2) {
         ruleRepository.swap(id1, id2);
+        eventPublisher.accept(RuleEvent.updated(id1, id2));
     }
 
     /**
@@ -136,12 +150,17 @@ public class RuleAdminService {
     }
 
     public boolean delete(@NonNull String id) {
-        return ruleRepository.deleteById(id);
+        boolean deleted = ruleRepository.deleteById(id);
+        if (deleted) {
+            eventPublisher.accept(RuleEvent.deleted(id));
+        }
+        return deleted;
     }
 
     public Stream<Rule> getAll() {
         return ruleRepository.findAll();
     }
+
     /**
      * Return the Rules according to the query.
      *
@@ -203,6 +222,7 @@ public class RuleAdminService {
             throws IllegalArgumentException {
 
         ruleRepository.setLimits(ruleId, limits);
+        eventPublisher.accept(RuleEvent.updated(ruleId));
     }
 
     // =========================================================================
@@ -234,6 +254,7 @@ public class RuleAdminService {
      */
     public void setLayerDetails(@NonNull String ruleId, LayerDetails detailsNew) {
         ruleRepository.setLayerDetails(ruleId, detailsNew);
+        eventPublisher.accept(RuleEvent.updated(ruleId));
     }
 
     /**
@@ -242,6 +263,7 @@ public class RuleAdminService {
      */
     public void setAllowedStyles(@NonNull String ruleId, Set<String> styles) {
         ruleRepository.setAllowedStyles(ruleId, styles);
+        eventPublisher.accept(RuleEvent.updated(ruleId));
     }
 
     /**

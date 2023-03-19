@@ -7,7 +7,7 @@ package org.geoserver.acl.jpa.config;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import org.geoserver.acl.jpa.config.AuthorizationJPAProperties.DataSourceProperties;
+import org.geoserver.acl.jpa.config.AclJpaProperties.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
@@ -16,7 +16,7 @@ import org.springframework.util.StringUtils;
 import javax.sql.DataSource;
 
 @Configuration
-public class AuthorizationDataSourceConfiguration {
+public class AclDataSourceConfiguration {
 
     /**
      * E.g.:
@@ -39,7 +39,7 @@ public class AuthorizationDataSourceConfiguration {
      * }</pre>
      */
     @Bean("authorizationDataSource")
-    public DataSource authorizationDataSource(AuthorizationJPAProperties props) {
+    public DataSource authorizationDataSource(AclJpaProperties props) {
         DataSourceProperties dsprops = props.getDatasource();
         final String jndiName = dsprops.getJndiName();
         if (StringUtils.hasText(jndiName)) {

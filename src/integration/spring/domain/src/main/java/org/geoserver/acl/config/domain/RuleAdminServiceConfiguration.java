@@ -6,6 +6,7 @@ package org.geoserver.acl.config.domain;
 
 import org.geoserver.acl.rules.RuleAdminService;
 import org.geoserver.acl.rules.RuleRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,7 +14,10 @@ import org.springframework.context.annotation.Configuration;
 public class RuleAdminServiceConfiguration {
 
     @Bean
-    public RuleAdminService ruleAdminService(RuleRepository ruleRepository) {
-        return new RuleAdminService(ruleRepository);
+    public RuleAdminService ruleAdminService(
+            RuleRepository ruleRepository, ApplicationEventPublisher eventPublisher) {
+        RuleAdminService service = new RuleAdminService(ruleRepository);
+        service.setEventPublisher(eventPublisher::publishEvent);
+        return service;
     }
 }

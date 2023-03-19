@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.querydsl.core.types.Predicate;
 
-import org.geoserver.acl.jpa.config.AuthorizationDataSourceConfiguration;
+import org.geoserver.acl.jpa.config.AclDataSourceConfiguration;
 import org.geoserver.acl.jpa.config.AuthorizationJPAConfiguration;
 import org.geoserver.acl.jpa.config.AuthorizationJPAPropertiesTestConfiguration;
 import org.geoserver.acl.jpa.model.AdminGrantType;
@@ -37,7 +37,7 @@ import javax.transaction.Transactional;
 @SpringBootTest(
         classes = {
             AuthorizationJPAPropertiesTestConfiguration.class,
-            AuthorizationDataSourceConfiguration.class,
+            AclDataSourceConfiguration.class,
             AuthorizationJPAConfiguration.class
         })
 @ActiveProfiles("test")

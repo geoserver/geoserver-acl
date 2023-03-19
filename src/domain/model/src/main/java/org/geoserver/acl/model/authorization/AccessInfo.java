@@ -9,6 +9,7 @@ package org.geoserver.acl.model.authorization;
 
 import lombok.Builder;
 import lombok.Builder.Default;
+import lombok.NonNull;
 import lombok.Value;
 import lombok.With;
 
@@ -17,6 +18,7 @@ import org.geoserver.acl.model.rules.CatalogMode;
 import org.geoserver.acl.model.rules.GrantType;
 import org.geoserver.acl.model.rules.LayerAttribute;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -53,6 +55,10 @@ public class AccessInfo {
     private Set<LayerAttribute> attributes;
 
     private Set<String> allowedStyles;
+
+    @Default @NonNull private List<String> matchingRules = List.of();
+
+    private String matchingAdminRule;
 
     public static class Builder {
         // explicitly implement only mutators that need to ensure immutability

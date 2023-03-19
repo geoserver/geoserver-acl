@@ -4,6 +4,8 @@
  */
 package org.geoserver.acl.integration.jpa.repository;
 
+import lombok.Getter;
+
 import org.geoserver.acl.jpa.repository.PriorityRepository;
 import org.geoserver.acl.model.rules.InsertPosition;
 import org.springframework.data.domain.PageRequest;
@@ -11,12 +13,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 
 class PriorityResolver<T> {
 
     private final PriorityRepository<T> jparepo;
     private final Function<T, Long> priorityExtractor;
+
+    private final @Getter Set<Long> updatedIds = new TreeSet<>();
 
     PriorityResolver(PriorityRepository<T> jparepo, Function<T, Long> priorityExtractor) {
         this.jparepo = jparepo;
@@ -57,6 +63,8 @@ class PriorityResolver<T> {
         jparepo.findOneByPriority(requestedPriority)
                 .ifPresent(
                         r -> {
+                            jparepo.streamIdsByShiftPriority(requestedPriority)
+                                    .forEach(updatedIds::add);
                             jparepo.shiftPriority(requestedPriority, 1);
                         });
         return requestedPriority;
@@ -83,6 +91,7 @@ class PriorityResolver<T> {
 
         Long min = Math.min(currentPriority, requestedPriority);
         Long max = Math.max(currentPriority, requestedPriority) - 1;
+        jparepo.streamIdsByShiftPriorityBetween(min, max).forEach(updatedIds::add);
         jparepo.shiftPrioritiesBetween(min, max, 1);
         return requestedPriority;
     }
@@ -115,13 +124,18 @@ class PriorityResolver<T> {
 
         Optional<Long> found = findNthPriorityByOrder(requestedPosition, Direction.DESC);
         if (found.isPresent()) {
+            jparepo.streamIdsByShiftPriority(found.get()).forEach(updatedIds::add);
             jparepo.shiftPriority(found.get(), 1);
             return found.get();
         }
 
         // there are not enough rules from the bottom, use the minimum one
         Optional<Long> min = jparepo.findMinPriority();
-        min.ifPresent(minPriority -> jparepo.shiftPriority(minPriority, 1));
+        min.ifPresent(
+                minPriority -> {
+                    jparepo.streamIdsByShiftPriority(minPriority).forEach(updatedIds::add);
+                    jparepo.shiftPriority(minPriority, 1);
+                });
         return min.orElse(1L);
     }
 

@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
-public class AuthorizationJPAProperties {
+public class AclJpaProperties {
 
     private DataSourceProperties datasource = new DataSourceProperties();
     private JpaProperties jpa = new JpaProperties();

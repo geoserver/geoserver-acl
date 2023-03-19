@@ -9,13 +9,16 @@ package org.geoserver.acl.adminrules;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
+import org.geoserver.acl.domain.event.AdminRuleEvent;
 import org.geoserver.acl.model.adminrules.AdminRule;
 import org.geoserver.acl.model.filter.AdminRuleFilter;
 import org.geoserver.acl.model.filter.RuleQuery;
 import org.geoserver.acl.model.rules.InsertPosition;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -27,6 +30,12 @@ import java.util.stream.Stream;
 public class AdminRuleAdminService {
 
     private final @NonNull AdminRuleRepository repository;
+
+    @Setter
+    private @NonNull Consumer<AdminRuleEvent> eventPublisher =
+            r -> {
+                // no-op
+            };
 
     // =========================================================================
     // Basic operations
@@ -43,11 +52,9 @@ public class AdminRuleAdminService {
      * @throws AdminRuleIdentifierConflictException
      */
     public AdminRule insert(AdminRule rule, InsertPosition position) {
-        try {
-            return repository.create(rule, position);
-        } catch (RuntimeException e) {
-            throw e;
-        }
+        AdminRule created = repository.create(rule, position);
+        eventPublisher.accept(AdminRuleEvent.created(created));
+        return created;
     }
 
     /**
@@ -58,7 +65,9 @@ public class AdminRuleAdminService {
             throw new IllegalArgumentException("AdminRule has no id");
         }
 
-        return repository.save(rule);
+        AdminRule updated = repository.save(rule);
+        eventPublisher.accept(AdminRuleEvent.updated(updated));
+        return updated;
     }
 
     /**
@@ -76,6 +85,7 @@ public class AdminRuleAdminService {
 
     public void swap(@NonNull String id1, @NonNull String id2) {
         repository.swap(id1, id2);
+        eventPublisher.accept(AdminRuleEvent.updated(id1, id2));
     }
 
     /**
@@ -90,7 +100,9 @@ public class AdminRuleAdminService {
     }
 
     public boolean delete(@NonNull String id) {
-        return repository.deleteById(id);
+        boolean deleted = repository.deleteById(id);
+        if (deleted) eventPublisher.accept(AdminRuleEvent.deleted(id));
+        return deleted;
     }
 
     public Stream<AdminRule> getAll() {

@@ -9,13 +9,13 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import javax.sql.DataSource;
 
-class AuthorizationDataSourceConfigurationTest {
+class AclDataSourceConfigurationTest {
 
     private final ApplicationContextRunner runner =
             new ApplicationContextRunner()
                     .withUserConfiguration(
                             AuthorizationJPAPropertiesTestConfiguration.class,
-                            AuthorizationDataSourceConfiguration.class);
+                            AclDataSourceConfiguration.class);
 
     @Test
     void testConfigured() {

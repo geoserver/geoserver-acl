@@ -1,6 +1,7 @@
 package org.geoserver.acl.integration.jpa.config;
 
-import org.geoserver.acl.jpa.config.AuthorizationJPAProperties;
+import org.geoserver.acl.integration.jpa.it.RuleEventCollector;
+import org.geoserver.acl.jpa.config.AclJpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +13,12 @@ public class AuthorizationJPAPropertiesTestConfiguration {
 
     @Bean
     @ConfigurationProperties(prefix = "geoserver.acl")
-    AuthorizationJPAProperties authorizationJPAProperties() {
-        return new AuthorizationJPAProperties();
+    AclJpaProperties authorizationJPAProperties() {
+        return new AclJpaProperties();
+    }
+
+    @Bean
+    RuleEventCollector ruleEventCollector() {
+        return new RuleEventCollector();
     }
 }
