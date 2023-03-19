@@ -1,3 +1,7 @@
+# Initializers
+org.springframework.context.ApplicationContextInitializer=\
+org.geoserver.acl.autoconfigure.geotools.GeoToolsStaticContextInitializer
+
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.geoserver.acl.autoconfigure.persistence.JPAIntegrationAutoConfiguration,\
