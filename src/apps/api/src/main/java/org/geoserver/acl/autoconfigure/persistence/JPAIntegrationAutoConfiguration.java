@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.cloud.acl.autoconfigure.persistence;
+package org.geoserver.acl.autoconfigure.persistence;
 
 import org.geoserver.acl.integration.jpa.config.JPAIntegrationConfiguration;
 import org.geoserver.acl.jpa.config.AuthorizationJPAProperties;

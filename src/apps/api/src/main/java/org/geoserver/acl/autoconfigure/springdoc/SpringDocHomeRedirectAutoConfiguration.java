@@ -2,9 +2,9 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.cloud.acl.autoconfigure.springdoc;
+package org.geoserver.acl.autoconfigure.springdoc;
 
-import org.geoserver.cloud.acl.config.springdoc.SpringDocHomeRedirectConfiguration;
+import org.geoserver.acl.config.springdoc.SpringDocHomeRedirectConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Import;

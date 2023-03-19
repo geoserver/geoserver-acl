@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.cloud.acl.autoconfigure.api;
+package org.geoserver.acl.autoconfigure.api;
 
 import org.geoserver.acl.api.server.config.AuthorizationApiConfiguration;
 import org.geoserver.acl.api.server.config.RulesApiConfiguration;
