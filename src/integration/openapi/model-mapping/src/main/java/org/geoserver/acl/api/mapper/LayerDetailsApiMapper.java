@@ -8,7 +8,6 @@ import org.geoserver.acl.model.rules.LayerDetails;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
@@ -16,7 +15,6 @@ import org.mapstruct.ReportingPolicy;
         componentModel = "spring",
         injectionStrategy = InjectionStrategy.CONSTRUCTOR,
         unmappedTargetPolicy = ReportingPolicy.ERROR,
-        // nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         uses = {GeometryApiMapper.class, LayerAttributeApiMapper.class, EnumsApiMapper.class})
 public abstract class LayerDetailsApiMapper {
@@ -27,11 +25,7 @@ public abstract class LayerDetailsApiMapper {
 
     @Mapping(target = "area", source = "allowedArea")
     @Mapping(target = "attributes", source = "layerAttributes")
+    @Mapping(target = "catalogMode", defaultValue = "HIDE")
+    @Mapping(target = "spatialFilterType", defaultValue = "INTERSECT")
     public abstract LayerDetails map(org.geoserver.acl.api.model.LayerDetails ld);
-
-    @Mapping(target = "area", source = "allowedArea")
-    @Mapping(target = "attributes", source = "layerAttributes")
-    public abstract LayerDetails updateDetails(
-            @MappingTarget LayerDetails.Builder target,
-            org.geoserver.acl.api.model.LayerDetails source);
 }

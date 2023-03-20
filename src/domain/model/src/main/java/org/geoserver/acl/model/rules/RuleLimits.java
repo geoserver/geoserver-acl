@@ -9,6 +9,7 @@ package org.geoserver.acl.model.rules;
 
 import lombok.Builder;
 import lombok.Builder.Default;
+import lombok.NonNull;
 import lombok.Value;
 import lombok.With;
 
@@ -24,9 +25,9 @@ public class RuleLimits {
 
     private MultiPolygon<?> allowedArea;
 
-    @Default private SpatialFilterType spatialFilterType = SpatialFilterType.INTERSECT;
+    @Default @NonNull private SpatialFilterType spatialFilterType = SpatialFilterType.INTERSECT;
 
-    @Default private CatalogMode catalogMode = CatalogMode.HIDE;
+    @Default @NonNull private CatalogMode catalogMode = CatalogMode.HIDE;
 
     public static RuleLimits clip() {
         return RuleLimits.builder().spatialFilterType(SpatialFilterType.CLIP).build();

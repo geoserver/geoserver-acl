@@ -32,6 +32,17 @@ public interface GeometryApiMapper {
         return geom.getWkb() != null ? wkbToGeometry(geom.getWkb()) : wktToGeometry(geom.getWkt());
     }
 
+    default org.geolatte.geom.MultiPolygon<? extends Position> apiToMultiPolygon(
+            Geometry<? extends Position> geometry) {
+        //        Geometry<? extends Position> geometry = apiToGeometry(geom);
+        if (geometry == null) return null;
+        if (!(geometry instanceof org.geolatte.geom.MultiPolygon)) {
+            throw new IllegalArgumentException(
+                    "Expected MULTIPOLYGON, got " + geometry.getClass().getSimpleName());
+        }
+        return (org.geolatte.geom.MultiPolygon<? extends Position>) geometry;
+    }
+
     default org.geolatte.geom.Geometry<? extends Position> wktToGeometry(String wkt) {
         return wkt == null ? null : Wkt.fromWkt(wkt);
     }
@@ -47,17 +58,5 @@ public interface GeometryApiMapper {
         // if (0 == srid) srid = 4326;
         // return String.format("SRID=%d;%s", srid, wkt);
         return wkt;
-    }
-
-    /** Used by {@link LayerDetailsApiMapper} and {@link RuleLimitsApiMapper} */
-    @SuppressWarnings("unchecked")
-    default <P extends Position> org.geolatte.geom.MultiPolygon<P> castMultiPolygon(
-            Geometry<?> geometry) {
-        if (geometry == null) return null;
-        if (!(geometry instanceof org.geolatte.geom.MultiPolygon)) {
-            throw new IllegalArgumentException(
-                    "Expected MULTIPOLYGON, got " + geometry.getClass().getSimpleName());
-        }
-        return (org.geolatte.geom.MultiPolygon<P>) geometry;
     }
 }

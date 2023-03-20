@@ -60,16 +60,12 @@ components:
 
     wkt:
       type: object
-      required:
-      - wkt
       properties:
         wkt:
           type: string
-          example: "CRS=EPSG:4326;MULTIPOLYGON(....)"
+          example: "SRID=4326;MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))"
     wkb:
       type: object
-      required:
-      - wkb
       properties:
         wkb:
           type: string

@@ -8,6 +8,7 @@
 package org.geoserver.acl.model.rules;
 
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.With;
@@ -40,9 +41,9 @@ public class LayerDetails {
 
     private MultiPolygon<?> area;
 
-    private SpatialFilterType spatialFilterType;
+    @Default @NonNull private SpatialFilterType spatialFilterType = SpatialFilterType.INTERSECT;
 
-    private CatalogMode catalogMode;
+    @Default @NonNull private CatalogMode catalogMode = CatalogMode.HIDE;
 
     @NonNull private Set<String> allowedStyles;
 

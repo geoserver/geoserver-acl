@@ -4,10 +4,9 @@
  */
 package org.geoserver.acl.api.mapper;
 
-import org.geoserver.acl.model.rules.RuleLimits;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
@@ -22,9 +21,7 @@ public interface RuleLimitsApiMapper {
 
     org.geoserver.acl.api.model.RuleLimits toApi(org.geoserver.acl.model.rules.RuleLimits limits);
 
+    @Mapping(target = "catalogMode", defaultValue = "HIDE")
+    @Mapping(target = "spatialFilterType", defaultValue = "INTERSECT")
     org.geoserver.acl.model.rules.RuleLimits toModel(org.geoserver.acl.api.model.RuleLimits limits);
-
-    RuleLimits updateLimits(
-            @MappingTarget RuleLimits.Builder builder,
-            org.geoserver.acl.api.model.RuleLimits source);
 }
