@@ -87,7 +87,7 @@
               <skip>${openapi-codegen-skip}</skip>
               <!-- see https://openapi-generator.tech/docs/generators/java/ -->
               <generatorName>spring</generatorName>
-              <inputSpec>${project.basedir}/../acl-model.yaml</inputSpec>
+              <inputSpec>${project.basedir}/../acl-api.yaml</inputSpec>
               <modelPackage>org.geoserver.acl.api.model</modelPackage>
               <generateModels>true</generateModels>
               <generateApis>false</generateApis>

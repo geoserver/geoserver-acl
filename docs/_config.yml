@@ -1,0 +1,4 @@
+theme: jekyll-theme-modernist
+title: GeoServer ACL
+description: GeoServer Access Control List admin and authorization
+show_downloads: true

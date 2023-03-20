@@ -1,0 +1,235 @@
+@startuml
+
+title GeoServer ACL Schemas Diagram
+
+enum SpatialFilterType {
+    INTERSECT
+    CLIP
+}
+
+enum AdminGrantType {
+    ADMIN
+    USER
+}
+
+enum CatalogMode {
+    HIDE
+    CHALLENGE
+    MIXED
+}
+
+enum GrantType {
+    ALLOW
+    DENY
+    LIMIT
+}
+
+enum InsertPosition {
+  FIXED
+  FROM_START
+  FROM_END
+}
+
+struct AccessInfo {
+    * grant: GrantType
+    * adminRights: Boolean
+    area: Geom
+    clipArea: Geom
+    catalogMode: CatalogMode
+    defaultStyle: String
+    allowedStyles: List<String>
+    cqlFilterRead: String
+    cqlFilterWrite: String
+    attributes: List<LayerAttribute>
+    matchingRules: List<String>
+    matchingAdminRule: String
+}
+
+struct AccessRequest {
+    username: String
+    roles: List<String>
+    * filter: RuleFilter
+}
+
+struct AddressRangeFilter {
+    includeDefault: Boolean
+    value: String
+}
+
+entity AdminRule {
+    id: String
+    * priority: Long
+    * access: AdminGrantType
+    extId: String
+    name: String
+    description: String
+    instance: String
+    role: String
+    user: String
+    workspace: String
+    addressRange: String
+}
+
+struct AdminRuleFilter {
+    instance: TextFilter
+    grantType: AdminGrantType
+    user: TextFilter
+    roles: SetFilter
+    workspace: TextFilter
+    sourceAddress: AddressRangeFilter
+}
+
+struct Geom {
+    wkt: String
+    wkb: Byte[]
+}
+
+struct LayerAttribute {
+    * name: String
+    dataType: String
+    access: String
+}
+
+entity LayerDetails {
+    type: String
+    defaultStyle: String
+    cqlFilterRead: String
+    cqlFilterWrite: String
+    allowedArea: Geom
+    spatialFilterType: SpatialFilterType
+    catalogMode: CatalogMode
+    allowedStyles: List<String>
+    layerAttributes: List<LayerAttribute>
+}
+
+entity Rule {
+    id: String
+    * priority: Long
+    extId: String
+    name: String
+    description: String
+    instance: String
+    * access: GrantType
+    limits: RuleLimits
+    role: String
+    user: String
+    addressRange: String
+    service: String
+    request: String
+    subfield: String
+    workspace: String
+    layer: String
+}
+
+struct RuleFilter {
+    instance: TextFilter
+    user: TextFilter
+    roles: SetFilter
+    service: TextFilter
+    request: TextFilter
+    subfield: TextFilter
+    workspace: TextFilter
+    layer: TextFilter
+    sourceAddress: AddressRangeFilter
+}
+
+struct RuleLimits {
+    allowedArea: Geom
+    spatialFilterType: SpatialFilterType
+    catalogMode: CatalogMode
+}
+
+struct SetFilter {
+    includeDefault: Boolean
+    values: List<String>
+}
+
+struct TextFilter {
+    includeDefault: Boolean
+    value: String
+}
+
+class AuthorizationApi{
+    getAccessInfo(AccessRequest): AccessInfo
+    getAdminAccessInfo(AccessRequest): AccessInfo
+    getMatchingRules(AccessRequest): List<Rule>
+}
+AuthorizationApi -[dashed]-> AccessRequest
+AuthorizationApi -[dashed]-> AccessInfo
+AuthorizationApi -[dashed]-> Rule
+
+class RulesApi{
+    countAllRules(): Integer
+    countRules(RuleFilter): Integer
+    createRule(Rule, InsertPosition)
+    deleteRuleById(String)
+    findOneRuleByPriority(Long): Rule
+    getLayerDetailsByRuleId(String):LayerDetails
+    getRuleById(String): Rule
+    getRules(Integer, String):List<Rule>
+    queryRules(Integer, String, RuleFilter):List<Rule>
+    ruleExistsById(String):Boolean
+    setRuleAllowedStyles(String, Set<String>)
+    setRuleLayerDetails(String, LayerDetails)
+    setRuleLimits(String, RuleLimits)
+    shiftRulesByPriority(Long, Long):Integer
+    swapRules(String, String)
+    updateRuleById(String, Rule):Rule
+}
+RulesApi -[dashed]-> Rule
+RulesApi -[dashed]-> LayerDetails
+RulesApi -[dashed]-> RuleLimits
+RulesApi -[dashed]-> InsertPosition
+RulesApi -[dashed]-> RuleFilter
+
+class AdminRulesApi{
+    adminRuleExistsById(String): Boolean
+    countAllAdminRules(): Integer
+    countAdminRules(AdminRuleFilter): Integer
+    createAdminRule(AdminRule, InsertPosition)
+    deleteAdminRuleById(String)
+    findAdminRules(Integer, String, AdminRuleFilter)
+    findAllAdminRules(Integer, String)
+    findFirstAdminRule(AdminRuleFilter)
+    findOneAdminRuleByPriority(Long)
+    getAdminRuleById(String)
+    shiftAdminRulesByPiority(Long, Long)
+    swapAdminRules(String, String)
+    updateAdminRule(String, AdminRule)
+}
+AdminRulesApi -[dashed]-> AdminRule
+AdminRulesApi -[dashed]-> InsertPosition
+AdminRulesApi -[dashed]-> AdminRuleFilter
+
+LayerDetails -- Geom : allowedArea
+LayerDetails -- "0..*" LayerAttribute : layerAttributes
+AccessRequest -- RuleFilter : filter
+AccessInfo -- Geom : area
+AccessInfo -- Geom : clipArea
+AccessInfo -- "0..*" LayerAttribute : attributes
+AdminRuleFilter -- TextFilter : instance
+AdminRuleFilter -- TextFilter : user
+AdminRuleFilter -- SetFilter : roles
+AdminRuleFilter -- TextFilter : workspace
+AdminRuleFilter -- AddressRangeFilter : sourceAddress
+RuleLimits -- Geom : allowedArea
+RuleFilter -- TextFilter : instance
+RuleFilter -- TextFilter : user
+RuleFilter -- SetFilter : roles
+RuleFilter -- TextFilter : service
+RuleFilter -- TextFilter : request
+RuleFilter -- TextFilter : subfield
+RuleFilter -- TextFilter : workspace
+RuleFilter -- TextFilter : layer
+RuleFilter -- AddressRangeFilter : sourceAddress
+Rule -- RuleLimits : limits
+Rule -- GrantType : access
+AccessInfo -- GrantType : grant
+AdminRule -- AdminGrantType : access
+AccessInfo -- CatalogMode : catalogMode
+RuleLimits -- CatalogMode : catalogMode
+LayerDetails -- CatalogMode : catalogMode
+RuleLimits -- SpatialFilterType : spatialFilterType
+LayerDetails -- SpatialFilterType : spatialFilterType
+
+@enduml

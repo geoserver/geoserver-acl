@@ -2,11 +2,7 @@
 
 This is a (spring-boot) application for the GeoServer Access Control List REST API.
 
-The OpenAPI 3 specification is split into these files:
-
-- [acl-model.yaml](../../../acl/openapi/acl-model.yaml)
-- [acl-api.yaml](../../../acl/openapi/acl-api.yaml)
-- [acl-user-management.yaml](../../../acl/openapi/acl-user-management.yaml)
+The OpenAPI 3 specification is available at [acl-api.yaml](../../../acl/openapi/acl-api.yaml).
 
 With the application running at [http://localhost:8080/api](http://localhost:8080/api):
 

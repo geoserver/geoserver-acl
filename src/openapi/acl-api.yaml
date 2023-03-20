@@ -23,8 +23,8 @@ paths:
       tags:
         - Rules
       parameters:
-        - $ref: 'acl-model.yaml#/components/parameters/limit'
-        - $ref: 'acl-model.yaml#/components/parameters/nextCursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/nextCursor'
       responses:
         '200':
           $ref: '#/components/responses/PageOfRules'
@@ -33,16 +33,16 @@ paths:
       tags:
         - Rules
       parameters:
-        - $ref: 'acl-model.yaml#/components/parameters/insertPosition'
+        - $ref: '#/components/parameters/insertPosition'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/Rule'
+              $ref: '#/components/schemas/Rule'
           application/x-jackson-smile:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/Rule'
+              $ref: '#/components/schemas/Rule'
       responses:
         '201':
           $ref: '#/components/responses/Rule'
@@ -60,8 +60,8 @@ paths:
   /rules/query:
     post:
       parameters:
-        - $ref: 'acl-model.yaml#/components/parameters/limit'
-        - $ref: 'acl-model.yaml#/components/parameters/nextCursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/nextCursor'
       operationId: queryRules
       tags:
         - Rules
@@ -70,10 +70,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/RuleFilter'
+              $ref: '#/components/schemas/RuleFilter'
           application/x-jackson-smile:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/RuleFilter'
+              $ref: '#/components/schemas/RuleFilter'
       responses:
         '200':
           $ref: '#/components/responses/PageOfRules'
@@ -96,10 +96,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/RuleFilter'
+              $ref: '#/components/schemas/RuleFilter'
           application/x-jackson-smile:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/RuleFilter'
+              $ref: '#/components/schemas/RuleFilter'
       responses:
         '200':
           $ref: '#/components/responses/Count'
@@ -147,10 +147,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/Rule'
+              $ref: '#/components/schemas/Rule'
           application/x-jackson-smile:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/Rule'
+              $ref: '#/components/schemas/Rule'
       responses:
         '200':
           $ref: '#/components/responses/Rule'
@@ -214,10 +214,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/LayerDetails'
+              $ref: '#/components/schemas/LayerDetails'
           application/x-jackson-smile:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/LayerDetails'
+              $ref: '#/components/schemas/LayerDetails'
       responses:
         '204':
           description: Updated
@@ -235,10 +235,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/RuleLimits'
+              $ref: '#/components/schemas/RuleLimits'
           application/x-jackson-smile:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/RuleLimits'
+              $ref: '#/components/schemas/RuleLimits'
       responses:
         '204':
           description: Updated
@@ -334,8 +334,8 @@ paths:
       tags:
         - AdminRules
       parameters:
-        - $ref: 'acl-model.yaml#/components/parameters/limit'
-        - $ref: 'acl-model.yaml#/components/parameters/nextCursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/nextCursor'
       responses:
         '200':
           $ref: '#/components/responses/PageOfAdminRules'
@@ -344,24 +344,24 @@ paths:
       tags:
         - AdminRules
       parameters:
-        - $ref: 'acl-model.yaml#/components/parameters/insertPosition'
+        - $ref: '#/components/parameters/insertPosition'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+              $ref: '#/components/schemas/AdminRule'
           application/x-jackson-smile:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+              $ref: '#/components/schemas/AdminRule'
       responses:
         '201':
           $ref: '#/components/responses/AdminRule'
   /adminrules/query:
     post:
       parameters:
-        - $ref: 'acl-model.yaml#/components/parameters/limit'
-        - $ref: 'acl-model.yaml#/components/parameters/nextCursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/nextCursor'
       operationId: findAdminRules
       tags:
         - AdminRules
@@ -370,10 +370,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
+              $ref: '#/components/schemas/AdminRuleFilter'
           application/x-jackson-smile:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
+              $ref: '#/components/schemas/AdminRuleFilter'
       responses:
         '200':
           $ref: '#/components/responses/PageOfAdminRules'
@@ -396,10 +396,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
+              $ref: '#/components/schemas/AdminRuleFilter'
           application/x-jackson-smile:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
+              $ref: '#/components/schemas/AdminRuleFilter'
       responses:
         '200':
           $ref: '#/components/responses/Count'
@@ -435,10 +435,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
+              $ref: '#/components/schemas/AdminRuleFilter'
           application/x-jackson-smile:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/AdminRuleFilter'
+              $ref: '#/components/schemas/AdminRuleFilter'
       responses:
         '200':
           $ref: '#/components/responses/AdminRule'
@@ -467,10 +467,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+              $ref: '#/components/schemas/AdminRule'
           application/x-jackson-smile:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+              $ref: '#/components/schemas/AdminRule'
       responses:
         '200':
           $ref: '#/components/responses/AdminRule'
@@ -569,10 +569,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/AccessRequest'
+              $ref: '#/components/schemas/AccessRequest'
           application/x-jackson-smile:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/AccessRequest'
+              $ref: '#/components/schemas/AccessRequest'
       responses:
         '200':
           $ref: '#/components/responses/AccessInfo'
@@ -587,10 +587,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/AccessRequest'
+              $ref: '#/components/schemas/AccessRequest'
           application/x-jackson-smile:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/AccessRequest'
+              $ref: '#/components/schemas/AccessRequest'
       responses:
         '200':
           $ref: '#/components/responses/AccessInfo'
@@ -605,10 +605,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/AccessRequest'
+              $ref: '#/components/schemas/AccessRequest'
           application/x-jackson-smile:
             schema:
-              $ref: 'acl-model.yaml#/components/schemas/AccessRequest'
+              $ref: '#/components/schemas/AccessRequest'
       responses:
         '200':
           $ref: '#/components/responses/PageOfRules'
@@ -618,34 +618,64 @@ components:
     basicAuth:
       type: http
       scheme: basic
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      description: The rule identifier
+      schema:
+        type: string
+    nextCursor:
+      name: nextCursor
+      in: query 
+      description: The next cursor identifier when doing cursor paging, as returned by the X-ACL-NEXTCURSOR response header
+      required: false
+      schema:
+        type: string
+    limit:
+      name: limit
+      in: query
+      description: Maximum number of rules to return from the query. If there are more rules, the response will return an X-ACL-NEXTCURSOR header
+                   with a value that can be used for the nextCursor parameter on a subsequent request, until X-ACL-NEXTCURSOR is null
+      required: false
+      schema:
+        type: integer
+    insertPosition:
+      name: position
+      in: query 
+      description: "Displacement option related to how to interpret the Rule's priority"
+      required: false
+      schema:
+        $ref: '#/components/schemas/InsertPosition'
   responses:
     Rule:
       description: The requested or updated Rule
       content:
         application/json:
           schema:
-            $ref: 'acl-model.yaml#/components/schemas/Rule'
+            $ref: '#/components/schemas/Rule'
         application/x-jackson-smile:
           schema:
-            $ref: 'acl-model.yaml#/components/schemas/Rule'
+            $ref: '#/components/schemas/Rule'
     LayerDetails:
       description: The requested or updated Rule LayerDetails
       content:
         application/json:
           schema:
-            $ref: 'acl-model.yaml#/components/schemas/LayerDetails'
+            $ref: '#/components/schemas/LayerDetails'
         application/x-jackson-smile:
           schema:
-            $ref: 'acl-model.yaml#/components/schemas/LayerDetails'
+            $ref: '#/components/schemas/LayerDetails'
     AdminRule:
       description: The requested or updated AdminRule
       content:
         application/json:
           schema:
-            $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+            $ref: '#/components/schemas/AdminRule'
         application/x-jackson-smile:
           schema:
-            $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+            $ref: '#/components/schemas/AdminRule'
     Count:
       description: Number of rules matching the request
       content:
@@ -659,12 +689,12 @@ components:
           schema:
             type: array
             items:
-              $ref: 'acl-model.yaml#/components/schemas/Rule'
+              $ref: '#/components/schemas/Rule'
         application/x-jackson-smile:
           schema:
             type: array
             items:
-              $ref: 'acl-model.yaml#/components/schemas/Rule'
+              $ref: '#/components/schemas/Rule'
       headers:
        X-ACL-NEXTCURSOR:
          schema:
@@ -679,12 +709,12 @@ components:
           schema:
             type: array
             items:
-              $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+              $ref: '#/components/schemas/AdminRule'
         application/x-jackson-smile:
           schema:
             type: array
             items:
-              $ref: 'acl-model.yaml#/components/schemas/AdminRule'
+              $ref: '#/components/schemas/AdminRule'
       headers:
        X-ACL-NEXTCURSOR:
          schema:
@@ -697,15 +727,374 @@ components:
       content:
         application/json:
           schema:
-            $ref: 'acl-model.yaml#/components/schemas/AccessInfo'
+            $ref: '#/components/schemas/AccessInfo'
         application/x-jackson-smile:
           schema:
-            $ref: 'acl-model.yaml#/components/schemas/AccessInfo'
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
-      description: The rule identifier
-      schema:
-        type: string
+            $ref: '#/components/schemas/AccessInfo'
+  schemas:
+    CatalogMode:
+      type: string
+      nullable: true
+      enum:
+        - HIDE
+        - CHALLENGE
+        - MIXED
+    SpatialFilterType:
+      type: string
+      nullable: true
+      enum:
+        - INTERSECT
+        - CLIP
+
+    Geom:
+      anyOf:
+      - $ref: '#/components/schemas/wkt'
+      - $ref: '#/components/schemas/wkb'
+
+    wkt:
+      type: object
+      properties:
+        wkt:
+          type: string
+          example: "SRID=4326;MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))"
+    wkb:
+      type: object
+      properties:
+        wkb:
+          type: string
+          format: byte
+
+    AddressRange:
+      type: string
+      nullable: true
+      pattern: '^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$'
+      description: IPv4 address with optional /nn on the end with values from 0 - 32
+      
+    Rule:
+      type: object
+      description: >-
+         A Rule expresses if a given combination of request access is allowed or not.
+      required:
+        - priority
+        - access
+      properties:
+        id:
+          type: string
+          nullable: true
+        priority:
+          type: integer
+          format: int64
+        extId:
+          type: string
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        instance:
+          type: string
+          nullable: true
+        access:
+          $ref: '#/components/schemas/GrantType'
+        limits:
+          $ref: '#/components/schemas/RuleLimits'
+        role:
+          type: string
+          nullable: true
+        user:
+          type: string
+          nullable: true
+        addressRange:
+          $ref: '#/components/schemas/AddressRange'
+        service:
+          type: string
+          nullable: true
+        request:
+          type: string
+          nullable: true
+        subfield:
+          type: string
+          nullable: true
+        workspace:
+          type: string
+          nullable: true
+        layer:
+          type: string
+          nullable: true
+    RuleLimits:
+      type: object
+      description: Defines general limits (such as an Area ) for a Rule, when  access type is LIMIT
+      nullable: true
+      properties:
+        allowedArea:
+          $ref: '#/components/schemas/Geom'
+        spatialFilterType:
+          $ref: '#/components/schemas/SpatialFilterType'
+        catalogMode:
+          $ref: '#/components/schemas/CatalogMode'
+
+    LayerDetails:
+      type: object
+      description: Details may be set only for ules with non-wildcarded profile, instance, workspace, layer
+      nullable: true
+      properties:
+        type:
+          type: string
+          nullable: true
+          enum:
+            - VECTOR
+            - RASTER
+            - LAYERGROUP
+        defaultStyle:
+          type: string
+          nullable: true
+        cqlFilterRead:
+          type: string
+          nullable: true
+        cqlFilterWrite:
+          type: string
+          nullable: true
+        allowedArea:
+          $ref: '#/components/schemas/Geom'
+        spatialFilterType:
+          $ref: '#/components/schemas/SpatialFilterType'
+        catalogMode:
+          $ref: '#/components/schemas/CatalogMode'
+        allowedStyles:
+          type: array
+          nullable: true
+          uniqueItems: true
+          items:
+            type: string
+        layerAttributes:
+          type: array
+          nullable: true
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/LayerAttribute'
+
+    LayerAttribute:
+      type: object
+      description: Access restrictions to a FeatureType attribute
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        dataType:
+          type: string
+          nullable: true
+        access:
+          type: string
+          nullable: true
+          enum:
+            - NONE
+            - READONLY
+            - READWRITE
+    InsertPosition:
+      type: string
+      enum:
+        - FIXED
+        - FROM_START
+        - FROM_END
+
+    GrantType:
+      type: string
+      description: The type of access restriction this rule represents.
+      nullable: true
+      enum:
+        - ALLOW
+        - DENY
+        - LIMIT
+
+    AdminGrantType:
+      type: string
+      description: The type of access restriction to the workspace administration
+      nullable: true
+      enum:
+        - ADMIN
+        - USER
+
+    AdminRule:
+      type: object
+      description: >-
+         An AdminRule expresses if a given combination of request access is allowed or not.
+         It's used for setting admin privileges on workspaces.
+      required:
+        - priority
+        - access
+      properties:
+        id:
+          type: string
+          nullable: true
+        priority:
+          type: integer
+          format: int64
+        access:
+          $ref: '#/components/schemas/AdminGrantType'
+        extId:
+          type: string
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        instance:
+          type: string
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        user:
+          type: string
+          nullable: true
+        workspace:
+          type: string
+          nullable: true
+        addressRange:
+          $ref: '#/components/schemas/AddressRange'
+
+    TextFilter:
+      type: object
+      nullable: true
+      properties:
+        includeDefault:
+          type: boolean
+          nullable: true
+        value:
+          type: string
+          nullable: true
+          description: An absent value will match both set and default values for the property,
+                        a value with only the character literal '*' will match only the default values for the property,
+                        any other specific value will match properties with that value 
+
+    SetFilter:
+      type: object
+      nullable: true
+      properties:
+        includeDefault:
+          type: boolean
+          nullable: true
+        values:
+          type: array
+          nullable: true
+          uniqueItems: true
+          items:
+            type: string
+
+    AddressRangeFilter:
+      type: object
+      nullable: true
+      properties:
+        includeDefault:
+          type: boolean
+          nullable: true
+        value:
+          $ref: '#/components/schemas/AddressRange'
+
+    RuleFilter:
+      type: object
+      description: A filter definition to query Rules
+      nullable: true
+      properties:
+        instance:
+          $ref: '#/components/schemas/TextFilter'
+        user:
+          $ref: '#/components/schemas/TextFilter'
+        roles:
+          $ref: '#/components/schemas/SetFilter'
+        service:
+          $ref: '#/components/schemas/TextFilter'
+        request:
+          $ref: '#/components/schemas/TextFilter'
+        subfield:
+          $ref: '#/components/schemas/TextFilter'
+        workspace:
+          $ref: '#/components/schemas/TextFilter'
+        layer:
+          $ref: '#/components/schemas/TextFilter'
+        sourceAddress:
+          $ref: '#/components/schemas/AddressRangeFilter'
+
+    AdminRuleFilter:
+      type: object
+      description: A filter definition to query Rules
+      nullable: true
+      properties:
+        instance:
+          $ref: '#/components/schemas/TextFilter'
+        grantType:
+          $ref: '#/components/schemas/AdminGrantType'
+        user:
+          $ref: '#/components/schemas/TextFilter'
+        roles:
+          $ref: '#/components/schemas/SetFilter'
+        workspace:
+          $ref: '#/components/schemas/TextFilter'
+        sourceAddress:
+          $ref: '#/components/schemas/AddressRangeFilter'
+
+    AccessRequest:
+      type: object
+      description: A request by a given authenticated user to access the resources matching a given RuleFilter
+      required:
+      - filter
+      properties:
+        username:
+          description: the authentication user name performing the request for which the authorization is being requested
+          type: string
+        roles:
+          description: The roles the requesting user belongs to
+          type: array
+          nullable: true
+          uniqueItems: true
+          items:
+            type: string
+        filter:
+          $ref: '#/components/schemas/RuleFilter'
+        
+    AccessInfo:
+      type: object
+      description: The compiled access limits for a given user/RuleFilter combination
+      required:
+      - grant
+      - adminRights
+      properties:
+        grant:
+          $ref: '#/components/schemas/GrantType'
+        adminRights:
+           type: boolean
+        area:
+          $ref: '#/components/schemas/Geom'
+        clipArea:
+          $ref: '#/components/schemas/Geom'
+        catalogMode:
+          $ref: '#/components/schemas/CatalogMode'
+        defaultStyle:
+          type: string
+        allowedStyles:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        cqlFilterRead:
+          type: string
+        cqlFilterWrite:
+          type: string
+        attributes:
+          type: array
+          nullable: true
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/LayerAttribute'
+        matchingRules:
+          type: array
+          items:
+            type: string
+        matchingAdminRule:
+          type: string
+        

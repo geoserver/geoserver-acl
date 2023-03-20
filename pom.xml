@@ -38,6 +38,7 @@
   </developers>
   <modules>
     <module>src</module>
+    <module>docs</module>
   </modules>
   <scm>
     <connection>scm:git:git@github.com:geoserver/geoserver-acl.git</connection>
@@ -71,6 +72,8 @@
     <fmt.action>format</fmt.action>
     <fmt.skip>false</fmt.skip>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <openapi-generator-maven-plugin.version>6.3.0</openapi-generator-maven-plugin.version>
+    <openapi-codegen-skip>false</openapi-codegen-skip>
   </properties>
   <repositories>
     <repository>
@@ -219,6 +222,11 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>flatten-maven-plugin</artifactId>
           <version>1.2.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.openapitools</groupId>
+          <artifactId>openapi-generator-maven-plugin</artifactId>
+          <version>${openapi-generator-maven-plugin.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
