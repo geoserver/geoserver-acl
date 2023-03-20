@@ -73,3 +73,4 @@ flowchart LR
     rest-app --> spring-boot-autoconfiguration
   end
 ```
+
