@@ -30,6 +30,7 @@ public class AuthorizationApiImpl implements AuthorizationApiDelegate {
                 support.toModel(accessRequest);
         org.geoserver.acl.model.authorization.AccessInfo modelResponse =
                 service.getAccessInfo(modelRequest);
+        support.setPreferredGeometryEncoding();
         AccessInfo apiResponse = support.toApi(modelResponse);
         return ResponseEntity.ok(apiResponse);
     }
@@ -40,6 +41,7 @@ public class AuthorizationApiImpl implements AuthorizationApiDelegate {
                 support.toModel(accessRequest);
         org.geoserver.acl.model.authorization.AccessInfo modelResponse =
                 service.getAdminAuthorization(modelRequest);
+        support.setPreferredGeometryEncoding();
         AccessInfo apiResponse = support.toApi(modelResponse);
         return ResponseEntity.ok(apiResponse);
     }
@@ -51,6 +53,7 @@ public class AuthorizationApiImpl implements AuthorizationApiDelegate {
         List<org.geoserver.acl.model.rules.Rule> modelResponse =
                 service.getMatchingRules(modelRequest);
 
+        support.setPreferredGeometryEncoding();
         List<Rule> apiResponse =
                 modelResponse.stream().map(support::toApi).collect(Collectors.toList());
         return ResponseEntity.ok(apiResponse);

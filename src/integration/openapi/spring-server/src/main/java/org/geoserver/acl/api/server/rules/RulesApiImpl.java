@@ -51,6 +51,7 @@ public class RulesApiImpl implements RulesApiDelegate {
         } catch (RuleIdentifierConflictException conflict) {
             return support.error(CONFLICT, conflict.getMessage());
         }
+        support.setPreferredGeometryEncoding();
         return ResponseEntity.status(HttpStatus.CREATED).body(support.toApi(created));
     }
 
@@ -92,6 +93,7 @@ public class RulesApiImpl implements RulesApiDelegate {
             return support.error(BAD_REQUEST, e.getMessage());
         }
 
+        support.setPreferredGeometryEncoding();
         List<Rule> body = list.stream().map(support::toApi).collect(Collectors.toList());
         String nextCursor;
         if (requestedLimit != null && body.size() > requestedLimit) {
@@ -106,6 +108,7 @@ public class RulesApiImpl implements RulesApiDelegate {
     @Override
     public ResponseEntity<Rule> getRuleById(@NonNull String id) {
         Optional<org.geoserver.acl.model.rules.Rule> found = service.get(id);
+        support.setPreferredGeometryEncoding();
 
         return ResponseEntity.status(found.isPresent() ? OK : NOT_FOUND)
                 .body(found.map(support::toApi).orElse(null));
@@ -119,6 +122,7 @@ public class RulesApiImpl implements RulesApiDelegate {
         } catch (IllegalStateException multipleResults) {
             return ResponseEntity.status(CONFLICT).build();
         }
+        support.setPreferredGeometryEncoding();
         return ResponseEntity.status(found.isPresent() ? OK : NOT_FOUND)
                 .body(found.map(support::toApi).orElse(null));
     }
@@ -152,6 +156,7 @@ public class RulesApiImpl implements RulesApiDelegate {
     @Override
     public ResponseEntity<LayerDetails> getLayerDetailsByRuleId(@NonNull String id) {
         try {
+            support.setPreferredGeometryEncoding();
             LayerDetails details = service.getLayerDetails(id).map(support::toApi).orElse(null);
             return ResponseEntity.status(details == null ? NO_CONTENT : OK).body(details);
         } catch (IllegalArgumentException e) {
@@ -219,6 +224,7 @@ public class RulesApiImpl implements RulesApiDelegate {
 
         try {
             org.geoserver.acl.model.rules.Rule updated = service.update(patched);
+            support.setPreferredGeometryEncoding();
             return ResponseEntity.status(OK).body(support.toApi(updated));
         } catch (RuleIdentifierConflictException e) {
             return support.error(CONFLICT, e.getMessage());

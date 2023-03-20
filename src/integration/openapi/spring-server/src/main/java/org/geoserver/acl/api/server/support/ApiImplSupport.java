@@ -11,13 +11,16 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import org.geoserver.acl.api.mapper.EnumsApiMapperImpl;
+import org.geoserver.acl.api.mapper.GeometryApiMapper;
 import org.geoserver.acl.api.mapper.RuleFilterApiMapper;
 import org.geoserver.acl.api.model.AdminRuleFilter;
 import org.geoserver.acl.api.model.InsertPosition;
 import org.geoserver.acl.api.model.RuleFilter;
 import org.geoserver.acl.api.server.support.RequestBodyBufferingServletFilter.RequestBodyBufferingServletRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import java.io.BufferedReader;
@@ -80,5 +83,17 @@ public abstract class ApiImplSupport<DTO, T> {
 
     public <R> ResponseEntity<R> error(HttpStatus code, String reason) {
         return ResponseEntity.status(code).header("X-Reason", reason).build();
+    }
+
+    public void setPreferredGeometryEncoding() {
+        String acceptContentType = nativeRequest.getHeader("Accept");
+        boolean useWkb = true;
+        if (StringUtils.hasText(acceptContentType)) {
+            MediaType mediaType = MediaType.parseMediaType(acceptContentType);
+            useWkb = !MediaType.APPLICATION_JSON.isCompatibleWith(mediaType);
+        } else {
+            useWkb = false;
+        }
+        GeometryApiMapper.setUseWkb(useWkb);
     }
 }

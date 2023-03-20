@@ -9,6 +9,8 @@ import org.geolatte.geom.Geometry;
 import org.geolatte.geom.Position;
 import org.geolatte.geom.codec.Wkb;
 import org.geolatte.geom.codec.Wkt;
+import org.geolatte.geom.crs.CrsRegistry;
+import org.geolatte.geom.crs.Geographic2DCoordinateReferenceSystem;
 import org.geoserver.acl.api.model.Geom;
 import org.mapstruct.Mapper;
 
@@ -19,22 +21,40 @@ public interface GeometryApiMapper {
 
     Pattern pattern = Pattern.compile("((SRID=(\\d+))\\s*;)?\\s*(MULTIPOLYGON.*)");
 
+    static final ThreadLocal<Boolean> USE_WKB = ThreadLocal.withInitial(() -> true);
+
+    static void setUseWkb(boolean useWkb) {
+        USE_WKB.set(useWkb);
+    }
+
     default Geom geometryToApi(Geometry<? extends Position> geom) {
         if (null == geom) return null;
 
         Geom apiValue = new Geom();
-        apiValue.setWkb(Wkb.toWkb(geom).toByteArray());
+        final boolean wkb = USE_WKB.get().booleanValue();
+        if (wkb) {
+            apiValue.setWkb(Wkb.toWkb(geom).toByteArray());
+        } else {
+            apiValue.setWkt(geolatteToWKT(geom));
+        }
         return apiValue;
     }
 
     default org.geolatte.geom.Geometry<? extends Position> apiToGeometry(Geom geom) {
         if (geom == null) return null;
-        return geom.getWkb() != null ? wkbToGeometry(geom.getWkb()) : wktToGeometry(geom.getWkt());
+        Geometry<?> geometry =
+                geom.getWkb() != null ? wkbToGeometry(geom.getWkb()) : wktToGeometry(geom.getWkt());
+        if (null != geometry && -1 == geometry.getSRID()) {
+            Geographic2DCoordinateReferenceSystem wgs84 =
+                    CrsRegistry.getGeographicCoordinateReferenceSystemForEPSG(4326);
+            geometry = Geometry.forceToCrs(geometry, wgs84);
+        }
+        return geometry;
     }
 
     default org.geolatte.geom.MultiPolygon<? extends Position> apiToMultiPolygon(
             Geometry<? extends Position> geometry) {
-        //        Geometry<? extends Position> geometry = apiToGeometry(geom);
+        // Geometry<? extends Position> geometry = apiToGeometry(geom);
         if (geometry == null) return null;
         if (!(geometry instanceof org.geolatte.geom.MultiPolygon)) {
             throw new IllegalArgumentException(

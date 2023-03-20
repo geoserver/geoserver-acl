@@ -693,7 +693,8 @@ public class RuleAdminServiceIT {
 
     private MultiPolygon<?> world() {
         return (MultiPolygon<?>)
-                Wkt.fromWkt("MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))");
+                Wkt.fromWkt(
+                        "SRID=4326;MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))");
     }
 
     private LayerDetails sampleDetails(int i) {
