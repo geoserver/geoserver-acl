@@ -17,12 +17,10 @@
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
       <artifactId>gs-acl-accessrules</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
       <artifactId>gs-acl-adminrules</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -51,14 +49,12 @@
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
       <artifactId>gs-acl-accessrules</artifactId>
-      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
       <artifactId>gs-acl-adminrules</artifactId>
-      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

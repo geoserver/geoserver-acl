@@ -75,6 +75,103 @@
     <openapi-generator-maven-plugin.version>6.3.0</openapi-generator-maven-plugin.version>
     <openapi-codegen-skip>false</openapi-codegen-skip>
   </properties>
+  <dependencyManagement>
+    <dependencies>
+      <!-- Domain -->
+      <dependency>
+        <groupId>org.geoserver.acl.domain</groupId>
+        <artifactId>gs-acl-objectmodel</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.domain</groupId>
+        <artifactId>gs-acl-accessrules</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.domain</groupId>
+        <artifactId>gs-acl-accessrules</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.domain</groupId>
+        <artifactId>gs-acl-adminrules</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.domain</groupId>
+        <artifactId>gs-acl-adminrules</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.domain</groupId>
+        <artifactId>gs-acl-authorization</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.domain</groupId>
+        <artifactId>gs-acl-authorization</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <!-- OpenAPI code-gen libraries -->
+      <dependency>
+        <groupId>org.geoserver.acl.openapi</groupId>
+        <artifactId>gs-acl-openapi-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.openapi</groupId>
+        <artifactId>gs-acl-openapi-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.openapi</groupId>
+        <artifactId>gs-acl-openapi-spring-server</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- JPA integration -->
+      <dependency>
+        <groupId>org.geoserver.acl.integration.jpa</groupId>
+        <artifactId>gs-acl-jpa-persistence</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.integration.jpa</groupId>
+        <artifactId>gs-acl-jpa-integration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- OpenAPI integration -->
+      <dependency>
+        <groupId>org.geoserver.cloud.authorizaton.integration.openapi</groupId>
+        <artifactId>gs-acl-api-model-mapper</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.cloud.authorizaton.integration.openapi</groupId>
+        <artifactId>gs-acl-api-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.cloud.authorizaton.integration.openapi</groupId>
+        <artifactId>gs-acl-api-impl</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- Spring/boot integration -->
+      <dependency>
+        <groupId>org.geoserver.acl.integration</groupId>
+        <artifactId>gs-acl-domain-spring-integration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.integration</groupId>
+        <artifactId>spring-boot-simplejndi</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <repositories>
     <repository>
       <releases>

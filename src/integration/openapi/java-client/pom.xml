@@ -17,22 +17,18 @@
     <dependency>
       <groupId>org.geoserver.acl.openapi</groupId>
       <artifactId>gs-acl-openapi-client</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.cloud.authorizaton.integration.openapi</groupId>
       <artifactId>gs-acl-api-model-mapper</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
       <artifactId>gs-acl-accessrules</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
       <artifactId>gs-acl-adminrules</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>

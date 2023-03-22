@@ -17,32 +17,26 @@
     <dependency>
       <groupId>org.geoserver.acl.openapi</groupId>
       <artifactId>gs-acl-openapi-spring-server</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.cloud.authorizaton.integration.openapi</groupId>
       <artifactId>gs-acl-api-model-mapper</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.acl.integration</groupId>
       <artifactId>gs-acl-domain-spring-integration</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
       <artifactId>gs-acl-accessrules</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
       <artifactId>gs-acl-adminrules</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
       <artifactId>gs-acl-authorization</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>

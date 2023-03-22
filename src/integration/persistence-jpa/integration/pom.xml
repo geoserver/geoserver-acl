@@ -17,17 +17,14 @@
     <dependency>
       <groupId>org.geoserver.acl.integration.jpa</groupId>
       <artifactId>gs-acl-jpa-persistence</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
       <artifactId>gs-acl-accessrules</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
       <artifactId>gs-acl-adminrules</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -41,7 +38,6 @@
     <dependency>
       <groupId>org.geoserver.acl.integration</groupId>
       <artifactId>gs-acl-domain-spring-integration</artifactId>
-      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -67,20 +63,17 @@
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
       <artifactId>gs-acl-accessrules</artifactId>
-      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
       <artifactId>gs-acl-authorization</artifactId>
-      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
       <artifactId>gs-acl-authorization</artifactId>
-      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

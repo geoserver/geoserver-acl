@@ -19,12 +19,10 @@
     <dependency>
       <groupId>org.geoserver.cloud.authorizaton.integration.openapi</groupId>
       <artifactId>gs-acl-api-impl</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.acl.integration.jpa</groupId>
       <artifactId>gs-acl-jpa-integration</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
