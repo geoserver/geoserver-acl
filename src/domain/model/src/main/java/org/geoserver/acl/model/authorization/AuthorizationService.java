@@ -24,9 +24,9 @@ public interface AuthorizationService {
     /**
      * info about admin authorization on a given workspace.
      *
-     * <p>Returned AccessInfo will always be ALLOW, with the computed adminRights.
+     * <p>Returned AdminAccessInfo will always be ALLOW, with the computed adminRights.
      */
-    AccessInfo getAdminAuthorization(AccessRequest request);
+    AdminAccessInfo getAdminAuthorization(AdminAccessRequest request);
 
     /**
      * Return the unprocessed {@link Rule} list matching a given filter, sorted by priority.

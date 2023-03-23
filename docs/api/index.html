@@ -847,14 +847,11 @@ ul.nav-tabs {
     // Script section to load models into a JS Var
     var defs = {}
     defs["AccessInfo"] = {
-  "required" : [ "adminRights", "grant" ],
+  "required" : [ "grant" ],
   "type" : "object",
   "properties" : {
     "grant" : {
       "$ref" : "#/components/schemas/GrantType"
-    },
-    "adminRights" : {
-      "type" : "boolean"
     },
     "area" : {
       "$ref" : "#/components/schemas/Geom"
@@ -894,18 +891,14 @@ ul.nav-tabs {
       "items" : {
         "type" : "string"
       }
-    },
-    "matchingAdminRule" : {
-      "type" : "string"
     }
   },
   "description" : "The compiled access limits for a given user/RuleFilter combination"
 };
     defs["AccessRequest"] = {
-  "required" : [ "filter" ],
   "type" : "object",
   "properties" : {
-    "username" : {
+    "user" : {
       "type" : "string",
       "description" : "the authentication user name performing the request for which the authorization is being requested"
     },
@@ -918,11 +911,36 @@ ul.nav-tabs {
         "type" : "string"
       }
     },
-    "filter" : {
-      "$ref" : "#/components/schemas/RuleFilter"
+    "instance" : {
+      "type" : "string",
+      "default" : "*"
+    },
+    "sourceAddress" : {
+      "type" : "string",
+      "default" : "*"
+    },
+    "service" : {
+      "type" : "string",
+      "default" : "*"
+    },
+    "request" : {
+      "type" : "string",
+      "default" : "*"
+    },
+    "subfield" : {
+      "type" : "string",
+      "default" : "*"
+    },
+    "workspace" : {
+      "type" : "string",
+      "default" : "*"
+    },
+    "layer" : {
+      "type" : "string",
+      "default" : "*"
     }
   },
-  "description" : "A request by a given authenticated user to access the resources matching a given RuleFilter"
+  "description" : "A request by a given authenticated user to access the resources matching the request properties"
 };
     defs["AddressRangeFilter"] = {
   "type" : "object",
@@ -936,6 +954,53 @@ ul.nav-tabs {
     }
   },
   "nullable" : true
+};
+    defs["AdminAccessInfo"] = {
+  "required" : [ "admin" ],
+  "type" : "object",
+  "properties" : {
+    "admin" : {
+      "type" : "boolean"
+    },
+    "workspace" : {
+      "type" : "string"
+    },
+    "matchingAdminRule" : {
+      "type" : "string"
+    }
+  },
+  "description" : "Workspace level admin grant"
+};
+    defs["AdminAccessRequest"] = {
+  "type" : "object",
+  "properties" : {
+    "user" : {
+      "type" : "string",
+      "description" : "the authentication user name performing the request for which the authorization is being requested"
+    },
+    "roles" : {
+      "uniqueItems" : true,
+      "type" : "array",
+      "description" : "The roles the requesting user belongs to",
+      "nullable" : true,
+      "items" : {
+        "type" : "string"
+      }
+    },
+    "instance" : {
+      "type" : "string",
+      "default" : "*"
+    },
+    "sourceAddress" : {
+      "type" : "string",
+      "default" : "*"
+    },
+    "workspace" : {
+      "type" : "string",
+      "default" : "*"
+    }
+  },
+  "description" : "A request by a given authenticated user to access the workspace given by this request"
 };
     defs["AdminGrantType"] = {
   "type" : "string",
@@ -6796,46 +6861,15 @@ $(document).ready(function() {
  -H "Content-Type: application/json,application/x-jackson-smile" \
  "http://localhost:8080/api/authorization/resources" \
  -d '{
-  &quot;filter&quot; : {
-    &quot;request&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;workspace&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;instance&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;subfield&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;sourceAddress&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;service&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;roles&quot; : {
-      &quot;values&quot; : [ &quot;values&quot;, &quot;values&quot; ],
-      &quot;includeDefault&quot; : true
-    },
-    &quot;user&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;layer&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    }
-  },
+  &quot;request&quot; : &quot;*&quot;,
+  &quot;workspace&quot; : &quot;*&quot;,
+  &quot;instance&quot; : &quot;*&quot;,
+  &quot;sourceAddress&quot; : &quot;*&quot;,
+  &quot;subfield&quot; : &quot;*&quot;,
+  &quot;service&quot; : &quot;*&quot;,
   &quot;roles&quot; : [ &quot;roles&quot;, &quot;roles&quot; ],
-  &quot;username&quot; : &quot;username&quot;
+  &quot;user&quot; : &quot;user&quot;,
+  &quot;layer&quot; : &quot;*&quot;
 }' \
  -d 'Custom MIME type example not yet supported: application/x-jackson-smile'
 </code></pre>
@@ -7126,7 +7160,7 @@ $(document).ready(function() {
                             <h3 id="examples-Authorization-getAccessInfo-title-200"></h3>
                             <p id="examples-Authorization-getAccessInfo-description-200" class="marked"></p>
                             <script>
-                              var responseAuthorization200_description = `The compiled access grant for a given resource or admin access request`;
+                              var responseAuthorization200_description = `The compiled access grant for a given resource access request`;
                               var responseAuthorization200_description_break = responseAuthorization200_description.indexOf('\n');
                               if (responseAuthorization200_description_break == -1) {
                                 $("#examples-Authorization-getAccessInfo-title-200").text("Status: 200 - " + responseAuthorization200_description);
@@ -7227,46 +7261,11 @@ $(document).ready(function() {
  -H "Content-Type: application/json,application/x-jackson-smile" \
  "http://localhost:8080/api/authorization/admin" \
  -d '{
-  &quot;filter&quot; : {
-    &quot;request&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;workspace&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;instance&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;subfield&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;sourceAddress&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;service&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;roles&quot; : {
-      &quot;values&quot; : [ &quot;values&quot;, &quot;values&quot; ],
-      &quot;includeDefault&quot; : true
-    },
-    &quot;user&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;layer&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    }
-  },
+  &quot;workspace&quot; : &quot;*&quot;,
+  &quot;instance&quot; : &quot;*&quot;,
+  &quot;sourceAddress&quot; : &quot;*&quot;,
   &quot;roles&quot; : [ &quot;roles&quot;, &quot;roles&quot; ],
-  &quot;username&quot; : &quot;username&quot;
+  &quot;user&quot; : &quot;user&quot;
 }' \
  -d 'Custom MIME type example not yet supported: application/x-jackson-smile'
 </code></pre>
@@ -7291,10 +7290,10 @@ public class AuthorizationApiExample {
 
         // Create an instance of the API class
         AuthorizationApi apiInstance = new AuthorizationApi();
-        AccessRequest accessRequest = ; // AccessRequest | 
+        AdminAccessRequest adminAccessRequest = ; // AdminAccessRequest | 
 
         try {
-            AccessInfo result = apiInstance.getAdminAuthorization(accessRequest);
+            AdminAccessInfo result = apiInstance.getAdminAuthorization(adminAccessRequest);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling AuthorizationApi#getAdminAuthorization");
@@ -7311,10 +7310,10 @@ public class AuthorizationApiExample {
 public class AuthorizationApiExample {
     public static void main(String[] args) {
         AuthorizationApi apiInstance = new AuthorizationApi();
-        AccessRequest accessRequest = ; // AccessRequest | 
+        AdminAccessRequest adminAccessRequest = ; // AdminAccessRequest | 
 
         try {
-            AccessInfo result = apiInstance.getAdminAuthorization(accessRequest);
+            AdminAccessInfo result = apiInstance.getAdminAuthorization(adminAccessRequest);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling AuthorizationApi#getAdminAuthorization");
@@ -7336,10 +7335,10 @@ public class AuthorizationApiExample {
 
 // Create an instance of the API class
 AuthorizationApi *apiInstance = [[AuthorizationApi alloc] init];
-AccessRequest *accessRequest = ; // 
+AdminAccessRequest *adminAccessRequest = ; // 
 
-[apiInstance getAdminAuthorizationWith:accessRequest
-              completionHandler: ^(AccessInfo output, NSError* error) {
+[apiInstance getAdminAuthorizationWith:adminAccessRequest
+              completionHandler: ^(AdminAccessInfo output, NSError* error) {
     if (output) {
         NSLog(@"%@", output);
     }
@@ -7361,7 +7360,7 @@ basicAuth.password = 'YOUR PASSWORD';
 
 // Create an instance of the API class
 var api = new GeoServerAcl.AuthorizationApi()
-var accessRequest = ; // {AccessRequest} 
+var adminAccessRequest = ; // {AdminAccessRequest} 
 
 var callback = function(error, data, response) {
   if (error) {
@@ -7370,7 +7369,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.getAdminAuthorization(accessRequest, callback);
+api.getAdminAuthorization(adminAccessRequest, callback);
 </code></pre>
                             </div>
 
@@ -7396,10 +7395,10 @@ namespace Example
 
             // Create an instance of the API class
             var apiInstance = new AuthorizationApi();
-            var accessRequest = new AccessRequest(); // AccessRequest | 
+            var adminAccessRequest = new AdminAccessRequest(); // AdminAccessRequest | 
 
             try {
-                AccessInfo result = apiInstance.getAdminAuthorization(accessRequest);
+                AdminAccessInfo result = apiInstance.getAdminAuthorization(adminAccessRequest);
                 Debug.WriteLine(result);
             } catch (Exception e) {
                 Debug.Print("Exception when calling AuthorizationApi.getAdminAuthorization: " + e.Message );
@@ -7420,10 +7419,10 @@ OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_
 
 // Create an instance of the API class
 $api_instance = new OpenAPITools\Client\Api\AuthorizationApi();
-$accessRequest = ; // AccessRequest | 
+$adminAccessRequest = ; // AdminAccessRequest | 
 
 try {
-    $result = $api_instance->getAdminAuthorization($accessRequest);
+    $result = $api_instance->getAdminAuthorization($adminAccessRequest);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling AuthorizationApi->getAdminAuthorization: ', $e->getMessage(), PHP_EOL;
@@ -7442,10 +7441,10 @@ $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
 
 # Create an instance of the API class
 my $api_instance = WWW::OPenAPIClient::AuthorizationApi->new();
-my $accessRequest = WWW::OPenAPIClient::Object::AccessRequest->new(); # AccessRequest | 
+my $adminAccessRequest = WWW::OPenAPIClient::Object::AdminAccessRequest->new(); # AdminAccessRequest | 
 
 eval {
-    my $result = $api_instance->getAdminAuthorization(accessRequest => $accessRequest);
+    my $result = $api_instance->getAdminAuthorization(adminAccessRequest => $adminAccessRequest);
     print Dumper($result);
 };
 if ($@) {
@@ -7466,10 +7465,10 @@ openapi_client.configuration.password = 'YOUR_PASSWORD'
 
 # Create an instance of the API class
 api_instance = openapi_client.AuthorizationApi()
-accessRequest =  # AccessRequest | 
+adminAccessRequest =  # AdminAccessRequest | 
 
 try:
-    api_response = api_instance.get_admin_authorization(accessRequest)
+    api_response = api_instance.get_admin_authorization(adminAccessRequest)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling AuthorizationApi->getAdminAuthorization: %s\n" % e)</code></pre>
@@ -7479,10 +7478,10 @@ except ApiException as e:
                               <pre class="prettyprint"><code class="language-rust">extern crate AuthorizationApi;
 
 pub fn main() {
-    let accessRequest = ; // AccessRequest
+    let adminAccessRequest = ; // AdminAccessRequest
 
     let mut context = AuthorizationApi::Context::default();
-    let result = client.getAdminAuthorization(accessRequest, &context).wait();
+    let result = client.getAdminAuthorization(adminAccessRequest, &context).wait();
 
     println!("{:?}", result);
 }
@@ -7505,7 +7504,7 @@ pub fn main() {
                                 <th width="150px">Name</th>
                                 <th>Description</th>
                               </tr>
-                                <tr><td style="width:150px;">accessRequest <span style="color:red;">*</span></td>
+                                <tr><td style="width:150px;">adminAccessRequest <span style="color:red;">*</span></td>
 <td>
 <p class="marked"></p>
 <script>
@@ -7514,12 +7513,12 @@ $(document).ready(function() {
   "content" : {
     "application/json" : {
       "schema" : {
-        "$ref" : "#/components/schemas/AccessRequest"
+        "$ref" : "#/components/schemas/AdminAccessRequest"
       }
     },
     "application/x-jackson-smile" : {
       "schema" : {
-        "$ref" : "#/components/schemas/AccessRequest"
+        "$ref" : "#/components/schemas/AdminAccessRequest"
       }
     }
   },
@@ -7540,12 +7539,12 @@ $(document).ready(function() {
   }
 
   var view = new JSONSchemaView(schema,2,{isBodyParam: true});
-  var result = $('#d2e199_getAdminAuthorization_accessRequest');
+  var result = $('#d2e199_getAdminAuthorization_adminAccessRequest');
   result.empty();
   result.append(view.render());
 });
 </script>
-<div id="d2e199_getAdminAuthorization_accessRequest"></div>
+<div id="d2e199_getAdminAuthorization_adminAccessRequest"></div>
 </td>
 </tr>
 
@@ -7557,7 +7556,7 @@ $(document).ready(function() {
                             <h3 id="examples-Authorization-getAdminAuthorization-title-200"></h3>
                             <p id="examples-Authorization-getAdminAuthorization-description-200" class="marked"></p>
                             <script>
-                              var responseAuthorization200_description = `The compiled access grant for a given resource or admin access request`;
+                              var responseAuthorization200_description = `The compiled admin access grant for a given workspace`;
                               var responseAuthorization200_description_break = responseAuthorization200_description.indexOf('\n');
                               if (responseAuthorization200_description_break == -1) {
                                 $("#examples-Authorization-getAdminAuthorization-title-200").text("Status: 200 - " + responseAuthorization200_description);
@@ -7658,46 +7657,15 @@ $(document).ready(function() {
  -H "Content-Type: application/json,application/x-jackson-smile" \
  "http://localhost:8080/api/authorization/resources/matchingrules" \
  -d '{
-  &quot;filter&quot; : {
-    &quot;request&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;workspace&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;instance&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;subfield&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;sourceAddress&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;service&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;roles&quot; : {
-      &quot;values&quot; : [ &quot;values&quot;, &quot;values&quot; ],
-      &quot;includeDefault&quot; : true
-    },
-    &quot;user&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    },
-    &quot;layer&quot; : {
-      &quot;includeDefault&quot; : true,
-      &quot;value&quot; : &quot;value&quot;
-    }
-  },
+  &quot;request&quot; : &quot;*&quot;,
+  &quot;workspace&quot; : &quot;*&quot;,
+  &quot;instance&quot; : &quot;*&quot;,
+  &quot;sourceAddress&quot; : &quot;*&quot;,
+  &quot;subfield&quot; : &quot;*&quot;,
+  &quot;service&quot; : &quot;*&quot;,
   &quot;roles&quot; : [ &quot;roles&quot;, &quot;roles&quot; ],
-  &quot;username&quot; : &quot;username&quot;
+  &quot;user&quot; : &quot;user&quot;,
+  &quot;layer&quot; : &quot;*&quot;
 }' \
  -d 'Custom MIME type example not yet supported: application/x-jackson-smile'
 </code></pre>

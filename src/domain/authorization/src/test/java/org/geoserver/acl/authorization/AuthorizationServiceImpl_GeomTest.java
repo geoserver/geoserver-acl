@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.geoserver.acl.model.rules.GrantType.ALLOW;
 import static org.geoserver.acl.model.rules.GrantType.LIMIT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -22,9 +21,6 @@ import org.geoserver.acl.adminrules.MemoryAdminRuleRepository;
 import org.geoserver.acl.model.authorization.AccessInfo;
 import org.geoserver.acl.model.authorization.AccessRequest;
 import org.geoserver.acl.model.authorization.AuthorizationService;
-import org.geoserver.acl.model.authorization.User;
-import org.geoserver.acl.model.filter.RuleFilter;
-import org.geoserver.acl.model.filter.predicate.SpecialFilterType;
 import org.geoserver.acl.model.rules.CatalogMode;
 import org.geoserver.acl.model.rules.Rule;
 import org.geoserver.acl.model.rules.RuleLimits;
@@ -32,6 +28,8 @@ import org.geoserver.acl.model.rules.SpatialFilterType;
 import org.geoserver.acl.rules.MemoryRuleRepository;
 import org.geoserver.acl.rules.RuleAdminService;
 import org.junit.jupiter.api.Test;
+
+import java.util.Set;
 
 /**
  * {@link AuthorizationService} integration/conformance test working with geometries
@@ -80,12 +78,21 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
         }
 
         {
-            RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
-            filter.setWorkspace("w1");
-            filter.setService("s1");
-            filter.setRequest("r1");
-            filter.setLayer("l1");
-            AccessRequest request = AccessRequest.builder().filter(filter).build();
+            //            RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
+            //            filter.setWorkspace("w1");
+            //            filter.setService("s1");
+            //            filter.setRequest("r1");
+            //            filter.setLayer("l1");
+
+            AccessRequest request =
+                    AccessRequest.builder()
+                            .user(null)
+                            .roles(Set.of())
+                            .service("s1")
+                            .request("r1")
+                            .workspace("w1")
+                            .layer("l1")
+                            .build();
             AccessInfo accessInfo = authorizationService.getAccessInfo(request);
             Geometry<?> area = accessInfo.getArea();
             assertEquals(3857, area.getCoordinateReferenceSystem().getCrsId().getCode());
@@ -133,12 +140,22 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
         }
 
         {
-            RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
-            filter.setWorkspace("w1");
-            filter.setService("s1");
-            filter.setRequest("r1");
-            filter.setLayer("l1");
-            AccessRequest request = AccessRequest.builder().filter(filter).build();
+            //            RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
+            //            filter.setWorkspace("w1");
+            //            filter.setService("s1");
+            //            filter.setRequest("r1");
+            //            filter.setLayer("l1");
+            //            AccessRequest request = AccessRequest.builder().filter(filter).build();
+            AccessRequest request =
+                    AccessRequest.builder()
+                            .user(null)
+                            .roles(Set.of())
+                            .service("s1")
+                            .request("r1")
+                            .workspace("w1")
+                            .layer("l1")
+                            .build();
+
             AccessInfo accessInfo = authorizationService.getAccessInfo(request);
             Geometry<?> area = accessInfo.getArea();
             assertEquals(3003, area.getCoordinateReferenceSystem().getCrsId().getCode());
@@ -151,13 +168,13 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
         // test that when we have two rules referring to the same group
         // one having a filter type Intersects and the other one having filter type Clip
         // the result is a clip area obtained by the intersection of the two.
-        final User user = createUser("auth11", "group11", "group12");
+        final AccessRequest user = createRequest("auth11", "group11", "group12");
 
         insert(9999, null, null, null, null, "s11", "r11", null, "w11", "l11", ALLOW);
-        String id =
+        String id1 =
                 insert(
                                 10,
-                                user.getName(),
+                                user.getUser(),
                                 "group11",
                                 null,
                                 null,
@@ -179,12 +196,12 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
                         .allowedArea(area)
                         .build();
 
-        ruleAdminService.setLimits(id, limits);
+        ruleAdminService.setLimits(id1, limits);
 
         String id2 =
                 insert(
                                 11,
-                                user.getName(),
+                                user.getUser(),
                                 "group12",
                                 null,
                                 null,
@@ -206,14 +223,15 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
                         .allowedArea(area2)
                         .build();
         ruleAdminService.setLimits(id2, limits2);
-        RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
-        filter.setWorkspace("w11");
-        filter.setLayer("l11");
-
-        AccessRequest request = AccessRequest.builder().user(user).filter(filter).build();
+        //        RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
+        //        filter.setWorkspace("w11");
+        //        filter.setLayer("l11");
+        //
+        // AccessRequest request = AccessRequest.builder().user(user).filter(filter).build();
+        AccessRequest request = AccessRequest.builder().workspace("w11").layer("l11").build();
+        //        request = user.withWorkspace("w11").withLayer("l11");
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
         assertEquals(ALLOW, accessInfo.getGrant());
-        assertFalse(accessInfo.isAdminRights());
 
         // area in same group, the result should an itersection of the
         // two allowed area as a clip geometry.
@@ -233,13 +251,13 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
         // test that when we have two rules referring to the same group
         // both having a filter type Intersects
         // the result is an intersect area obtained by the intersection of the two.
-        final User user = createUser("auth12", "group13", "group14");
+        final AccessRequest user = createRequest("auth12", "group13", "group14");
 
         insert(9999, null, null, null, null, "s11", "r11", null, "w11", "l11", ALLOW);
         String id =
                 insert(
                                 13,
-                                user.getName(),
+                                user.getUser(),
                                 "group13",
                                 null,
                                 null,
@@ -266,7 +284,7 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
         String id2 =
                 insert(
                                 14,
-                                user.getName(),
+                                user.getUser(),
                                 "group14",
                                 null,
                                 null,
@@ -289,16 +307,13 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
                         .build();
 
         ruleAdminService.setLimits(id2, limits2);
-        RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
-        filter.setWorkspace("w11");
-        filter.setLayer("l11");
 
-        AccessRequest request = AccessRequest.builder().user(user).filter(filter).build();
+        AccessRequest request = AccessRequest.builder().workspace("w11").layer("l11").build();
+        //        request = user.withWorkspace("w11").withLayer("l11");
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
         assertEquals(ALLOW, accessInfo.getGrant());
-        assertFalse(accessInfo.isAdminRights());
 
-        // area in same group, the result should an itersection of the
+        // area in same group, the result should be the
         // two allowed area as an intersects geometry.
         org.locationtech.jts.geom.Geometry testArea = JTS.to(area).intersection(JTS.to(area2));
         testArea.normalize();
@@ -316,7 +331,7 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
         // the user belongs to two groups. One with an allowedArea of type intersects,
         // the other one with an allowed area of type clip. They should be returned
         // separately in the final rule.
-        final User user = createUser("auth22", "group22", "group23");
+        final AccessRequest user = createRequest("auth22", "group22", "group23");
 
         insert(999, null, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
 
@@ -347,14 +362,16 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
                         .allowedArea(area2)
                         .build();
         ruleAdminService.setLimits(id2, limits2);
-        RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
-        filter.setWorkspace("w22");
-        filter.setLayer("l22");
-        filter.setUser(user.getName());
-        AccessRequest request = AccessRequest.builder().user(user).filter(filter).build();
+
+        //        RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
+        //        filter.setWorkspace("w22");
+        //        filter.setLayer("l22");
+        //        filter.setUser(user.getName());
+        //        AccessRequest request = AccessRequest.builder().user(user).filter(filter).build();
+        AccessRequest request = user.withWorkspace("w22").withLayer("l22");
+
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
         assertEquals(ALLOW, accessInfo.getGrant());
-        assertFalse(accessInfo.isAdminRights());
 
         // we got a user in two groups one with an intersect spatialFilterType
         // and the other with a clip spatialFilterType. The two area should haven
@@ -388,7 +405,7 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
         // restrictive
         // type is chosen.
 
-        final User user = createUser("auth33", "group31", "group32");
+        final AccessRequest user = createRequest("auth33", "group31", "group32");
 
         insert(999, null, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
 
@@ -453,15 +470,15 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
                         .build();
         ruleAdminService.setLimits(id4, limits4);
 
-        RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
-        filter.setWorkspace("w22");
-        filter.setLayer("l22");
-        filter.setUser(user.getName());
-
-        AccessRequest request = AccessRequest.builder().user(user).filter(filter).build();
+        //        RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
+        //        filter.setWorkspace("w22");
+        //        filter.setLayer("l22");
+        //        filter.setUser(user.getName());
+        //        AccessRequest request = AccessRequest.builder().user(user).filter(filter).build();
+        AccessRequest request = user.withWorkspace("w22").withLayer("l22");
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
         assertEquals(ALLOW, accessInfo.getGrant());
-        assertFalse(accessInfo.isAdminRights());
+
         // we should have only the clip geometry
         assertNull(accessInfo.getArea());
         assertNotNull(accessInfo.getClipArea());
@@ -486,7 +503,7 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
         // type
         // intersects.
 
-        final User user = createUser("auth44", "group41", "group42");
+        final AccessRequest user = createRequest("auth44", "group41", "group42");
 
         insert(999, null, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
 
@@ -530,14 +547,15 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
                 RuleLimits.intersect().withCatalogMode(CatalogMode.HIDE).withAllowedArea(area4);
         ruleAdminService.setLimits(id4, limits4);
 
-        RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
-        filter.setWorkspace("w22");
-        filter.setLayer("l22");
-        filter.setUser(user.getName());
-        AccessRequest request = AccessRequest.builder().user(user).filter(filter).build();
+        //        RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
+        //        filter.setWorkspace("w22");
+        //        filter.setLayer("l22");
+        //        filter.setUser(user.getName());
+        //        AccessRequest request = AccessRequest.builder().user(user).filter(filter).build();
+        AccessRequest request = user.withWorkspace("w22").withLayer("l22");
+
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
         assertEquals(ALLOW, accessInfo.getGrant());
-        assertFalse(accessInfo.isAdminRights());
 
         // we should have both
         assertNotNull(accessInfo.getArea());

@@ -12,6 +12,8 @@ import org.geoserver.acl.api.mapper.AuthorizationModelApiMapper;
 import org.geoserver.acl.api.mapper.RuleApiMapper;
 import org.geoserver.acl.model.authorization.AccessInfo;
 import org.geoserver.acl.model.authorization.AccessRequest;
+import org.geoserver.acl.model.authorization.AdminAccessInfo;
+import org.geoserver.acl.model.authorization.AdminAccessRequest;
 import org.geoserver.acl.model.authorization.AuthorizationService;
 import org.geoserver.acl.model.rules.Rule;
 
@@ -27,23 +29,34 @@ public class AuthorizationServiceClientAdaptor implements AuthorizationService {
 
     @Override
     public AccessInfo getAccessInfo(AccessRequest request) {
-        org.geoserver.acl.api.model.AccessRequest apiRequest = mapper.toApi(request);
-        org.geoserver.acl.api.model.AccessInfo apiResponse = apiClient.getAccessInfo(apiRequest);
+        org.geoserver.acl.api.model.AccessRequest apiRequest;
+        org.geoserver.acl.api.model.AccessInfo apiResponse;
+
+        apiRequest = mapper.toApi(request);
+        apiResponse = apiClient.getAccessInfo(apiRequest);
+
         return mapper.toModel(apiResponse);
     }
 
     @Override
-    public AccessInfo getAdminAuthorization(AccessRequest request) {
-        org.geoserver.acl.api.model.AccessRequest apiRequest = mapper.toApi(request);
-        org.geoserver.acl.api.model.AccessInfo apiResponse =
-                apiClient.getAdminAuthorization(apiRequest);
+    public AdminAccessInfo getAdminAuthorization(AdminAccessRequest request) {
+        org.geoserver.acl.api.model.AdminAccessRequest apiRequest;
+        org.geoserver.acl.api.model.AdminAccessInfo apiResponse;
+
+        apiRequest = mapper.toApi(request);
+        apiResponse = apiClient.getAdminAuthorization(apiRequest);
+
         return mapper.toModel(apiResponse);
     }
 
     @Override
     public List<Rule> getMatchingRules(AccessRequest request) {
-        org.geoserver.acl.api.model.AccessRequest apiRequest = mapper.toApi(request);
-        List<org.geoserver.acl.api.model.Rule> apiResponse = apiClient.getMatchingRules(apiRequest);
+        org.geoserver.acl.api.model.AccessRequest apiRequest;
+        List<org.geoserver.acl.api.model.Rule> apiResponse;
+
+        apiRequest = mapper.toApi(request);
+        apiResponse = apiClient.getMatchingRules(apiRequest);
+
         return apiResponse.stream().map(ruleMapper::toModel).collect(Collectors.toList());
     }
 }

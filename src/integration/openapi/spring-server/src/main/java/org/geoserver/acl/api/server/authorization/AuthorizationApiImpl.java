@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.geoserver.acl.api.model.AccessInfo;
 import org.geoserver.acl.api.model.AccessRequest;
+import org.geoserver.acl.api.model.AdminAccessInfo;
+import org.geoserver.acl.api.model.AdminAccessRequest;
 import org.geoserver.acl.api.model.Rule;
 import org.geoserver.acl.api.server.AuthorizationApiDelegate;
 import org.geoserver.acl.api.server.support.AuthorizationApiSupport;
@@ -25,33 +27,38 @@ public class AuthorizationApiImpl implements AuthorizationApiDelegate {
     private final @NonNull AuthorizationApiSupport support;
 
     @Override
-    public ResponseEntity<AccessInfo> getAccessInfo(AccessRequest accessRequest) {
-        org.geoserver.acl.model.authorization.AccessRequest modelRequest =
-                support.toModel(accessRequest);
-        org.geoserver.acl.model.authorization.AccessInfo modelResponse =
-                service.getAccessInfo(modelRequest);
+    public ResponseEntity<AccessInfo> getAccessInfo(AccessRequest request) {
+        org.geoserver.acl.model.authorization.AccessRequest modelRequest;
+        org.geoserver.acl.model.authorization.AccessInfo modelResponse;
+
+        modelRequest = support.toModel(request);
+        modelResponse = service.getAccessInfo(modelRequest);
+
         support.setPreferredGeometryEncoding();
         AccessInfo apiResponse = support.toApi(modelResponse);
         return ResponseEntity.ok(apiResponse);
     }
 
     @Override
-    public ResponseEntity<AccessInfo> getAdminAuthorization(AccessRequest accessRequest) {
-        org.geoserver.acl.model.authorization.AccessRequest modelRequest =
-                support.toModel(accessRequest);
-        org.geoserver.acl.model.authorization.AccessInfo modelResponse =
-                service.getAdminAuthorization(modelRequest);
+    public ResponseEntity<AdminAccessInfo> getAdminAuthorization(AdminAccessRequest request) {
+        org.geoserver.acl.model.authorization.AdminAccessRequest modelRequest;
+        org.geoserver.acl.model.authorization.AdminAccessInfo modelResponse;
+
+        modelRequest = support.toModel(request);
+        modelResponse = service.getAdminAuthorization(modelRequest);
+
         support.setPreferredGeometryEncoding();
-        AccessInfo apiResponse = support.toApi(modelResponse);
+        AdminAccessInfo apiResponse = support.toApi(modelResponse);
         return ResponseEntity.ok(apiResponse);
     }
 
     @Override
     public ResponseEntity<List<Rule>> getMatchingRules(AccessRequest accessRequest) {
-        org.geoserver.acl.model.authorization.AccessRequest modelRequest =
-                support.toModel(accessRequest);
-        List<org.geoserver.acl.model.rules.Rule> modelResponse =
-                service.getMatchingRules(modelRequest);
+        org.geoserver.acl.model.authorization.AccessRequest modelRequest;
+        List<org.geoserver.acl.model.rules.Rule> modelResponse;
+
+        modelRequest = support.toModel(accessRequest);
+        modelResponse = service.getMatchingRules(modelRequest);
 
         support.setPreferredGeometryEncoding();
         List<Rule> apiResponse =

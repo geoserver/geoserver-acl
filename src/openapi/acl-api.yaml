@@ -569,13 +569,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AccessRequest'
+              $ref: '#/components/schemas/AdminAccessRequest'
           application/x-jackson-smile:
             schema:
-              $ref: '#/components/schemas/AccessRequest'
+              $ref: '#/components/schemas/AdminAccessRequest'
       responses:
         '200':
-          $ref: '#/components/responses/AccessInfo'
+          $ref: '#/components/responses/AdminAccessInfo'
   /authorization/resources:
     post:
       operationId: getAccessInfo
@@ -723,7 +723,7 @@ components:
                         limit query parameter. Null or absent of there are no more rules to fetch
                         that satisfy the request filter.
     AccessInfo:
-      description: The compiled access grant for a given resource or admin access request
+      description: The compiled access grant for a given resource access request
       content:
         application/json:
           schema:
@@ -731,6 +731,15 @@ components:
         application/x-jackson-smile:
           schema:
             $ref: '#/components/schemas/AccessInfo'
+    AdminAccessInfo:
+      description: The compiled admin access grant for a given workspace
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AdminAccessInfo'
+        application/x-jackson-smile:
+          schema:
+            $ref: '#/components/schemas/AdminAccessInfo'
   schemas:
     CatalogMode:
       type: string
@@ -1040,11 +1049,9 @@ components:
 
     AccessRequest:
       type: object
-      description: A request by a given authenticated user to access the resources matching a given RuleFilter
-      required:
-      - filter
+      description: A request by a given authenticated user to access the resources matching the request properties
       properties:
-        username:
+        user:
           description: the authentication user name performing the request for which the authorization is being requested
           type: string
         roles:
@@ -1054,20 +1061,60 @@ components:
           uniqueItems: true
           items:
             type: string
-        filter:
-          $ref: '#/components/schemas/RuleFilter'
+        instance:
+          type: string
+          default: '*'
+        sourceAddress:
+          type: string
+          default: '*'
+        service:
+          type: string
+          default: '*'
+        request:
+          type: string
+          default: '*'
+        subfield:
+          type: string
+          default: '*'
+        workspace:
+          type: string
+          default: '*'
+        layer:
+          type: string
+          default: '*'
         
+    AdminAccessRequest:
+      type: object
+      description: A request by a given authenticated user to access the workspace given by this request
+      properties:
+        user:
+          description: the authentication user name performing the request for which the authorization is being requested
+          type: string
+        roles:
+          description: The roles the requesting user belongs to
+          type: array
+          nullable: true
+          uniqueItems: true
+          items:
+            type: string
+        instance:
+          type: string
+          default: '*'
+        sourceAddress:
+          type: string
+          default: '*'
+        workspace:
+          type: string
+          default: '*'
+
     AccessInfo:
       type: object
       description: The compiled access limits for a given user/RuleFilter combination
       required:
       - grant
-      - adminRights
       properties:
         grant:
           $ref: '#/components/schemas/GrantType'
-        adminRights:
-           type: boolean
         area:
           $ref: '#/components/schemas/Geom'
         clipArea:
@@ -1095,6 +1142,17 @@ components:
           type: array
           items:
             type: string
+
+    AdminAccessInfo:
+      type: object
+      description: Workspace level admin grant
+      required:
+      - admin
+      properties:
+        admin:
+           type: boolean
+        workspace:
+          type: string
         matchingAdminRule:
           type: string
         

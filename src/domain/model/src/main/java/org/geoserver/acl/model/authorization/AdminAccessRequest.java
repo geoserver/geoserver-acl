@@ -15,9 +15,11 @@ import java.util.Set;
 @Value
 @With
 @Builder(toBuilder = true, builderClassName = "Builder")
-public class User {
+public class AdminAccessRequest {
 
-    private String name;
-
-    @Default private @NonNull Set<String> roles = Set.of();
+    private String user;
+    @Default @NonNull private Set<String> roles = Set.of();
+    private String instance;
+    private String workspace;
+    private String sourceAddress;
 }

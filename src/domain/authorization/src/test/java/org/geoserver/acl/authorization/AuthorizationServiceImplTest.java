@@ -7,25 +7,24 @@
 
 package org.geoserver.acl.authorization;
 
+import static org.geoserver.acl.model.rules.GrantType.ALLOW;
+import static org.geoserver.acl.model.rules.GrantType.DENY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import lombok.NonNull;
-
 import org.geoserver.acl.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.adminrules.MemoryAdminRuleRepository;
 import org.geoserver.acl.model.adminrules.AdminRule;
 import org.geoserver.acl.model.authorization.AccessInfo;
 import org.geoserver.acl.model.authorization.AccessRequest;
+import org.geoserver.acl.model.authorization.AdminAccessRequest;
 import org.geoserver.acl.model.authorization.AuthorizationService;
-import org.geoserver.acl.model.authorization.User;
 import org.geoserver.acl.model.filter.RuleFilter;
 import org.geoserver.acl.model.filter.RuleQuery;
 import org.geoserver.acl.model.filter.predicate.SpecialFilterType;
-import org.geoserver.acl.model.rules.GrantType;
 import org.geoserver.acl.model.rules.IPAddressRange;
 import org.geoserver.acl.model.rules.LayerAttribute;
 import org.geoserver.acl.model.rules.LayerDetails;
@@ -33,7 +32,6 @@ import org.geoserver.acl.model.rules.Rule;
 import org.geoserver.acl.rules.MemoryRuleRepository;
 import org.geoserver.acl.rules.RuleAdminService;
 import org.junit.jupiter.api.Test;
-import org.springframework.lang.Nullable;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -71,14 +69,14 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
 
         assertEquals(0, ruleAdminService.count(RuleFilter.any()));
 
-        final User u1 = createUser("TestUser1", "p1");
-        final User u2 = createUser("TestUser2", "p2");
-        final User u3 = createUser("TestUser3", "g3a", "g3b");
+        final AccessRequest u1 = createRequest("TestUser1", "p1");
+        final AccessRequest u2 = createRequest("TestUser2", "p2");
+        final AccessRequest u3 = createRequest("TestUser3", "g3a", "g3b");
 
         insert(
                 Rule.allow()
                         .withPriority(10)
-                        .withUsername(u1.getName())
+                        .withUsername(u1.getUser())
                         .withRolename("p1")
                         .withService("s1")
                         .withRequest("r1")
@@ -87,7 +85,7 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
         insert(
                 Rule.allow()
                         .withPriority(20)
-                        .withUsername(u2.getName())
+                        .withUsername(u2.getUser())
                         .withRolename("p2")
                         .withService("s1")
                         .withRequest("r2")
@@ -96,46 +94,27 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
         insert(
                 Rule.allow()
                         .withPriority(30)
-                        .withUsername(u1.getName())
+                        .withUsername(u1.getUser())
                         .withRolename("p1")
                         .withService("s3")
                         .withRequest("r3")
                         .withWorkspace("w3")
                         .withLayer("l3"));
-        insert(Rule.allow().withPriority(40).withUsername(u1.getName()).withRolename("p1"));
+        insert(Rule.allow().withPriority(40).withUsername(u1.getUser()).withRolename("p1"));
         insert(Rule.allow().withPriority(50).withRolename("g3a"));
         insert(Rule.allow().withPriority(60).withRolename("g3b"));
 
-        assertEquals(
-                3, getMatchingRules(u1, u1.getName(), "*", "Z", "*", "*", "*", "*", "*").size());
-        assertEquals(3, getMatchingRules(null, "*", "p1", "Z", "*", "*", "*", "*", "*").size());
-        assertEquals(
-                1,
-                getMatchingRules(u1, u1.getName(), "*", "Z", "*", null, null, null, null).size());
-        assertEquals(0, getMatchingRules(null, "*", "Z", "Z", "*", null, null, null, null).size());
-        assertEquals(
-                1,
-                getMatchingRules(u1, u1.getName(), "*", "Z", "*", null, null, null, null).size());
-        assertEquals(
-                1,
-                getMatchingRules(u1, u1.getName(), "*", "Z", "*", null, null, null, null).size());
-        assertEquals(
-                1, getMatchingRules(u2, u2.getName(), "*", "Z", "*", "*", "*", "*", "*").size());
-        assertEquals(1, getMatchingRules(null, "*", "p2", "Z", "*", "*", "*", "*", "*").size());
-        assertEquals(
-                2, getMatchingRules(u1, u1.getName(), "*", "Z", "*", "s1", "*", "*", "*").size());
-        assertEquals(2, getMatchingRules(null, "*", "p1", "Z", "*", "s1", "*", "*", "*").size());
-        assertEquals(
-                2, getMatchingRules(u3, u3.getName(), "*", "Z", "*", "s1", "*", "*", "*").size());
-    }
-
-    private static RuleFilter createFilter(String userName, String groupName, String service) {
-        RuleFilter filter;
-        filter = new RuleFilter(SpecialFilterType.ANY);
-        if (userName != null) filter.setUser(userName);
-        if (groupName != null) filter.setRole(groupName);
-        if (service != null) filter.setService(service);
-        return filter;
+        assertEquals(3, getMatchingRules(u1, "Z", "*", "*", "*", "*", "*").size());
+        assertEquals(3, getMatchingRules("*", "p1", "Z", "*", "*", "*", "*", "*").size());
+        assertEquals(1, getMatchingRules(u1, "Z", "*", null, null, null, null).size());
+        assertEquals(0, getMatchingRules("*", "Z", "Z", "*", null, null, null, null).size());
+        assertEquals(1, getMatchingRules(u1, "Z", "*", null, null, null, null).size());
+        assertEquals(1, getMatchingRules(u1, "Z", "*", null, null, null, null).size());
+        assertEquals(1, getMatchingRules(u2, "Z", "*", "*", "*", "*", "*").size());
+        assertEquals(1, getMatchingRules("*", "p2", "Z", "*", "*", "*", "*", "*").size());
+        assertEquals(2, getMatchingRules(u1, "Z", "*", "s1", "*", "*", "*").size());
+        assertEquals(2, getMatchingRules("*", "p1", "Z", "*", "s1", "*", "*", "*").size());
+        assertEquals(2, getMatchingRules(u3.getUser(), "*", "Z", "*", "s1", "*", "*", "*").size());
     }
 
     @Test
@@ -174,33 +153,27 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
         r3 = insert(r3);
         r4 = insert(r4);
 
-        assertEquals(4, getMatchingRules(null, "*", "*", "*", "*", "*", "*", "*", "*").size());
-        assertEquals(3, getMatchingRules(null, "*", "*", "*", "*", "s1", "*", "*", "*").size());
-        assertEquals(1, getMatchingRules(null, "*", "*", "*", "*", "ZZ", "*", "*", "*").size());
+        assertEquals(4, getMatchingRules("*", "*", "*", "*", "*", "*", "*", "*").size());
+        assertEquals(3, getMatchingRules("*", "*", "*", "*", "s1", "*", "*", "*").size());
+        assertEquals(1, getMatchingRules("*", "*", "*", "*", "ZZ", "*", "*", "*").size());
 
-        assertEquals(3, getMatchingRules(null, "*", "p1", "*", "*", "*", "*", "*", "*").size());
-        assertEquals(2, getMatchingRules(null, "*", "p1", "*", "*", "s1", "*", "*", "*").size());
-        assertEquals(1, getMatchingRules(null, "*", "p1", "*", "*", "ZZ", "*", "*", "*").size());
+        assertEquals(3, getMatchingRules("*", "p1", "*", "*", "*", "*", "*", "*").size());
+        assertEquals(2, getMatchingRules("*", "p1", "*", "*", "s1", "*", "*", "*").size());
+        assertEquals(1, getMatchingRules("*", "p1", "*", "*", "ZZ", "*", "*", "*").size());
 
-        assertEquals(1, getMatchingRules(null, "*", "p2", "*", "*", "*", "*", "*", "*").size());
-        assertEquals(1, getMatchingRules(null, "*", "p2", "*", "*", "s1", "*", "*", "*").size());
-        assertEquals(0, getMatchingRules(null, "*", "p2", "*", "*", "ZZ", "*", "*", "*").size());
+        assertEquals(1, getMatchingRules("*", "p2", "*", "*", "*", "*", "*", "*").size());
+        assertEquals(1, getMatchingRules("*", "p2", "*", "*", "s1", "*", "*", "*").size());
+        assertEquals(0, getMatchingRules("*", "p2", "*", "*", "ZZ", "*", "*", "*").size());
 
-        RuleFilter filter;
-        AccessRequest req;
-
-        filter = createFilter(null, "p1", null);
-        req = AccessRequest.builder().filter(filter).build();
+        AccessRequest req = AccessRequest.builder().roles(Set.of("p1")).build();
         assertEquals(3, authorizationService.getMatchingRules(req).size());
 
-        filter = createFilter((String) null, null, "s3");
-        req = AccessRequest.builder().filter(filter).build();
+        req = AccessRequest.builder().service("s3").build();
         assertEquals(2, authorizationService.getMatchingRules(req).size());
     }
 
     @Test
     public void testGetInfo() {
-        final User user = createUser("u0", "p0");
         assertEquals(0, ruleAdminService.count(new RuleFilter(SpecialFilterType.ANY)));
 
         List<Rule> rules = new ArrayList<>();
@@ -226,57 +199,55 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
 
         assertEquals(4, ruleAdminService.count(new RuleFilter(SpecialFilterType.ANY)));
 
-        RuleFilter baseFilter = new RuleFilter(SpecialFilterType.ANY);
-        baseFilter.setUser("u0");
-        baseFilter.setRole("p0");
-        baseFilter.setInstance("i0");
-        baseFilter.setService("WCS");
-        baseFilter.setRequest(SpecialFilterType.ANY);
-        baseFilter.setWorkspace("W0");
-        baseFilter.setLayer("l0");
+        //        RuleFilter baseFilter = new RuleFilter(SpecialFilterType.ANY);
+        //        baseFilter.setUser("u0");
+        //        baseFilter.setRole("p0");
+        //        baseFilter.setInstance("i0");
+        //        baseFilter.setService("WCS");
+        //        baseFilter.setRequest(SpecialFilterType.ANY);
+        //        baseFilter.setWorkspace("W0");
+        //        baseFilter.setLayer("l0");
+        //        AccessRequest req = AccessRequest.builder().user(req).filter(baseFilter).build();
 
-        AccessRequest req = AccessRequest.builder().user(user).filter(baseFilter).build();
+        AccessRequest req =
+                createRequest("u0", "p0")
+                        .withInstance("i0")
+                        .withService("WCS")
+                        .withRequest(null)
+                        .withWorkspace("W0")
+                        .withLayer("l0");
 
         {
-            RuleFilter ruleFilter = new RuleFilter(baseFilter);
-            ruleFilter.setUser(SpecialFilterType.ANY);
-            assertEquals(
-                    2, authorizationService.getMatchingRules(req.withFilter(ruleFilter)).size());
-            assertEquals(
-                    GrantType.ALLOW,
-                    authorizationService.getAccessInfo(req.withFilter(ruleFilter)).getGrant());
+            //            RuleFilter ruleFilter = new RuleFilter(baseFilter);
+            //            ruleFilter.setUser(SpecialFilterType.ANY);
+            assertEquals(2, authorizationService.getMatchingRules(req.withUser(null)).size());
+            assertEquals(ALLOW, authorizationService.getAccessInfo(req.withUser(null)).getGrant());
         }
         {
-            RuleFilter ruleFilter = new RuleFilter(baseFilter);
-            ruleFilter.setRole(SpecialFilterType.ANY);
+            //            RuleFilter ruleFilter = new RuleFilter(baseFilter);
+            //            ruleFilter.setRole(SpecialFilterType.ANY);
 
+            assertEquals(2, authorizationService.getMatchingRules(req.withRoles(Set.of())).size());
             assertEquals(
-                    2, authorizationService.getMatchingRules(req.withFilter(ruleFilter)).size());
-            assertEquals(
-                    GrantType.ALLOW,
-                    authorizationService.getAccessInfo(req.withFilter(ruleFilter)).getGrant());
+                    ALLOW, authorizationService.getAccessInfo(req.withRoles(Set.of())).getGrant());
         }
         {
-            RuleFilter ruleFilter = new RuleFilter(baseFilter);
-            ruleFilter.setUser(SpecialFilterType.ANY);
-            ruleFilter.setService("UNMATCH");
+            //            RuleFilter ruleFilter = new RuleFilter(baseFilter);
+            //            ruleFilter.setUser(SpecialFilterType.ANY);
+            //            ruleFilter.setService("UNMATCH");
 
-            assertEquals(
-                    1, authorizationService.getMatchingRules(req.withFilter(ruleFilter)).size());
-            assertEquals(
-                    GrantType.DENY,
-                    authorizationService.getAccessInfo(req.withFilter(ruleFilter)).getGrant());
+            AccessRequest unmatch = req.withUser(null).withService("UNMATCH");
+            assertEquals(1, authorizationService.getMatchingRules(unmatch).size());
+            assertEquals(DENY, authorizationService.getAccessInfo(unmatch).getGrant());
         }
         {
-            RuleFilter ruleFilter = new RuleFilter(baseFilter);
-            ruleFilter.setRole(SpecialFilterType.ANY);
-            ruleFilter.setService("UNMATCH");
+            //            RuleFilter ruleFilter = new RuleFilter(baseFilter);
+            //            ruleFilter.setRole(SpecialFilterType.ANY);
+            //            ruleFilter.setService("UNMATCH");
+            AccessRequest unmatch = req.withRoles(Set.of()).withService("UNMATCH");
 
-            assertEquals(
-                    1, authorizationService.getMatchingRules(req.withFilter(ruleFilter)).size());
-            assertEquals(
-                    GrantType.DENY,
-                    authorizationService.getAccessInfo(req.withFilter(ruleFilter)).getGrant());
+            assertEquals(1, authorizationService.getMatchingRules(unmatch).size());
+            assertEquals(DENY, authorizationService.getAccessInfo(unmatch).getGrant());
         }
     }
 
@@ -304,61 +275,51 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
         AccessInfo accessInfo;
 
         {
-            final RuleFilter ruleFilter = new RuleFilter(SpecialFilterType.ANY);
-            ruleFilter.setService("s1");
-            ruleFilter.setLayer("l2");
-            final AccessRequest req = AccessRequest.builder().filter(ruleFilter).build();
+            final AccessRequest req = AccessRequest.builder().service("s1").layer("l2").build();
             RuleQuery<RuleFilter> query = RuleQuery.of(new RuleFilter(SpecialFilterType.ANY));
+
             assertEquals(2, ruleAdminService.getAll(query).count());
             List<Rule> matchingRules = authorizationService.getMatchingRules(req);
-            // LOGGER.info("Matching rules: " + matchingRules);
+
             assertEquals(1, matchingRules.size());
             accessInfo = authorizationService.getAccessInfo(req);
-            assertEquals(GrantType.ALLOW, accessInfo.getGrant());
+            assertEquals(ALLOW, accessInfo.getGrant());
             assertNull(accessInfo.getArea());
         }
     }
 
     @Test
     public void testNoDefault() {
-        final User user = createUser("u0", "p0");
+
         assertEquals(0, ruleAdminService.count(new RuleFilter(SpecialFilterType.ANY)));
 
         insert(Rule.allow().withService("WCS"));
 
+        assertEquals(1, getMatchingRules("u0", "*", "i0", null, "WCS", null, "W0", "l0").size());
         assertEquals(
-                1, getMatchingRules(user, "u0", "*", "i0", null, "WCS", null, "W0", "l0").size());
+                ALLOW, getAccessInfo("u0", "*", "i0", null, "WCS", null, "W0", "l0").getGrant());
+
+        assertEquals(1, getMatchingRules("*", "p0", "i0", null, "WCS", null, "W0", "l0").size());
         assertEquals(
-                GrantType.ALLOW,
-                getAccessInfo(user, "u0", "*", "i0", null, "WCS", null, "W0", "l0").getGrant());
+                ALLOW, getAccessInfo("*", "p0", "i0", null, "WCS", null, "W0", "l0").getGrant());
 
         assertEquals(
-                1, getMatchingRules(user, "*", "p0", "i0", null, "WCS", null, "W0", "l0").size());
+                0, getMatchingRules("u0", "*", "i0", null, "UNMATCH", null, "W0", "l0").size());
         assertEquals(
-                GrantType.ALLOW,
-                getAccessInfo(user, "*", "p0", "i0", null, "WCS", null, "W0", "l0").getGrant());
+                DENY, getAccessInfo("u0", "*", "i0", null, "UNMATCH", null, "W0", "l0").getGrant());
 
         assertEquals(
-                0,
-                getMatchingRules(user, "u0", "*", "i0", null, "UNMATCH", null, "W0", "l0").size());
+                0, getMatchingRules("*", "p0", "i0", null, "UNMATCH", null, "W0", "l0").size());
         assertEquals(
-                GrantType.DENY,
-                getAccessInfo(user, "u0", "*", "i0", null, "UNMATCH", null, "W0", "l0").getGrant());
-
-        assertEquals(
-                0,
-                getMatchingRules(user, "*", "p0", "i0", null, "UNMATCH", null, "W0", "l0").size());
-        assertEquals(
-                GrantType.DENY,
-                getAccessInfo(user, "*", "p0", "i0", null, "UNMATCH", null, "W0", "l0").getGrant());
+                DENY, getAccessInfo("*", "p0", "i0", null, "UNMATCH", null, "W0", "l0").getGrant());
     }
 
     @Test
     public void testGroups() {
         assertEquals(0, ruleAdminService.count());
 
-        final User u1 = createUser("u1", "p1");
-        final User u2 = createUser("u2", "p2");
+        final AccessRequest u1 = createRequest("u1", "p1");
+        final AccessRequest u2 = createRequest("u2", "p2");
 
         List<Rule> rules = new ArrayList<>();
 
@@ -379,25 +340,31 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
         assertEquals(rules.size(), ruleAdminService.count());
 
         {
-            RuleFilter filter = new RuleFilter(SpecialFilterType.ANY).setUser(u1.getName());
-            AccessRequest request = AccessRequest.builder().user(u1).filter(filter).build();
-            assertEquals(2, authorizationService.getMatchingRules(request).size());
-            filter.setService("s1");
-            request = request.withFilter(filter);
-            assertEquals(2, authorizationService.getMatchingRules(request).size());
-            assertEquals(GrantType.ALLOW, authorizationService.getAccessInfo(request).getGrant());
+            //            RuleFilter filter = new
+            // RuleFilter(SpecialFilterType.ANY).setUser(u1.getName());
+            //            AccessRequest request =
+            // AccessRequest.builder().user(u1).filter(filter).build();
 
-            filter.setService("s2");
-            request = request.withFilter(filter);
+            AccessRequest request = u1;
+            assertEquals(2, authorizationService.getMatchingRules(request).size());
+
+            request = u1.withService("s1");
+            assertEquals(2, authorizationService.getMatchingRules(request).size());
+            assertEquals(ALLOW, authorizationService.getAccessInfo(request).getGrant());
+
+            request = u1.withService("s2");
             assertEquals(1, authorizationService.getMatchingRules(request).size());
-            assertEquals(GrantType.DENY, authorizationService.getAccessInfo(request).getGrant());
+            assertEquals(DENY, authorizationService.getAccessInfo(request).getGrant());
         }
 
         {
-            RuleFilter filter = new RuleFilter(SpecialFilterType.ANY).setUser(u2.getName());
-            AccessRequest request = AccessRequest.builder().user(u2).filter(filter).build();
+            //            RuleFilter filter = new
+            // RuleFilter(SpecialFilterType.ANY).setUser(u2.getName());
+            //            AccessRequest request =
+            // AccessRequest.builder().user(u2).filter(filter).build();
+            AccessRequest request = u2;
             assertEquals(0, authorizationService.getMatchingRules(request).size());
-            assertEquals(GrantType.DENY, authorizationService.getAccessInfo(request).getGrant());
+            assertEquals(DENY, authorizationService.getAccessInfo(request).getGrant());
         }
     }
 
@@ -405,8 +372,8 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
     public void testGroupOrder01() throws UnknownHostException {
         assertEquals(0, ruleAdminService.count());
 
-        final User u1 = createUser("u1", "p1");
-        final User u2 = createUser("u2", "p2");
+        final AccessRequest req1 = createRequest("u1", "p1");
+        final AccessRequest req2 = createRequest("u2", "p2");
 
         List<Rule> rules = new ArrayList<Rule>();
         rules.add(insert(Rule.allow().withPriority(10 + rules.size()).withRolename("p1")));
@@ -417,25 +384,25 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
 
         assertEquals(rules.size(), ruleAdminService.count());
 
-        RuleFilter filterU1 = new RuleFilter(SpecialFilterType.ANY).setUser(u1.getName());
-        AccessRequest req1 = AccessRequest.builder().user(u1).filter(filterU1).build();
-
-        RuleFilter filterU2 = new RuleFilter(SpecialFilterType.ANY).setUser(u2.getName());
-        AccessRequest req2 = AccessRequest.builder().user(u2).filter(filterU2).build();
+        //        RuleFilter filterU1 = new RuleFilter(SpecialFilterType.ANY).setUser(u1.getName());
+        //        AccessRequest req1 = AccessRequest.builder().user(u1).filter(filterU1).build();
+        //
+        //        RuleFilter filterU2 = new RuleFilter(SpecialFilterType.ANY).setUser(u2.getName());
+        //        AccessRequest req2 = AccessRequest.builder().user(u2).filter(filterU2).build();
 
         assertEquals(1, authorizationService.getMatchingRules(req1).size());
         assertEquals(1, authorizationService.getMatchingRules(req2).size());
 
-        assertEquals(GrantType.ALLOW, authorizationService.getAccessInfo(req1).getGrant());
-        assertEquals(GrantType.DENY, authorizationService.getAccessInfo(req2).getGrant());
+        assertEquals(ALLOW, authorizationService.getAccessInfo(req1).getGrant());
+        assertEquals(DENY, authorizationService.getAccessInfo(req2).getGrant());
     }
 
     @Test
     public void testGroupOrder02() {
         assertEquals(0, ruleAdminService.count());
 
-        final User u1 = createUser("u1", "p1");
-        final User u2 = createUser("u2", "p2");
+        final AccessRequest req1 = createRequest("u1", "p1");
+        final AccessRequest req2 = createRequest("u2", "p2");
 
         List<Rule> rules = new ArrayList<Rule>();
         rules.add(insert(Rule.deny().withPriority(10 + rules.size()).withRolename("p2")));
@@ -446,26 +413,26 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
 
         assertEquals(rules.size(), ruleAdminService.count());
 
-        RuleFilter filterU1 = new RuleFilter(SpecialFilterType.ANY).setUser(u1.getName());
-        AccessRequest req1 = AccessRequest.builder().user(u1).filter(filterU1).build();
-
-        RuleFilter filterU2 = new RuleFilter(SpecialFilterType.ANY).setUser(u2.getName());
-        AccessRequest req2 = AccessRequest.builder().user(u2).filter(filterU2).build();
+        //        RuleFilter filterU1 = new RuleFilter(SpecialFilterType.ANY).setUser(u1.getName());
+        //        AccessRequest req1 = AccessRequest.builder().user(u1).filter(filterU1).build();
+        //
+        //        RuleFilter filterU2 = new RuleFilter(SpecialFilterType.ANY).setUser(u2.getName());
+        //        AccessRequest req2 = AccessRequest.builder().user(u2).filter(filterU2).build();
 
         assertEquals(1, authorizationService.getMatchingRules(req1).size());
         assertEquals(1, authorizationService.getMatchingRules(req2).size());
 
-        assertEquals(GrantType.ALLOW, authorizationService.getAccessInfo(req1).getGrant());
-        assertEquals(GrantType.DENY, authorizationService.getAccessInfo(req2).getGrant());
+        assertEquals(ALLOW, authorizationService.getAccessInfo(req1).getGrant());
+        assertEquals(DENY, authorizationService.getAccessInfo(req2).getGrant());
     }
 
     @Test
     public void testAttrib() {
         assertEquals(0, ruleAdminService.count());
-        final User u1 = createUser("u1", "g1");
-        final User u2 = createUser("u2", "g2");
-        final User u12 = createUser("u12", "g1", "g2");
-        final User u13 = createUser("u13", "g1", "g3");
+        final AccessRequest req1 = createRequest("u1", "g1");
+        final AccessRequest req2 = createRequest("u2", "g2");
+        final AccessRequest req12 = createRequest("u12", "g1", "g2");
+        final AccessRequest req13 = createRequest("u13", "g1", "g3");
 
         {
             Rule r1 = insert(Rule.allow().withRolename("g1").withLayer("l1"));
@@ -515,25 +482,28 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
 
         // TEST u1
         {
-            RuleFilter filterU1 = new RuleFilter(SpecialFilterType.ANY).setUser("u1");
-            AccessRequest request = AccessRequest.builder().user(u1).filter(filterU1).build();
-            // LOGGER.info("getMatchingRules ========================================");
+            //            RuleFilter filterU1 = new RuleFilter(SpecialFilterType.ANY).setUser("u1");
+            //            AccessRequest request =
+            // AccessRequest.builder().user(req1).filter(filterU1).build();
+            AccessRequest request = req1;
             assertEquals(1, authorizationService.getMatchingRules(request).size());
 
-            // LOGGER.info("getAccessInfo ========================================");
             AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-            assertEquals(GrantType.ALLOW, accessInfo.getGrant());
+            assertEquals(ALLOW, accessInfo.getGrant());
         }
 
         // TEST u2
         {
-            RuleFilter filter = new RuleFilter(SpecialFilterType.ANY).setUser("u2").setLayer("l1");
-            AccessRequest request = AccessRequest.builder().user(u2).filter(filter).build();
+            //            RuleFilter filter = new
+            // RuleFilter(SpecialFilterType.ANY).setUser("u2").setLayer("l1");
+            //            AccessRequest request =
+            // AccessRequest.builder().user(req2).filter(filter).build();
+            AccessRequest request = req2;
 
             assertEquals(1, authorizationService.getMatchingRules(request).size());
 
             AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-            assertEquals(GrantType.ALLOW, accessInfo.getGrant());
+            assertEquals(ALLOW, accessInfo.getGrant());
             assertNotNull(accessInfo.getAttributes());
             assertEquals(3, accessInfo.getAttributes().size());
             assertEquals(
@@ -550,14 +520,16 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
         // merging attributes at higher access level
         // merging styles
         {
-            RuleFilter filter =
-                    new RuleFilter(SpecialFilterType.ANY).setUser(u12.getName()).setLayer("l1");
-            AccessRequest request = AccessRequest.builder().user(u12).filter(filter).build();
-
+            //            RuleFilter filter =
+            //                    new
+            // RuleFilter(SpecialFilterType.ANY).setUser(req12.getName()).setLayer("l1");
+            //            AccessRequest request =
+            // AccessRequest.builder().user(req12).filter(filter).build();
+            AccessRequest request = req12.withLayer("l1");
             assertEquals(2, authorizationService.getMatchingRules(request).size());
 
             AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-            assertEquals(GrantType.ALLOW, accessInfo.getGrant());
+            assertEquals(ALLOW, accessInfo.getGrant());
             assertNotNull(accessInfo.getAttributes());
             assertEquals(3, accessInfo.getAttributes().size());
             assertEquals(
@@ -575,14 +547,17 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
         // unconstraining styles
 
         {
-            RuleFilter filter;
-            filter = new RuleFilter(SpecialFilterType.ANY).setUser(u13.getName()).setLayer("l1");
-            AccessRequest request = AccessRequest.builder().user(u13).filter(filter).build();
+            //            RuleFilter filter;
+            //            filter = new
+            // RuleFilter(SpecialFilterType.ANY).setUser(req13.getName()).setLayer("l1");
+            //            AccessRequest request =
+            // AccessRequest.builder().user(req13).filter(filter).build();
+            AccessRequest request = req13;
 
             assertEquals(2, authorizationService.getMatchingRules(request).size());
 
             AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-            assertEquals(GrantType.ALLOW, accessInfo.getGrant());
+            assertEquals(ALLOW, accessInfo.getGrant());
             // LOGGER.info("attributes: " + accessInfo.getAttributes());
             assertTrue(accessInfo.getAttributes().isEmpty());
             // assertEquals(3, accessInfo.getAttributes().size());
@@ -602,7 +577,7 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
     public void testNullAllowableStyles() {
         assertEquals(0, ruleAdminService.count());
 
-        final User u1 = createUser("u1", "g1", "g2");
+        final AccessRequest request = createRequest("u1", "g1", "g2");
 
         // no details for first rule
         {
@@ -627,15 +602,17 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
 
         // TEST u1
         {
-            RuleFilter filterU1 = new RuleFilter(SpecialFilterType.ANY).setUser(u1.getName());
-            AccessRequest request = AccessRequest.builder().user(u1).filter(filterU1).build();
+            //            RuleFilter filterU1 = new
+            // RuleFilter(SpecialFilterType.ANY).setUser(u1.getName());
+            //            AccessRequest request =
+            // AccessRequest.builder().user(u1).filter(filterU1).build();
 
             // LOGGER.info("getMatchingRules ========================================");
             assertEquals(2, authorizationService.getMatchingRules(request).size());
 
             // LOGGER.info("getAccessInfo ========================================");
             AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-            assertEquals(GrantType.ALLOW, accessInfo.getGrant());
+            assertEquals(ALLOW, accessInfo.getGrant());
 
             assertTrue(accessInfo.getAllowedStyles().isEmpty());
         }
@@ -686,25 +663,20 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
 
         // test without address filtering
 
-        assertEquals(4, getMatchingRules(null, "*", "*", "*", "*", "*", "*", "*", "*").size());
-        assertEquals(3, getMatchingRules(null, "*", "g1", "*", "*", "*", "*", "*", "*").size());
-        assertEquals(1, getMatchingRules(null, "*", "g2", "*", "*", "*", "*", "*", "*").size());
-        assertEquals(2, getMatchingRules(null, "*", "g1", "*", "*", "s1", "*", "*", "*").size());
-        assertEquals(1, getMatchingRules(null, "*", "*", "*", "*", "ZZ", "*", "*", "*").size());
+        assertEquals(4, getMatchingRules("*", "*", "*", "*", "*", "*", "*", "*").size());
+        assertEquals(3, getMatchingRules("*", "g1", "*", "*", "*", "*", "*", "*").size());
+        assertEquals(1, getMatchingRules("*", "g2", "*", "*", "*", "*", "*", "*").size());
+        assertEquals(2, getMatchingRules("*", "g1", "*", "*", "s1", "*", "*", "*").size());
+        assertEquals(1, getMatchingRules("*", "*", "*", "*", "ZZ", "*", "*", "*").size());
 
         // test with address filtering
-        assertEquals(
-                3, getMatchingRules(null, "*", "*", "*", "10.10.100.4", "*", "*", "*", "*").size());
-        assertEquals(
-                2,
-                getMatchingRules(null, "*", "g1", "*", "10.10.100.4", "*", "*", "*", "*").size());
-        assertEquals(
-                1, getMatchingRules(null, "*", "*", "*", "10.10.1.4", "*", "*", "*", "*").size());
-        assertEquals(
-                2, getMatchingRules(null, "*", "*", "*", "192.168.1.1", "*", "*", "*", "*").size());
-        assertEquals(1, getMatchingRules(null, "*", "*", "*", null, "*", "*", "*", "*").size());
+        assertEquals(3, getMatchingRules("*", "*", "*", "10.10.100.4", "*", "*", "*", "*").size());
+        assertEquals(2, getMatchingRules("*", "g1", "*", "10.10.100.4", "*", "*", "*", "*").size());
+        assertEquals(1, getMatchingRules("*", "*", "*", "10.10.1.4", "*", "*", "*", "*").size());
+        assertEquals(2, getMatchingRules("*", "*", "*", "192.168.1.1", "*", "*", "*", "*").size());
+        assertEquals(1, getMatchingRules("*", "*", "*", null, "*", "*", "*", "*").size());
 
-        List<Rule> matchingRules = getMatchingRules(null, "*", "*", "*", "BAD", "*", "*", "*", "*");
+        List<Rule> matchingRules = getMatchingRules("*", "*", "*", "BAD", "*", "*", "*", "*");
         assertEquals(0, matchingRules.size());
     }
 
@@ -712,7 +684,7 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
     public void testGetRulesForUserOnly() {
         assertEquals(0, ruleAdminService.count());
 
-        final User u1 = createUser("TestUser1", "g1");
+        final AccessRequest u1 = createRequest("TestUser1", "g1");
 
         insert(
                 Rule.allow()
@@ -742,62 +714,62 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
         insert(Rule.allow().withPriority(50).withRolename("g3a"));
         insert(Rule.allow().withPriority(60).withRolename("g3b"));
 
-        RuleFilter filter;
+        AccessRequest request = u1;
+        assertEquals(3, authorizationService.getMatchingRules(request).size());
 
-        filter = createFilter(u1.getName(), null, null);
-        assertEquals(3, authorizationService.getMatchingRules(AccessRequest.of(u1, filter)).size());
+        request = u1.withService("s1");
+        assertEquals(2, authorizationService.getMatchingRules(request).size());
 
-        filter = createFilter(u1.getName(), null, "s1");
-        assertEquals(2, authorizationService.getMatchingRules(AccessRequest.of(u1, filter)).size());
+        request = u1.withService("s3");
+        assertEquals(2, authorizationService.getMatchingRules(request).size());
 
-        filter = createFilter(u1.getName(), null, "s3");
-        assertEquals(2, authorizationService.getMatchingRules(AccessRequest.of(u1, filter)).size());
-
-        filter = createFilter("anonymous", null, null);
-        assertEquals(
-                0, authorizationService.getMatchingRules(AccessRequest.of(null, filter)).size());
+        request = AccessRequest.builder().user("anonymous").roles(Set.of()).service(null).build();
+        assertEquals(0, authorizationService.getMatchingRules(request).size());
     }
 
     @Test
     public void testAdminRules() {
 
-        final User user = createUser("auth00");
+        final AccessRequest request = createRequest("auth00").withWorkspace("w1");
+        final AdminAccessRequest adminReq =
+                AdminAccessRequest.builder().user("auth00").workspace("w1").build();
 
         insert(
                 Rule.allow()
                         .withPriority(10)
-                        .withUsername(user.getName())
+                        .withUsername(request.getUser())
                         .withService("s1")
                         .withRequest("r1")
                         .withWorkspace("w1")
                         .withLayer("l1"));
 
-        RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
-        filter.setWorkspace("w1");
+        //        RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
+        //        filter.setWorkspace("w1");
 
-        AccessInfo accessInfo = authorizationService.getAccessInfo(AccessRequest.of(user, filter));
-        assertEquals(GrantType.ALLOW, accessInfo.getGrant());
-        assertFalse(accessInfo.isAdminRights());
+        AccessInfo accessInfo = authorizationService.getAccessInfo(request);
+        assertEquals(ALLOW, accessInfo.getGrant());
+
+        assertFalse(authorizationService.getAdminAuthorization(adminReq).isAdmin());
 
         // let's add a USER adminrule
 
-        insert(AdminRule.user().withPriority(20).withUsername(user.getName()));
+        insert(AdminRule.user().withPriority(20).withUsername(request.getUser()));
 
-        accessInfo = authorizationService.getAccessInfo(AccessRequest.of(user, filter));
-        assertEquals(GrantType.ALLOW, accessInfo.getGrant());
-        assertFalse(accessInfo.isAdminRights());
+        accessInfo = authorizationService.getAccessInfo(request);
+        assertEquals(ALLOW, accessInfo.getGrant());
+        assertFalse(authorizationService.getAdminAuthorization(adminReq).isAdmin());
 
         // let's add an ADMIN adminrule on workspace w1
 
         adminruleAdminService.insert(
                 AdminRule.admin()
                         .withPriority(10)
-                        .withUsername(user.getName())
-                        .withWorkspace("w1"));
+                        .withUsername(request.getUser())
+                        .withWorkspace(request.getWorkspace()));
 
-        accessInfo = authorizationService.getAccessInfo(AccessRequest.of(user, filter));
-        assertEquals(GrantType.ALLOW, accessInfo.getGrant());
-        assertTrue(accessInfo.isAdminRights());
+        accessInfo = authorizationService.getAccessInfo(request);
+        assertEquals(ALLOW, accessInfo.getGrant());
+        assertTrue(authorizationService.getAdminAuthorization(adminReq).isAdmin());
     }
 
     // @Disabled
@@ -805,104 +777,88 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
     public void testMultiRoles() {
         assertEquals(0, ruleAdminService.count());
 
-        final User u1 = createUser("TestUser1", "p1");
-        final User u2 = createUser("TestUser2", "p2");
-        final User u3 = createUser("TestUser3", "p1", "p2");
+        final AccessRequest u1 = createRequest("TestUser1", "p1");
+        final AccessRequest u2 = createRequest("TestUser2", "p2");
+        final AccessRequest u3 = createRequest("TestUser3", "p1", "p2");
 
-        insert(10, u1.getName(), "p1", null, null, "s1", "r1", null, "w1", "l1", GrantType.ALLOW);
-        insert(20, u2.getName(), "p2", null, null, "s1", "r2", null, "w2", "l2", GrantType.ALLOW);
-        insert(30, u1.getName(), null, null, null, null, null, null, null, null, GrantType.ALLOW);
-        insert(40, u2.getName(), null, null, null, null, null, null, null, null, GrantType.ALLOW);
-        insert(50, u3.getName(), null, null, null, null, null, null, null, null, GrantType.ALLOW);
-        insert(51, u3.getName(), "p1", null, null, null, null, null, null, null, GrantType.ALLOW);
-        insert(52, u3.getName(), "p2", null, null, null, null, null, null, null, GrantType.ALLOW);
-        insert(60, null, "p1", null, null, null, null, null, null, null, GrantType.ALLOW);
-        insert(70, null, "p2", null, null, null, null, null, null, null, GrantType.ALLOW);
-        insert(80, null, "p3", null, null, null, null, null, null, null, GrantType.ALLOW);
-        insert(901, u1.getName(), "p2", null, null, null, null, null, null, null, GrantType.ALLOW);
-        insert(902, u2.getName(), "p1", null, null, null, null, null, null, null, GrantType.ALLOW);
-        insert(999, null, null, null, null, null, null, null, null, null, GrantType.ALLOW);
+        insert(10, u1.getUser(), "p1", null, null, "s1", "r1", null, "w1", "l1", ALLOW);
+        insert(20, u2.getUser(), "p2", null, null, "s1", "r2", null, "w2", "l2", ALLOW);
+        insert(30, u1.getUser(), null, null, null, null, null, null, null, null, ALLOW);
+        insert(40, u2.getUser(), null, null, null, null, null, null, null, null, ALLOW);
+        insert(50, u3.getUser(), null, null, null, null, null, null, null, null, ALLOW);
+        insert(51, u3.getUser(), "p1", null, null, null, null, null, null, null, ALLOW);
+        insert(52, u3.getUser(), "p2", null, null, null, null, null, null, null, ALLOW);
+        insert(60, null, "p1", null, null, null, null, null, null, null, ALLOW);
+        insert(70, null, "p2", null, null, null, null, null, null, null, ALLOW);
+        insert(80, null, "p3", null, null, null, null, null, null, null, ALLOW);
+        insert(901, u1.getUser(), "p2", null, null, null, null, null, null, null, ALLOW);
+        insert(902, u2.getUser(), "p1", null, null, null, null, null, null, null, ALLOW);
+        insert(999, null, null, null, null, null, null, null, null, null, ALLOW);
 
-        assertRules(
-                "*", "*", new Integer[] {10, 20, 30, 40, 50, 51, 52, 60, 70, 80, 901, 902, 999});
-        assertRules("*", null, new Integer[] {30, 40, 50, 999});
-        assertRules("*", "NO", new Integer[] {30, 40, 50, 999});
-        assertRules("*", "p1", new Integer[] {10, 30, 40, 50, 51, 60, 902, 999});
-        assertRules("*", "p1,NO", new Integer[] {10, 30, 40, 50, 51, 60, 902, 999});
-        assertRules(
-                "*", "p1,p2", new Integer[] {10, 20, 30, 40, 50, 51, 52, 60, 70, 901, 902, 999});
-        assertRules(
-                "*", "p1,p2,NO", new Integer[] {10, 20, 30, 40, 50, 51, 52, 60, 70, 901, 902, 999});
+        assertRules("*", "*", 10, 20, 30, 40, 50, 51, 52, 60, 70, 80, 901, 902, 999);
+        assertRules("*", null, 30, 40, 50, 999);
+        assertRules("*", "NO", 30, 40, 50, 999);
+        assertRules("*", "p1", 10, 30, 40, 50, 51, 60, 902, 999);
+        assertRules("*", "p1,NO", 10, 30, 40, 50, 51, 60, 902, 999);
+        assertRules("*", "p1,p2", 10, 20, 30, 40, 50, 51, 52, 60, 70, 901, 902, 999);
+        assertRules("*", "p1,p2,NO", 10, 20, 30, 40, 50, 51, 52, 60, 70, 901, 902, 999);
 
-        assertRules((String) null, "*", new Integer[] {60, 70, 80, 999});
-        assertRules((String) null, null, new Integer[] {999});
-        assertRules((String) null, "NO", new Integer[] {999});
-        assertRules((String) null, "p1", new Integer[] {60, 999});
-        assertRules((String) null, "p1,NO", new Integer[] {60, 999});
-        assertRules((String) null, "p1,p2", new Integer[] {60, 70, 999});
-        assertRules((String) null, "p1,p2,NO", new Integer[] {60, 70, 999});
+        assertRules((String) null, "*", 60, 70, 80, 999);
+        assertRules((String) null, null, 999);
+        assertRules((String) null, "NO", 999);
+        assertRules((String) null, "p1", 60, 999);
+        assertRules((String) null, "p1,NO", 60, 999);
+        assertRules((String) null, "p1,p2", 60, 70, 999);
+        assertRules((String) null, "p1,p2,NO", 60, 70, 999);
 
-        assertRules("NO", "*", new Integer[] {999});
-        assertRules("NO", null, new Integer[] {999});
-        assertRules("NO", "NO", new Integer[] {999});
-        assertRules("NO", "p1", new Integer[] {999});
-        assertRules("NO", "p1,NO", new Integer[] {999});
-        assertRules("NO", "p1,p2", new Integer[] {999});
-        assertRules("NO", "p1,p2,NO", new Integer[] {999});
+        assertRules("NO", null, 999);
+        assertRules("NO", null, 999);
+        assertRules("NO", "NO", 999);
+        assertRules("NO", "p1", 60, 999);
+        assertRules("NO", "p1NO", 999);
+        assertRules("NO", "p1,p2", 60, 70, 999);
+        assertRules("NO", "p1,p2,NO", 60, 70, 999);
 
-        assertRules(u1, "*", new Integer[] {10, 30, 60, 999});
-        assertRules(u1, null, new Integer[] {30, 999});
-        assertRules(u1, "NO", new Integer[] {30, 999});
-        assertRules(u1, "p1", new Integer[] {10, 30, 60, 999});
-        assertRules(u1, "p1,NO", new Integer[] {10, 30, 60, 999});
-        assertRules(u1, "p1,p2", new Integer[] {10, 30, 60, 999});
-        assertRules(u1, "p1,p2,NO", new Integer[] {10, 30, 60, 999});
+        //        assertRules(u1, "*", 10, 30, 60, 999);
+        assertRules(u1, 10, 30, 60, 999);
+        assertRules(u1.withRoles(Set.of()), 30, 999);
+        assertRules(u1.withRoles(Set.of("NO")), 30, 999);
+        assertRules(u1.withRoles(Set.of("p1")), 10, 30, 60, 999);
+        assertRules(u1.withRoles(Set.of("p1", "NO")), 10, 30, 60, 999);
+        assertRules(u1.withRoles(Set.of("p1", "p2")), 10, 30, 60, 70, 901, 999);
+        assertRules(u1.withRoles(Set.of("p1", "p2", "NO")), 10, 30, 60, 70, 901, 999);
 
-        assertRules(u3, "*", new Integer[] {50, 51, 52, 60, 70, 999});
-        assertRules(u3, null, new Integer[] {50, 999});
-        assertRules(u3, "NO", new Integer[] {50, 999});
-        assertRules(u3, "p1", new Integer[] {50, 51, 60, 999});
-        assertRules(u3, "p2", new Integer[] {50, 52, 70, 999});
-        assertRules(u3, "p1,NO", new Integer[] {50, 51, 60, 999});
-        assertRules(u3, "p1,p2", new Integer[] {50, 51, 52, 60, 70, 999});
-        assertRules(u3, "p1,p2,p3", new Integer[] {50, 51, 52, 60, 70, 999});
-        assertRules(u3, "p1,p2,NO", new Integer[] {50, 51, 52, 60, 70, 999});
+        assertRules(u3.withRoles(Set.of("*")), 50, 51, 52, 60, 70, 80, 999);
+        assertRules(u3.withRoles(Set.of()), 50, 999);
+        assertRules(u3.withRoles(Set.of("NO")), 50, 999);
+        assertRules(u3.withRoles(Set.of("p1")), 50, 51, 60, 999);
+        assertRules(u3.withRoles(Set.of("p2")), 50, 52, 70, 999);
+        assertRules(u3.withRoles(Set.of("p1", "NO")), 50, 51, 60, 999);
+        assertRules(u3.withRoles(Set.of("p1", "p2")), 50, 51, 52, 60, 70, 999);
+        assertRules(u3.withRoles(Set.of("p1", "p2", "p3")), 50, 51, 52, 60, 70, 80, 999);
+        assertRules(u3.withRoles(Set.of("p1", "p2", "NO")), 50, 51, 52, 60, 70, 999);
     }
 
-    private AccessRequest createRequest(String userName, String groupName) {
-        RuleFilter ruleFilter =
-                new RuleFilter(userName, groupName, "*", "*", "*", "*", "*", "*", "*");
-        return AccessRequest.of(null, ruleFilter);
+    private void assertRules(String userName, String groupNames, Integer... expectedPriorities) {
+
+        String[] groups = groupNames == null ? new String[0] : groupNames.split(",");
+        AccessRequest request = createRequest(userName, groups);
+        assertRules(request, expectedPriorities);
     }
 
-    private void assertRules(String userName, String groupName, Integer[] expectedPriorities) {
-        assertRules(createRequest(userName, groupName), expectedPriorities);
-    }
-
-    private AccessRequest createRequest(@NonNull User user, String groupName) {
-        RuleFilter filter =
-                new RuleFilter(user.getName(), groupName, "*", "*", "*", "*", "*", "*", "*");
-        return AccessRequest.of(user, filter);
-    }
-
-    private void assertRules(@NonNull User user, String groupName, Integer[] expectedPriorities) {
-        assertRules(createRequest(user, groupName), expectedPriorities);
-    }
-
-    private void assertRules(AccessRequest request, Integer[] expectedPriorities) {
-        RuleFilter origFilter = request.getFilter().clone();
+    private void assertRules(AccessRequest request, Integer... expectedPriorities) {
         List<Rule> rules = authorizationService.getMatchingRules(request);
 
-        Set<Long> pri = rules.stream().map(r -> r.getPriority()).collect(Collectors.toSet());
-        Set<Long> exp =
+        List<Long> pri =
+                rules.stream().map(r -> r.getPriority()).sorted().collect(Collectors.toList());
+        List<Long> exp =
                 Arrays.asList(expectedPriorities).stream()
                         .map(i -> i.longValue())
-                        .collect(Collectors.toSet());
-        assertEquals(exp, pri, "Bad rule set selected for filter " + origFilter);
+                        .collect(Collectors.toList());
+        assertEquals(exp, pri, "Bad rule set selected for filter " + request);
     }
 
     private List<Rule> getMatchingRules(
-            @Nullable User user,
             String userName,
             String profileName,
             String instanceName,
@@ -912,24 +868,38 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
             String workspace,
             String layer) {
 
-        RuleFilter filter =
-                new RuleFilter(
-                        userName,
-                        profileName,
-                        instanceName,
-                        sourceAddress,
-                        service,
-                        request,
-                        null,
-                        workspace,
-                        layer);
+        return getMatchingRules(
+                createRequest(userName, profileName),
+                instanceName,
+                sourceAddress,
+                service,
+                request,
+                workspace,
+                layer);
+    }
 
-        AccessRequest req = AccessRequest.builder().user(user).filter(filter).build();
+    private List<Rule> getMatchingRules(
+            AccessRequest baseRequest,
+            String instanceName,
+            String sourceAddress,
+            String service,
+            String request,
+            String workspace,
+            String layer) {
+
+        AccessRequest req =
+                baseRequest
+                        .withInstance(instanceName)
+                        .withSourceAddress(sourceAddress)
+                        .withService(service)
+                        .withRequest(request)
+                        .withWorkspace(workspace)
+                        .withLayer(layer);
+
         return authorizationService.getMatchingRules(req);
     }
 
     private AccessInfo getAccessInfo(
-            @Nullable User user,
             String userName,
             String roleName,
             String instanceName,
@@ -939,18 +909,15 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
             String workspace,
             String layer) {
 
-        RuleFilter filter =
-                new RuleFilter(
-                        userName,
-                        roleName,
-                        instanceName,
-                        sourceAddress,
-                        service,
-                        request,
-                        null,
-                        workspace,
-                        layer);
-        AccessRequest req = AccessRequest.builder().user(user).filter(filter).build();
+        AccessRequest req =
+                createRequest(userName, roleName)
+                        .withInstance(instanceName)
+                        .withSourceAddress(sourceAddress)
+                        .withService(service)
+                        .withRequest(request)
+                        .withWorkspace(workspace)
+                        .withLayer(layer);
+
         return authorizationService.getAccessInfo(req);
     }
 }

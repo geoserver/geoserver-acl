@@ -170,6 +170,17 @@
         <artifactId>spring-boot-simplejndi</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <!-- Deliverables -->
+      <dependency>
+        <groupId>org.geoserver.acl.app</groupId>
+        <artifactId>gs-acl-service</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.plugin</groupId>
+        <artifactId>gs-acl-plugin-accessmanager</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <repositories>

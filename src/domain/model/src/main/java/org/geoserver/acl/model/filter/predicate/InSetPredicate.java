@@ -9,18 +9,14 @@ import lombok.EqualsAndHashCode;
 import org.geoserver.acl.model.filter.RuleFilter;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /** Contains a fixed text OR a special filtering condition (i.e. ANY, DEFAULT). */
 @EqualsAndHashCode(callSuper = true)
 public class InSetPredicate<V> extends RulePredicate<Set<V>> implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 6565336016075974626L;
-    // SortedSet to preserve hashing, RuleFilter is used as a cache key in the authorization module
-    private SortedSet<V> values;
+    private Set<V> values = Set.of();
 
     public InSetPredicate(FilterType type) {
         super(type);
@@ -37,7 +33,7 @@ public class InSetPredicate<V> extends RulePredicate<Set<V>> implements Serializ
 
     public InSetPredicate(Set<V> values) {
         super(FilterType.NAMEVALUE);
-        this.values = Collections.unmodifiableSortedSet(new TreeSet<>(values));
+        this.values = values == null ? Set.of() : Set.copyOf(values);
     }
 
     @SuppressWarnings("unchecked")
@@ -47,10 +43,19 @@ public class InSetPredicate<V> extends RulePredicate<Set<V>> implements Serializ
         } else if (text.equals("*")) {
             this.type = FilterType.ANY;
         } else {
-            this.type = FilterType.NAMEVALUE;
-            this.values =
-                    (SortedSet<V>)
-                            Collections.unmodifiableSortedSet(RuleFilter.asCollectionValue(text));
+            setValues((Set<V>) RuleFilter.asCollectionValue(text));
+        }
+    }
+
+    public void setHeuristically(Set<V> roles) {
+        if (roles == null || roles.isEmpty()) {
+            this.values = Set.of();
+            this.type = FilterType.DEFAULT;
+        } else if (roles.contains("*")) {
+            this.values = Set.of();
+            this.type = FilterType.ANY;
+        } else {
+            this.setValues(roles);
         }
     }
 
@@ -60,9 +65,8 @@ public class InSetPredicate<V> extends RulePredicate<Set<V>> implements Serializ
     }
 
     public void setValues(Set<V> values) {
-        this.values =
-                values == null ? null : Collections.unmodifiableSortedSet(new TreeSet<>(values));
         this.type = FilterType.NAMEVALUE;
+        this.values = values == null ? Set.of() : Set.copyOf(values);
     }
 
     public Set<V> getValues() {
@@ -76,8 +80,7 @@ public class InSetPredicate<V> extends RulePredicate<Set<V>> implements Serializ
             case DEFAULT:
                 return type.toString();
             case NAMEVALUE:
-                return (values == null ? "(null)" : values.isEmpty() ? "(empty)" : values)
-                        + (includeDefault ? "+" : "");
+                return values + (includeDefault ? "+" : "");
             case IDVALUE:
             default:
                 throw new AssertionError();

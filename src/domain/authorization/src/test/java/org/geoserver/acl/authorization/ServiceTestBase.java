@@ -6,10 +6,12 @@
  */
 package org.geoserver.acl.authorization;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.geoserver.acl.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.model.adminrules.AdminRule;
+import org.geoserver.acl.model.authorization.AccessRequest;
 import org.geoserver.acl.model.authorization.AuthorizationService;
-import org.geoserver.acl.model.authorization.User;
 import org.geoserver.acl.model.rules.GrantType;
 import org.geoserver.acl.model.rules.IPAddressRange;
 import org.geoserver.acl.model.rules.Rule;
@@ -41,8 +43,9 @@ public abstract class ServiceTestBase {
 
     protected abstract AuthorizationService getAuthorizationService();
 
-    protected User createUser(String name, String... groups) {
-        return User.builder().name(name).roles(Set.of(groups)).build();
+    protected AccessRequest createRequest(String name, String... groups) {
+        for (String g : groups) assertNotNull(g);
+        return AccessRequest.builder().user(name).roles(Set.of(groups)).build();
     }
 
     protected Rule insert(

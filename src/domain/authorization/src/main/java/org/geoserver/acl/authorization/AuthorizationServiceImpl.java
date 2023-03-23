@@ -15,14 +15,14 @@ import org.geoserver.acl.model.adminrules.AdminGrantType;
 import org.geoserver.acl.model.adminrules.AdminRule;
 import org.geoserver.acl.model.authorization.AccessInfo;
 import org.geoserver.acl.model.authorization.AccessRequest;
+import org.geoserver.acl.model.authorization.AdminAccessInfo;
+import org.geoserver.acl.model.authorization.AdminAccessRequest;
 import org.geoserver.acl.model.authorization.AuthorizationService;
 import org.geoserver.acl.model.filter.AdminRuleFilter;
 import org.geoserver.acl.model.filter.RuleFilter;
 import org.geoserver.acl.model.filter.RuleQuery;
 import org.geoserver.acl.model.filter.predicate.FilterType;
-import org.geoserver.acl.model.filter.predicate.InSetPredicate;
 import org.geoserver.acl.model.filter.predicate.SpecialFilterType;
-import org.geoserver.acl.model.filter.predicate.TextFilter;
 import org.geoserver.acl.model.rules.CatalogMode;
 import org.geoserver.acl.model.rules.GrantType;
 import org.geoserver.acl.model.rules.LayerAttribute;
@@ -42,7 +42,6 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -80,6 +79,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         return found.values().stream()
                 .flatMap(List::stream)
                 .sorted((r1, r2) -> Long.compare(r1.getPriority(), r2.getPriority()))
+                .distinct()
                 .collect(Collectors.toList());
     }
 
@@ -89,6 +89,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         Map<String, List<Rule>> groupedRules = getMatchingRulesByRole(request);
 
         AccessInfo currAccessInfo = null;
+
+        //        List<Rule> flattened = flatten(groupedRules);
+        //        currAccessInfo = resolveRuleset(flattened);
 
         for (Entry<String, List<Rule>> ruleGroup : groupedRules.entrySet()) {
             String role = ruleGroup.getKey();
@@ -112,26 +115,22 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             ret = currAccessInfo;
         }
 
-        Optional<AdminRule> adminAuth = Optional.empty();
-        if (ret.getGrant() == GrantType.ALLOW) {
-            adminAuth = getAdminAuth(request);
-            ret = ret.withAdminRights(isAdminAuth(adminAuth));
-        }
-
         log.debug("Returning {} for {}", ret, request);
         List<String> matchingIds =
                 flatten(groupedRules).stream().map(Rule::getId).collect(Collectors.toList());
-        return ret.withMatchingRules(matchingIds)
-                .withMatchingAdminRule(adminAuth.map(AdminRule::getId).orElse(null));
+        return ret.withMatchingRules(matchingIds);
     }
 
     @Override
-    public AccessInfo getAdminAuthorization(AccessRequest request) {
+    public AdminAccessInfo getAdminAuthorization(AdminAccessRequest request) {
         Optional<AdminRule> adminAuth = getAdminAuth(request);
+        boolean adminRigths = isAdminAuth(adminAuth);
         String adminRuleId = adminAuth.map(AdminRule::getId).orElse(null);
-        return AccessInfo.ALLOW_ALL
-                .withAdminRights(isAdminAuth(adminAuth))
-                .withMatchingAdminRule(adminRuleId);
+        return AdminAccessInfo.builder()
+                .workspace(request.getWorkspace())
+                .admin(adminRigths)
+                .matchingAdminRule(adminRuleId)
+                .build();
     }
 
     private AccessInfo enlargeAccessInfo(AccessInfo baseAccess, AccessInfo moreAccess) {
@@ -311,39 +310,6 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         return ret;
     }
 
-    private String validateUsername(TextFilter filter) {
-
-        switch (filter.getType()) {
-            case NAMEVALUE:
-                String name = filter.getText();
-                if (null == name || name.isBlank())
-                    throw new IllegalArgumentException("Blank user name");
-                return name.trim();
-            case DEFAULT:
-            case ANY:
-                return null;
-            default:
-                throw new IllegalArgumentException("Unknown user filter type '" + filter + "'");
-        }
-    }
-
-    private Set<String> validateRolenames(InSetPredicate<String> filter) {
-
-        switch (filter.getType()) {
-            case NAMEVALUE:
-                Set<String> roles = filter.getValues();
-                if (roles == null || roles.isEmpty()) {
-                    throw new IllegalArgumentException("Blank role name");
-                }
-                return roles;
-            case DEFAULT:
-            case ANY:
-                return Collections.emptySortedSet();
-            default:
-                throw new IllegalArgumentException("Unknown role filter type '" + filter + "'");
-        }
-    }
-
     private AccessInfo buildAllowAccessInfo(Rule rule, List<RuleLimits> limits) {
         AccessInfo.Builder accessInfo = AccessInfo.builder().grant(GrantType.ALLOW);
 
@@ -505,15 +471,25 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     protected Map<String, List<Rule>> getMatchingRulesByRole(AccessRequest request)
             throws IllegalArgumentException {
 
-        final Set<String> finalRoleFilter = validateUserRoles(request);
-        RuleFilter filter = request.getFilter();
+        //        RuleFilter filter = request.getFilter();
+        RuleFilter filter = new RuleFilter();
+        filter.getUser().setHeuristically(request.getUser());
 
-        if (finalRoleFilter == null) {
-            return Map.of(); // shortcut here, in order to avoid loading the rules
-        }
+        Set<String> userRoles = request.getRoles();
+        filter.getRole().setHeuristically(userRoles);
+
+        filter.getSourceAddress().setHeuristically(request.getSourceAddress());
+        filter.getInstance().setHeuristically(request.getInstance());
+        filter.getService().setHeuristically(request.getService());
+        filter.getRequest().setHeuristically(request.getRequest());
+        filter.getSubfield().setHeuristically(request.getSubfield());
+        filter.getWorkspace().setHeuristically(request.getWorkspace());
+        filter.getLayer().setHeuristically(request.getLayer());
 
         Map<String, List<Rule>> ret = new HashMap<>();
 
+        final Set<String> finalRoleFilter =
+                filter.getRole().getValues(); // validateUserRoles(request);
         if (finalRoleFilter.isEmpty()) {
             if (filter.getRole().getType() != FilterType.ANY) {
                 filter = filter.clone();
@@ -546,62 +522,61 @@ public class AuthorizationServiceImpl implements AuthorizationService {
      * @return a Set of group names, or null if provided user/group are invalid.
      * @throws IllegalArgumentException
      */
-    protected Set<String> validateUserRoles(AccessRequest request) throws IllegalArgumentException {
-
-        final RuleFilter filter = request.getFilter();
-
-        // username can be null if the user filter asks for ANY or DEFAULT
-        String username = validateUsername(filter.getUser());
-
-        Set<String> finalRoleFilter = new HashSet<>();
-        // If both user and group are defined in filter
-        // if user doesn't belong to group, no rule is returned
-        // otherwise assigned or default rules are searched for
-
-        switch (filter.getRole().getType()) {
-            case NAMEVALUE:
-                // rolename can be null if the group filter asks for ANY or DEFAULT
-                final Set<String> requestedRoles = validateRolenames(filter.getRole()); // CSV
-                // rolenames
-
-                if (username != null) {
-                    Set<String> userRoles = request.userRoles();
-                    for (String role : requestedRoles) {
-                        if (userRoles.contains(role)) {
-                            finalRoleFilter.add(role);
-                        } else {
-                            log.debug(
-                                    "User does not belong to role [User:{}] [Role:{}] [ResolvedRoles:{}]",
-                                    filter.getUser(),
-                                    role,
-                                    userRoles);
-                        }
-                    }
-                } else {
-                    finalRoleFilter.addAll(requestedRoles);
-                }
-                break;
-
-            case ANY:
-                if (username != null) {
-                    Set<String> resolvedRoles = request.userRoles();
-                    if (!resolvedRoles.isEmpty()) {
-                        finalRoleFilter = resolvedRoles;
-                    } else {
-                        filter.setRole(SpecialFilterType.DEFAULT);
-                    }
-                } else {
-                    // no changes, use requested filtering
-                }
-                break;
-
-            default:
-                // no changes
-                break;
-        }
-
-        return finalRoleFilter;
-    }
+    //    protected Set<String> validateUserRoles(String username, Set<String> userRoles) throws
+    // IllegalArgumentException {
+    //
+    //        // username can be null if the user filter asks for ANY or DEFAULT
+    //        //String username = validateUsername(filter.getUser());
+    //
+    //        Set<String> finalRoleFilter = new HashSet<>();
+    //        // If both user and group are defined in filter
+    //        // if user doesn't belong to group, no rule is returned
+    //        // otherwise assigned or default rules are searched for
+    //
+    //        switch (filter.getRole().getType()) {
+    //            case NAMEVALUE:
+    //                // rolename can be null if the group filter asks for ANY or DEFAULT
+    //                final Set<String> requestedRoles = userRoles;//validateRolenames(userRoles);
+    //                // rolenames
+    //
+    //                if (username != null) {
+    //                    for (String role : requestedRoles) {
+    //                        if (userRoles.contains(role)) {
+    //                            finalRoleFilter.add(role);
+    //                        } else {
+    //                            log.debug(
+    //                                    "User does not belong to role [User:{}] [Role:{}]
+    // [ResolvedRoles:{}]",
+    //                                    filter.getUser(),
+    //                                    role,
+    //                                    userRoles);
+    //                        }
+    //                    }
+    //                } else {
+    //                    finalRoleFilter.addAll(requestedRoles);
+    //                }
+    //                break;
+    //
+    //            case ANY:
+    //                if (username != null) {
+    //                    Set<String> resolvedRoles = request.userRoles();
+    //                    if (!resolvedRoles.isEmpty()) {
+    //                        finalRoleFilter = resolvedRoles;
+    //                    } else {
+    //                        filter.setRole(SpecialFilterType.DEFAULT);
+    //                    }
+    //                } else {
+    //                    // no changes, use requested filtering
+    //                }
+    //                break;
+    //
+    //            default:
+    //                // no changes
+    //                break;
+    //        }
+    //
+    //        return finalRoleFilter;
+    //    }
 
     // ==========================================================================
 
@@ -609,20 +584,23 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         return rule.isEmpty() ? false : rule.orElseThrow().getAccess() == AdminGrantType.ADMIN;
     }
 
-    private Optional<AdminRule> getAdminAuth(AccessRequest request) {
-        Set<String> finalRoleFilter = validateUserRoles(request);
+    private Optional<AdminRule> getAdminAuth(AdminAccessRequest request) {
+        // AdminRuleFilter adminRuleFilter = AdminRuleFilter.of(request.getFilter());
+        AdminRuleFilter adminRuleFilter = new AdminRuleFilter();
+        adminRuleFilter.getInstance().setHeuristically(request.getInstance());
+        adminRuleFilter.getSourceAddress().setHeuristically(request.getSourceAddress());
+        adminRuleFilter.getUser().setHeuristically(request.getUser());
+        adminRuleFilter.getRole().setHeuristically(request.getRoles());
+        adminRuleFilter.getWorkspace().setHeuristically(request.getWorkspace());
 
-        if (finalRoleFilter == null) {
-            return Optional.empty();
-        }
-
-        AdminRuleFilter adminRuleFilter = AdminRuleFilter.of(request.getFilter());
+        Set<String> finalRoleFilter =
+                adminRuleFilter.getRole().getValues(); // validateUserRoles(request);
 
         if (finalRoleFilter.isEmpty()) {
             return adminRuleService.getFirstMatch(adminRuleFilter);
         }
 
-        adminRuleFilter.setRole(RuleFilter.asTextValue(finalRoleFilter));
+        //        adminRuleFilter.setRole(RuleFilter.asTextValue(finalRoleFilter));
         adminRuleFilter.getRole().setIncludeDefault(true);
         Optional<AdminRule> found = adminRuleService.getFirstMatch(adminRuleFilter);
         return found;

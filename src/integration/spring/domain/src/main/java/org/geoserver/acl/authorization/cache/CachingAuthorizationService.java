@@ -14,6 +14,8 @@ import org.geoserver.acl.domain.event.AdminRuleEvent;
 import org.geoserver.acl.domain.event.RuleEvent;
 import org.geoserver.acl.model.authorization.AccessInfo;
 import org.geoserver.acl.model.authorization.AccessRequest;
+import org.geoserver.acl.model.authorization.AdminAccessInfo;
+import org.geoserver.acl.model.authorization.AdminAccessRequest;
 import org.geoserver.acl.model.authorization.AuthorizationService;
 import org.geoserver.acl.model.rules.Rule;
 import org.springframework.context.event.EventListener;
@@ -31,7 +33,7 @@ public class CachingAuthorizationService implements AuthorizationService {
     private final AuthorizationService delegate;
 
     private LoadingCache<AccessRequest, AccessInfo> ruleAccessCache;
-    private LoadingCache<AccessRequest, AccessInfo> adminRuleAccessCache;
+    private LoadingCache<AdminAccessRequest, AdminAccessInfo> adminRuleAccessCache;
 
     CachingAuthorizationService(
             @NonNull AuthorizationService delegate, @NonNull CaffeineSpec spec) {
@@ -55,7 +57,7 @@ public class CachingAuthorizationService implements AuthorizationService {
     }
 
     @Override
-    public AccessInfo getAdminAuthorization(AccessRequest request) {
+    public AdminAccessInfo getAdminAuthorization(AdminAccessRequest request) {
         return adminRuleAccessCache.get(request);
     }
 
@@ -107,12 +109,12 @@ public class CachingAuthorizationService implements AuthorizationService {
     }
 
     private void evictAdminAccessCache(Set<String> affectedRuleIds) {
-        Predicate<? super Entry<AccessRequest, AccessInfo>> adminRulePredicate =
+        Predicate<? super Entry<AdminAccessRequest, AdminAccessInfo>> adminRulePredicate =
                 e ->
                         e.getValue().getMatchingAdminRule() != null
                                 && affectedRuleIds.contains(e.getValue().getMatchingAdminRule());
 
-        List<AccessRequest> matchingRequests;
+        List<AdminAccessRequest> matchingRequests;
 
         matchingRequests =
                 adminRuleAccessCache.asMap().entrySet().stream()
@@ -122,15 +124,6 @@ public class CachingAuthorizationService implements AuthorizationService {
                         .collect(Collectors.toList());
 
         adminRuleAccessCache.invalidateAll(matchingRequests);
-
-        matchingRequests =
-                ruleAccessCache.asMap().entrySet().stream()
-                        .parallel()
-                        .filter(adminRulePredicate)
-                        .map(Map.Entry::getKey)
-                        .collect(Collectors.toList());
-
-        ruleAccessCache.invalidateAll(matchingRequests);
     }
 
     public static CachingAuthorizationService newShortLivedInstanceForClient(

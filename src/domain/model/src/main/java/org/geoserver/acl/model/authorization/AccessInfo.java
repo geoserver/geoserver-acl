@@ -38,8 +38,6 @@ public class AccessInfo {
     /** The resulting grant: allow or deny. */
     @Default private GrantType grant = GrantType.DENY;
 
-    @Default private boolean adminRights = false;
-
     private Geometry<?> area;
 
     private Geometry<?> clipArea;
@@ -58,12 +56,10 @@ public class AccessInfo {
 
     @Default @NonNull private List<String> matchingRules = List.of();
 
-    private String matchingAdminRule;
-
     public static class Builder {
         // explicitly implement only mutators that need to ensure immutability
-        private Set<LayerAttribute> attributes;
-        private Set<String> allowedStyles;
+        private Set<LayerAttribute> attributes = Set.of();
+        private Set<String> allowedStyles = Set.of();
 
         public Builder attributes(Set<LayerAttribute> value) {
             this.attributes = value == null ? null : Set.copyOf(value);
