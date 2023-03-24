@@ -77,23 +77,46 @@ class PriorityResolver<T> {
      * and 5, and the ones with priority > 5 not being shifted at all.
      *
      * @param currentPriority the priority the rule has in the database
-     * @param requestedPriority the priority it's being updated to
+     * @param targetPriority the priority it's being updated to
      * @return the final priority, may differ from the requested one only if it's bellow the minimum
      *     or above the maximum existing priorities
      */
-    public long resolvePriorityUpdate(final long currentPriority, final long requestedPriority) {
-        if (currentPriority == requestedPriority) {
+    public long resolvePriorityUpdate(final long currentPriority, final long targetPriority) {
+        if (currentPriority == targetPriority) {
             return currentPriority;
         }
-        if (0L == requestedPriority) {
+        if (0L == targetPriority) {
             return jparepo.findMaxPriority().orElse(0L) + 1;
         }
+        if (!slotBusy(targetPriority)) {
+            return targetPriority;
+        }
 
-        Long min = Math.min(currentPriority, requestedPriority);
-        Long max = Math.max(currentPriority, requestedPriority) - 1;
+        long min, max, offset;
+        if (targetPriority < currentPriority) {
+            // move up, from M to N, only shift M to N - 1
+            // e.g. for [1,2,3,4,5], current = 4, target = 2, shift [2,3] by one
+            min = targetPriority;
+            max = currentPriority - 1;
+            offset = 1;
+        } else {
+            // move down from M to N, make room shifting (N)..MAX one position
+            // e.g. for [1,2,3,4,5], current = 2, target = 4, shift up [3,4] by one
+            // this could be improved by moving only until finding a hole
+            min = targetPriority;
+            max = jparepo.findMaxPriority().orElseThrow();
+            offset = 1;
+        }
+
         jparepo.streamIdsByShiftPriorityBetween(min, max).forEach(updatedIds::add);
-        jparepo.shiftPrioritiesBetween(min, max, 1);
-        return requestedPriority;
+        jparepo.shiftPrioritiesBetween(min, max, offset);
+        return targetPriority;
+    }
+
+    private boolean slotBusy(long targetPriority) {
+        final Optional<T> another = jparepo.findOneByPriority(targetPriority);
+        final boolean slotBusy = another.isPresent();
+        return slotBusy;
     }
 
     private long resolvePriorityFromStart(final long requestedPosition) {

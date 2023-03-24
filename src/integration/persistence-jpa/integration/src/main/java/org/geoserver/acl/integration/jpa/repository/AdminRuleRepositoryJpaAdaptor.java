@@ -25,6 +25,7 @@ import org.geoserver.acl.domain.filter.RuleQuery;
 import org.geoserver.acl.domain.filter.predicate.IPAddressRangeFilter;
 import org.geoserver.acl.integration.jpa.mapper.AdminRuleJpaMapper;
 import org.geoserver.acl.integration.jpa.mapper.RuleJpaMapper;
+import org.geoserver.acl.jpa.model.AdminRuleIdentifier;
 import org.geoserver.acl.jpa.model.QAdminRule;
 import org.geoserver.acl.jpa.repository.JpaAdminRuleRepository;
 import org.geoserver.acl.jpa.repository.TransactionReadOnly;
@@ -89,6 +90,8 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     @TransactionRequired
     public AdminRule create(AdminRule rule, InsertPosition position) {
         if (null != rule.getId()) throw new IllegalArgumentException("Rule must have no id");
+        findDup(rule).ifPresent(dup -> throwConflict(dup, null));
+
         if (rule.getPriority() < 0)
             throw new IllegalArgumentException(
                     "Negative priority is not allowed: " + rule.getPriority());
@@ -103,14 +106,11 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
 
         org.geoserver.acl.jpa.model.AdminRule saved;
         try {
-            // gotta use saveAndFlush to catch the exception before the method returns and
-            // the tx is committed
-            jparepo.flush();
+            // gotta use saveAndFlush to catch the exception before the method returns and the tx is
+            // committed
             saved = jparepo.saveAndFlush(entity);
         } catch (DataIntegrityViolationException e) {
-            throw new AdminRuleIdentifierConflictException(
-                    "An AdminRule with the same identifier already exists: " + rule.toShortString(),
-                    e);
+            throw throwConflict(rule, e);
         }
         notifyCollateralUpdates(priorityResolver.getUpdatedIds());
         return modelMapper.toModel(saved);
@@ -165,7 +165,10 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     @Override
     @TransactionRequired
     public AdminRule save(AdminRule rule) {
+
         Objects.requireNonNull(rule.getId());
+        findDup(rule).ifPresent(dup -> throwConflict(dup, null));
+
         org.geoserver.acl.jpa.model.AdminRule entity = getOrThrowIAE(rule.getId());
 
         PriorityResolver<org.geoserver.acl.jpa.model.AdminRule> priorityResolver =
@@ -182,9 +185,7 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
             notifyCollateralUpdates(priorityResolver.getUpdatedIds());
             return modelMapper.toModel(saved);
         } catch (DataIntegrityViolationException e) {
-            throw new AdminRuleIdentifierConflictException(
-                    "An AdminRule with the same identifier already exists: " + rule.toShortString(),
-                    e);
+            throw throwConflict(rule, e);
         }
     }
 
@@ -288,5 +289,25 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
             throw new NoSuchElementException("AdminRule " + ruleId + " does not exist");
         }
         return rule;
+    }
+
+    private Optional<AdminRule> findDup(AdminRule rule) {
+
+        final Long id = decodeId(rule.getId());
+        final AdminRuleIdentifier identifier = modelMapper.toEntity(rule.getIdentifier());
+
+        List<org.geoserver.acl.jpa.model.AdminRule> matches;
+        matches = jparepo.findAllByIdentifier(identifier);
+
+        return matches.stream()
+                .filter(r -> !r.getId().equals(id))
+                .findFirst()
+                .map(modelMapper::toModel);
+    }
+
+    private AdminRuleIdentifierConflictException throwConflict(
+            AdminRule rule, DataIntegrityViolationException e) {
+        throw new AdminRuleIdentifierConflictException(
+                "An AdminRule with the same identifier already exists: " + rule.toShortString(), e);
     }
 }

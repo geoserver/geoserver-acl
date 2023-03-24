@@ -118,7 +118,7 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
                         duplicate -> {
                             throw new RuleIdentifierConflictException(
                                     "A Rule with the same identifier already exists: "
-                                            + rule.getIdentifier().toShortString());
+                                            + rule.toShortString());
                         });
     }
 
@@ -146,7 +146,7 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
     @Override
     public Stream<Rule> findAll(RuleQuery<RuleFilter> query) {
         RuleFilter filter = query.getFilter().orElse(RuleFilter.any());
-        Stream<Rule> matches = rules.stream().filter(filter);
+        Stream<Rule> matches = findAll().filter(filter);
 
         String nextId = query.getNextId();
         if (nextId != null) {

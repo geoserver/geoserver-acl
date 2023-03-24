@@ -38,8 +38,7 @@ public class Rule {
     private RuleLimits ruleLimits;
 
     public @Override String toString() {
-        return String.format(
-                "Rule[id: %s, priority: %d, %s]", id, priority, identifier.toShortString());
+        return String.format("Rule[id: %s, %s]", id, toShortString());
     }
 
     public String ipAddressRange() {
@@ -96,5 +95,9 @@ public class Rule {
 
     public static Rule limit() {
         return Rule.builder().build().withAccess(GrantType.LIMIT);
+    }
+
+    public String toShortString() {
+        return String.format("priority: %d, %s", getPriority(), getIdentifier().toShortString());
     }
 }

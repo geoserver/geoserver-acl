@@ -117,7 +117,7 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
                         duplicate -> {
                             throw new AdminRuleIdentifierConflictException(
                                     "An AdminRule with the same identifier already exists: "
-                                            + rule.getIdentifier().toShortString());
+                                            + rule.toShortString());
                         });
     }
 
@@ -128,12 +128,12 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
 
     @Override
     public Stream<AdminRule> findAll() {
-        return findAll(RuleQuery.of());
+        return List.copyOf(rules).stream();
     }
 
     @Override
     public Stream<AdminRule> findAll(RuleQuery<AdminRuleFilter> query) {
-        Stream<AdminRule> matches = rules.stream();
+        Stream<AdminRule> matches = findAll();
         if (query.getFilter().isPresent()) {
             AdminRuleFilter filter = query.getFilter().orElseThrow();
             matches = matches.filter(filter);

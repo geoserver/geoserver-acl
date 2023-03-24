@@ -75,6 +75,29 @@ class RuleRepositoryJpaAdaptorTest {
         testCreateDuplicateIdentifier(r = r.withPriority(10).withAccess(GrantType.DENY));
     }
 
+    @Test
+    void update_duplicateKey() {
+        Rule r1 = Rule.allow().withPriority(1).withRolename("role").withUsername("user1");
+        r1 = repo.create(r1, InsertPosition.FIXED);
+
+        Rule r2 =
+                repo.create(
+                        r1.withId(null).withPriority(2).withUsername("user2"),
+                        InsertPosition.FIXED);
+
+        Rule r1dup = r2.withUsername("user1");
+        String message =
+                assertThrows(RuleIdentifierConflictException.class, () -> repo.save(r1dup))
+                        .getMessage();
+        assertThat(message).contains(r1.toShortString());
+
+        Rule r2dup = r1.withUsername("user2");
+        message =
+                assertThrows(RuleIdentifierConflictException.class, () -> repo.save(r2dup))
+                        .getMessage();
+        assertThat(message).contains(r2.toShortString());
+    }
+
     private void testCreateDuplicateIdentifier(Rule r1) {
         assertNotNull(repo.create(r1, InsertPosition.FIXED));
 
@@ -109,6 +132,24 @@ class RuleRepositoryJpaAdaptorTest {
                 IntStream.rangeClosed(1, 100).mapToObj(this::addFull).collect(Collectors.toList());
         List<Rule> result = repo.findAll(RuleQuery.of()).collect(Collectors.toList());
         assertThat(result).isEqualTo(all);
+    }
+
+    @Test
+    void deleteById() {
+        Rule r1 = repo.create(Rule.allow(), InsertPosition.FIXED);
+        Rule r2 = repo.create(Rule.deny(), InsertPosition.FIXED);
+
+        assertThat(repo.count()).isEqualTo(2);
+
+        assertThat(repo.deleteById(r2.getId())).isTrue();
+        assertThat(repo.count()).isOne();
+        assertThat(repo.deleteById(r2.getId())).isFalse();
+        assertThat(repo.count()).isOne();
+
+        assertThat(repo.deleteById(r1.getId())).isTrue();
+        assertThat(repo.count()).isZero();
+        assertThat(repo.deleteById(r1.getId())).isFalse();
+        assertThat(repo.count()).isZero();
     }
 
     private Rule addFull(int priority) {

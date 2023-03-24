@@ -16,5 +16,6 @@
   <packaging>pom</packaging>
   <modules>
     <module>api</module>
+    <module>plugin</module>
   </modules>
 </project>

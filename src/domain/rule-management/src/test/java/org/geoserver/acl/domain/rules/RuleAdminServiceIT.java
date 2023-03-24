@@ -531,17 +531,35 @@ public class RuleAdminServiceIT {
         // moving r3 three slots up, should shift r1 and r2 only, ending in
         // r3(1),r2(2),r1(3),r4(4)
         r3 = r3.withPriority(1);
+        r2 = r2.withPriority(2);
+        r1 = r1.withPriority(3);
         assertThat(ruleAdminService.update(r3)).isEqualTo(r3);
 
-        assertGet(r2)
-                .as("r2 should have been displaced to priority 2")
-                .isEqualTo(r2.withPriority(2));
+        assertGet(r2).as("r2 should have been displaced to priority 2").isEqualTo(r2);
 
         assertGet(r1)
                 .as("r1 should have been displaced to priority 3")
                 .isEqualTo(r1.withPriority(3));
 
         assertGet(r4).as("r4 should have kept priority 4").isEqualTo(r4);
+
+        // moving r3 two slots down, should shift r1 and r4
+        // from: r3(1),r2(2),r1(3),r4(4)
+        // to:         r2(2),r3(3),r1(4),r4(5)
+        r2 = r2.withPriority(2);
+        r3 = r3.withPriority(3);
+        r1 = r1.withPriority(4);
+        r4 = r4.withPriority(5);
+        assertThat(ruleAdminService.update(r3)).isEqualTo(r3);
+        List<Rule> collect = ruleAdminService.getAll().collect(Collectors.toList());
+
+        assertGet(r2).as("r2 should have kept priority 2").isEqualTo(r2);
+
+        assertGet(r1).as("r1 should have been displaced to priority 4").isEqualTo(r1);
+
+        assertGet(r4)
+                .as("r4 should have been displaced to priority 5")
+                .isEqualTo(r4.withPriority(5));
     }
 
     @Test

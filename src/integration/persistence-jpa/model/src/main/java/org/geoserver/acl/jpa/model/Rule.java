@@ -9,7 +9,6 @@ package org.geoserver.acl.jpa.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -28,7 +27,6 @@ import javax.persistence.Table;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Accessors(chain = true)
 @Entity(name = "Rule")
 @EntityListeners(AuditingEntityListener.class)
 @Table(

@@ -44,13 +44,21 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
     public @Override ResponseEntity<AdminRule> createAdminRule(
             AdminRule adminRule, InsertPosition position) {
 
-        org.geoserver.acl.domain.adminrules.AdminRule rule;
-        if (position == null) {
-            rule = service.insert(support.toModel(adminRule));
-        } else {
-            rule = service.insert(support.toModel(adminRule), support.toAdminRulesModel(position));
+        try {
+            org.geoserver.acl.domain.adminrules.AdminRule rule;
+            if (position == null) {
+                rule = service.insert(support.toModel(adminRule));
+            } else {
+                rule =
+                        service.insert(
+                                support.toModel(adminRule), support.toAdminRulesModel(position));
+            }
+            return ResponseEntity.ok(support.toApi(rule));
+        } catch (AdminRuleIdentifierConflictException e) {
+            return support.error(CONFLICT, e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return support.error(BAD_REQUEST, e.getMessage());
         }
-        return ResponseEntity.ok(support.toApi(rule));
     }
 
     public @Override ResponseEntity<Void> deleteAdminRuleById(@NonNull String id) {

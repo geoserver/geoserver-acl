@@ -142,23 +142,32 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                 // ok: extending grants
                 AccessInfo.Builder ret = AccessInfo.builder().grant(GrantType.ALLOW);
 
-                ret.cqlFilterRead(
-                        unionCQL(baseAccess.getCqlFilterRead(), moreAccess.getCqlFilterRead()));
-                ret.cqlFilterWrite(
-                        unionCQL(baseAccess.getCqlFilterWrite(), moreAccess.getCqlFilterWrite()));
+                String cqlRead =
+                        unionCQL(baseAccess.getCqlFilterRead(), moreAccess.getCqlFilterRead());
+                ret.cqlFilterRead(cqlRead);
+                String cqlWrite =
+                        unionCQL(baseAccess.getCqlFilterWrite(), moreAccess.getCqlFilterWrite());
+                ret.cqlFilterWrite(cqlWrite);
 
-                ret.catalogMode(
-                        getLarger(baseAccess.getCatalogMode(), moreAccess.getCatalogMode()));
+                CatalogMode catalogMode =
+                        getLarger(baseAccess.getCatalogMode(), moreAccess.getCatalogMode());
+                ret.catalogMode(catalogMode);
 
-                if (baseAccess.getDefaultStyle() == null || moreAccess.getDefaultStyle() == null)
+                if (baseAccess.getDefaultStyle() == null || moreAccess.getDefaultStyle() == null) {
                     ret.defaultStyle(null);
-                else ret.defaultStyle(baseAccess.getDefaultStyle()); // just pick one
+                } else {
+                    ret.defaultStyle(baseAccess.getDefaultStyle()); // just pick one
+                }
 
-                ret.allowedStyles(
+                Set<String> allowedStyles =
                         unionAllowedStyles(
-                                baseAccess.getAllowedStyles(), moreAccess.getAllowedStyles()));
-                ret.attributes(
-                        unionAttributes(baseAccess.getAttributes(), moreAccess.getAttributes()));
+                                baseAccess.getAllowedStyles(), moreAccess.getAllowedStyles());
+                ret.allowedStyles(allowedStyles);
+
+                Set<LayerAttribute> attributes =
+                        unionAttributes(baseAccess.getAttributes(), moreAccess.getAttributes());
+                ret.attributes(attributes);
+
                 setAllowedAreas(baseAccess, moreAccess, ret);
                 return ret.build();
             }

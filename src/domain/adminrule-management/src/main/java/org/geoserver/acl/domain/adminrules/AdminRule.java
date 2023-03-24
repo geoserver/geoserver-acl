@@ -46,9 +46,7 @@ public class AdminRule {
     private AdminGrantType access;
 
     public @Override String toString() {
-        return String.format(
-                "AdminRule[id: %s, priority: %d, access: %s,  %s]",
-                id, priority, access, identifier.toShortString());
+        return String.format("AdminRule[id: %s, %s]", id, toShortString());
     }
 
     public AdminRule withInstanceName(String instanceName) {
@@ -80,6 +78,8 @@ public class AdminRule {
     }
 
     public String toShortString() {
-        return String.format("access: %s, %s", getAccess(), getIdentifier().toShortString());
+        return String.format(
+                "priority: %d, access: %s, %s",
+                getPriority(), getAccess(), getIdentifier().toShortString());
     }
 }

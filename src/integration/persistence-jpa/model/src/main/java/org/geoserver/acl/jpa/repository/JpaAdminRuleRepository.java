@@ -29,7 +29,7 @@ public interface JpaAdminRuleRepository
 
     @TransactionRequired
     @Modifying
-    @Query("delete from Rule r where r.id=:id")
+    @Query("delete from AdminRule r where r.id=:id")
     int deleteById(@Param("id") long id);
 
     @Override

@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 class PredicateMapper {
 
     public Predicate toPredicate(RuleQuery<?> query) {
+        if (query.getFilter().isEmpty()) return new BooleanBuilder();
         return query.getFilter().flatMap(this::toPredicate).orElseGet(BooleanBuilder::new);
     }
 
@@ -86,7 +87,7 @@ class PredicateMapper {
         }
     }
 
-    Optional<Predicate> toPredicate(Filter filter) {
+    Optional<Predicate> toPredicate(Filter<?> filter) {
         if (filter instanceof RuleFilter) return toPredicate((RuleFilter) filter);
         if (filter instanceof AdminRuleFilter) return toPredicate((AdminRuleFilter) filter);
         return Optional.empty();

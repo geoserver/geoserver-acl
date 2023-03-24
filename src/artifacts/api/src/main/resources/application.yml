@@ -33,7 +33,7 @@ geoserver.acl:
     username: sa
     password: sa
     hikari:
-      minimum-idle: 0
+      minimum-idle: 1
       maximum-pool-size: 20
   jpa:
     show-sql: false
@@ -60,9 +60,9 @@ spring.config.activate.on-profile: dev
 
 geoserver.acl:
   datasource:
-    url: jdbc:h2:mem:geoserver-acl
+    url: jdbc:h2:mem:geoserver-acl;DB_CLOSE_DELAY=-1
     hikari:
-      minimum-idle: 0
+      minimum-idle: 1
       maximum-pool-size: 20
   jpa:
     show-sql: false

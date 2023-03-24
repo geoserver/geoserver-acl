@@ -4,6 +4,8 @@
  */
 package org.geoserver.acl.integration.jpa.repository;
 
+import static org.geoserver.acl.domain.rules.GrantType.ALLOW;
+import static org.geoserver.acl.domain.rules.GrantType.LIMIT;
 import static org.geoserver.acl.integration.jpa.mapper.RuleJpaMapper.decodeId;
 
 import com.mysema.commons.lang.CloseableIterator;
@@ -14,6 +16,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import org.geoserver.acl.domain.filter.RuleQuery;
 import org.geoserver.acl.domain.filter.predicate.IPAddressRangeFilter;
@@ -48,6 +51,7 @@ import java.util.stream.StreamSupport;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 
+@Slf4j
 @TransactionSupported
 public class RuleRepositoryJpaAdaptor implements RuleRepository {
 
@@ -165,7 +169,10 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     @TransactionRequired
     public Rule save(Rule rule) {
         Objects.requireNonNull(rule.getId());
+        findDup(rule).ifPresent(this::throwConflict);
+
         org.geoserver.acl.jpa.model.Rule entity = getOrThrowIAE(rule.getId());
+        removeLayerDetailsIfNotApplicableAnyMore(rule, entity);
 
         PriorityResolver<org.geoserver.acl.jpa.model.Rule> priorityResolver = priorityResolver();
         long finalPriority =
@@ -173,16 +180,32 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
 
         modelMapper.updateEntity(entity, rule);
         entity.setPriority(finalPriority);
-        if (checkForDups(entity)) {
-            throw new RuleIdentifierConflictException(
-                    "A Rule with the same identifier already exists: "
-                            + rule.getIdentifier().toShortString());
-        }
 
         org.geoserver.acl.jpa.model.Rule saved = jparepo.save(entity);
 
         notifyCollateralUpdates(priorityResolver.getUpdatedIds());
         return modelMapper.toModel(saved);
+    }
+
+    private void removeLayerDetailsIfNotApplicableAnyMore(
+            Rule rule, org.geoserver.acl.jpa.model.Rule entity) {
+        if (entity.getLayerDetails() != null && !entity.getLayerDetails().isEmpty()) {
+            boolean updatedCanHaveDetails =
+                    ALLOW == rule.getIdentifier().getAccess()
+                            && null != rule.getIdentifier().getLayer();
+            if (!updatedCanHaveDetails) {
+                log.info(
+                        "Removing LayerDetails for Rule {} (entity id  {})."
+                                + " Tansitioned from [access={}, layer={}] to [access={}, layer={}]",
+                        rule.getId(),
+                        entity.getId(),
+                        entity.getIdentifier().getAccess(),
+                        entity.getIdentifier().getLayer(),
+                        rule.getIdentifier().getAccess(),
+                        rule.getIdentifier().getLayer());
+                entity.setLayerDetails(null);
+            }
+        }
     }
 
     @Override
@@ -193,17 +216,14 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
             throw new IllegalArgumentException(
                     "Negative priority is not allowed: " + rule.getPriority());
 
+        findDup(rule).ifPresent(this::throwConflict);
+
         PriorityResolver<org.geoserver.acl.jpa.model.Rule> priorityResolver = priorityResolver();
         final long finalPriority =
                 priorityResolver.resolveFinalPriority(rule.getPriority(), position);
 
         org.geoserver.acl.jpa.model.Rule entity = modelMapper.toEntity(rule);
         entity.setPriority(finalPriority);
-        if (checkForDups(entity)) {
-            throw new RuleIdentifierConflictException(
-                    "A Rule with the same identifier already exists: "
-                            + rule.getIdentifier().toShortString());
-        }
 
         org.geoserver.acl.jpa.model.Rule saved = jparepo.save(entity);
 
@@ -221,14 +241,19 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
         }
     }
 
-    private boolean checkForDups(org.geoserver.acl.jpa.model.Rule rule) {
-        if (rule.getIdentifier().getAccess() == GrantType.LIMIT) {
-            return false;
+    private Optional<Rule> findDup(Rule rule) {
+        if (rule.getIdentifier().getAccess() == LIMIT) {
+            return Optional.empty();
         }
 
-        RuleIdentifier identifier = rule.getIdentifier();
+        final Long id = decodeId(rule.getId());
+        final RuleIdentifier identifier = modelMapper.toEntity(rule.getIdentifier());
+
         List<org.geoserver.acl.jpa.model.Rule> matches = jparepo.findAllByIdentifier(identifier);
-        return matches.stream().anyMatch(r -> !r.getId().equals(rule.getId()));
+        return matches.stream()
+                .filter(r -> !r.getId().equals(id))
+                .findFirst()
+                .map(modelMapper::toModel);
     }
 
     @Override
@@ -353,5 +378,10 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
             throw new IllegalArgumentException("Rule " + ruleId + " does not exist");
         }
         return rule;
+    }
+
+    private void throwConflict(Rule dup) {
+        throw new RuleIdentifierConflictException(
+                "A Rule with the same identifier already exists: " + dup.toShortString());
     }
 }

@@ -175,15 +175,41 @@
         <artifactId>spring-boot-simplejndi</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <!-- Deliverables -->
+      <!-- GeoServer plugin components -->
       <dependency>
-        <groupId>org.geoserver.acl.app</groupId>
-        <artifactId>gs-acl-service</artifactId>
+        <groupId>org.geoserver.acl.plugin</groupId>
+        <artifactId>gs-acl-plugin-accessmanager</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver.acl.plugin</groupId>
-        <artifactId>gs-acl-plugin-accessmanager</artifactId>
+        <artifactId>gs-acl-plugin-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.plugin</groupId>
+        <artifactId>gs-acl-plugin-config</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.plugin</groupId>
+        <artifactId>gs-acl-plugin-restconfig</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.plugin</groupId>
+        <artifactId>gs-acl-plugin-webui</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.plugin</groupId>
+        <artifactId>gs-acl-plugin-wps</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- Deliverables -->
+      <dependency>
+        <groupId>org.geoserver.acl.app</groupId>
+        <artifactId>gs-acl-service</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>
