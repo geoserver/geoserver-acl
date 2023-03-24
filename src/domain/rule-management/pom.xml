@@ -16,7 +16,11 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
-      <artifactId>gs-acl-objectmodel</artifactId>
+      <artifactId>gs-acl-filter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geolatte</groupId>
+      <artifactId>geolatte-geom</artifactId>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>

@@ -7,19 +7,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.geolatte.geom.MultiPolygon;
 import org.geolatte.geom.codec.Wkt;
+import org.geoserver.acl.domain.filter.RuleQuery;
+import org.geoserver.acl.domain.rules.CatalogMode;
+import org.geoserver.acl.domain.rules.GrantType;
+import org.geoserver.acl.domain.rules.InsertPosition;
+import org.geoserver.acl.domain.rules.Rule;
+import org.geoserver.acl.domain.rules.RuleIdentifierConflictException;
+import org.geoserver.acl.domain.rules.RuleLimits;
+import org.geoserver.acl.domain.rules.RuleRepository;
+import org.geoserver.acl.domain.rules.SpatialFilterType;
 import org.geoserver.acl.integration.jpa.config.AuthorizationJPAPropertiesTestConfiguration;
 import org.geoserver.acl.integration.jpa.config.JPAIntegrationConfiguration;
 import org.geoserver.acl.jpa.repository.JpaRuleRepository;
-import org.geoserver.acl.model.filter.RuleQuery;
-import org.geoserver.acl.model.rules.CatalogMode;
-import org.geoserver.acl.model.rules.GrantType;
-import org.geoserver.acl.model.rules.IPAddressRange;
-import org.geoserver.acl.model.rules.InsertPosition;
-import org.geoserver.acl.model.rules.Rule;
-import org.geoserver.acl.model.rules.RuleLimits;
-import org.geoserver.acl.model.rules.SpatialFilterType;
-import org.geoserver.acl.rules.RuleIdentifierConflictException;
-import org.geoserver.acl.rules.RuleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,10 +68,7 @@ class RuleRepositoryJpaAdaptorTest {
         testCreateDuplicateIdentifier(r = r.withPriority(3).withRolename("role"));
         testCreateDuplicateIdentifier(r = r.withPriority(4).withService("WMS"));
         testCreateDuplicateIdentifier(r = r.withPriority(5).withRequest("GetCapabilities"));
-        testCreateDuplicateIdentifier(
-                r =
-                        r.withPriority(6)
-                                .withAddressRange(IPAddressRange.fromCidrSignature("10.0.0.1/24")));
+        testCreateDuplicateIdentifier(r = r.withPriority(6).withAddressRange("10.0.0.1/24"));
         testCreateDuplicateIdentifier(r = r.withPriority(7).withSubfield("subfield"));
         testCreateDuplicateIdentifier(r = r.withPriority(8).withWorkspace("ws"));
         testCreateDuplicateIdentifier(r = r.withPriority(9).withLayer("layer"));
@@ -127,7 +123,7 @@ class RuleRepositoryJpaAdaptorTest {
                 .extId("extId-" + priority)
                 .identifier(
                         Rule.limit().getIdentifier().toBuilder()
-                                .addressRange(IPAddressRange.fromCidrSignature("10.1.1.1/32"))
+                                .addressRange("10.1.1.1/32")
                                 .layer("layer-" + priority)
                                 .workspace("ws-" + priority)
                                 .build())

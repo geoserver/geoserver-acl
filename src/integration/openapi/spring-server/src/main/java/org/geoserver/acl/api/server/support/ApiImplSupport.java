@@ -45,19 +45,25 @@ public abstract class ApiImplSupport<DTO, T> {
         return toApi.apply(model);
     }
 
-    public InsertPosition toApi(org.geoserver.acl.model.rules.InsertPosition position) {
+    public InsertPosition toApi(org.geoserver.acl.domain.rules.InsertPosition position) {
         return new EnumsApiMapperImpl().map(position);
     }
 
-    public org.geoserver.acl.model.rules.InsertPosition toModel(InsertPosition position) {
-        return new EnumsApiMapperImpl().map(position);
+    public org.geoserver.acl.domain.rules.InsertPosition toRulesModel(InsertPosition position) {
+        return new EnumsApiMapperImpl().toRuleInsertPosition(position);
     }
 
-    public org.geoserver.acl.model.filter.AdminRuleFilter map(AdminRuleFilter adminRuleFilter) {
+    public org.geoserver.acl.domain.adminrules.InsertPosition toAdminRulesModel(
+            InsertPosition position) {
+        return new EnumsApiMapperImpl().toAdminRuleInsertPosition(position);
+    }
+
+    public org.geoserver.acl.domain.adminrules.AdminRuleFilter map(
+            AdminRuleFilter adminRuleFilter) {
         return filterMapper.map(adminRuleFilter);
     }
 
-    public org.geoserver.acl.model.filter.RuleFilter map(RuleFilter filter) {
+    public org.geoserver.acl.domain.rules.RuleFilter map(RuleFilter filter) {
         return filterMapper.toModel(filter);
     }
 

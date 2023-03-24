@@ -11,7 +11,7 @@ import org.geoserver.acl.api.model.AdminRule;
 import org.springframework.web.context.request.NativeWebRequest;
 
 public class AdminRulesApiSupport
-        extends ApiImplSupport<AdminRule, org.geoserver.acl.model.adminrules.AdminRule> {
+        extends ApiImplSupport<AdminRule, org.geoserver.acl.domain.adminrules.AdminRule> {
 
     public AdminRulesApiSupport(
             @NonNull NativeWebRequest nativeRequest, AdminRuleApiMapper mapper) {

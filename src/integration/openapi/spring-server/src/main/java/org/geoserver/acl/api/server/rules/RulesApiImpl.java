@@ -20,9 +20,9 @@ import org.geoserver.acl.api.model.RuleFilter;
 import org.geoserver.acl.api.model.RuleLimits;
 import org.geoserver.acl.api.server.RulesApiDelegate;
 import org.geoserver.acl.api.server.support.RulesApiSupport;
-import org.geoserver.acl.model.filter.RuleQuery;
-import org.geoserver.acl.rules.RuleAdminService;
-import org.geoserver.acl.rules.RuleIdentifierConflictException;
+import org.geoserver.acl.domain.filter.RuleQuery;
+import org.geoserver.acl.domain.rules.RuleAdminService;
+import org.geoserver.acl.domain.rules.RuleIdentifierConflictException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -40,13 +40,13 @@ public class RulesApiImpl implements RulesApiDelegate {
 
     @Override
     public ResponseEntity<Rule> createRule(@NonNull Rule rule, InsertPosition position) {
-        org.geoserver.acl.model.rules.Rule model = support.toModel(rule);
-        org.geoserver.acl.model.rules.Rule created;
+        org.geoserver.acl.domain.rules.Rule model = support.toModel(rule);
+        org.geoserver.acl.domain.rules.Rule created;
         try {
             if (null == position) {
                 created = service.insert(model);
             } else {
-                created = service.insert(model, support.toModel(position));
+                created = service.insert(model, support.toRulesModel(position));
             }
         } catch (RuleIdentifierConflictException conflict) {
             return support.error(CONFLICT, conflict.getMessage());
@@ -72,14 +72,14 @@ public class RulesApiImpl implements RulesApiDelegate {
     public ResponseEntity<List<Rule>> queryRules( //
             @Nullable Integer limit, @Nullable String nextCursor, @Nullable RuleFilter ruleFilter) {
 
-        org.geoserver.acl.model.filter.RuleFilter filter = support.map(ruleFilter);
+        org.geoserver.acl.domain.rules.RuleFilter filter = support.map(ruleFilter);
 
         return query(RuleQuery.of(filter, limit, nextCursor));
     }
 
     private ResponseEntity<List<Rule>> query(
-            RuleQuery<org.geoserver.acl.model.filter.RuleFilter> query) {
-        List<org.geoserver.acl.model.rules.Rule> list;
+            RuleQuery<org.geoserver.acl.domain.rules.RuleFilter> query) {
+        List<org.geoserver.acl.domain.rules.Rule> list;
 
         // handle cursor-based pagination.
         final Integer requestedLimit = query.getLimit();
@@ -107,7 +107,7 @@ public class RulesApiImpl implements RulesApiDelegate {
 
     @Override
     public ResponseEntity<Rule> getRuleById(@NonNull String id) {
-        Optional<org.geoserver.acl.model.rules.Rule> found = service.get(id);
+        Optional<org.geoserver.acl.domain.rules.Rule> found = service.get(id);
         support.setPreferredGeometryEncoding();
 
         return ResponseEntity.status(found.isPresent() ? OK : NOT_FOUND)
@@ -116,7 +116,7 @@ public class RulesApiImpl implements RulesApiDelegate {
 
     @Override
     public ResponseEntity<Rule> findOneRuleByPriority(Long priority) {
-        Optional<org.geoserver.acl.model.rules.Rule> found;
+        Optional<org.geoserver.acl.domain.rules.Rule> found;
         try {
             found = service.getRuleByPriority(priority);
         } catch (IllegalStateException multipleResults) {
@@ -167,7 +167,7 @@ public class RulesApiImpl implements RulesApiDelegate {
     @Override
     public ResponseEntity<Void> setRuleLayerDetails(@NonNull String id, LayerDetails layerDetails) {
         try {
-            org.geoserver.acl.model.rules.LayerDetails ld = support.toModel(layerDetails);
+            org.geoserver.acl.domain.rules.LayerDetails ld = support.toModel(layerDetails);
             service.setLayerDetails(id, ld);
             return ResponseEntity.status(OK).build();
         } catch (IllegalArgumentException e) {
@@ -207,7 +207,7 @@ public class RulesApiImpl implements RulesApiDelegate {
 
     @Override
     public ResponseEntity<Rule> updateRuleById(@NonNull String id, Rule patchBody) {
-        final org.geoserver.acl.model.rules.Rule rule = service.get(id).orElse(null);
+        final org.geoserver.acl.domain.rules.Rule rule = service.get(id).orElse(null);
         if (null == rule) {
             return support.error(NOT_FOUND, "Rule " + id + " does not exist");
         }
@@ -220,10 +220,10 @@ public class RulesApiImpl implements RulesApiDelegate {
                             + id);
         }
 
-        org.geoserver.acl.model.rules.Rule patched = support.mergePatch(rule);
+        org.geoserver.acl.domain.rules.Rule patched = support.mergePatch(rule);
 
         try {
-            org.geoserver.acl.model.rules.Rule updated = service.update(patched);
+            org.geoserver.acl.domain.rules.Rule updated = service.update(patched);
             support.setPreferredGeometryEncoding();
             return ResponseEntity.status(OK).body(support.toApi(updated));
         } catch (RuleIdentifierConflictException e) {

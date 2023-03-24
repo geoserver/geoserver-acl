@@ -63,7 +63,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.acl.domain</groupId>
+      <groupId>org.geoserver.acl</groupId>
       <artifactId>gs-acl-authorization</artifactId>
       <type>test-jar</type>
       <scope>test</scope>

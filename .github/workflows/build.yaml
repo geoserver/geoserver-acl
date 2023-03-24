@@ -1,10 +1,10 @@
 # Builds and pushes docker images on main and tags
 
-name: Build on any branch
+name: Build and test
 on:
   push:
     branches:
-      - '*/**'
+      - '*'
 
 jobs:
   build:

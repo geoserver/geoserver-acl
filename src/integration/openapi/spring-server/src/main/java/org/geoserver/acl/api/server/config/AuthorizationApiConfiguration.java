@@ -10,7 +10,7 @@ import org.geoserver.acl.api.server.AuthorizationApiController;
 import org.geoserver.acl.api.server.AuthorizationApiDelegate;
 import org.geoserver.acl.api.server.authorization.AuthorizationApiImpl;
 import org.geoserver.acl.api.server.support.AuthorizationApiSupport;
-import org.geoserver.acl.model.authorization.AuthorizationService;
+import org.geoserver.acl.authorization.AuthorizationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

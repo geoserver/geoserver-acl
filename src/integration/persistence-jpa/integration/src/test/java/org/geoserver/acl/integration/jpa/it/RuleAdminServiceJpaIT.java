@@ -1,17 +1,17 @@
 package org.geoserver.acl.integration.jpa.it;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.geoserver.acl.domain.event.RuleEvent.created;
-import static org.geoserver.acl.domain.event.RuleEvent.updated;
+import static org.geoserver.acl.domain.rules.RuleEvent.created;
+import static org.geoserver.acl.domain.rules.RuleEvent.updated;
 
 import org.geoserver.acl.config.domain.RuleAdminServiceConfiguration;
-import org.geoserver.acl.domain.event.RuleEvent;
+import org.geoserver.acl.domain.rules.Rule;
+import org.geoserver.acl.domain.rules.RuleAdminService;
+import org.geoserver.acl.domain.rules.RuleAdminServiceIT;
+import org.geoserver.acl.domain.rules.RuleEvent;
 import org.geoserver.acl.integration.jpa.config.AuthorizationJPAPropertiesTestConfiguration;
 import org.geoserver.acl.integration.jpa.config.JPAIntegrationConfiguration;
 import org.geoserver.acl.jpa.repository.JpaRuleRepository;
-import org.geoserver.acl.model.rules.Rule;
-import org.geoserver.acl.rules.RuleAdminService;
-import org.geoserver.acl.rules.RuleAdminServiceIT;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -80,7 +80,7 @@
       <!-- Domain -->
       <dependency>
         <groupId>org.geoserver.acl.domain</groupId>
-        <artifactId>gs-acl-objectmodel</artifactId>
+        <artifactId>gs-acl-filter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -106,12 +106,17 @@
         <type>test-jar</type>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.acl.domain</groupId>
+        <groupId>org.geoserver.acl</groupId>
+        <artifactId>gs-acl-authorization-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl</groupId>
         <artifactId>gs-acl-authorization</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.acl.domain</groupId>
+        <groupId>org.geoserver.acl</groupId>
         <artifactId>gs-acl-authorization</artifactId>
         <version>${project.version}</version>
         <type>test-jar</type>

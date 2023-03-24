@@ -16,9 +16,8 @@
   <artifactId>domain</artifactId>
   <packaging>pom</packaging>
   <modules>
-    <module>model</module>
+    <module>filter</module>
     <module>rule-management</module>
     <module>adminrule-management</module>
-    <module>authorization</module>
   </modules>
 </project>

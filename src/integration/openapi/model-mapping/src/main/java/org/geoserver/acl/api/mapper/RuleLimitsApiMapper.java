@@ -19,9 +19,10 @@ import org.mapstruct.ReportingPolicy;
         uses = {GeometryApiMapper.class, EnumsApiMapper.class})
 public interface RuleLimitsApiMapper {
 
-    org.geoserver.acl.api.model.RuleLimits toApi(org.geoserver.acl.model.rules.RuleLimits limits);
+    org.geoserver.acl.api.model.RuleLimits toApi(org.geoserver.acl.domain.rules.RuleLimits limits);
 
     @Mapping(target = "catalogMode", defaultValue = "HIDE")
     @Mapping(target = "spatialFilterType", defaultValue = "INTERSECT")
-    org.geoserver.acl.model.rules.RuleLimits toModel(org.geoserver.acl.api.model.RuleLimits limits);
+    org.geoserver.acl.domain.rules.RuleLimits toModel(
+            org.geoserver.acl.api.model.RuleLimits limits);
 }

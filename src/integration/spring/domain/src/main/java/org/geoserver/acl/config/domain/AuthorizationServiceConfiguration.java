@@ -4,10 +4,10 @@
  */
 package org.geoserver.acl.config.domain;
 
-import org.geoserver.acl.adminrules.AdminRuleAdminService;
+import org.geoserver.acl.authorization.AuthorizationService;
 import org.geoserver.acl.authorization.AuthorizationServiceImpl;
-import org.geoserver.acl.model.authorization.AuthorizationService;
-import org.geoserver.acl.rules.RuleAdminService;
+import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
+import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

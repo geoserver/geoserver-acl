@@ -12,18 +12,18 @@ import com.querydsl.core.types.dsl.StringPath;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.geoserver.acl.domain.adminrules.AdminGrantType;
+import org.geoserver.acl.domain.adminrules.AdminRuleFilter;
+import org.geoserver.acl.domain.filter.Filter;
+import org.geoserver.acl.domain.filter.RuleQuery;
+import org.geoserver.acl.domain.filter.predicate.FilterType;
+import org.geoserver.acl.domain.filter.predicate.InSetPredicate;
+import org.geoserver.acl.domain.filter.predicate.TextFilter;
+import org.geoserver.acl.domain.rules.RuleFilter;
 import org.geoserver.acl.jpa.model.QAdminRule;
 import org.geoserver.acl.jpa.model.QAdminRuleIdentifier;
 import org.geoserver.acl.jpa.model.QRule;
 import org.geoserver.acl.jpa.model.QRuleIdentifier;
-import org.geoserver.acl.model.adminrules.AdminGrantType;
-import org.geoserver.acl.model.filter.AdminRuleFilter;
-import org.geoserver.acl.model.filter.Filter;
-import org.geoserver.acl.model.filter.RuleFilter;
-import org.geoserver.acl.model.filter.RuleQuery;
-import org.geoserver.acl.model.filter.predicate.FilterType;
-import org.geoserver.acl.model.filter.predicate.InSetPredicate;
-import org.geoserver.acl.model.filter.predicate.TextFilter;
 
 import java.util.Optional;
 import java.util.OptionalLong;

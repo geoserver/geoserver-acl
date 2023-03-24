@@ -4,15 +4,15 @@
  */
 package org.geoserver.acl.api.it.accesscontrol;
 
-import org.geoserver.acl.adminrules.AdminRuleAdminService;
-import org.geoserver.acl.adminrules.AdminRuleRepository;
 import org.geoserver.acl.api.it.support.ClientContextSupport;
 import org.geoserver.acl.api.it.support.IntegrationTestsApplication;
 import org.geoserver.acl.api.it.support.ServerContextSupport;
+import org.geoserver.acl.authorization.AuthorizationService;
 import org.geoserver.acl.authorization.AuthorizationServiceImplTest;
-import org.geoserver.acl.model.authorization.AuthorizationService;
-import org.geoserver.acl.rules.RuleAdminService;
-import org.geoserver.acl.rules.RuleRepository;
+import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
+import org.geoserver.acl.domain.adminrules.AdminRuleRepository;
+import org.geoserver.acl.domain.rules.RuleAdminService;
+import org.geoserver.acl.domain.rules.RuleRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;

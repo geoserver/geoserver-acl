@@ -4,8 +4,9 @@
  */
 package org.geoserver.acl.config.domain;
 
-import org.geoserver.acl.adminrules.AdminRuleAdminService;
-import org.geoserver.acl.adminrules.AdminRuleRepository;
+import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
+import org.geoserver.acl.domain.adminrules.AdminRuleAdminServiceImpl;
+import org.geoserver.acl.domain.adminrules.AdminRuleRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +17,7 @@ public class AdminRuleAdminServiceConfiguration {
     @Bean
     public AdminRuleAdminService adminRuleAdminService(
             AdminRuleRepository repository, ApplicationEventPublisher eventPublisher) {
-        AdminRuleAdminService service = new AdminRuleAdminService(repository);
+        AdminRuleAdminService service = new AdminRuleAdminServiceImpl(repository);
         service.setEventPublisher(eventPublisher::publishEvent);
         return service;
     }

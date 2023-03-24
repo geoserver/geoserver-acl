@@ -9,7 +9,6 @@ import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import org.geoserver.acl.adminrules.AdminRuleRepository;
 import org.geoserver.acl.api.mapper.AdminRuleApiMapper;
 import org.geoserver.acl.api.mapper.EnumsApiMapper;
 import org.geoserver.acl.api.mapper.RuleApiMapper;
@@ -17,7 +16,8 @@ import org.geoserver.acl.api.server.AdminRulesApiController;
 import org.geoserver.acl.api.server.AdminRulesApiDelegate;
 import org.geoserver.acl.api.server.RulesApiController;
 import org.geoserver.acl.api.server.RulesApiDelegate;
-import org.geoserver.acl.rules.RuleRepository;
+import org.geoserver.acl.domain.adminrules.AdminRuleRepository;
+import org.geoserver.acl.domain.rules.RuleRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.context.annotation.UserConfigurations;

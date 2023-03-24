@@ -4,7 +4,7 @@
  */
 package org.geoserver.acl.integration.jpa.mapper;
 
-import org.geoserver.acl.model.rules.RuleIdentifier;
+import org.geoserver.acl.domain.rules.RuleIdentifier;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

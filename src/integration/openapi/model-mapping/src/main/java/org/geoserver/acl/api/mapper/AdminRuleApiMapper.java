@@ -4,8 +4,8 @@
  */
 package org.geoserver.acl.api.mapper;
 
-import org.geoserver.acl.model.adminrules.AdminRule;
-import org.geoserver.acl.model.adminrules.AdminRuleIdentifier;
+import org.geoserver.acl.domain.adminrules.AdminRule;
+import org.geoserver.acl.domain.adminrules.AdminRuleIdentifier;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,12 +20,7 @@ import org.mapstruct.ReportingPolicy;
         unmappedTargetPolicy = ReportingPolicy.ERROR,
         nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        uses = {
-            OptionalApiMapper.class,
-            GeometryApiMapper.class,
-            IPAddressRangeApiMapper.class,
-            EnumsApiMapper.class
-        })
+        uses = {OptionalApiMapper.class, GeometryApiMapper.class, EnumsApiMapper.class})
 public abstract class AdminRuleApiMapper {
 
     @Mapping(target = "identifier.instanceName", source = "instance")
@@ -33,7 +28,7 @@ public abstract class AdminRuleApiMapper {
     @Mapping(target = "identifier.rolename", source = "role")
     @Mapping(target = "identifier.workspace", source = "workspace")
     @Mapping(target = "identifier.addressRange", source = "addressRange")
-    public abstract org.geoserver.acl.model.adminrules.AdminRule toModel(
+    public abstract org.geoserver.acl.domain.adminrules.AdminRule toModel(
             org.geoserver.acl.api.model.AdminRule rule);
 
     @Mapping(target = "instance", source = "identifier.instanceName")
@@ -42,7 +37,7 @@ public abstract class AdminRuleApiMapper {
     @Mapping(target = "workspace", source = "identifier.workspace")
     @Mapping(target = "addressRange", source = "identifier.addressRange")
     public abstract org.geoserver.acl.api.model.AdminRule toApi(
-            org.geoserver.acl.model.adminrules.AdminRule rule);
+            org.geoserver.acl.domain.adminrules.AdminRule rule);
 
     @Mapping(target = "identifier", ignore = true)
     abstract AdminRule updateEntity(
@@ -56,13 +51,13 @@ public abstract class AdminRuleApiMapper {
             org.geoserver.acl.api.model.AdminRule dto);
 
     public AdminRule patch(
-            org.geoserver.acl.model.adminrules.AdminRule target,
+            org.geoserver.acl.domain.adminrules.AdminRule target,
             org.geoserver.acl.api.model.AdminRule source) {
 
         AdminRuleIdentifier identifier =
                 updateIdentifier(target.getIdentifier().toBuilder(), source);
 
-        org.geoserver.acl.model.adminrules.AdminRule patched =
+        org.geoserver.acl.domain.adminrules.AdminRule patched =
                 updateEntity(target.toBuilder(), source);
 
         return patched.withIdentifier(identifier);

@@ -10,11 +10,11 @@ import org.geoserver.acl.api.mapper.LayerDetailsApiMapper;
 import org.geoserver.acl.api.mapper.RuleApiMapper;
 import org.geoserver.acl.api.mapper.RuleLimitsApiMapper;
 import org.geoserver.acl.api.model.Rule;
-import org.geoserver.acl.model.rules.LayerDetails;
-import org.geoserver.acl.model.rules.RuleLimits;
+import org.geoserver.acl.domain.rules.LayerDetails;
+import org.geoserver.acl.domain.rules.RuleLimits;
 import org.springframework.web.context.request.NativeWebRequest;
 
-public class RulesApiSupport extends ApiImplSupport<Rule, org.geoserver.acl.model.rules.Rule> {
+public class RulesApiSupport extends ApiImplSupport<Rule, org.geoserver.acl.domain.rules.Rule> {
 
     private final @NonNull LayerDetailsApiMapper layerDetailsMapper;
     private final @NonNull RuleLimitsApiMapper limitsMapper;

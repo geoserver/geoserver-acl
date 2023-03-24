@@ -10,14 +10,14 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 
 import lombok.NonNull;
 
-import org.geoserver.acl.domain.event.AdminRuleEvent;
-import org.geoserver.acl.domain.event.RuleEvent;
-import org.geoserver.acl.model.authorization.AccessInfo;
-import org.geoserver.acl.model.authorization.AccessRequest;
-import org.geoserver.acl.model.authorization.AdminAccessInfo;
-import org.geoserver.acl.model.authorization.AdminAccessRequest;
-import org.geoserver.acl.model.authorization.AuthorizationService;
-import org.geoserver.acl.model.rules.Rule;
+import org.geoserver.acl.authorization.AccessInfo;
+import org.geoserver.acl.authorization.AccessRequest;
+import org.geoserver.acl.authorization.AdminAccessInfo;
+import org.geoserver.acl.authorization.AdminAccessRequest;
+import org.geoserver.acl.authorization.AuthorizationService;
+import org.geoserver.acl.domain.adminrules.AdminRuleEvent;
+import org.geoserver.acl.domain.rules.Rule;
+import org.geoserver.acl.domain.rules.RuleEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 

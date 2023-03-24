@@ -15,9 +15,14 @@ import com.querydsl.jpa.impl.JPAQuery;
 import lombok.NonNull;
 import lombok.Setter;
 
-import org.geoserver.acl.adminrules.AdminRuleIdentifierConflictException;
-import org.geoserver.acl.adminrules.AdminRuleRepository;
-import org.geoserver.acl.domain.event.AdminRuleEvent;
+import org.geoserver.acl.domain.adminrules.AdminRule;
+import org.geoserver.acl.domain.adminrules.AdminRuleEvent;
+import org.geoserver.acl.domain.adminrules.AdminRuleFilter;
+import org.geoserver.acl.domain.adminrules.AdminRuleIdentifierConflictException;
+import org.geoserver.acl.domain.adminrules.AdminRuleRepository;
+import org.geoserver.acl.domain.adminrules.InsertPosition;
+import org.geoserver.acl.domain.filter.RuleQuery;
+import org.geoserver.acl.domain.filter.predicate.IPAddressRangeFilter;
 import org.geoserver.acl.integration.jpa.mapper.AdminRuleJpaMapper;
 import org.geoserver.acl.integration.jpa.mapper.RuleJpaMapper;
 import org.geoserver.acl.jpa.model.QAdminRule;
@@ -25,11 +30,6 @@ import org.geoserver.acl.jpa.repository.JpaAdminRuleRepository;
 import org.geoserver.acl.jpa.repository.TransactionReadOnly;
 import org.geoserver.acl.jpa.repository.TransactionRequired;
 import org.geoserver.acl.jpa.repository.TransactionSupported;
-import org.geoserver.acl.model.adminrules.AdminRule;
-import org.geoserver.acl.model.filter.AdminRuleFilter;
-import org.geoserver.acl.model.filter.RuleQuery;
-import org.geoserver.acl.model.filter.predicate.IPAddressRangeFilter;
-import org.geoserver.acl.model.rules.InsertPosition;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
@@ -96,7 +96,7 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
         PriorityResolver<org.geoserver.acl.jpa.model.AdminRule> priorityResolver =
                 priorityResolver();
         final long finalPriority =
-                priorityResolver.resolveFinalPriority(rule.getPriority(), position);
+                priorityResolver.resolveFinalPriority(rule.getPriority(), map(position));
 
         org.geoserver.acl.jpa.model.AdminRule entity = modelMapper.toEntity(rule);
         entity.setPriority(finalPriority);
@@ -114,6 +114,19 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
         }
         notifyCollateralUpdates(priorityResolver.getUpdatedIds());
         return modelMapper.toModel(saved);
+    }
+
+    private org.geoserver.acl.domain.rules.InsertPosition map(InsertPosition position) {
+        switch (position) {
+            case FIXED:
+                return org.geoserver.acl.domain.rules.InsertPosition.FIXED;
+            case FROM_END:
+                return org.geoserver.acl.domain.rules.InsertPosition.FROM_END;
+            case FROM_START:
+                return org.geoserver.acl.domain.rules.InsertPosition.FROM_START;
+            default:
+                throw new IllegalStateException();
+        }
     }
 
     @Override
@@ -226,9 +239,11 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     private java.util.function.Predicate<? super AdminRule> filterByAddress(
             Optional<AdminRuleFilter> filter) {
         if (filter.isEmpty()) return r -> true;
-        IPAddressRangeFilter ipFilter = filter.get().getSourceAddress();
 
-        return ipFilter.toIPAddressPredicate(r -> r.getIdentifier().getAddressRange());
+        IPAddressRangeFilter ipFilter = filter.get().getSourceAddress();
+        return rule -> {
+            return ipFilter.test(rule.getIdentifier().getAddressRange());
+        };
     }
 
     @Override

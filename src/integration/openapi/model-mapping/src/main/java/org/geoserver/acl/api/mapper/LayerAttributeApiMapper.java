@@ -4,7 +4,7 @@
  */
 package org.geoserver.acl.api.mapper;
 
-import org.geoserver.acl.model.rules.LayerAttribute;
+import org.geoserver.acl.domain.rules.LayerAttribute;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValueMappingStrategy;

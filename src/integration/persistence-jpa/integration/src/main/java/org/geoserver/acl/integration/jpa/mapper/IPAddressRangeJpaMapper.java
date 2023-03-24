@@ -4,7 +4,7 @@
  */
 package org.geoserver.acl.integration.jpa.mapper;
 
-import org.geoserver.acl.model.rules.IPAddressRange;
+import org.geoserver.acl.domain.filter.predicate.SubnetV4Utils;
 import org.mapstruct.Condition;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValueMappingStrategy;
@@ -18,28 +18,23 @@ import org.mapstruct.ReportingPolicy;
         unmappedTargetPolicy = ReportingPolicy.ERROR)
 interface IPAddressRangeJpaMapper {
 
-    default org.geoserver.acl.jpa.model.IPAddressRange toEntity(IPAddressRange model) {
-        if (null == model) {
+    default org.geoserver.acl.jpa.model.IPAddressRange toEntity(String cidrNotation) {
+        if (null == cidrNotation) {
             return org.geoserver.acl.jpa.model.IPAddressRange.noData();
         }
-        Long low = model.getLow();
-        Long high =
-                model.getHigh() == null
-                        ? org.geoserver.acl.jpa.model.IPAddressRange.NULL
-                        : model.getHigh();
-        Integer size = model.getSize();
+        SubnetV4Utils su = new SubnetV4Utils(cidrNotation);
+        long low = su.getInfo().getAddressAsInteger();
+        int size = su.getInfo().getMaskSize();
+        long high = org.geoserver.acl.jpa.model.IPAddressRange.NULL;
         return new org.geoserver.acl.jpa.model.IPAddressRange(low, high, size);
     }
 
-    default IPAddressRange toModel(org.geoserver.acl.jpa.model.IPAddressRange entity) {
+    default String toModel(org.geoserver.acl.jpa.model.IPAddressRange entity) {
         if (isNotEmpty(entity)) {
             long low = entity.getLow();
-            Long high =
-                    entity.getHigh() == org.geoserver.acl.jpa.model.IPAddressRange.NULL
-                            ? null
-                            : entity.getHigh();
             int size = entity.getSize();
-            return IPAddressRange.builder().low(low).high(high).size(size).build();
+            SubnetV4Utils su = new SubnetV4Utils(low, size);
+            return su.getInfo().getCidrSignature();
         }
         return null;
     }

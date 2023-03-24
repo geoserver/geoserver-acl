@@ -9,9 +9,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import org.geoserver.acl.model.filter.RuleFilter;
-import org.geoserver.acl.model.filter.predicate.FilterType;
-import org.geoserver.acl.model.filter.predicate.SpecialFilterType;
+import org.geoserver.acl.domain.filter.predicate.FilterType;
+import org.geoserver.acl.domain.filter.predicate.SpecialFilterType;
+import org.geoserver.acl.domain.rules.RuleFilter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

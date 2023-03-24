@@ -4,9 +4,10 @@
  */
 package org.geoserver.acl.integration.jpa.config;
 
-import org.geoserver.acl.adminrules.AdminRuleRepository;
-import org.geoserver.acl.domain.event.AdminRuleEvent;
-import org.geoserver.acl.domain.event.RuleEvent;
+import org.geoserver.acl.domain.adminrules.AdminRuleEvent;
+import org.geoserver.acl.domain.adminrules.AdminRuleRepository;
+import org.geoserver.acl.domain.rules.RuleEvent;
+import org.geoserver.acl.domain.rules.RuleRepository;
 import org.geoserver.acl.integration.jpa.mapper.AdminRuleJpaMapper;
 import org.geoserver.acl.integration.jpa.mapper.RuleJpaMapper;
 import org.geoserver.acl.integration.jpa.repository.AdminRuleRepositoryJpaAdaptor;
@@ -15,7 +16,6 @@ import org.geoserver.acl.jpa.config.AclDataSourceConfiguration;
 import org.geoserver.acl.jpa.config.AuthorizationJPAConfiguration;
 import org.geoserver.acl.jpa.repository.JpaAdminRuleRepository;
 import org.geoserver.acl.jpa.repository.JpaRuleRepository;
-import org.geoserver.acl.rules.RuleRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

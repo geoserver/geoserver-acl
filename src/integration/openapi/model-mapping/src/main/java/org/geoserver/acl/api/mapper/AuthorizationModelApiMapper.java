@@ -19,19 +19,19 @@ import org.mapstruct.ReportingPolicy;
         uses = {GeometryApiMapper.class, RuleFilterApiMapper.class})
 public interface AuthorizationModelApiMapper {
 
-    AccessRequest toApi(org.geoserver.acl.model.authorization.AccessRequest request);
+    AccessRequest toApi(org.geoserver.acl.authorization.AccessRequest request);
 
-    org.geoserver.acl.model.authorization.AccessRequest toModel(AccessRequest request);
+    org.geoserver.acl.authorization.AccessRequest toModel(AccessRequest request);
 
-    AccessInfo toApi(org.geoserver.acl.model.authorization.AccessInfo grant);
+    AccessInfo toApi(org.geoserver.acl.authorization.AccessInfo grant);
 
-    org.geoserver.acl.model.authorization.AccessInfo toModel(AccessInfo grant);
+    org.geoserver.acl.authorization.AccessInfo toModel(AccessInfo grant);
 
-    AdminAccessRequest toApi(org.geoserver.acl.model.authorization.AdminAccessRequest request);
+    AdminAccessRequest toApi(org.geoserver.acl.authorization.AdminAccessRequest request);
 
-    org.geoserver.acl.model.authorization.AdminAccessRequest toModel(AdminAccessRequest request);
+    org.geoserver.acl.authorization.AdminAccessRequest toModel(AdminAccessRequest request);
 
-    AdminAccessInfo toApi(org.geoserver.acl.model.authorization.AdminAccessInfo grant);
+    AdminAccessInfo toApi(org.geoserver.acl.authorization.AdminAccessInfo grant);
 
-    org.geoserver.acl.model.authorization.AdminAccessInfo toModel(AdminAccessInfo grant);
+    org.geoserver.acl.authorization.AdminAccessInfo toModel(AdminAccessInfo grant);
 }

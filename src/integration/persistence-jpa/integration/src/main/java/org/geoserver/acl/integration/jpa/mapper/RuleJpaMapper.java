@@ -4,8 +4,8 @@
  */
 package org.geoserver.acl.integration.jpa.mapper;
 
-import org.geoserver.acl.model.rules.LayerDetails;
-import org.geoserver.acl.model.rules.Rule;
+import org.geoserver.acl.domain.rules.LayerDetails;
+import org.geoserver.acl.domain.rules.Rule;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -44,14 +44,15 @@ public interface RuleJpaMapper {
     }
 
     org.geoserver.acl.jpa.model.LayerDetails toEntity(
-            org.geoserver.acl.model.rules.LayerDetails value);
+            org.geoserver.acl.domain.rules.LayerDetails value);
 
-    org.geoserver.acl.model.rules.LayerDetails toModel(
+    org.geoserver.acl.domain.rules.LayerDetails toModel(
             org.geoserver.acl.jpa.model.LayerDetails value);
 
-    org.geoserver.acl.jpa.model.RuleLimits toEntity(org.geoserver.acl.model.rules.RuleLimits value);
+    org.geoserver.acl.jpa.model.RuleLimits toEntity(
+            org.geoserver.acl.domain.rules.RuleLimits value);
 
-    org.geoserver.acl.model.rules.RuleLimits toModel(org.geoserver.acl.jpa.model.RuleLimits value);
+    org.geoserver.acl.domain.rules.RuleLimits toModel(org.geoserver.acl.jpa.model.RuleLimits value);
 
     static String encodeId(Long id) {
         return id == null ? null : Long.toHexString(id);

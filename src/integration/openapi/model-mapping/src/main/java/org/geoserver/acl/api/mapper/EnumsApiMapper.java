@@ -4,12 +4,12 @@
  */
 package org.geoserver.acl.api.mapper;
 
-import org.geoserver.acl.model.adminrules.AdminGrantType;
-import org.geoserver.acl.model.rules.CatalogMode;
-import org.geoserver.acl.model.rules.GrantType;
-import org.geoserver.acl.model.rules.LayerAttribute;
-import org.geoserver.acl.model.rules.LayerDetails;
-import org.geoserver.acl.model.rules.SpatialFilterType;
+import org.geoserver.acl.domain.adminrules.AdminGrantType;
+import org.geoserver.acl.domain.rules.CatalogMode;
+import org.geoserver.acl.domain.rules.GrantType;
+import org.geoserver.acl.domain.rules.LayerAttribute;
+import org.geoserver.acl.domain.rules.LayerDetails;
+import org.geoserver.acl.domain.rules.SpatialFilterType;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
@@ -35,9 +35,15 @@ public interface EnumsApiMapper {
     org.geoserver.acl.api.model.SpatialFilterType map(SpatialFilterType value);
 
     org.geoserver.acl.api.model.InsertPosition map(
-            org.geoserver.acl.model.rules.InsertPosition pos);
+            org.geoserver.acl.domain.rules.InsertPosition pos);
 
-    org.geoserver.acl.model.rules.InsertPosition map(
+    org.geoserver.acl.domain.rules.InsertPosition toRuleInsertPosition(
+            org.geoserver.acl.api.model.InsertPosition pos);
+
+    org.geoserver.acl.api.model.InsertPosition map(
+            org.geoserver.acl.domain.adminrules.InsertPosition pos);
+
+    org.geoserver.acl.domain.adminrules.InsertPosition toAdminRuleInsertPosition(
             org.geoserver.acl.api.model.InsertPosition pos);
 
     org.geoserver.acl.api.model.LayerAttribute.AccessEnum accessType(

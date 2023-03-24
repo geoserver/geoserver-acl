@@ -4,8 +4,8 @@
  */
 package org.geoserver.acl.api.mapper;
 
-import org.geoserver.acl.model.rules.Rule;
-import org.geoserver.acl.model.rules.RuleIdentifier;
+import org.geoserver.acl.domain.rules.Rule;
+import org.geoserver.acl.domain.rules.RuleIdentifier;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,8 +20,11 @@ import org.mapstruct.ReportingPolicy;
         // nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         uses = {
-            EnumsApiMapper.class, OptionalApiMapper.class, LayerDetailsApiMapper.class,
-            GeometryApiMapper.class, RuleLimitsApiMapper.class, IPAddressRangeApiMapper.class
+            EnumsApiMapper.class,
+            OptionalApiMapper.class,
+            LayerDetailsApiMapper.class,
+            GeometryApiMapper.class,
+            RuleLimitsApiMapper.class
         })
 public abstract class RuleApiMapper {
 
@@ -36,7 +39,7 @@ public abstract class RuleApiMapper {
     @Mapping(target = "identifier.layer", source = "layer")
     @Mapping(target = "identifier.addressRange", source = "addressRange")
     @Mapping(target = "ruleLimits", source = "limits")
-    public abstract org.geoserver.acl.model.rules.Rule toModel(
+    public abstract org.geoserver.acl.domain.rules.Rule toModel(
             org.geoserver.acl.api.model.Rule rule);
 
     @Mapping(target = "instance", source = "identifier.instanceName")
@@ -50,7 +53,8 @@ public abstract class RuleApiMapper {
     @Mapping(target = "layer", source = "identifier.layer")
     @Mapping(target = "addressRange", source = "identifier.addressRange")
     @Mapping(target = "limits", source = "ruleLimits")
-    public abstract org.geoserver.acl.api.model.Rule toApi(org.geoserver.acl.model.rules.Rule rule);
+    public abstract org.geoserver.acl.api.model.Rule toApi(
+            org.geoserver.acl.domain.rules.Rule rule);
 
     @Mapping(target = "identifier", ignore = true)
     @Mapping(target = "ruleLimits", ignore = true)

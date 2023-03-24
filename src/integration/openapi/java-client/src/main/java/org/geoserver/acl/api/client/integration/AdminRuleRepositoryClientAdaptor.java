@@ -9,16 +9,16 @@ import static org.geoserver.acl.api.client.integration.ClientExceptionHelper.rea
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import org.geoserver.acl.adminrules.AdminRuleIdentifierConflictException;
-import org.geoserver.acl.adminrules.AdminRuleRepository;
 import org.geoserver.acl.api.client.AdminRulesApi;
 import org.geoserver.acl.api.mapper.AdminRuleApiMapper;
 import org.geoserver.acl.api.mapper.EnumsApiMapper;
 import org.geoserver.acl.api.mapper.RuleFilterApiMapper;
-import org.geoserver.acl.model.adminrules.AdminRule;
-import org.geoserver.acl.model.filter.AdminRuleFilter;
-import org.geoserver.acl.model.filter.RuleQuery;
-import org.geoserver.acl.model.rules.InsertPosition;
+import org.geoserver.acl.domain.adminrules.AdminRule;
+import org.geoserver.acl.domain.adminrules.AdminRuleFilter;
+import org.geoserver.acl.domain.adminrules.AdminRuleIdentifierConflictException;
+import org.geoserver.acl.domain.adminrules.AdminRuleRepository;
+import org.geoserver.acl.domain.adminrules.InsertPosition;
+import org.geoserver.acl.domain.filter.RuleQuery;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Objects;

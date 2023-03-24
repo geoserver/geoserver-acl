@@ -4,7 +4,6 @@
  */
 package org.geoserver.acl.api.it.support;
 
-import org.geoserver.acl.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.api.client.AdminRulesApi;
 import org.geoserver.acl.api.client.ApiClient;
 import org.geoserver.acl.api.client.AuthorizationApi;
@@ -17,7 +16,8 @@ import org.geoserver.acl.api.mapper.RuleApiMapper;
 import org.geoserver.acl.authorization.AuthorizationServiceImpl;
 import org.geoserver.acl.config.domain.AdminRuleAdminServiceConfiguration;
 import org.geoserver.acl.config.domain.RuleAdminServiceConfiguration;
-import org.geoserver.acl.rules.RuleAdminService;
+import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
+import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockEnvironment;

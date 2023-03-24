@@ -6,9 +6,9 @@ package org.geoserver.acl.api.it.rules;
 
 import org.geoserver.acl.api.it.support.ClientContextSupport;
 import org.geoserver.acl.api.it.support.IntegrationTestsApplication;
+import org.geoserver.acl.domain.rules.RuleAdminService;
+import org.geoserver.acl.domain.rules.RuleAdminServiceIT;
 import org.geoserver.acl.jpa.repository.JpaRuleRepository;
-import org.geoserver.acl.rules.RuleAdminService;
-import org.geoserver.acl.rules.RuleAdminServiceIT;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;

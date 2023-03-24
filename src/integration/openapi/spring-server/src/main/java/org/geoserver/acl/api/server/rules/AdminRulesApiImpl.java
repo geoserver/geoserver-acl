@@ -12,14 +12,14 @@ import static org.springframework.http.HttpStatus.OK;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import org.geoserver.acl.adminrules.AdminRuleAdminService;
-import org.geoserver.acl.adminrules.AdminRuleIdentifierConflictException;
 import org.geoserver.acl.api.model.AdminRule;
 import org.geoserver.acl.api.model.AdminRuleFilter;
 import org.geoserver.acl.api.model.InsertPosition;
 import org.geoserver.acl.api.server.AdminRulesApiDelegate;
 import org.geoserver.acl.api.server.support.AdminRulesApiSupport;
-import org.geoserver.acl.model.filter.RuleQuery;
+import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
+import org.geoserver.acl.domain.adminrules.AdminRuleIdentifierConflictException;
+import org.geoserver.acl.domain.filter.RuleQuery;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -44,11 +44,11 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
     public @Override ResponseEntity<AdminRule> createAdminRule(
             AdminRule adminRule, InsertPosition position) {
 
-        org.geoserver.acl.model.adminrules.AdminRule rule;
+        org.geoserver.acl.domain.adminrules.AdminRule rule;
         if (position == null) {
             rule = service.insert(support.toModel(adminRule));
         } else {
-            rule = service.insert(support.toModel(adminRule), support.toModel(position));
+            rule = service.insert(support.toModel(adminRule), support.toAdminRulesModel(position));
         }
         return ResponseEntity.ok(support.toApi(rule));
     }
@@ -69,14 +69,14 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
 
     public @Override ResponseEntity<AdminRule> findFirstAdminRule(AdminRuleFilter adminRuleFilter) {
 
-        org.geoserver.acl.model.adminrules.AdminRule match =
+        org.geoserver.acl.domain.adminrules.AdminRule match =
                 service.getFirstMatch(support.map(adminRuleFilter)).orElse(null);
 
         return ResponseEntity.status(null == match ? NOT_FOUND : OK).body(support.toApi(match));
     }
 
     public @Override ResponseEntity<AdminRule> findOneAdminRuleByPriority(Long priority) {
-        Optional<org.geoserver.acl.model.adminrules.AdminRule> found =
+        Optional<org.geoserver.acl.domain.adminrules.AdminRule> found =
                 service.getRuleByPriority(priority);
 
         return ResponseEntity.status(found.isPresent() ? OK : NOT_FOUND)
@@ -86,15 +86,15 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
     public @Override ResponseEntity<List<AdminRule>> findAdminRules(
             Integer limit, String nextCursor, AdminRuleFilter adminRuleFilter) {
 
-        org.geoserver.acl.model.filter.AdminRuleFilter filter = support.map(adminRuleFilter);
+        org.geoserver.acl.domain.adminrules.AdminRuleFilter filter = support.map(adminRuleFilter);
 
         return query(RuleQuery.of(filter, limit, nextCursor));
     }
 
     private ResponseEntity<List<AdminRule>> query(
-            RuleQuery<org.geoserver.acl.model.filter.AdminRuleFilter> query) {
+            RuleQuery<org.geoserver.acl.domain.adminrules.AdminRuleFilter> query) {
 
-        List<org.geoserver.acl.model.adminrules.AdminRule> list;
+        List<org.geoserver.acl.domain.adminrules.AdminRule> list;
 
         // handle cursor-based pagination.
         final Integer requestedLimit = query.getLimit();
@@ -120,7 +120,7 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
 
     public @Override ResponseEntity<AdminRule> getAdminRuleById(@NonNull String id) {
 
-        Optional<org.geoserver.acl.model.adminrules.AdminRule> found = service.get(id);
+        Optional<org.geoserver.acl.domain.adminrules.AdminRule> found = service.get(id);
 
         return ResponseEntity.status(found.isPresent() ? OK : NOT_FOUND)
                 .body(found.map(support::toApi).orElse(null));
@@ -138,7 +138,7 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
 
     public @Override ResponseEntity<AdminRule> updateAdminRule(
             @NonNull String id, AdminRule patchBody) {
-        org.geoserver.acl.model.adminrules.AdminRule rule =
+        org.geoserver.acl.domain.adminrules.AdminRule rule =
                 service.get(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 
         if (null == rule) {
@@ -153,10 +153,10 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
                             + id);
         }
 
-        org.geoserver.acl.model.adminrules.AdminRule patched = support.mergePatch(rule);
+        org.geoserver.acl.domain.adminrules.AdminRule patched = support.mergePatch(rule);
 
         try {
-            org.geoserver.acl.model.adminrules.AdminRule updated = service.update(patched);
+            org.geoserver.acl.domain.adminrules.AdminRule updated = service.update(patched);
             return ResponseEntity.status(OK).body(support.toApi(updated));
         } catch (AdminRuleIdentifierConflictException e) {
             return support.error(CONFLICT, e.getMessage());

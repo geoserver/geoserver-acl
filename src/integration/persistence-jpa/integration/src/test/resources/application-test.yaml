@@ -18,8 +18,7 @@ geoserver.acl:
 logging:
   level:
     root: warn
-    '[org.geoserver.acl]': info
-    '[org.springframework.boot.autoconfigure]': info
-    '[org.springframework.boot.test.context]': info
-    '[org.geoserver.acl.integration.jpa]': debug
+    '[org.geoserver.acl]': warn
+    '[org.springframework.boot.autoconfigure]': warn
+    '[org.springframework.boot.test.context]': warn
     '[org.testcontainers]': info

@@ -2,13 +2,15 @@ package org.geoserver.acl.integration.jpa.it;
 
 import lombok.Getter;
 
-import org.geoserver.acl.adminrules.AdminRuleAdminService;
-import org.geoserver.acl.adminrules.AdminRuleRepository;
 import org.geoserver.acl.authorization.AuthorizationServiceImpl;
+import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
+import org.geoserver.acl.domain.adminrules.AdminRuleAdminServiceImpl;
+import org.geoserver.acl.domain.adminrules.AdminRuleRepository;
+import org.geoserver.acl.domain.rules.RuleAdminService;
+import org.geoserver.acl.domain.rules.RuleAdminServiceImpl;
+import org.geoserver.acl.domain.rules.RuleRepository;
 import org.geoserver.acl.jpa.repository.JpaAdminRuleRepository;
 import org.geoserver.acl.jpa.repository.JpaRuleRepository;
-import org.geoserver.acl.rules.RuleAdminService;
-import org.geoserver.acl.rules.RuleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,8 +31,8 @@ public class JpaIntegrationTestSupport {
         jpaAdminRules.deleteAll();
         jpaRules.deleteAll();
 
-        adminruleAdminService = new AdminRuleAdminService(adminRuleRepository);
-        ruleAdminService = new RuleAdminService(ruleRepository);
+        adminruleAdminService = new AdminRuleAdminServiceImpl(adminRuleRepository);
+        ruleAdminService = new RuleAdminServiceImpl(ruleRepository);
 
         authorizationService =
                 new AuthorizationServiceImpl(adminruleAdminService, ruleAdminService);

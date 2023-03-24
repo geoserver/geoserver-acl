@@ -1,10 +1,10 @@
 package org.geoserver.acl.integration.jpa.it;
 
-import org.geoserver.acl.adminrules.AdminRuleAdminService;
+import org.geoserver.acl.authorization.AuthorizationService;
 import org.geoserver.acl.authorization.AuthorizationServiceImpl_GeomTest;
+import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
+import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.geoserver.acl.integration.jpa.config.JPAIntegrationConfiguration;
-import org.geoserver.acl.model.authorization.AuthorizationService;
-import org.geoserver.acl.rules.RuleAdminService;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

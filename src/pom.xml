@@ -18,15 +18,19 @@
   <description>GeoServer Cloud ACL is a java web application that handles Access Control List rules.</description>
   <modules>
     <module>domain</module>
+    <module>application</module>
     <module>openapi</module>
     <module>integration</module>
-    <module>apps</module>
+    <module>artifacts</module>
   </modules>
   <properties>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <spring-cloud.version>2021.0.6</spring-cloud.version>
     <spring-boot.version>2.7.9</spring-boot.version>
+    <!-- Default GeoServer version to build and test the plugin against-->
+    <gs.version>2.24-SNAPSHOT</gs.version>
+    <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
     <gt.version>28.2</gt.version>
     <lombok.version>1.18.26</lombok.version>
     <mapstruct.version>1.5.3.Final</mapstruct.version>

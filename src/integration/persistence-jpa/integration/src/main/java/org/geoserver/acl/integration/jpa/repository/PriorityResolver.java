@@ -6,8 +6,8 @@ package org.geoserver.acl.integration.jpa.repository;
 
 import lombok.Getter;
 
+import org.geoserver.acl.domain.rules.InsertPosition;
 import org.geoserver.acl.jpa.repository.PriorityRepository;
-import org.geoserver.acl.model.rules.InsertPosition;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;

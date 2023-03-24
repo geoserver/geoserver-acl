@@ -15,7 +15,15 @@ import com.querydsl.jpa.impl.JPAQuery;
 import lombok.NonNull;
 import lombok.Setter;
 
-import org.geoserver.acl.domain.event.RuleEvent;
+import org.geoserver.acl.domain.filter.RuleQuery;
+import org.geoserver.acl.domain.filter.predicate.IPAddressRangeFilter;
+import org.geoserver.acl.domain.rules.InsertPosition;
+import org.geoserver.acl.domain.rules.Rule;
+import org.geoserver.acl.domain.rules.RuleEvent;
+import org.geoserver.acl.domain.rules.RuleFilter;
+import org.geoserver.acl.domain.rules.RuleIdentifierConflictException;
+import org.geoserver.acl.domain.rules.RuleLimits;
+import org.geoserver.acl.domain.rules.RuleRepository;
 import org.geoserver.acl.integration.jpa.mapper.RuleJpaMapper;
 import org.geoserver.acl.jpa.model.GrantType;
 import org.geoserver.acl.jpa.model.LayerDetails;
@@ -25,14 +33,6 @@ import org.geoserver.acl.jpa.repository.JpaRuleRepository;
 import org.geoserver.acl.jpa.repository.TransactionReadOnly;
 import org.geoserver.acl.jpa.repository.TransactionRequired;
 import org.geoserver.acl.jpa.repository.TransactionSupported;
-import org.geoserver.acl.model.filter.RuleFilter;
-import org.geoserver.acl.model.filter.RuleQuery;
-import org.geoserver.acl.model.filter.predicate.IPAddressRangeFilter;
-import org.geoserver.acl.model.rules.InsertPosition;
-import org.geoserver.acl.model.rules.Rule;
-import org.geoserver.acl.model.rules.RuleLimits;
-import org.geoserver.acl.rules.RuleIdentifierConflictException;
-import org.geoserver.acl.rules.RuleRepository;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import java.util.List;
@@ -153,10 +153,12 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
 
     private java.util.function.Predicate<? super Rule> filterByAddress(
             Optional<RuleFilter> filter) {
+
         if (filter.isEmpty()) return r -> true;
         IPAddressRangeFilter ipFilter = filter.get().getSourceAddress();
-
-        return ipFilter.toIPAddressPredicate(r -> r.getIdentifier().getAddressRange());
+        return rule -> {
+            return ipFilter.test(rule.getIdentifier().getAddressRange());
+        };
     }
 
     @Override
@@ -309,7 +311,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     @Override
     @TransactionRequired
     public void setLayerDetails(
-            String ruleId, org.geoserver.acl.model.rules.LayerDetails detailsNew) {
+            String ruleId, org.geoserver.acl.domain.rules.LayerDetails detailsNew) {
 
         org.geoserver.acl.jpa.model.Rule rule = getOrThrowIAE(ruleId);
 
@@ -326,7 +328,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
 
     @Override
     @TransactionReadOnly
-    public Optional<org.geoserver.acl.model.rules.LayerDetails> findLayerDetailsByRuleId(
+    public Optional<org.geoserver.acl.domain.rules.LayerDetails> findLayerDetailsByRuleId(
             @NonNull String ruleId) {
 
         org.geoserver.acl.jpa.model.Rule jparule = getOrThrowIAE(ruleId);

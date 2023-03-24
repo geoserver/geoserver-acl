@@ -8,9 +8,9 @@ import org.geoserver.acl.api.model.AddressRangeFilter;
 import org.geoserver.acl.api.model.AdminGrantType;
 import org.geoserver.acl.api.model.SetFilter;
 import org.geoserver.acl.api.model.TextFilter;
-import org.geoserver.acl.model.filter.AdminRuleFilter;
-import org.geoserver.acl.model.filter.RuleFilter;
-import org.geoserver.acl.model.filter.predicate.SpecialFilterType;
+import org.geoserver.acl.domain.adminrules.AdminRuleFilter;
+import org.geoserver.acl.domain.filter.predicate.SpecialFilterType;
+import org.geoserver.acl.domain.rules.RuleFilter;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -44,14 +44,14 @@ public class RuleFilterApiMapper {
         return model;
     }
 
-    private org.geoserver.acl.model.adminrules.AdminGrantType map(AdminGrantType grantType) {
+    private org.geoserver.acl.domain.adminrules.AdminGrantType map(AdminGrantType grantType) {
 
         if (grantType != null) {
             switch (grantType) {
                 case ADMIN:
-                    return org.geoserver.acl.model.adminrules.AdminGrantType.ADMIN;
+                    return org.geoserver.acl.domain.adminrules.AdminGrantType.ADMIN;
                 case USER:
-                    return org.geoserver.acl.model.adminrules.AdminGrantType.USER;
+                    return org.geoserver.acl.domain.adminrules.AdminGrantType.USER;
                 default:
                     throw new IllegalArgumentException("Unknown AdminGrantType: " + grantType);
             }
@@ -59,7 +59,7 @@ public class RuleFilterApiMapper {
         return null;
     }
 
-    private AdminGrantType map(org.geoserver.acl.model.adminrules.AdminGrantType grantType) {
+    private AdminGrantType map(org.geoserver.acl.domain.adminrules.AdminGrantType grantType) {
         if (grantType == null) return null;
         switch (grantType) {
             case ADMIN:
@@ -103,7 +103,7 @@ public class RuleFilterApiMapper {
     }
 
     private org.geoserver.acl.api.model.SetFilter setFilterToApi(
-            org.geoserver.acl.model.filter.predicate.InSetPredicate<String> filter) {
+            org.geoserver.acl.domain.filter.predicate.InSetPredicate<String> filter) {
 
         switch (filter.getType()) {
             case DEFAULT:
@@ -124,7 +124,7 @@ public class RuleFilterApiMapper {
     }
 
     private void setFilterToModel(
-            org.geoserver.acl.model.filter.predicate.InSetPredicate<String> target,
+            org.geoserver.acl.domain.filter.predicate.InSetPredicate<String> target,
             org.geoserver.acl.api.model.SetFilter source) {
 
         if (source == null) return;
@@ -143,7 +143,7 @@ public class RuleFilterApiMapper {
     }
 
     private org.geoserver.acl.api.model.TextFilter textFilterToApi(
-            org.geoserver.acl.model.filter.predicate.TextFilter filter) {
+            org.geoserver.acl.domain.filter.predicate.TextFilter filter) {
 
         switch (filter.getType()) {
             case DEFAULT:
@@ -164,7 +164,7 @@ public class RuleFilterApiMapper {
     }
 
     private void textFilterToModel(
-            org.geoserver.acl.model.filter.predicate.TextFilter target,
+            org.geoserver.acl.domain.filter.predicate.TextFilter target,
             org.geoserver.acl.api.model.TextFilter source) {
 
         if (source != null) {
@@ -183,7 +183,7 @@ public class RuleFilterApiMapper {
     }
 
     private org.geoserver.acl.api.model.AddressRangeFilter addressRangeToApi(
-            org.geoserver.acl.model.filter.predicate.IPAddressRangeFilter filter) {
+            org.geoserver.acl.domain.filter.predicate.IPAddressRangeFilter filter) {
 
         switch (filter.getType()) {
             case DEFAULT:
@@ -191,7 +191,7 @@ public class RuleFilterApiMapper {
             case ANY:
                 return new AddressRangeFilter().value("*");
             case NAMEVALUE:
-                AddressRangeFilter value = new AddressRangeFilter().value(filter.getText());
+                AddressRangeFilter value = new AddressRangeFilter().value(filter.getAddress());
                 if (!filter.isIncludeDefault()) {
                     value.includeDefault(filter.isIncludeDefault());
                 }
@@ -204,7 +204,7 @@ public class RuleFilterApiMapper {
     }
 
     private void addressRangeToModel(
-            org.geoserver.acl.model.filter.predicate.IPAddressRangeFilter target,
+            org.geoserver.acl.domain.filter.predicate.IPAddressRangeFilter target,
             org.geoserver.acl.api.model.AddressRangeFilter source) {
 
         if (source != null) {

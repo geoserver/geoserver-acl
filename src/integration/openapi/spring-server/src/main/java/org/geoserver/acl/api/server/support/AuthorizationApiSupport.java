@@ -16,7 +16,7 @@ import org.geoserver.acl.api.model.Rule;
 import org.springframework.web.context.request.NativeWebRequest;
 
 public class AuthorizationApiSupport
-        extends ApiImplSupport<AccessInfo, org.geoserver.acl.model.authorization.AccessInfo> {
+        extends ApiImplSupport<AccessInfo, org.geoserver.acl.authorization.AccessInfo> {
 
     private final RuleApiMapper rulesMapper;
     private final AuthorizationModelApiMapper mapper;
@@ -31,33 +31,31 @@ public class AuthorizationApiSupport
         this.rulesMapper = rulesMapper;
     }
 
-    public Rule toApi(org.geoserver.acl.model.rules.Rule rule) {
+    public Rule toApi(org.geoserver.acl.domain.rules.Rule rule) {
         return rulesMapper.toApi(rule);
     }
 
-    public AccessRequest toApi(org.geoserver.acl.model.authorization.AccessRequest request) {
+    public AccessRequest toApi(org.geoserver.acl.authorization.AccessRequest request) {
         return mapper.toApi(request);
     }
 
-    public org.geoserver.acl.model.authorization.AccessRequest toModel(AccessRequest request) {
+    public org.geoserver.acl.authorization.AccessRequest toModel(AccessRequest request) {
         return mapper.toModel(request);
     }
 
-    public AdminAccessRequest toApi(
-            org.geoserver.acl.model.authorization.AdminAccessRequest request) {
+    public AdminAccessRequest toApi(org.geoserver.acl.authorization.AdminAccessRequest request) {
         return mapper.toApi(request);
     }
 
-    public org.geoserver.acl.model.authorization.AdminAccessRequest toModel(
-            AdminAccessRequest request) {
+    public org.geoserver.acl.authorization.AdminAccessRequest toModel(AdminAccessRequest request) {
         return mapper.toModel(request);
     }
 
-    public AdminAccessInfo toApi(org.geoserver.acl.model.authorization.AdminAccessInfo access) {
+    public AdminAccessInfo toApi(org.geoserver.acl.authorization.AdminAccessInfo access) {
         return mapper.toApi(access);
     }
 
-    public org.geoserver.acl.model.authorization.AdminAccessInfo toModel(AdminAccessInfo access) {
+    public org.geoserver.acl.authorization.AdminAccessInfo toModel(AdminAccessInfo access) {
         return mapper.toModel(access);
     }
 }

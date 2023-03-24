@@ -35,7 +35,7 @@
       <artifactId>gs-acl-adminrules</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.acl.domain</groupId>
+      <groupId>org.geoserver.acl</groupId>
       <artifactId>gs-acl-authorization</artifactId>
     </dependency>
     <dependency>
