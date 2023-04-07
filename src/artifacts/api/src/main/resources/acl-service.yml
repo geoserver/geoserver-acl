@@ -1,0 +1,41 @@
+geoserver.acl:
+  datasource:
+    jndi-name: ${acl.db.jndiName:} 
+    url: ${acl.db.url:}
+    username: ${acl.db.username:}
+    password: ${acl.db.password:}
+    hikari:
+      minimum-idle: ${acl.db.hikari.minimumIdle:1}
+      maximum-pool-size: ${acl.db.hikari.maximumPoolSize:20}
+  jpa:
+    show-sql: false
+    open-in-view: false
+    generate-ddl: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: ${acl.db.schema:public}
+        hbm2ddl.auto: ${acl.db.hbm2ddl.auto:validate}
+
+
+---
+spring.config.activate.on-profile: dev
+
+geoserver.acl:
+  datasource:
+    url: jdbc:h2:mem:geoserver-acl;DB_CLOSE_DELAY=-1
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 20
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        hbm2ddl.auto: update
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - '*'

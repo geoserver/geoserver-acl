@@ -8,14 +8,15 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContextException;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.jdbc.support.DatabaseStartupValidator;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -28,13 +29,9 @@ import javax.sql.DataSource;
 @Slf4j
 @Configuration
 @EnableConfigurationProperties(JNDIDataSourcesConfigurationProperties.class)
-public class JNDIDataSourceAutoConfiguration implements InitializingBean {
+public class JNDIDataSourceAutoConfiguration {
 
-    private @Autowired JNDIDataSourcesConfigurationProperties config;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-
+    private void setUpDataSources(JNDIDataSourcesConfigurationProperties config) {
         Map<String, JNDIDatasourceConfig> configs = config.getDatasources();
 
         if (null == configs || configs.isEmpty()) {
@@ -44,6 +41,14 @@ public class JNDIDataSourceAutoConfiguration implements InitializingBean {
 
         configs.entrySet()
                 .forEach(e -> setUpDataSource(toJndiDatasourceName(e.getKey()), e.getValue()));
+    }
+
+    @Bean
+    String configuredJndiDataSources(JNDIDataSourcesConfigurationProperties config) {
+        setUpDataSources(config);
+        return config.getDatasources().values().stream()
+                .map(JNDIDatasourceConfig::getJndiName)
+                .collect(Collectors.joining(","));
     }
 
     String toJndiDatasourceName(String dsname) {
@@ -80,7 +85,7 @@ public class JNDIDataSourceAutoConfiguration implements InitializingBean {
         try {
             initialContext.bind(jndiName, dataSource);
             log.info(
-                    "Bound JNDI datasource {}: url: {}, user: {}, max size: {}, min size: {}, connection timeout: {}, idle timeout: {}",
+                    "Bound JNDI datasource {} to {}, user: {}, max pool size: {}, min pool size: {}, connection timeout: {}ms, idle timeout: {}ms",
                     jndiName,
                     props.getUrl(),
                     props.getUsername(),
@@ -91,6 +96,9 @@ public class JNDIDataSourceAutoConfiguration implements InitializingBean {
         } catch (NamingException e) {
             throw new ApplicationContextException("Error binding JNDI datasource " + jndiName, e);
         }
+
+        DataSource test = new JndiDataSourceLookup().getDataSource(jndiName);
+        log.info("Obtained datasource {}: {}", jndiName, test);
     }
 
     private void waitForIt(String jndiName, DataSource dataSource, JNDIDatasourceConfig props) {

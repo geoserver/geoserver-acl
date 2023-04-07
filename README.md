@@ -50,6 +50,16 @@ will nonetheless be compiled to Java 11 class compatibility.
 ./mvnw clean install
 ```
 
+A [Makefile](Makefile) is also provided with useful targets for the CI build:
+
+* `make lint`: validates source code and `pom.xml` files formatting. Used to fail the build if ill-formatted code or project configuration is pushed to github.
+* `make format`: applies source code and `pom.xml` formatters, may modify files. Useful to ensure code and project configurations are properly formatted before pushing commits to github.
+* `make package`: builds the projects without installing the maven artifacts to the local maven repository.
+* `make test`: runs unit and integration tests.
+* `make build-image`: builds a Docker image for the [GeoServer ACL application](src/artifacts/api/README.md).
+* `make push-image`: pushes the Docker image to docker hub.
+
+
 ## Contributing
 
 Please read the [contribution guidelines](CONTRIBUTING.md) before contributing pull requests to the GeoServer ACL project.

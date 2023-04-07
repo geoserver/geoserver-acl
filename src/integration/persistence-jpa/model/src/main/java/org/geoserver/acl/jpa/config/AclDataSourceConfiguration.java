@@ -43,7 +43,7 @@ public class AclDataSourceConfiguration {
         DataSourceProperties dsprops = props.getDatasource();
         final String jndiName = dsprops.getJndiName();
         if (StringUtils.hasText(jndiName)) {
-            new JndiDataSourceLookup().getDataSource(jndiName);
+            return new JndiDataSourceLookup().getDataSource(jndiName);
         }
 
         String url = dsprops.getUrl();
