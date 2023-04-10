@@ -1,0 +1,37 @@
+version: "3.1"
+
+volumes:
+  acl_data:
+
+services:
+  acldb:
+    image: postgis/postgis:15-3.3
+    environment:
+      - POSTGRES_DB=acl
+      - POSTGRES_USER=acl
+      - POSTGRES_PASSWORD=acls3cr3t
+    volumes:
+      - acl_data:/var/lib/postgresql/data
+      # mount the db init script to run after 10_postgis.sh
+      - ./docker-compose-initdb.sql:/docker-entrypoint-initdb.d/20-init-acl-db.sql
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 2G
+    ports:
+      - 5432:5432
+
+  acl:
+    image: geoservercloud/geoserver-acl:1.0-SNAPSHOT
+    volumes:
+      - ./docker-compose-acl-config.yml:/opt/app/bin/acl.yml
+    ports:
+      - 9000:8080
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 2G
+

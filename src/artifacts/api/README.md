@@ -20,6 +20,7 @@ will create a single-jar executable at `target/gs-cloud-acl-service-<version>-bi
 
 ## Run
 
+
 Run in development mode with an in-memory H2 database, either with
 
 	mvn spring-boot:run -Dspring-boot.run.profiles=dev
@@ -27,6 +28,7 @@ Run in development mode with an in-memory H2 database, either with
 or
 
 	java -jar target/gs-cloud-acl-service-1.0-SNAPSHOT-bin.jar --spring.profiles.active=dev
+
 
 ## Dependency graph
 

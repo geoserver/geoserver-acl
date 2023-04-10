@@ -1,13 +1,36 @@
 server:
   port: 8080
-  # one of never, always, on_trace_param (deprecated), on_param
+  # Let spring-boot's ForwardedHeaderFilter take care of reflecting the client-originated protocol and address in the HttpServletRequest  
+  forward-headers-strategy: framework
   error:
+    # one of never, always, on_trace_param (deprecated), on_param
     include-stacktrace: on-param
     include-binding-errors: always
     include-message: always
+  compression:
+    enabled: true
+    mime-types:
+    - application/json
+    - application/x-jackson-smile
+  tomcat:
+    # Maximum number of connections that the server accepts and processes at any given time.
+    # Once the limit has been reached, the operating system may still accept connections based on the "acceptCount" property.
+    max-connections: ${tomcat.max.connections:8192}
+    # Maximum queue length for incoming connection requests when all possible request processing threads are in use.
+    accept-count: ${tomcat.accept.count:100}
+    accesslog.enabled: ${tomcat.accesslog.enabled:false}
+    mbeanregistry.enabled: ${tomcat.mbeanregistry.enabled:false}
+    threads:
+      # Minimum amount of worker threads.
+      min-spare: ${tomcat.threads.min.spare:10}
+      # Maximum amount of worker threads.
+      max: ${tomcat.threads.max:64}
+
 spring:
   config:
-    name: geoserver
+    import:
+    - classpath:/acl-service.yml
+    - optional:file:./acl.yml
   main:
     banner-mode: off
     web-application-type: servlet
@@ -22,29 +45,20 @@ spring:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
       - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
       - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration
 
-  data.web.pageable.default-page-size: 100
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+#  endpoints:
+#    web:
+#      exposure:
+#        include:
+#        - '*'
 
 openapi.geoServerACL.base-path: /api
-
-geoserver.acl:
-  datasource:
-    url: jdbc:h2:mem:geoserver-acl
-    username: sa
-    password: sa
-    hikari:
-      minimum-idle: 1
-      maximum-pool-size: 20
-  jpa:
-    show-sql: false
-    open-in-view: false
-    generate-ddl: false
-    properties:
-      hibernate:
-        format_sql: true
-        default_schema: public
-        hbm2ddl.auto: validate
-#       dialect: org.hibernate.spatial.dialect.h2geodb.GeoDBDialect
 
 springdoc:
   api-docs:
@@ -54,19 +68,4 @@ springdoc:
     enabled: true
     path: ${openapi.geoServerACL.base-path}/swagger-ui.html
     tryItOutEnabled: false
-
----
-spring.config.activate.on-profile: dev
-
-geoserver.acl:
-  datasource:
-    url: jdbc:h2:mem:geoserver-acl;DB_CLOSE_DELAY=-1
-    hikari:
-      minimum-idle: 1
-      maximum-pool-size: 20
-  jpa:
-    show-sql: false
-    properties:
-      hibernate:
-        hbm2ddl.auto: create
 
