@@ -82,7 +82,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     @Override
     public AccessInfo getAccessInfo(AccessRequest request) {
         request = request.validate();
-        log.info("Requesting access for {}", request);
+        log.debug("Requesting access for {}", request);
         Map<String, List<Rule>> groupedRules = getMatchingRulesByRole(request);
 
         AccessInfo currAccessInfo = null;
@@ -105,7 +105,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         AccessInfo ret;
 
         if (currAccessInfo == null) {
-            log.info("No access for filter " + request);
+            log.debug("No access for filter " + request);
             // Denying by default
             ret = AccessInfo.DENY_ALL;
         } else {
@@ -291,10 +291,10 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                 case LIMIT:
                     RuleLimits rl = rule.getRuleLimits();
                     if (rl != null) {
-                        log.debug("Collecting limits: {}", rl);
+                        log.trace("Collecting limits: {}", rl);
                         limits.add(rl);
                     } else
-                        log.info(
+                        log.trace(
                                 "Rule has no associated limits (id: {}, priority: {})",
                                 rule.getId(),
                                 rule.getPriority());
