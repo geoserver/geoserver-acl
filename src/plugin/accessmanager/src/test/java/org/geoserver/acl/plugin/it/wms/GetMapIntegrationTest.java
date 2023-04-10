@@ -30,10 +30,12 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geotools.image.test.ImageAssert;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
@@ -156,7 +158,8 @@ public class GetMapIntegrationTest extends AclWMSTestSupport {
         assertEquals(200, resp.getStatus());
 
         // check that user is able to access the layer
-        assertEquals("image/png", resp.getContentType());
+        MediaType actual = MediaType.parseMediaType(resp.getContentType());
+        assertTrue(MediaType.IMAGE_PNG.isCompatibleWith(actual));
         logout();
 
         login("jane", "", "ROLE_USER");
@@ -288,7 +291,7 @@ public class GetMapIntegrationTest extends AclWMSTestSupport {
     }
 
     @Test
-    public void testGeofenceAccessManagerNotFailsGetMapNestedGroup() throws Exception {
+    public void testAccessManagerNotFailsGetMapNestedGroup() throws Exception {
         Rule r1 = support.addRule(ALLOW, null, null, null, null, null, null, 1);
 
         addLakesPlacesLayerGroup(SINGLE, "nested");
@@ -306,7 +309,8 @@ public class GetMapIntegrationTest extends AclWMSTestSupport {
         login("anonymousUser", "", "ROLE_ANONYMOUS");
         String url = getMapRequest(group.getName());
         MockHttpServletResponse response = getAsServletResponse(url);
-        assertEquals("image/png", response.getContentType());
+        MediaType actual = MediaType.parseMediaType(response.getContentType());
+        assertTrue(actual.toString(), MediaType.IMAGE_PNG.isCompatibleWith(actual));
     }
 
     @Test
@@ -339,13 +343,32 @@ public class GetMapIntegrationTest extends AclWMSTestSupport {
         String url = getMapRequest(group.getName());
         MockHttpServletResponse response = getAsServletResponse(url);
         // first request default style should work
-        assertEquals("image/png", response.getContentType());
+        MediaType expected = MediaType.IMAGE_PNG;
+        MediaType actual = MediaType.parseMediaType(response.getContentType());
+        assertEquals(expected.getType(), actual.getType());
+        assertEquals(expected.getSubtype(), actual.getSubtype());
 
         url = getMapRequest(group.getName()).replace("styles=&", "styles=forests_style&");
 
         response = getAsServletResponse(url);
         // should get an error since the polygon style is contained in the lg forest_style
-        assertEquals("text/xml", getBaseMimeType(response.getContentType()));
+        expected = MediaType.TEXT_XML;
+        actual = MediaType.parseMediaType(response.getContentType());
+        assertEquals(expected.getType(), actual.getType());
+        assertEquals(expected.getSubtype(), actual.getSubtype());
+
         assertTrue(response.getContentAsString().contains("style is not available on this layer"));
+    }
+
+    @Override
+    protected BufferedImage getAsImage(String path, String mime) throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse(path);
+        MediaType expected = MediaType.parseMediaType(mime);
+        MediaType actual = MediaType.parseMediaType(resp.getContentType());
+        assertEquals(expected.getType(), actual.getType());
+        assertEquals(expected.getSubtype(), actual.getSubtype());
+        try (InputStream is = getBinaryInputStream(resp)) {
+            return ImageIO.read(is);
+        }
     }
 }

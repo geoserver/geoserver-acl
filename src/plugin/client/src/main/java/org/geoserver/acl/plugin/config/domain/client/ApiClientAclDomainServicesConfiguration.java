@@ -45,9 +45,9 @@ import org.springframework.core.env.Environment;
  */
 @Configuration
 @Import({
-    // repositories from geofence-api-client
+    // repositories from api-client
     ApiClientConfiguration.class, RepositoryClientAdaptorsConfiguration.class,
-    // services from geofence-domain-spring-integration
+    // services from domain-spring-integration
     RuleAdminServiceConfiguration.class, AdminRuleAdminServiceConfiguration.class,
     // AuthorizationService using the OpenAPI client backed rule services
     AuthorizationServiceClientAdaptorConfiguration.class

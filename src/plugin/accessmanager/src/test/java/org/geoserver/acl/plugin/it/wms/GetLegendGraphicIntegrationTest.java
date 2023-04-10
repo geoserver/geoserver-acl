@@ -19,6 +19,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.util.List;
@@ -48,7 +49,8 @@ public class GetLegendGraphicIntegrationTest extends AclWMSTestSupport {
                         + "&style="
                         + "&format=image/png&width=20&height=20";
         MockHttpServletResponse response = getAsServletResponse(url);
-        assertEquals(response.getContentType(), "image/png");
+        MediaType actual = MediaType.parseMediaType(response.getContentType());
+        assertTrue(MediaType.IMAGE_PNG.isCompatibleWith(actual));
     }
 
     @Test
@@ -90,7 +92,8 @@ public class GetLegendGraphicIntegrationTest extends AclWMSTestSupport {
         String url = String.format(urlFormat, ""); // default style
         MockHttpServletResponse response = getAsServletResponse(url);
         // default lg style should not fail
-        assertEquals("image/png", response.getContentType());
+        MediaType actual = MediaType.parseMediaType(response.getContentType());
+        assertTrue(MediaType.IMAGE_PNG.isCompatibleWith(actual));
 
         url =
                 "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
@@ -101,7 +104,10 @@ public class GetLegendGraphicIntegrationTest extends AclWMSTestSupport {
                         + "&format=image/png&width=20&height=20";
         response = getAsServletResponse(url);
         // should fail the forests_style contains the not allowed polygon style
-        assertEquals("application/vnd.ogc.se_xml", getBaseMimeType(response.getContentType()));
+        MediaType expected = MediaType.parseMediaType("application/vnd.ogc.se_xml");
+        actual = MediaType.parseMediaType(response.getContentType());
+        assertEquals(expected.getType(), actual.getType());
+        assertEquals(expected.getSubtype(), actual.getSubtype());
         assertTrue(response.getContentAsString().contains("style is not available on this layer"));
     }
 }
