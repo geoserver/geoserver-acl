@@ -13,9 +13,15 @@ test:
 	./mvnw verify -ntp -T4
 
 # Make sure `make package` was run before if anything changed since the last build
+# Consecutive COPY commands in Dockerfile fail on github runners
+# Added "DOCKER_BUILDKIT=1" as a temporary fix
+# more discussion on the same issue:
+# https://github.com/moby/moby/issues/37965
+# https://github.community/t/attempting-to-build-docker-image-with-copy-from-on-actions/16715
+# https://stackoverflow.com/questions/51115856/docker-failed-to-export-image-failed-to-create-image-failed-to-get-layer
 build-image:
 	@VERSION=`./mvnw help:evaluate -q -DforceStdout -Dexpression=project.version` && \
-	docker build -t $(DOCKER_REPO):$${VERSION} src/artifacts/api/
+	DOCKER_BUILDKIT=1 docker build -t $(DOCKER_REPO):$${VERSION} src/artifacts/api/
 
 push-image:
 	@VERSION=`./mvnw help:evaluate -q -DforceStdout -Dexpression=project.version` && \
