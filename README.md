@@ -1,3 +1,5 @@
+![build](https://github.com/geoserver/geoserver-acl/actions/workflows/build.yaml/badge.svg)
+
 # GeoServer Access Control List (ACL)
 
 GeoServer ACL is an advanced authorization system for [GeoServer](https://geoserver.org/).
