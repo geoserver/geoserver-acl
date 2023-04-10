@@ -22,11 +22,6 @@ public interface JpaRuleRepository
                 QuerydslPredicateExecutor<Rule>,
                 PriorityRepository<Rule> {
 
-    @TransactionRequired
-    @Modifying
-    @Query("delete from Rule r where r.id=:id")
-    int deleteById(@Param("id") long id);
-
     @Override
     Optional<Rule> findOneByPriority(long priority);
 

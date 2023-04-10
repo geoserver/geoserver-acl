@@ -259,7 +259,19 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     @Override
     @TransactionRequired
     public boolean deleteById(@NonNull String id) {
-        return 1 == jparepo.deleteById(decodeId(id).longValue());
+        org.geoserver.acl.jpa.model.Rule rule;
+        try {
+            rule = jparepo.getReferenceById(decodeId(id));
+            LayerDetails details = rule.getLayerDetails();
+            if (details != null) {
+                details.setAllowedStyles(null);
+                details.setAttributes(null);
+            }
+        } catch (EntityNotFoundException e) {
+            return false;
+        }
+        jparepo.delete(rule);
+        return true;
     }
 
     @Override

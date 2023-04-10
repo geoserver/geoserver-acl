@@ -72,6 +72,8 @@ public class RuleRepositoryClientAdaptor implements RuleRepository {
         org.geoserver.acl.api.model.Rule response;
         try {
             response = apiClient.createRule(map(rule), enumsMapper.map(position));
+        } catch (HttpClientErrorException.BadRequest e) {
+            throw new IllegalArgumentException(reason(e), e);
         } catch (HttpClientErrorException.Conflict c) {
             throw new RuleIdentifierConflictException(reason(c), c);
         }
