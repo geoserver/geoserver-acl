@@ -72,12 +72,12 @@ class ContainerLimitResolver {
     /**
      * @param groups the layer groups containing the resource in the context of a WMS request
      *     targeting a layer group.
-     * @param ruleService the GeoFence rule service.
+     * @param ruleService the ACL access rules admin service.
      * @param authentication the Authentication object bounded to this request.
      * @param layer the layer being requested.
      * @param workspace the workspace of the layer being requested.
      * @param callerIp the ip of the user.
-     * @param configuration the geofence configuration.
+     * @param configuration the access manager configuration.
      */
     ContainerLimitResolver(
             List<LayerGroupInfo> groups,
@@ -94,12 +94,12 @@ class ContainerLimitResolver {
     /**
      * @param groups the layer groups containing the resource in the context of a WMS request
      *     directly targeting a layer contained in one or more layer groups.
-     * @param ruleService the GeoFence rule service.
+     * @param ruleService the ACL access rules admin service.
      * @param authentication the Authentication object bounded to this request.
      * @param layer the layer being requested.
      * @param workspace the workspace of the layer being requested.
      * @param callerIp the ip of the user.
-     * @param configuration the geofence configuration.
+     * @param configuration the access manager configuration.
      */
     ContainerLimitResolver(
             Collection<LayerGroupContainmentCache.LayerGroupSummary> groups,
