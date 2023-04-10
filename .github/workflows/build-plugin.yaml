@@ -1,6 +1,5 @@
 # Builds and pushes docker images on main and tags
-
-name: Build and test
+name: Test GeoSever plugin
 on:
   push:
     branches:
@@ -9,10 +8,13 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-    name: Build
+  build-plugin:
+    name: Test Plugin for GeoSever
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    strategy:
+      matrix:
+        gs-version: [2.22.2, 2.23.0]
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -22,15 +24,6 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
         cache: 'maven'
-
-    - name: Validate source code formatting
+    - name: Test plugin
       run: |
-        make lint
-
-    - name: Build without tests
-      run: |
-        make package
-
-    - name: Test
-      run: |
-        make test
+        ./mvnw -Dgs.version=${{ matrix.gs-version }} verify -pl :gs-acl-client-plugin -am -ntp
