@@ -34,9 +34,8 @@ import java.util.stream.Stream;
 @Slf4j
 class PredicateMapper {
 
-    public Predicate toPredicate(RuleQuery<?> query) {
-        if (query.getFilter().isEmpty()) return new BooleanBuilder();
-        return query.getFilter().flatMap(this::toPredicate).orElseGet(BooleanBuilder::new);
+    public Predicate toPredicate(RuleQuery<? extends Filter<?>> query) {
+        return query.getFilter().flatMap(this::mapPredicate).orElseGet(BooleanBuilder::new);
     }
 
     Optional<BooleanExpression> toPriorityPredicate(OptionalLong pstart) {
@@ -87,7 +86,7 @@ class PredicateMapper {
         }
     }
 
-    Optional<Predicate> toPredicate(Filter<?> filter) {
+    Optional<Predicate> mapPredicate(Filter<?> filter) {
         if (filter instanceof RuleFilter) return toPredicate((RuleFilter) filter);
         if (filter instanceof AdminRuleFilter) return toPredicate((AdminRuleFilter) filter);
         return Optional.empty();
