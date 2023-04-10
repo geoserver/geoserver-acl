@@ -203,6 +203,28 @@ public class RuleAdminServiceIT {
     }
 
     @Test
+    void testDeleteRuleWithLayerDetails() {
+        Rule r1 = ruleAdminService.insert(Rule.allow().withWorkspace("ws1").withLayer("l1"));
+        Rule r2 = ruleAdminService.insert(Rule.allow().withWorkspace("ws1").withLayer("l2"));
+
+        ruleAdminService.setLayerDetails(r1.getId(), sampleDetails(1));
+        ruleAdminService.setLayerDetails(r2.getId(), sampleDetails(2));
+
+        assertThat(ruleAdminService.getLayerDetails(r1)).isPresent();
+        assertThat(ruleAdminService.getLayerDetails(r2)).isPresent();
+
+        assertThat(ruleAdminService.delete(r1.getId())).isTrue();
+        assertThat(ruleAdminService.delete(r1.getId())).isFalse();
+        assertThat(ruleAdminService.getAll()).isEqualTo(List.of(r2));
+
+        assertThat(ruleAdminService.delete(r2.getId())).isTrue();
+        assertThat(ruleAdminService.delete(r2.getId())).isFalse();
+
+        assertThrows(IllegalArgumentException.class, () -> ruleAdminService.getLayerDetails(r1));
+        assertThrows(IllegalArgumentException.class, () -> ruleAdminService.getLayerDetails(r2));
+    }
+
+    @Test
     void testGetAll_and_GetList_paginated() {
         assertThat(ruleAdminService.getAll()).isNotNull().isEmpty();
 

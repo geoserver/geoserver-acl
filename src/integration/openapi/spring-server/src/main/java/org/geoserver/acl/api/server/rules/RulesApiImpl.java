@@ -50,6 +50,8 @@ public class RulesApiImpl implements RulesApiDelegate {
             }
         } catch (RuleIdentifierConflictException conflict) {
             return support.error(CONFLICT, conflict.getMessage());
+        } catch (IllegalArgumentException e) {
+            return support.error(BAD_REQUEST, e.getMessage());
         }
         support.setPreferredGeometryEncoding();
         return ResponseEntity.status(HttpStatus.CREATED).body(support.toApi(created));
