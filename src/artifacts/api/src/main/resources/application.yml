@@ -26,6 +26,7 @@ server:
       # Maximum amount of worker threads.
       max: ${tomcat.threads.max:64}
 
+
 spring:
   config:
     import:
@@ -46,6 +47,8 @@ spring:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
       - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
       - org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration
+  jpa:
+    open-in-view: false
 
 management:
   endpoint:

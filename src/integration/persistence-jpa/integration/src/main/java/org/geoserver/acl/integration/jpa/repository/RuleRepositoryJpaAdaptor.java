@@ -114,7 +114,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     }
 
     @Override
-    @TransactionReadOnly
+    @TransactionSupported
     public Stream<Rule> findAll(@NonNull RuleQuery<RuleFilter> query) {
 
         Predicate predicate = queryMapper.toPredicate(query);
