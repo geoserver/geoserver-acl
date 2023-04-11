@@ -61,10 +61,9 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
 
     protected final FormComponent<Long> priority;
 
-    protected final FormComponent<String> addressRange;
-
     protected final FormComponent<String> role;
     protected final FormComponent<String> user;
+    protected final FormComponent<String> addressRange;
 
     protected final DropDownChoice<String> service;
     protected final DropDownChoice<String> request;
@@ -403,50 +402,6 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
         catalogMode.setOutputMarkupPlaceholderTag(true);
         return catalogMode;
     }
-
-    // @formatter:off
-    //	private class LayerChoiceOnChange extends OnChangeAjaxBehavior {
-    //		@Override
-    //		protected void onUpdate(AjaxRequestTarget target) {
-    //			ruleFormModel.getObject()
-    //					.setLayerDetailsCheck(ruleFormModel.getObject().isLayerDetailsCheck()
-    //							&& GrantType.ALLOW.equals(grantTypeChoice.getConvertedInput())
-    //							&& layerChoice.getConvertedInput() != null);
-    //
-    //			ruleFormModel.getObject().getLayerDetails().getAttributes().clear();
-    //			if (layerChoice.getConvertedInput() != null) {
-    //				PublishedInfo info = RulePropertiesEditPanel.this.dataAccessRuleEditPage.getCatalog()
-    //						.get(PublishedInfo.class, Predicates.equal("name", layerChoice.getConvertedInput()));
-    //				MutableLayerDetails layerDetails = ruleFormModel.getObject().getLayerDetails();
-    //				LayerType layerType =
-    // RulePropertiesEditPanel.this.dataAccessRuleEditPage.setLayerType(info,
-    //						layerDetails);
-    //				ResourceInfo resource = info instanceof LayerInfo ? ((LayerInfo) info).getResource() :
-    // null;
-    //				if (layerType != null && layerType.equals(LayerType.RASTER)) {
-    //					spatialFilterTypeChoice.setModelObject(SpatialFilterType.CLIP);
-    //					spatialFilterTypeChoice.setEnabled(false);
-    //				} else {
-    //					spatialFilterTypeChoice.setEnabled(true);
-    //				}
-    //				target.add(spatialFilterTypeLabel, spatialFilterTypeChoice);
-    //
-    //				if (resource instanceof FeatureTypeInfo) {
-    //					FeatureTypeInfo fti = (FeatureTypeInfo) resource;
-    //					try {
-    //						for (AttributeTypeInfo ati : fti.attributes()) {
-    //							MutableLayerAttribute attribute = new MutableLayerAttribute(ati.getName(),
-    //									ati.getBinding() == null ? null : ati.getBinding().getName(), AccessType.NONE);
-    //							ruleFormModel.getObject().getLayerDetails().getAttributes().add(attribute);
-    //						}
-    //					} catch (IOException e) {
-    //						DataAccessRuleEditPage.LOGGER.log(Level.WARNING, "Could not fetch attributes.", e);
-    //					}
-    //				}
-    //			}
-    //		}
-    //	}
-    // @formatter:on
 
     /** Makes sure that while rendered in mixed case, is stored in uppercase */
     private static class CaseConversionRenderer extends ChoiceRenderer<String> {

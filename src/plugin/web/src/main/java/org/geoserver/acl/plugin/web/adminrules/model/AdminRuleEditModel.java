@@ -28,6 +28,16 @@ public class AdminRuleEditModel extends AbstractRuleEditModel<MutableAdminRule> 
     }
 
     @Override
+    protected String getInstanceName(MutableAdminRule rule) {
+        return rule.getInstanceName();
+    }
+
+    // no-op
+    protected @Override String getSelectedWorkspace() {
+        return null;
+    }
+
+    @Override
     public void save() {
         MutableAdminRule modelRule = getModel().getObject();
         if (isIncludeInstanceName()) {
@@ -61,10 +71,5 @@ public class AdminRuleEditModel extends AbstractRuleEditModel<MutableAdminRule> 
 
     private static AdminRuleAdminService adminService() {
         return GeoServerApplication.get().getBeanOfType(AdminRuleAdminService.class);
-    }
-
-    @Override
-    protected String getInstanceName(MutableAdminRule rule) {
-        return rule.getInstanceName();
     }
 }

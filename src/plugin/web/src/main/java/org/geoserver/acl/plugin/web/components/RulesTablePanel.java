@@ -61,6 +61,9 @@ public final class RulesTablePanel<R extends Serializable> extends GeoServerTabl
         return (Property<T>) BUTTONS;
     }
 
+    private final DragSource dragSource;
+    private final DropTarget dropTarget;
+
     public RulesTablePanel(String id, RulesDataProvider<R> dataProvider) {
         super(id, dataProvider, true /* selectable */);
         setOutputMarkupId(true);
@@ -70,8 +73,25 @@ public final class RulesTablePanel<R extends Serializable> extends GeoServerTabl
         items.setItemReuseStrategy(DefaultItemReuseStrategy.getInstance());
 
         add(new WebTheme());
-        add(dragSourceBehavior());
-        add(dropTargetBehavior());
+        dragSource = dragSourceBehavior();
+        dropTarget = dropTargetBehavior();
+        enableDnD(true);
+    }
+
+    public void setFilteredMode(boolean filtered) {
+        setPageable(!filtered);
+        setSelectable(!filtered);
+        setFilterable(!filtered);
+        enableDnD(!filtered);
+        modelChanged();
+    }
+
+    void enableDnD(boolean enable) {
+        if (enable) {
+            super.add(dragSource, dropTarget);
+        } else {
+            super.remove(dragSource, dropTarget);
+        }
     }
 
     private DragSource dragSourceBehavior() {

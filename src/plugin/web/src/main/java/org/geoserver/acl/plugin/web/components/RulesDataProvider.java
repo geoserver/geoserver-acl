@@ -6,8 +6,11 @@ package org.geoserver.acl.plugin.web.components;
 
 import com.google.common.base.Objects;
 
+import lombok.Setter;
+
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
+import org.geoserver.acl.plugin.web.support.SerializablePredicate;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.springframework.dao.DuplicateKeyException;
 
@@ -16,6 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public abstract class RulesDataProvider<R> extends GeoServerDataProvider<R> {
@@ -23,6 +27,8 @@ public abstract class RulesDataProvider<R> extends GeoServerDataProvider<R> {
     private final List<R> _rules = new ArrayList<>();
 
     private Class<R> modelClass;
+
+    private @Setter SerializablePredicate<R> filter;
 
     public RulesDataProvider(Class<R> modelClass) {
         this.modelClass = modelClass;
@@ -47,7 +53,9 @@ public abstract class RulesDataProvider<R> extends GeoServerDataProvider<R> {
     @Override
     public List<R> getItems() {
         if (_rules.isEmpty()) reload();
-        return _rules;
+        SerializablePredicate<R> predicate = filter;
+        if (predicate == null) return _rules;
+        return _rules.stream().filter(predicate).collect(Collectors.toList());
     }
 
     private final void reload() {
@@ -71,7 +79,7 @@ public abstract class RulesDataProvider<R> extends GeoServerDataProvider<R> {
     }
 
     public boolean canUp(R rule) {
-        return getItems().indexOf(rule) > 0;
+        return filter == null && getItems().indexOf(rule) > 0;
     }
 
     public void moveUp(R rule) {
@@ -86,7 +94,7 @@ public abstract class RulesDataProvider<R> extends GeoServerDataProvider<R> {
 
     public boolean canDown(R rule) {
         List<R> rules = getItems();
-        return rules.indexOf(rule) < rules.size() - 1;
+        return filter == null && rules.indexOf(rule) < rules.size() - 1;
     }
 
     public void moveDown(R rule) {

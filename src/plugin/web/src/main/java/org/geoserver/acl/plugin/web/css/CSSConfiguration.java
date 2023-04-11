@@ -24,14 +24,24 @@ public class CSSConfiguration {
      * AdminRulesACLPage}
      */
     @Bean
-    HeaderContribution aclRulesPageCssContribution() {
+    HeaderContribution aclRulesTablePanelCssContribution() {
         return new CssContribution(
                 "RulesTablePanel.css", AccessRulesACLPage.class, AdminRulesACLPage.class);
     }
 
+    /**
+     * Contributes {@code SimulatorPanel.css} to {@link AccessRulesACLPage} and {@link
+     * AdminRulesACLPage}
+     */
+    @Bean
+    HeaderContribution aclSimulatorPanelCssContribution() {
+        return new CssContribution(
+                "SimulatorPanel.css", AccessRulesACLPage.class, AdminRulesACLPage.class);
+    }
+
     /** Contributes {@code DataAccessRuleEditPage.css} to {@link DataAccessRuleEditPage} */
     @Bean
-    HeaderContribution aclDataAccessRuleEditPageCss() {
+    HeaderContribution aclDataAccessRuleEditPageCssContribution() {
         return new CssContribution("DataAccessRuleEditPage.css", DataAccessRuleEditPage.class);
     }
 
@@ -40,9 +50,19 @@ public class CSSConfiguration {
      * AdminRuleEditPage}
      */
     @Bean
-    HeaderContribution aclSwitchFieldCss() {
+    HeaderContribution aclSwitchFieldCssContribution() {
         return new CssContribution(
                 "switch-field.css", DataAccessRuleEditPage.class, AdminRuleEditPage.class);
+    }
+
+    /**
+     * Contributes {@code tabset.css} to {@link DataAccessRuleEditPage} and {@link
+     * AccessRulesACLPage}
+     */
+    @Bean
+    HeaderContribution aclTabsetCssContribution() {
+        return new CssContribution(
+                "tabset.css", DataAccessRuleEditPage.class, AccessRulesACLPage.class);
     }
 
     static class CssContribution extends HeaderContribution {

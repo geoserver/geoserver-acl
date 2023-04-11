@@ -76,7 +76,7 @@ public class LayerDetailsEditModel implements Serializable {
 
     public boolean hasDisplayablePropertiesSet() {
         MutableLayerDetails ld = getModel().getObject();
-        return nonNull(ld.getDefaultStyle())
+        return ld != null && nonNull(ld.getDefaultStyle())
                 || nonNull(ld.getCqlFilterRead())
                 || nonNull(ld.getCqlFilterWrite())
                 || nonNull(ld.getArea())
@@ -109,7 +109,7 @@ public class LayerDetailsEditModel implements Serializable {
     }
 
     public LayerType getLayerType() {
-        LayerType ltype = getModel().getObject().getLayerType();
-        return ltype;
+        MutableLayerDetails layerDetails = getModel().getObject();
+        return null == layerDetails ? null : layerDetails.getLayerType();
     }
 }

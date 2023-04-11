@@ -4,17 +4,23 @@
  */
 package org.geoserver.acl.plugin.web.components;
 
+import lombok.extern.slf4j.Slf4j;
+
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.wicketstuff.select2.ChoiceProvider;
 import org.wicketstuff.select2.Select2MultiChoice;
+import org.wicketstuff.select2.Settings;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+@Slf4j
 @SuppressWarnings("serial")
 public class Select2SetMultiChoice<T> extends FormComponentPanel<Set<T>> {
 
@@ -31,14 +37,35 @@ public class Select2SetMultiChoice<T> extends FormComponentPanel<Set<T>> {
         select2.getSettings().setQueryParam("qm");
         select2.getSettings().setPlaceholder("select"); // required for allowClear
         select2.getSettings().setAllowClear(true);
-        select2.getSettings().setWidth("50%");
         select2.setOutputMarkupPlaceholderTag(true);
         this.setOutputMarkupPlaceholderTag(true);
+        // set internal select2 component width to 100% to expand to its container's width and
+        // respect the width of this container panel
+        select2.getSettings().setWidth("100%");
+        select2.add(
+                new OnChangeAjaxBehavior() {
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        Collection<T> modelObject = select2.getModelObject();
+                        log.debug("multichoice model updated: {}", modelObject);
+                    }
+                });
+    }
+
+    public Settings getSettings() {
+        return select2.getSettings();
+    }
+
+    @Override
+    protected void onModelChanged() {
+        Set<T> modelObject = getModelObject();
+        select2.setModelObject(modelObject);
     }
 
     @Override
     public void convertInput() {
-        Collection<T> choices = select2.getConvertedInput();
+        Collection<T> choices = select2.getModelObject();
+        if (null == choices) choices = Set.of();
         setConvertedInput(new LinkedHashSet<>(choices));
     }
 }
