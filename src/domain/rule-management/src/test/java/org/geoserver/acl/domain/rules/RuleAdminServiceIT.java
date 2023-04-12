@@ -225,6 +225,22 @@ public class RuleAdminServiceIT {
     }
 
     @Test
+    void testGetAll() {
+        assertThat(ruleAdminService.getAll()).isNotNull().isEmpty();
+        Rule r1 = ruleAdminService.insert(Rule.allow().withWorkspace("ws1").withLayer("l1"));
+        Rule r2 = ruleAdminService.insert(Rule.allow().withWorkspace("ws1").withLayer("l2"));
+
+        final LayerDetails details1 = sampleDetails(1);
+        final LayerDetails details2 = sampleDetails(2);
+        ruleAdminService.setLayerDetails(r1.getId(), details1);
+        ruleAdminService.setLayerDetails(r2.getId(), details2);
+
+        List<Rule> expected = List.of(r1, r2);
+        List<Rule> actual = ruleAdminService.getAll().collect(Collectors.toList());
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     void testGetAll_and_GetList_paginated() {
         assertThat(ruleAdminService.getAll()).isNotNull().isEmpty();
 
