@@ -30,7 +30,6 @@ import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.Lob;
 import javax.persistence.UniqueConstraint;
 
 /**
@@ -56,12 +55,10 @@ public class LayerDetails implements Serializable, Cloneable {
     @Column(name = "ld_default_style")
     private String defaultStyle;
 
-    @Lob
-    @Column(name = "ld_cql_filter_read")
+    @Column(name = "ld_cql_filter_read", length = 65535)
     private String cqlFilterRead;
 
-    @Lob
-    @Column(name = "ld_cql_filter_write")
+    @Column(name = "ld_cql_filter_write", length = 65535)
     private String cqlFilterWrite;
 
     @Column(name = "ld_area")

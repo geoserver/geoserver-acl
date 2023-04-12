@@ -11,6 +11,10 @@ import org.geoserver.acl.domain.filter.RuleQuery;
 import org.geoserver.acl.domain.rules.CatalogMode;
 import org.geoserver.acl.domain.rules.GrantType;
 import org.geoserver.acl.domain.rules.InsertPosition;
+import org.geoserver.acl.domain.rules.LayerAttribute;
+import org.geoserver.acl.domain.rules.LayerAttribute.AccessType;
+import org.geoserver.acl.domain.rules.LayerDetails;
+import org.geoserver.acl.domain.rules.LayerDetails.LayerType;
 import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleIdentifierConflictException;
 import org.geoserver.acl.domain.rules.RuleLimits;
@@ -25,7 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -128,10 +134,32 @@ class RuleRepositoryJpaAdaptorTest {
 
     @Test
     void streamAll() {
-        List<Rule> all =
-                IntStream.rangeClosed(1, 100).mapToObj(this::addFull).collect(Collectors.toList());
+        List<Rule> limits =
+                IntStream.rangeClosed(1, 100)
+                        .mapToObj(this::addLimitsRule)
+                        .collect(Collectors.toList());
+        List<Rule> allows =
+                IntStream.rangeClosed(101, 200)
+                        .mapToObj(this::addAllowRuleWithLayerDetails)
+                        .collect(Collectors.toList());
+
+        List<Rule> expected = new ArrayList<>(limits);
+        expected.addAll(allows);
+
         List<Rule> result = repo.findAll(RuleQuery.of()).collect(Collectors.toList());
-        assertThat(result).isEqualTo(all);
+        assertThat(result).isEqualTo(expected);
+    }
+
+    private Set<LayerAttribute> sampleAttributes(Rule r) {
+        return IntStream.rangeClosed(1, 5)
+                .mapToObj(
+                        i ->
+                                LayerAttribute.builder()
+                                        .name(r.getId() + "-att-" + i)
+                                        .dataType("java.lang.String")
+                                        .access(AccessType.READONLY)
+                                        .build())
+                .collect(Collectors.toSet());
     }
 
     @Test
@@ -152,11 +180,33 @@ class RuleRepositoryJpaAdaptorTest {
         assertThat(repo.count()).isZero();
     }
 
-    private Rule addFull(int priority) {
-        return repo.create(createFull(priority), InsertPosition.FIXED);
+    private Rule addLimitsRule(int priority) {
+        return repo.create(createLimitsRule(priority), InsertPosition.FIXED);
     }
 
-    private Rule createFull(int priority) {
+    private Rule addAllowRuleWithLayerDetails(int priority) {
+        Rule rule = repo.create(createAllowRule(priority), InsertPosition.FIXED);
+        addDetails(rule);
+        return rule;
+    }
+
+    private void addDetails(Rule r) {
+        LayerDetails ld =
+                LayerDetails.builder()
+                        .allowedStyles(Set.of(r.getId() + "-style-1", r.getId() + "-style-2"))
+                        .area(multiPolygon())
+                        .catalogMode(CatalogMode.CHALLENGE)
+                        .cqlFilterRead("1=1")
+                        .cqlFilterWrite("2=2")
+                        .defaultStyle(r.getId() + "-default-style")
+                        .type(LayerType.VECTOR)
+                        .spatialFilterType(SpatialFilterType.INTERSECT)
+                        .attributes(sampleAttributes(r))
+                        .build();
+        repo.setLayerDetails(r.getId(), ld);
+    }
+
+    private Rule createLimitsRule(int priority) {
         return Rule.limit().toBuilder()
                 .priority(priority)
                 .name("p" + priority)
@@ -172,11 +222,30 @@ class RuleRepositoryJpaAdaptorTest {
                 .build();
     }
 
+    private Rule createAllowRule(int priority) {
+        return Rule.allow().toBuilder()
+                .priority(priority)
+                .name("p" + priority)
+                .description("desc " + priority)
+                .extId("extId-" + priority)
+                .identifier(
+                        Rule.allow().getIdentifier().toBuilder()
+                                .addressRange("10.1.1.1/32")
+                                .layer("layer-" + priority)
+                                .workspace("ws-" + priority)
+                                .build())
+                .build();
+    }
+
     private RuleLimits limits() {
         return RuleLimits.builder()
-                .allowedArea((MultiPolygon<?>) Wkt.fromWkt(WORLD))
+                .allowedArea(multiPolygon())
                 .catalogMode(CatalogMode.CHALLENGE)
                 .spatialFilterType(SpatialFilterType.CLIP)
                 .build();
+    }
+
+    private MultiPolygon<?> multiPolygon() {
+        return (MultiPolygon<?>) Wkt.fromWkt(WORLD);
     }
 }
