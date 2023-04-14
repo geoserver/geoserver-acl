@@ -28,7 +28,7 @@
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <spring-cloud.version>2021.0.6</spring-cloud.version>
-    <spring-boot.version>2.7.9</spring-boot.version>
+    <spring-boot.version>2.7.10</spring-boot.version>
     <!-- Default GeoServer version to build and test the plugin against-->
     <gs.version>2.24-SNAPSHOT</gs.version>
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
@@ -59,6 +59,12 @@
         <version>${spring-boot.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <!-- Override version 1.30 transitive from spring-boot-starter to fix a couple CVE's -->
+        <groupId>org.yaml</groupId>
+        <artifactId>snakeyaml</artifactId>
+        <version>2.0</version>
       </dependency>
       <dependency>
         <groupId>org.testcontainers</groupId>
