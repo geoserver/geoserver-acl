@@ -150,17 +150,17 @@
       </dependency>
       <!-- OpenAPI integration -->
       <dependency>
-        <groupId>org.geoserver.cloud.authorizaton.integration.openapi</groupId>
+        <groupId>org.geoserver.acl.integration.openapi</groupId>
         <artifactId>gs-acl-api-model-mapper</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.cloud.authorizaton.integration.openapi</groupId>
+        <groupId>org.geoserver.acl.integration.openapi</groupId>
         <artifactId>gs-acl-api-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.cloud.authorizaton.integration.openapi</groupId>
+        <groupId>org.geoserver.acl.integration.openapi</groupId>
         <artifactId>gs-acl-api-impl</artifactId>
         <version>${project.version}</version>
       </dependency>
