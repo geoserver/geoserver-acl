@@ -1,5 +1,11 @@
 DOCKER_REPO="geoservercloud/geoserver-acl"
 
+#default target
+build: install build-image
+
+install:
+	./mvnw clean install
+
 lint:
 	./mvnw sortpom:verify fmt:check -ntp
 
