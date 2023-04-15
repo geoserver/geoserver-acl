@@ -12,7 +12,7 @@
     <artifactId>integration</artifactId>
     <version>${revision}</version>
   </parent>
-  <groupId>org.geoserver.cloud.authorizaton.integration.openapi</groupId>
+  <groupId>org.geoserver.acl.integration.openapi</groupId>
   <artifactId>openapi-integration</artifactId>
   <packaging>pom</packaging>
   <modules>

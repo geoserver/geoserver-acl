@@ -17,7 +17,7 @@
   <name>acl-service</name>
   <dependencies>
     <dependency>
-      <groupId>org.geoserver.cloud.authorizaton.integration.openapi</groupId>
+      <groupId>org.geoserver.acl.integration.openapi</groupId>
       <artifactId>gs-acl-api-impl</artifactId>
     </dependency>
     <dependency>
