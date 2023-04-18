@@ -16,10 +16,16 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore("TODO")
 public class AccessRulesACLPageTest extends AclWicketTestSupport {
 
     @Test
+    public void testLoads() {
+        tester.startPage(AccessRulesACLPage.class);
+        tester.assertNoErrorMessage();
+    }
+
+    @Test
+    @Ignore("TODO")
     public void testAddNewRuleLink() {
         tester.startPage(AccessRulesACLPage.class);
         tester.assertRenderedPage(AccessRulesACLPage.class);

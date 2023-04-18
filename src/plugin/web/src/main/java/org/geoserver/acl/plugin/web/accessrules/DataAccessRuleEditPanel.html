@@ -4,50 +4,52 @@
       <fieldset>
         <ul>
           <li>
-            <label for="priority"><wicket:message key="priority"></wicket:message></label>
-            <input id="priority" wicket:id="priority" type="number" class="text" />
+            <label wicket:for="priority"><wicket:message key="priority"></wicket:message></label>
+            <input wicket:id="priority" type="number" class="text" />
           </li>
 	      <li class="choiceItem">
-	        <input id="includeInstanceName" type="checkbox" wicket:id="includeInstanceName" />
-	        <label for="includeInstanceName"><wicket:message key="includeInstanceName">Create rule for this instance only <span wicket:id="instanceName">[instance]</span></wicket:message></label>
+	        <input type="checkbox" wicket:id="includeInstanceName" />
+	        <label wicket:for="includeInstanceName"><wicket:message key="includeInstanceName">Create rule for this instance only <span wicket:id="instanceName">[instance]</span></wicket:message></label>
 	      </li>
           <li>
-            <label for="roleName"><wicket:message key="roleName"></wicket:message></label>
-            <input id="roleName" wicket:id="roleName" type="text" class="text" placeholder="*"/>
+            <label wicket:for="roleName"><wicket:message key="roleName"></wicket:message></label>
+            <input wicket:id="roleName" type="text" class="text" placeholder="*"/>
           </li>
           <li>
-            <label for="userName"><wicket:message key="username"></wicket:message></label>
-            <input id="userName" wicket:id="userName" type="text" class="text" placeholder="*"/>
+            <label wicket:for="userName"><wicket:message key="username"></wicket:message></label>
+            <input wicket:id="userName" type="text" class="text" placeholder="*"/>
           </li>
           <li>
-            <label for="addressRange"><wicket:message key="addressRange"></wicket:message></label>
-            <input id="addressRange" wicket:id="addressRange" type="text" class="text" placeholder="0.0.0.0/00"/>
+            <label wicket:for="addressRange"><wicket:message key="addressRange"></wicket:message></label>
+            <input wicket:id="addressRange" type="text" class="text" placeholder="0.0.0.0/00"/>
           </li>
           <li>
-            <span style="white-space:nowrap">
+            <div style="white-space:nowrap">
               <table style="table-layout: auto;width:25em;">
-                <td style="width:33%;padding: 0px 0px 0px 0px;">
-                  <label for="service"><wicket:message key="service"></wicket:message></label>
-                  <select wicket:id="service" id="service"></select>
-                </td>
-                <td style="width:77%;padding: 0px 0px 0px 0px;">
-                  <label for="request"><wicket:message key="request"></wicket:message></label>
-                  <select wicket:id="request" id="request" style="width:100%"></select>
-                </td>
+                <tr>
+                  <td style="width:33%;padding: 0px 0px 0px 0px;">
+                    <label wicket:for="service"><wicket:message key="service"></wicket:message></label>
+                    <select wicket:id="service"></select>
+                  </td>
+                  <td style="width:77%;padding: 0px 0px 0px 0px;">
+                    <label wicket:for="request"><wicket:message key="request"></wicket:message></label>
+                    <select wicket:id="request" style="width:100%"></select>
+                  </td>
+                </tr>
               </table>
-            </span>
+            </div>
           </li>
           <li>
-            <label for="subfield" wicket:id="subfieldLabel"></label>
-            <input id="subfield" wicket:id="subfield" type="text" class="text" placeholder="*"/>
+            <label wicket:id="subfieldLabel"></label>
+            <input wicket:id="subfield" type="text" class="text" placeholder="*"/>
           </li>
           <li>
-            <label for="workspace"><wicket:message key="workspace"></wicket:message></label>
-            <input id="workspace" wicket:id="workspace" type="text" class="text" placeholder="*"/>
+            <label wicket:for="workspace"><wicket:message key="workspace"></wicket:message></label>
+            <input wicket:id="workspace" type="text" class="text" placeholder="*"/>
           </li>
           <li>
-            <label for="layer"><wicket:message key="layer"></wicket:message></label>
-            <input id="layer" wicket:id="layer" type="text" class="text" placeholder="*"/>
+            <label wicket:for="layer"><wicket:message key="layer"></wicket:message></label>
+            <input wicket:id="layer" type="text" class="text" placeholder="*"/>
           </li>
           <li>
             <label wicket:for="grantType"><wicket:message key="grantType"/></label>

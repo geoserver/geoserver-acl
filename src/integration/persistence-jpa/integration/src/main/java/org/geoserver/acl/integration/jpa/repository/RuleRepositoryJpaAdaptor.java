@@ -109,12 +109,13 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     }
 
     @Override
+    @TransactionReadOnly
     public Stream<Rule> findAll() {
         return findAll(RuleQuery.of());
     }
 
     @Override
-    @TransactionSupported
+    @TransactionReadOnly
     public Stream<Rule> findAll(@NonNull RuleQuery<RuleFilter> query) {
 
         Predicate predicate = queryMapper.toPredicate(query);
