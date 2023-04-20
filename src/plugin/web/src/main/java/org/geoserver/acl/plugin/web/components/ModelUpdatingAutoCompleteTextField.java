@@ -8,6 +8,8 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.IAutoCompleteRenderer;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.StringAutoCompleteRenderer;
 import org.apache.wicket.model.IModel;
 import org.geoserver.acl.plugin.web.support.SerializableFunction;
 
@@ -26,11 +28,15 @@ public class ModelUpdatingAutoCompleteTextField<T> extends AutoCompleteTextField
 
     public ModelUpdatingAutoCompleteTextField(
             String id, IModel<T> model, SerializableFunction<String, Iterator<T>> choiceResolver) {
-        this(
-                id,
-                model,
-                choiceResolver,
-                new AutoCompleteSettings().setMaxHeightInPx(200).setShowListOnEmptyInput(true));
+        this(id, model, choiceResolver, defaultSettings());
+    }
+
+    protected static AutoCompleteSettings defaultSettings() {
+        return new AutoCompleteSettings()
+                .setMaxHeightInPx(240)
+                .setShowListOnEmptyInput(true)
+                .setAdjustInputWidth(false)
+                .setIgnoreBordersWhenPositioning(false);
     }
 
     public ModelUpdatingAutoCompleteTextField(
@@ -38,9 +44,18 @@ public class ModelUpdatingAutoCompleteTextField<T> extends AutoCompleteTextField
             IModel<T> model,
             SerializableFunction<String, Iterator<T>> choiceResolver,
             AutoCompleteSettings settings) {
-        super(id, model, settings);
-        this.choiceResolver = choiceResolver;
 
+        this(id, model, choiceResolver, StringAutoCompleteRenderer.instance(), settings);
+    }
+
+    public ModelUpdatingAutoCompleteTextField(
+            String id,
+            IModel<T> model,
+            SerializableFunction<String, Iterator<T>> choiceResolver,
+            IAutoCompleteRenderer<T> renderer,
+            AutoCompleteSettings settings) {
+        super(id, model, null /* type */, renderer, settings);
+        this.choiceResolver = choiceResolver;
         add(
                 new OnChangeAjaxBehavior() {
                     protected @Override void onUpdate(AjaxRequestTarget target) {

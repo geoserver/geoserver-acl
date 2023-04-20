@@ -41,6 +41,7 @@ import org.geoserver.acl.plugin.web.accessrules.model.MutableRule;
 import org.geoserver.acl.plugin.web.accessrules.model.MutableRuleLimits;
 import org.geoserver.acl.plugin.web.components.IPAddressRangeValidator;
 import org.geoserver.acl.plugin.web.components.ModelUpdatingAutoCompleteTextField;
+import org.geoserver.acl.plugin.web.components.PublishedInfoAutoCompleteTextField;
 import org.geoserver.acl.plugin.web.support.SerializableFunction;
 
 import java.util.Iterator;
@@ -250,14 +251,18 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
     }
 
     /**
-     * A form component to select a workspace.
+     * A form component to select a layer.
      *
      * <p>{@link #send sends} a {@link LayerChangeEvent} event whenever the component's model value
      * changes, even with a partial layer name that wouldn't match an actual catalog layer
      */
     private FormComponent<String> layerChoice(final FormComponent<String> workspaceComponent) {
-        AutoCompleteTextField<String> layerChoice =
-                autoCompleteChoice("layer", model().bind("layer"), pageModel::getLayerChoices);
+
+        final IModel<String> layerModel = model().bind("layer");
+        PublishedInfoAutoCompleteTextField layerChoice =
+                new PublishedInfoAutoCompleteTextField(
+                        "layer", layerModel, pageModel::getLayerChoices);
+
         layerChoice.add(
                 new OnChangeAjaxBehavior() {
                     protected @Override void onUpdate(AjaxRequestTarget target) {
@@ -266,7 +271,6 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
                     }
                 });
         return layerChoice;
-        // layerChoice.add(new LayerChoiceOnChange());
     }
 
     private AutoCompleteTextField<String> autoCompleteChoice(
@@ -333,7 +337,6 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
                 });
 
         grantType.setRequired(true);
-        grantType.setOutputMarkupId(true);
         return grantType;
     }
 
@@ -398,8 +401,6 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
             catalogMode.add(radio);
         }
         catalogMode.setRequired(true);
-        catalogMode.setOutputMarkupId(true);
-        catalogMode.setOutputMarkupPlaceholderTag(true);
         return catalogMode;
     }
 

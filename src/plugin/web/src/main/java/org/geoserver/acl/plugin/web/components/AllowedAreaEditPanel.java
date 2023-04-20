@@ -58,24 +58,11 @@ public abstract class AllowedAreaEditPanel<T> extends FormComponentPanel<T> {
     @Override
     public abstract void convertInput();
 
-    //    @Override
-    //    public void convertInput() {
-    //        MultiPolygon area = allowedArea.getConvertedInput();
-    //        SpatialFilterType spf = spatialFilterType.getConvertedInput();
-    //        if(area == null || spf == null) {
-    //        	setConvertedInput(null);
-    //        }else {
-    //        	T modelObject = getModelObject();
-    //        }
-    //    }
-
     protected SpatialFilterType getSpatialFilterTypeConvertedInput() {
-        //        spatialFilterType.convertInput();
         return spatialFilterType.getConvertedInput();
     }
 
     protected MultiPolygon getAllowedAreaConvertedInput() {
-        //        allowedArea.convertInput();
         return allowedArea.getConvertedInput();
     }
 }

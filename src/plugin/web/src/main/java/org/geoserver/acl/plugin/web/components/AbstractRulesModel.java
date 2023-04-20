@@ -13,7 +13,6 @@ import org.geoserver.acl.plugin.accessmanager.AccessManagerConfig;
 import org.geoserver.acl.plugin.accessmanager.AccessManagerConfigProvider;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;
-import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -137,12 +136,12 @@ public abstract class AbstractRulesModel implements Serializable {
                 .iterator();
     }
 
-    public Iterator<String> getLayerChoices(@Nullable String input) {
+    public Iterator<PublishedInfo> getLayerChoices(@Nullable String input) {
         String workspace = getSelectedWorkspace();
         workspace = nonNull(workspace);
         final String test = nonNull(input);
 
-        Stream<String> options;
+        Stream<PublishedInfo> options;
 
         final Catalog rawCatalog = rawCatalog();
         if (StringUtils.hasText(workspace)) {
@@ -157,7 +156,6 @@ public abstract class AbstractRulesModel implements Serializable {
                         Streams.stream(it)
                                 .filter(PublishedInfo::isAdvertised)
                                 .filter(PublishedInfo::isEnabled)
-                                .map(PublishedInfo::getName)
                                 .limit(MAX_SUGGESTIONS)
                                 .collect(Collectors.toList())
                                 .stream();
@@ -165,8 +163,10 @@ public abstract class AbstractRulesModel implements Serializable {
         } else {
             options =
                     rawCatalog.getLayerGroupsByWorkspace(CatalogFacade.NO_WORKSPACE).stream()
-                            .map(LayerGroupInfo::getName)
-                            .sorted()
+                            .filter(PublishedInfo::isAdvertised)
+                            .filter(PublishedInfo::isEnabled)
+                            .map(PublishedInfo.class::cast)
+                            .sorted((g1, g2) -> g1.getName().compareTo(g2.getName()))
                             .limit(MAX_SUGGESTIONS);
         }
 

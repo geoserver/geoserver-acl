@@ -27,6 +27,7 @@ import org.geoserver.acl.plugin.web.accessrules.model.AccessRequestSimulatorMode
 import org.geoserver.acl.plugin.web.accessrules.model.MutableAccessRequest;
 import org.geoserver.acl.plugin.web.accessrules.model.MutableRule;
 import org.geoserver.acl.plugin.web.components.ModelUpdatingAutoCompleteTextField;
+import org.geoserver.acl.plugin.web.components.PublishedInfoAutoCompleteTextField;
 import org.geoserver.acl.plugin.web.components.RulesTablePanel;
 import org.geoserver.acl.plugin.web.components.Select2SetMultiChoice;
 import org.geoserver.acl.plugin.web.support.SerializableFunction;
@@ -327,14 +328,18 @@ public class AccessRequestSimulatorPanel extends Panel {
     }
 
     /**
-     * A form component to select a workspace.
+     * A form component to select a layer from the selected workspace.
      *
      * <p>{@link #send sends} a {@link LayerChangeEvent} event whenever the component's model value
      * changes, even with a partial layer name that wouldn't match an actual catalog layer
      */
     private FormComponent<String> layerChoice(final FormComponent<String> workspaceComponent) {
-        AutoCompleteTextField<String> layerChoice =
-                autoCompleteChoice("layer", model().bind("layer"), panelModel::getLayerChoices);
+
+        final IModel<String> layerModel = model().bind("layer");
+        PublishedInfoAutoCompleteTextField layerChoice =
+                new PublishedInfoAutoCompleteTextField(
+                        "layer", layerModel, panelModel::getLayerChoices);
+
         layerChoice.add(
                 new OnChangeAjaxBehavior() {
                     protected @Override void onUpdate(AjaxRequestTarget target) {
@@ -346,7 +351,6 @@ public class AccessRequestSimulatorPanel extends Panel {
                     }
                 });
         return layerChoice;
-        // layerChoice.add(new LayerChoiceOnChange());
     }
 
     private AutoCompleteTextField<String> autoCompleteChoice(
