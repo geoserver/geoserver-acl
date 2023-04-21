@@ -3,8 +3,13 @@ DOCKER_REPO="geoservercloud/geoserver-acl"
 #default target
 build: install build-image
 
+#build, test, and install all modules, including the API server and GeoServer plugin
 install:
 	./mvnw clean install
+
+# build, test, and install, the geoserver plugin and its dependencies
+plugin:
+	./mvnw clean install -pl :gs-acl-client-plugin --also-make -ntp
 
 lint:
 	./mvnw sortpom:verify fmt:check -ntp
