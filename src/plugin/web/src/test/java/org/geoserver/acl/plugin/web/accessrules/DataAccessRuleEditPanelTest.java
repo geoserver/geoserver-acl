@@ -16,6 +16,6 @@ public class DataAccessRuleEditPanelTest extends AclWicketTestSupport {
         DataAccessRuleEditPanel panel =
                 tester.startComponentInPage(new DataAccessRuleEditPanel("testPanel", pageModel));
         tester.assertNoErrorMessage();
-        print(panel, true, true);
+        // print(panel, true, true);
     }
 }

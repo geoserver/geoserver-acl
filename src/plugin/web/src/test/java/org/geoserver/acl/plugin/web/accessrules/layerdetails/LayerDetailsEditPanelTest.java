@@ -111,7 +111,7 @@ public class LayerDetailsEditPanelTest extends AclWicketTestSupport {
                 model.isShowPanel());
         assertFalse(
                 "panel details visibility should be false by default", model.isShowLayerDetails());
-        print(page, true, true);
+        // print(page, true, true);
         tester.assertVisible("form:panel");
 
         tester.assertComponent("form:panel:setLayerDetails", CheckBox.class);
