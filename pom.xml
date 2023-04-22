@@ -361,6 +361,28 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>flatten-maven-plugin</artifactId>
           <version>1.2.2</version>
+          <executions>
+            <execution>
+              <id>flatten</id>
+              <phase>process-resources</phase>
+              <goals>
+                <goal>flatten</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>flatten.clean</id>
+              <phase>clean</phase>
+              <goals>
+                <goal>clean</goal>
+              </goals>
+            </execution>
+          </executions>
+          <inherited>true</inherited>
+          <configuration>
+            <updatePomFile>true</updatePomFile>
+            <!-- see https://www.mojohaus.org/flatten-maven-plugin/flatten-mojo.html#flattenMode -->
+            <flattenMode>ossrh</flattenMode>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.openapitools</groupId>
@@ -440,26 +462,12 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>flatten</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>flatten</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>flatten.clean</id>
-            <phase>clean</phase>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-          </execution>
-        </executions>
         <configuration>
-          <updatePomFile>true</updatePomFile>
-          <!--flattenMode>resolveCiFriendliesOnly</flattenMode -->
-          <flattenMode>oss</flattenMode>
+          <!-- set flattenMode to bom only for this root pom, src/pom.xml sets it as ossrh for all modules -->
+          <flattenMode>bom</flattenMode>
+          <pomElements>
+            <dependencyManagement>resolve</dependencyManagement>
+          </pomElements>
         </configuration>
       </plugin>
     </plugins>
