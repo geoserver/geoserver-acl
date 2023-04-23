@@ -180,7 +180,6 @@ class LayerAttributesEditPanel extends FormComponentPanel<List<MutableLayerAttri
 
         public AttributeAccessRadioGroup(String id, IModel<AccessType> itemModel) {
             super(id, itemModel);
-            super.setOutputMarkupPlaceholderTag(true);
             Radio<AccessType> none = new Radio<>("NONE", Model.of(AccessType.NONE), this);
             Radio<AccessType> ro = new Radio<>("READONLY", Model.of(AccessType.READONLY), this);
             Radio<AccessType> rw = new Radio<>("READWRITE", Model.of(AccessType.READWRITE), this);
