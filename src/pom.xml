@@ -33,6 +33,7 @@
     <gs.version>2.24-SNAPSHOT</gs.version>
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
     <gt.version>28.2</gt.version>
+    <jts.version>1.19.0</jts.version>
     <lombok.version>1.18.26</lombok.version>
     <mapstruct.version>1.5.3.Final</mapstruct.version>
     <testcontainers.version>1.17.4</testcontainers.version>
@@ -95,9 +96,20 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.locationtech.jts</groupId>
+        <artifactId>jts-core</artifactId>
+        <version>${jts.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.geolatte</groupId>
         <artifactId>geolatte-geom</artifactId>
         <version>${geolatte.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>slf4j-api</artifactId>
+            <groupId>org.slf4j</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.mapstruct</groupId>
