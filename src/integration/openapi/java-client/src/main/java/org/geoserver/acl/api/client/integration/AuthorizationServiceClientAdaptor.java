@@ -6,6 +6,7 @@ package org.geoserver.acl.api.client.integration;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.geoserver.acl.api.client.AuthorizationApi;
 import org.geoserver.acl.api.mapper.AuthorizationModelApiMapper;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@Slf4j
 public class AuthorizationServiceClientAdaptor implements AuthorizationService {
 
     private final @NonNull AuthorizationApi apiClient;
@@ -30,10 +32,14 @@ public class AuthorizationServiceClientAdaptor implements AuthorizationService {
         org.geoserver.acl.api.model.AccessRequest apiRequest;
         org.geoserver.acl.api.model.AccessInfo apiResponse;
 
-        apiRequest = mapper.toApi(request);
-        apiResponse = apiClient.getAccessInfo(apiRequest);
-
-        return mapper.toModel(apiResponse);
+        try {
+            apiRequest = mapper.toApi(request);
+            apiResponse = apiClient.getAccessInfo(apiRequest);
+            return mapper.toModel(apiResponse);
+        } catch (RuntimeException e) {
+            log.error("Error getting access info for {}", request, e);
+            throw e;
+        }
     }
 
     @Override
@@ -42,10 +48,14 @@ public class AuthorizationServiceClientAdaptor implements AuthorizationService {
         org.geoserver.acl.api.model.AdminAccessRequest apiRequest;
         org.geoserver.acl.api.model.AdminAccessInfo apiResponse;
 
-        apiRequest = mapper.toApi(request);
-        apiResponse = apiClient.getAdminAuthorization(apiRequest);
-
-        return mapper.toModel(apiResponse);
+        try {
+            apiRequest = mapper.toApi(request);
+            apiResponse = apiClient.getAdminAuthorization(apiRequest);
+            return mapper.toModel(apiResponse);
+        } catch (RuntimeException e) {
+            log.error("Error getting admin access info for {}", request, e);
+            throw e;
+        }
     }
 
     @Override
@@ -53,9 +63,13 @@ public class AuthorizationServiceClientAdaptor implements AuthorizationService {
         org.geoserver.acl.api.model.AccessRequest apiRequest;
         List<org.geoserver.acl.api.model.Rule> apiResponse;
 
-        apiRequest = mapper.toApi(request);
-        apiResponse = apiClient.getMatchingRules(apiRequest);
-
-        return apiResponse.stream().map(ruleMapper::toModel).collect(Collectors.toList());
+        try {
+            apiRequest = mapper.toApi(request);
+            apiResponse = apiClient.getMatchingRules(apiRequest);
+            return apiResponse.stream().map(ruleMapper::toModel).collect(Collectors.toList());
+        } catch (RuntimeException e) {
+            log.error("Error getting matching rules for {}", request, e);
+            throw e;
+        }
     }
 }
