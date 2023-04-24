@@ -6,6 +6,8 @@
  */
 package org.geoserver.acl.plugin.accessmanager;
 
+import static java.util.logging.Level.*;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.geoserver.acl.authorization.AccessInfo;
 import org.geoserver.acl.authorization.AccessRequest;
@@ -61,6 +63,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -143,7 +146,7 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
 
     @Override
     public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace) {
-        LOGGER.log(Level.FINE, "Getting access limits for workspace {0}", workspace.getName());
+        log(FINE, "Getting access limits for workspace {0}", workspace.getName());
 
         CatalogMode catalogMode = DEFAULT_CATALOG_MODE;
         boolean canRead;
@@ -171,7 +174,7 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
 
     /** We expect the user not to be null and not to be admin */
     private boolean isWorkspaceAdmin(Authentication user, String workspaceName) {
-        LOGGER.log(Level.FINE, "Getting admin auth for Workspace {0}", workspaceName);
+        log(FINE, "Getting admin auth for Workspace {0}", workspaceName);
 
         final String sourceAddress = retrieveCallerIpAddress();
 
@@ -184,66 +187,70 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
 
         AdminAccessInfo grant = aclService.getAdminAuthorization(request);
 
-        LOGGER.log(
-                Level.FINE,
+        log(
+                FINE,
                 "Admin auth for User:{0} Workspace:{1}: {2}",
-                new Object[] {user.getName(), workspaceName, grant.isAdmin()});
+                user.getName(),
+                workspaceName,
+                grant.isAdmin());
 
         return grant.isAdmin();
     }
 
     String getSourceAddress(HttpServletRequest http) {
-        try {
-            if (http == null) {
-                LOGGER.log(Level.WARNING, "No HTTP connection available.");
-                return null;
-            }
-
-            String forwardedFor = http.getHeader("X-Forwarded-For");
-            if (forwardedFor != null) {
-                String[] ips = forwardedFor.split(", ");
-
-                return InetAddress.getByName(ips[0]).getHostAddress();
-            } else {
-                // Returns an IP address, removes surrounding brackets present in case of IPV6
-                // addresses
-                return http.getRemoteAddr().replaceAll("[\\[\\]]", "");
-            }
-        } catch (Exception e) {
-            LOGGER.log(Level.INFO, "Failed to get remote address", e);
+        if (http == null) {
+            log(WARNING, "No HTTP request available.");
             return null;
         }
+
+        try {
+            final String forwardedFor = http.getHeader("X-Forwarded-For");
+            final String remoteAddr = http.getRemoteAddr();
+            if (forwardedFor != null) {
+                String[] ips = forwardedFor.split(", ");
+                return InetAddress.getByName(ips[0]).getHostAddress();
+            } else if (remoteAddr != null) {
+                // Returns an IP address, removes surrounding brackets present in case of IPV6
+                // addresses
+                return remoteAddr.replaceAll("[\\[\\]]", "");
+            }
+        } catch (Exception e) {
+            log(INFO, "Failed to get remote address", e);
+        }
+        return null;
     }
 
     private String retrieveCallerIpAddress() {
 
+        String reqSource = "Dispatcher.REQUEST";
+        final HttpServletRequest request;
+        String sourceAddress = null;
+
         // is this an OWS request
         Request owsRequest = Dispatcher.REQUEST.get();
         if (owsRequest != null) {
-            HttpServletRequest httpReq = owsRequest.getHttpRequest();
-            String sourceAddress = getSourceAddress(httpReq);
-            if (sourceAddress == null) {
-                LOGGER.log(Level.WARNING, "Could not retrieve source address from OWSRequest");
-            }
-            return sourceAddress;
+            request = owsRequest.getHttpRequest();
+        } else {
+            reqSource = "Spring Request";
+            RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+            request =
+                    requestAttributes == null
+                            ? null
+                            : ((ServletRequestAttributes) requestAttributes).getRequest();
         }
-
-        // try Spring
         try {
-            HttpServletRequest request =
-                    ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
-                            .getRequest();
-            String sourceAddress = getSourceAddress(request);
+            sourceAddress = getSourceAddress(request);
             if (sourceAddress == null) {
-                LOGGER.log(Level.WARNING, "Could not retrieve source address with Spring Request");
+                log(WARNING, "Could not retrieve source address from {0}", reqSource);
             }
-            return sourceAddress;
-        } catch (IllegalStateException ex) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Error retrieving source address with Spring Request: " + ex.getMessage());
-            return null;
+        } catch (RuntimeException ex) {
+            log(
+                    WARNING,
+                    "Error retrieving source address with {0}: {1}",
+                    reqSource,
+                    ex.getMessage());
         }
+        return sourceAddress;
     }
 
     @Override
@@ -261,13 +268,13 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
 
     @Override
     public DataAccessLimits getAccessLimits(Authentication user, LayerInfo layer) {
-        LOGGER.log(Level.FINE, "Getting access limits for Layer {0}", layer.getName());
+        log(FINE, "Getting access limits for Layer {0}", layer.getName());
         return getAccessLimits(user, layer, Collections.emptyList());
     }
 
     @Override
     public DataAccessLimits getAccessLimits(Authentication user, ResourceInfo resource) {
-        LOGGER.log(Level.FINE, "Getting access limits for Resource {0}", resource.getName());
+        log(FINE, "Getting access limits for Resource {0}", resource.getName());
         // extract the user name
         String workspace = resource.getStore().getWorkspace().getName();
         String layer = resource.getName();
@@ -301,8 +308,7 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
             List<LayerGroupInfo> containers) {
         // shortcut, if the user is the admin, he can do everything
         if (isAdmin(user)) {
-            LOGGER.log(
-                    Level.FINE, "Admin level access, returning full rights for layer {0}", layer);
+            log(FINE, "Admin level access, returning full rights for layer {0}", layer);
             return buildAdminAccessLimits(info);
         }
 
@@ -310,10 +316,16 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
 
         AccessRequest accessRequest = buildAccessRequest(workspace, layer, user, ipAddress);
         AccessInfo accessInfo = aclService.getAccessInfo(accessRequest);
+        if (LOGGER.isLoggable(Level.FINE))
+            log(
+                    FINE,
+                    "ACL request: {0}. response: {1}",
+                    accessRequest,
+                    accessInfo == null ? null : accessInfo.toShortString());
 
         if (accessInfo == null) {
             accessInfo = AccessInfo.DENY_ALL;
-            LOGGER.log(Level.WARNING, "ACL returning null AccessInfo for {0}", accessRequest);
+            log(WARNING, "ACL returning null AccessInfo for {0}", accessRequest);
         }
 
         Request req = Dispatcher.REQUEST.get();
@@ -363,8 +375,8 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
 
         if ("WPS".equalsIgnoreCase(service)) {
             if (!noLayerGroups) {
-                LOGGER.log(
-                        Level.WARNING,
+                log(
+                        WARNING,
                         "Don't know how to deal with WPS requests for group data. Won't dive into single process limits.");
             } else {
                 WPSAccessInfo resolvedAccessInfo =
@@ -377,10 +389,12 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
                                     resolvedAccessInfo.getClip(),
                                     accessInfo.getCatalogMode());
 
-                    LOGGER.log(
-                            Level.FINE,
+                    log(
+                            FINE,
                             "Got WPS access {0} for layer {1} and user {2}",
-                            new Object[] {accessInfo, layer, getUserNameFromAuth(user)});
+                            accessInfo,
+                            layer,
+                            getUserNameFromAuth(user));
                 }
             }
         }
@@ -396,12 +410,20 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
                             ((LayerInfo) info).getResource(), accessInfo, processingResult);
         }
 
-        LOGGER.log(
-                Level.FINE,
+        log(
+                FINE,
                 "Returning {0} for layer {1} and user {2}",
-                new Object[] {limits, layer, getUserNameFromAuth(user)});
+                limits,
+                layer,
+                getUserNameFromAuth(user));
 
         return limits;
+    }
+
+    private void log(Level level, String msg, Object... params) {
+        if (LOGGER.isLoggable(level)) {
+            LOGGER.log(level, msg, params);
+        }
     }
 
     private boolean allOpaque(Collection<LayerGroupContainmentCache.LayerGroupSummary> summaries) {
@@ -492,10 +514,7 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
             clipArea = GeomHelper.reprojectGeometry(clipArea, crs);
         }
         CatalogMode catalogMode = getCatalogMode(accessInfo, resultLimits);
-        LOGGER.log(
-                Level.FINE,
-                "Returning mode {0} for resource {1}",
-                new Object[] {catalogMode, info});
+        log(FINE, "Returning mode {0} for resource {1}", catalogMode, info);
 
         AccessLimits accessLimits = null;
         if (info instanceof FeatureTypeInfo) {

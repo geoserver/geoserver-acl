@@ -11,7 +11,7 @@ import org.geoserver.wps.resource.WPSResourceManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class AclWpsIntegrationConfiguration {
 
     @Bean
