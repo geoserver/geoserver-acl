@@ -10,6 +10,7 @@ import lombok.Value;
 import lombok.With;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Value
 @With
@@ -44,6 +45,21 @@ public class AccessRequest {
         checkNotAny("workspace", workspace);
         checkNotAny("layer", layer);
         return this;
+    }
+
+    public @Override String toString() {
+        return String.format(
+                "%s[instance:%s, from:%s, by: %s(%s), for:%s:%s%s, layer:%s%s]",
+                getClass().getSimpleName(),
+                instance,
+                sourceAddress == null ? "<no IP>" : sourceAddress,
+                user,
+                roles.stream().collect(Collectors.joining(", ")),
+                service,
+                request,
+                subfield == null ? "" : "(" + subfield + ")",
+                workspace == null ? "<null ws>" : (workspace.isEmpty() ? "" : workspace + ":"),
+                layer);
     }
 
     public static class Builder {

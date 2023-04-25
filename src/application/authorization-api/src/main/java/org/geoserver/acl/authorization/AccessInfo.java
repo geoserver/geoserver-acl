@@ -56,18 +56,19 @@ public class AccessInfo {
 
     @Default @NonNull private List<String> matchingRules = List.of();
 
-    public String toShortString() {
+    @Override
+    public String toString() {
         return String.format(
                 "AccessInfo[grant: %s, catalogMode: %s, area: %s, clip: %s, styles[def: %s, allowed: %s], cql[r: %s, w: %s], atts: %s",
                 grant,
                 catalogMode,
-                area == null ? null : "present",
-                clipArea == null ? null : "present",
+                area == null ? "no" : "yes",
+                clipArea == null ? "no" : "yes",
                 defaultStyle,
-                allowedStyles == null ? null : allowedStyles.size(),
-                cqlFilterRead == null ? null : "present",
-                cqlFilterWrite == null ? null : "present",
-                attributes == null ? null : attributes.size());
+                allowedStyles == null || allowedStyles.isEmpty() ? "no" : allowedStyles.size(),
+                cqlFilterRead == null ? "no" : "yes",
+                cqlFilterWrite == null ? "no" : "yes",
+                attributes == null || attributes.isEmpty() ? "no" : attributes.size());
     }
 
     public static class Builder {
