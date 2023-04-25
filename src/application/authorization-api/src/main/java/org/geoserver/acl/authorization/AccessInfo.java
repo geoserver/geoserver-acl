@@ -56,6 +56,20 @@ public class AccessInfo {
 
     @Default @NonNull private List<String> matchingRules = List.of();
 
+    public String toShortString() {
+        return String.format(
+                "AccessInfo[grant: %s, catalogMode: %s, area: %s, clip: %s, styles[def: %s, allowed: %s], cql[r: %s, w: %s], atts: %s",
+                grant,
+                catalogMode,
+                area == null ? null : "present",
+                clipArea == null ? null : "present",
+                defaultStyle,
+                allowedStyles == null ? null : allowedStyles.size(),
+                cqlFilterRead == null ? null : "present",
+                cqlFilterWrite == null ? null : "present",
+                attributes == null ? null : attributes.size());
+    }
+
     public static class Builder {
         // explicitly implement only mutators that need to ensure immutability
         private Set<LayerAttribute> attributes = Set.of();

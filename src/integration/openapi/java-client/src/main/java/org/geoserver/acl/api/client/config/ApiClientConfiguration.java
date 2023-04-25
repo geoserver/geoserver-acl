@@ -19,6 +19,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
@@ -40,15 +41,16 @@ public class ApiClientConfiguration {
             @Qualifier("aclClientRestTemplate") RestTemplate restTemplate) {
 
         String basePath = config.getBasePath();
+        if (!StringUtils.hasText(basePath)) {
+            throw new IllegalStateException(
+                    "Authorization service target URL not provided through config property geoserver.acl.client.basePath");
+        }
+
         String username = config.getUsername();
         String password = config.getPassword();
         boolean debugging = config.isDebug();
 
         ApiClient apiClient = new ApiClient(restTemplate);
-        if (null == basePath) {
-            throw new IllegalStateException(
-                    "Authorization service target URL not provided through config property geoserver.acl.client.basePath");
-        }
         apiClient.setBasePath(basePath);
 
         apiClient.setDebugging(debugging);

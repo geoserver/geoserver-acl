@@ -6,8 +6,10 @@ package org.geoserver.acl.plugin.autoconfigure.webui;
 
 import org.geoserver.acl.plugin.autoconfigure.accessmanager.ConditionalOnAclEnabled;
 import org.geoserver.acl.plugin.config.webui.ACLWebUIConfiguration;
+import org.geoserver.web.Category;
 import org.geoserver.web.GeoServerBasePage;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Import;
@@ -15,6 +17,7 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration
 @ConditionalOnAclEnabled
 @ConditionalOnClass(GeoServerBasePage.class)
+@ConditionalOnBean(name = "securityCategory", value = Category.class)
 @ConditionalOnProperty(
         prefix = "geoserver.web-ui.acl",
         name = "enabled",
