@@ -6,7 +6,11 @@
  */
 package org.geoserver.acl.plugin.accessmanager;
 
-import static java.util.logging.Level.*;
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.WARNING;
+
+import com.google.common.base.Stopwatch;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.geoserver.acl.authorization.AccessInfo;
@@ -203,28 +207,28 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
             return null;
         }
 
+        String sourceAddress = null;
         try {
             final String forwardedFor = http.getHeader("X-Forwarded-For");
             final String remoteAddr = http.getRemoteAddr();
             if (forwardedFor != null) {
                 String[] ips = forwardedFor.split(", ");
-                return InetAddress.getByName(ips[0]).getHostAddress();
+                sourceAddress = InetAddress.getByName(ips[0]).getHostAddress();
             } else if (remoteAddr != null) {
                 // Returns an IP address, removes surrounding brackets present in case of IPV6
                 // addresses
-                return remoteAddr.replaceAll("[\\[\\]]", "");
+                sourceAddress = remoteAddr.replaceAll("[\\[\\]]", "");
             }
         } catch (Exception e) {
             log(INFO, "Failed to get remote address", e);
         }
-        return null;
+        return sourceAddress;
     }
 
     private String retrieveCallerIpAddress() {
 
         String reqSource = "Dispatcher.REQUEST";
         final HttpServletRequest request;
-        String sourceAddress = null;
 
         // is this an OWS request
         Request owsRequest = Dispatcher.REQUEST.get();
@@ -239,18 +243,19 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
                             : ((ServletRequestAttributes) requestAttributes).getRequest();
         }
         try {
-            sourceAddress = getSourceAddress(request);
+            String sourceAddress = getSourceAddress(request);
             if (sourceAddress == null) {
                 log(WARNING, "Could not retrieve source address from {0}", reqSource);
             }
+            return sourceAddress;
         } catch (RuntimeException ex) {
             log(
                     WARNING,
                     "Error retrieving source address with {0}: {1}",
                     reqSource,
                     ex.getMessage());
+            return null;
         }
-        return sourceAddress;
     }
 
     @Override
@@ -268,13 +273,13 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
 
     @Override
     public DataAccessLimits getAccessLimits(Authentication user, LayerInfo layer) {
-        log(FINE, "Getting access limits for Layer {0}", layer.getName());
+        LOGGER.log(Level.FINE, "Getting access limits for Layer {0}", layer.getName());
         return getAccessLimits(user, layer, Collections.emptyList());
     }
 
     @Override
     public DataAccessLimits getAccessLimits(Authentication user, ResourceInfo resource) {
-        log(FINE, "Getting access limits for Resource {0}", resource.getName());
+        LOGGER.log(Level.FINE, "Getting access limits for Resource {0}", resource.getName());
         // extract the user name
         String workspace = resource.getStore().getWorkspace().getName();
         String layer = resource.getName();
@@ -315,13 +320,10 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
         final String ipAddress = retrieveCallerIpAddress();
 
         AccessRequest accessRequest = buildAccessRequest(workspace, layer, user, ipAddress);
+        Stopwatch sw = Stopwatch.createStarted();
         AccessInfo accessInfo = aclService.getAccessInfo(accessRequest);
-        if (LOGGER.isLoggable(Level.FINE))
-            log(
-                    FINE,
-                    "ACL request: {0}. response: {1}",
-                    accessRequest,
-                    accessInfo == null ? null : accessInfo.toShortString());
+        sw.stop();
+        log(FINE, "ACL auth run in {0}: {0}. response ({1}): {2}", sw, accessRequest, accessInfo);
 
         if (accessInfo == null) {
             accessInfo = AccessInfo.DENY_ALL;

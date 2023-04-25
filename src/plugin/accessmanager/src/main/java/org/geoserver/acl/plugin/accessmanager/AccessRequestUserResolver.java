@@ -56,7 +56,7 @@ class AccessRequestUserResolver {
 
     public AccessRequestUserResolver resolve() {
         if (authorizationName == null) {
-            LOGGER.log(Level.FINE, "No user given");
+            LOGGER.log(Level.FINEST, "No user given");
             this.userRoles = Set.of();
             this.username = null;
         } else {
