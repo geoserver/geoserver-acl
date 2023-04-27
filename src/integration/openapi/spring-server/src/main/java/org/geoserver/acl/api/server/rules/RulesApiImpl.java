@@ -19,6 +19,8 @@ import org.geoserver.acl.api.model.Rule;
 import org.geoserver.acl.api.model.RuleFilter;
 import org.geoserver.acl.api.model.RuleLimits;
 import org.geoserver.acl.api.server.RulesApiDelegate;
+import org.geoserver.acl.api.server.support.IsAdmin;
+import org.geoserver.acl.api.server.support.IsAuthenticated;
 import org.geoserver.acl.api.server.support.RulesApiSupport;
 import org.geoserver.acl.domain.filter.RuleQuery;
 import org.geoserver.acl.domain.rules.RuleAdminService;
@@ -33,12 +35,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@IsAuthenticated
 public class RulesApiImpl implements RulesApiDelegate {
 
     private final @NonNull RuleAdminService service;
     private final @NonNull RulesApiSupport support;
 
     @Override
+    @IsAdmin
     public ResponseEntity<Rule> createRule(@NonNull Rule rule, InsertPosition position) {
         org.geoserver.acl.domain.rules.Rule model = support.toModel(rule);
         org.geoserver.acl.domain.rules.Rule created;
@@ -58,6 +62,7 @@ public class RulesApiImpl implements RulesApiDelegate {
     }
 
     @Override
+    @IsAdmin
     public ResponseEntity<Void> deleteRuleById(@NonNull String id) {
 
         boolean deleted = service.delete(id);
@@ -146,6 +151,7 @@ public class RulesApiImpl implements RulesApiDelegate {
     }
 
     @Override
+    @IsAdmin
     public ResponseEntity<Void> setRuleAllowedStyles(@NonNull String id, Set<String> requestBody) {
         try {
             service.setAllowedStyles(id, requestBody);
@@ -167,6 +173,7 @@ public class RulesApiImpl implements RulesApiDelegate {
     }
 
     @Override
+    @IsAdmin
     public ResponseEntity<Void> setRuleLayerDetails(@NonNull String id, LayerDetails layerDetails) {
         try {
             org.geoserver.acl.domain.rules.LayerDetails ld = support.toModel(layerDetails);
@@ -178,6 +185,7 @@ public class RulesApiImpl implements RulesApiDelegate {
     }
 
     @Override
+    @IsAdmin
     public ResponseEntity<Void> setRuleLimits(@NonNull String id, RuleLimits ruleLimits) {
         try {
             service.setLimits(id, support.toModel(ruleLimits));
@@ -188,6 +196,7 @@ public class RulesApiImpl implements RulesApiDelegate {
     }
 
     @Override
+    @IsAdmin
     public ResponseEntity<Integer> shiftRulesByPriority(Long priorityStart, Long offset) {
         try {
             int affectedCount = service.shift(priorityStart, offset);
@@ -198,6 +207,7 @@ public class RulesApiImpl implements RulesApiDelegate {
     }
 
     @Override
+    @IsAdmin
     public ResponseEntity<Void> swapRules(@NonNull String id, @NonNull String id2) {
         try {
             service.swapPriority(id, id2);
@@ -208,6 +218,7 @@ public class RulesApiImpl implements RulesApiDelegate {
     }
 
     @Override
+    @IsAdmin
     public ResponseEntity<Rule> updateRuleById(@NonNull String id, Rule patchBody) {
         final org.geoserver.acl.domain.rules.Rule rule = service.get(id).orElse(null);
         if (null == rule) {

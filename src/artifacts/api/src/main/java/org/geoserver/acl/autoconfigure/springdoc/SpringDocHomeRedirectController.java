@@ -2,18 +2,18 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.acl.config.springdoc;
+package org.geoserver.acl.autoconfigure.springdoc;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-class SpringDocHomeRedirectController {
+public class SpringDocHomeRedirectController {
 
     private String basePath;
 
     /**
-     * @param basePath e.g. {@literal /api/v2/swagger-ui/index.html"}
+     * @param basePath e.g. {@literal /api/swagger-ui/index.html"}
      */
     public SpringDocHomeRedirectController(String basePath) {
         this.basePath = basePath;

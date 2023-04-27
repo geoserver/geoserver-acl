@@ -6,4 +6,9 @@ org.geoserver.acl.autoconfigure.geotools.GeoToolsStaticContextInitializer
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.geoserver.acl.autoconfigure.persistence.JPAIntegrationAutoConfiguration,\
 org.geoserver.acl.autoconfigure.api.RulesApiAutoConfiguration,\
-org.geoserver.acl.autoconfigure.springdoc.SpringDocHomeRedirectAutoConfiguration
+org.geoserver.acl.autoconfigure.security.AclServiceSecurityAutoConfiguration,\
+org.geoserver.acl.autoconfigure.security.InternalSecurityConfiguration,\
+org.geoserver.acl.autoconfigure.security.PreAuthenticationSecurityAutoConfiguration,\
+org.geoserver.acl.autoconfigure.security.AuthenticationManagerAutoConfiguration,\
+org.geoserver.acl.autoconfigure.springdoc.SpringDocAutoConfiguration
+

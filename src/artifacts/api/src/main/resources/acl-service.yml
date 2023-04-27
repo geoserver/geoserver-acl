@@ -16,22 +16,73 @@ geoserver.acl:
         format_sql: true
         default_schema: ${acl.db.schema:public}
         hbm2ddl.auto: ${acl.db.hbm2ddl.auto:validate}
+  security:
+    headers:
+      enabled: true
+      user-header: sec-username
+      roles-header: sec-roles
+      admin-roles: ["ROLE_ADMINISTRATOR"]
+    internal:
+      enabled: true
+      users:
+      - name: admin
+        admin: true
+        enabled: true
+        # password is the bcrypt encoded value for s3cr3t
+        password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
+      - name: user
+        admin: false
+        enabled: true
+        # password is the bcrypt encoded value for s3cr3t
+        password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
 
+---
+spring.config.activate.on-profile: local
+server.port: 9000
+
+jndi:
+  datasources:
+    acl:
+      enabled: true
+      wait-for-it: true
+      wait-timeout: 15
+      url: jdbc:postgresql://localhost:6432/acl
+      username: acl
+      password: acls3cr3t
+      maximum-pool-size: 50
+      minimum-idle: 2
+      connection-timeout: 3000
+      idle-timeout: 60000
+
+acl:
+  db:
+    jndiName: java:comp/env/jdbc/acl
+    hbm2ddl.auto: update
+    schema: acl
 
 ---
 spring.config.activate.on-profile: dev
 
 geoserver.acl:
+  security:
+    internal:
+      enabled: true
+      users:
+      - name: admin
+        enabled: true
+      - name: user
+        enabled: true
+        
   datasource:
     url: jdbc:h2:mem:geoserver-acl;DB_CLOSE_DELAY=-1
     hikari:
       minimum-idle: 1
       maximum-pool-size: 20
   jpa:
-    show-sql: false
+    show-sql: true
     properties:
       hibernate:
-        hbm2ddl.auto: update
+        hbm2ddl.auto: create
 
 management:
   endpoints:
