@@ -12,30 +12,33 @@ jndi:
       connection-timeout: 3000
       idle-timeout: 60000
 
-acl:
-  db:
-    jndiName: java:comp/env/jdbc/acl
-    hbm2ddl.auto: update
-    schema: acl
-  security:
-    headers:
-      enabled: true
-      user-header: sec-username
-      roles-header: sec-roles
-      admin-roles: ["ROLE_ADMINISTRATOR"]
-    internal:
-      enabled: true
-      users:
-      - name: ${acl.admin.name:admin}
-        admin: true
-        enabled: ${acl.admin.enabled:true}
-        # password is the bcrypt encoded value for s3cr3t
-        password: ${acl.admin.password:"{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"}
-      - name: user
-        admin: false
-        enabled: false
-        # password is the bcrypt encoded value for s3cr3t
-        password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
+acl.db.jndiName: java:comp/env/jdbc/acl
+acl.db.schema: acl
+acl.db.hbm2ddl.auto: update
+
+geoserver:
+  acl:
+    security:
+      headers:
+        enabled: true
+        user-header: sec-username
+        roles-header: sec-roles
+        admin-roles: ["ROLE_ADMINISTRATOR"]
+      internal:
+        enabled: true
+        users:
+          admin:
+            admin: true
+            enabled: ${acl.admin.enabled:true}
+            # password is a bcrypt encoded value for s3cr3t
+            password: "${acl.admin.password:{bcrypt}$2a$10$FE62N3ejbKm56EX5VrtSQeDDka8YjwgjwF9sSEKbatGZuZ8e7S9v.}"
+            #for a plain-text password (e.g. coming from a docker or kubernetes secret,
+            # use the {noop} prefix, as in: password: "{noop}plaintextpwd}", or password: "{noop}${ACL_ADMIN_PASSWORD}"
+          user:
+            admin: false
+            enabled: true
+            # password is a bcrypt encoded value for s3cr3t
+            password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
 
 logging:
   level:

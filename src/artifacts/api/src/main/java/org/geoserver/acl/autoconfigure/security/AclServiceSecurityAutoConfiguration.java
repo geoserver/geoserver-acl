@@ -46,9 +46,10 @@ public class AclServiceSecurityAutoConfiguration {
             log.info("Pre-authentication headers disabled");
         } else {
             log.info(
-                    "Pre-authentication headers enabled for {}/{}",
+                    "Pre-authentication headers enabled for {}/{}. Admin roles: {}",
                     config.getHeaders().getUserHeader(),
-                    config.getHeaders().getRolesHeader());
+                    config.getHeaders().getRolesHeader(),
+                    config.getHeaders().getAdminRoles());
             http.addFilterAfter(preAuthFilter, RequestHeaderAuthenticationFilter.class);
         }
 

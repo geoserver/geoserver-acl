@@ -11,7 +11,7 @@ FROM eclipse-temurin:17-jre
 LABEL maintainer="GeoServer PSC <geoserver-users@lists.sourceforge.net>"
 
 WORKDIR /opt/app/bin
-ENV JAVA_TOOL_OPTS="\
+ENV DEF_JAVA_TOOL_OPTS="\
 --add-exports=java.desktop/sun.awt.image=ALL-UNNAMED \
 --add-opens=java.base/java.lang=ALL-UNNAMED \
 --add-opens=java.base/java.util=ALL-UNNAMED \
@@ -22,6 +22,9 @@ ENV JAVA_TOOL_OPTS="\
 --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED \
 -Djava.awt.headless=true"
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=80 -XshowSettings:system"
+
+ENV JAVA_TOOL_OPTS="$DEF_JAVA_TOOL_OPTS $JAVA_OPTS"
+
 EXPOSE 8080
 
 COPY --from=builder dependencies/ ./
@@ -36,4 +39,8 @@ HEALTHCHECK \
 --retries=5 \
 CMD curl -f -s -o /dev/null localhost:8080/actuator/health || exit 1
 
-CMD exec java $JAVA_OPTS $JAVA_TOOL_OPTS org.springframework.boot.loader.JarLauncher
+ARG APP_ARGS=""
+
+ENTRYPOINT [ "/bin/bash", "-c", "exec java $JAVA_TOOL_OPTS org.springframework.boot.loader.JarLauncher \"${@}\"", "--" ]
+
+CMD ["${APP_ARGS}"]

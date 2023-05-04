@@ -22,9 +22,9 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @AutoConfiguration
 @ConditionalOnInternalAuthenticationEnabled
@@ -53,37 +53,46 @@ public class InternalSecurityConfiguration {
     @Bean("internalUserDetailsService")
     public UserDetailsService internalUserDetailsService(SecurityConfigProperties config) {
 
-        List<SecurityConfigProperties.Internal.User> users = config.getInternal().getUsers();
-        Collection<UserDetails> authUsers =
-                users.stream()
-                        .peek(this::validate)
-                        .peek(
-                                u ->
-                                        log.info(
-                                                "Loading internal user {}, admin: {}",
-                                                u.getName(),
-                                                u.isAdmin()))
-                        .map(this::toUserDetails)
-                        .collect(Collectors.toList());
+        Map<String, SecurityConfigProperties.Internal.UserInfo> users =
+                config.getInternal().getUsers();
+        Collection<UserDetails> authUsers = new ArrayList<>();
+        users.forEach(
+                (username, userinfo) -> {
+                    validate(username, userinfo);
+                    log.info(
+                            "Loading internal user {}, admin: {}, enabled: {}",
+                            username,
+                            userinfo.isAdmin(),
+                            userinfo.isEnabled());
+                    UserDetails user = toUserDetails(username, userinfo);
+                    authUsers.add(user);
+                });
+
+        long enabledUsers = authUsers.stream().filter(UserDetails::isEnabled).count();
+        if (0L == enabledUsers) {
+            log.warn(
+                    "No API users are enabled for HTTP Basic Auth. Loaded user names: {}",
+                    users.keySet());
+        }
 
         return new InMemoryUserDetailsManager(authUsers);
     }
 
-    private UserDetails toUserDetails(SecurityConfigProperties.Internal.User u) {
+    private UserDetails toUserDetails(
+            String username, SecurityConfigProperties.Internal.UserInfo u) {
         return User.builder()
-                .username(u.getName())
+                .username(username)
                 .password(u.getPassword())
                 .authorities(u.authorities())
                 .disabled(!u.isEnabled())
                 .build();
     }
 
-    private void validate(SecurityConfigProperties.Internal.User user) {
-        if (user.isEnabled()) {
-            if (!hasText(user.getName()))
-                throw new IllegalArgumentException("User has no name: " + user);
-            if (!hasText(user.getPassword()))
-                throw new IllegalArgumentException("User has no password: " + user);
+    private void validate(final String name, SecurityConfigProperties.Internal.UserInfo info) {
+        if (info.isEnabled()) {
+            if (!hasText(name)) throw new IllegalArgumentException("User has no name: " + info);
+            if (!hasText(info.getPassword()))
+                throw new IllegalArgumentException("User has no password " + name + ": " + info);
         }
     }
 }

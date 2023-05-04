@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,11 +30,10 @@ public class SecurityConfigProperties {
 
     public static @Data class Internal {
         private boolean enabled;
-        private List<User> users = List.of();
+        private Map<String, UserInfo> users = Map.of();
 
         @ToString(exclude = "password")
-        public static @Data class User {
-            private String name;
+        public static @Data class UserInfo {
             private String password;
             private boolean admin;
             private boolean enabled = true;
