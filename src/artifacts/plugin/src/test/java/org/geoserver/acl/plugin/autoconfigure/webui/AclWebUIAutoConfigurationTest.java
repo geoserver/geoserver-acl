@@ -7,6 +7,7 @@ package org.geoserver.acl.plugin.autoconfigure.webui;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import org.geoserver.security.web.SecuritySettingsPage;
 import org.geoserver.web.Category;
 import org.geoserver.web.GeoServerBasePage;
 import org.junit.jupiter.api.Test;
@@ -38,8 +39,20 @@ class AclWebUIAutoConfigurationTest {
 
     @Test
     void testConditionalOnGeoServerBasePage() {
-        runner.withBean("securityCategory", Category.class, () -> securityCategory)
-                .withClassLoader(new FilteredClassLoader(GeoServerBasePage.class))
+        runner.withClassLoader(new FilteredClassLoader(GeoServerBasePage.class))
+                .run(
+                        context -> {
+                            assertThat(context)
+                                    .hasNotFailed()
+                                    .doesNotHaveBean("aclServiceConfigPageMenuInfo")
+                                    .doesNotHaveBean("accessRulesACLPageMenuInfo")
+                                    .doesNotHaveBean("adminRulesAclPageMenuInfo");
+                        });
+    }
+
+    @Test
+    void testConditionalOnSecuritySettingsPage() {
+        runner.withClassLoader(new FilteredClassLoader(SecuritySettingsPage.class))
                 .run(
                         context -> {
                             assertThat(context)
@@ -52,8 +65,7 @@ class AclWebUIAutoConfigurationTest {
 
     @Test
     void testConditionalOnAclEnabled() {
-        runner.withBean("securityCategory", Category.class, () -> securityCategory)
-                .withPropertyValues("geoserver.acl.enabled=false")
+        runner.withPropertyValues("geoserver.acl.enabled=false")
                 .run(
                         context -> {
                             assertThat(context)
@@ -66,8 +78,7 @@ class AclWebUIAutoConfigurationTest {
 
     @Test
     void testConditionalOnProperty() {
-        runner.withBean("securityCategory", Category.class, () -> securityCategory)
-                .withPropertyValues(
+        runner.withPropertyValues(
                         "geoserver.acl.enabled=true", "geoserver.web-ui.acl.enabled=false")
                 .run(
                         context -> {
@@ -77,18 +88,5 @@ class AclWebUIAutoConfigurationTest {
                                     .doesNotHaveBean("accessRulesACLPageMenuInfo")
                                     .doesNotHaveBean("adminRulesAclPageMenuInfo");
                         });
-    }
-
-    @Test
-    void testConditionalOnBean_securityCategory() {
-        runner.run(
-                context -> {
-                    assertThat(context)
-                            .hasNotFailed()
-                            .doesNotHaveBean("securityCategory")
-                            .doesNotHaveBean("aclServiceConfigPageMenuInfo")
-                            .doesNotHaveBean("accessRulesACLPageMenuInfo")
-                            .doesNotHaveBean("adminRulesAclPageMenuInfo");
-                });
     }
 }
