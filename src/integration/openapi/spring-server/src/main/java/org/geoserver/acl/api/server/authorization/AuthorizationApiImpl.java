@@ -14,6 +14,7 @@ import org.geoserver.acl.api.model.AdminAccessRequest;
 import org.geoserver.acl.api.model.Rule;
 import org.geoserver.acl.api.server.AuthorizationApiDelegate;
 import org.geoserver.acl.api.server.support.AuthorizationApiSupport;
+import org.geoserver.acl.api.server.support.IsAuthenticated;
 import org.geoserver.acl.authorization.AuthorizationService;
 import org.springframework.http.ResponseEntity;
 
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@IsAuthenticated
 public class AuthorizationApiImpl implements AuthorizationApiDelegate {
 
     private final @NonNull AuthorizationService service;

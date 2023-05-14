@@ -17,17 +17,19 @@ import org.geoserver.acl.api.model.AdminRuleFilter;
 import org.geoserver.acl.api.model.InsertPosition;
 import org.geoserver.acl.api.server.AdminRulesApiDelegate;
 import org.geoserver.acl.api.server.support.AdminRulesApiSupport;
+import org.geoserver.acl.api.server.support.IsAdmin;
+import org.geoserver.acl.api.server.support.IsAuthenticated;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.adminrules.AdminRuleIdentifierConflictException;
 import org.geoserver.acl.domain.filter.RuleQuery;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@IsAuthenticated
 public class AdminRulesApiImpl implements AdminRulesApiDelegate {
 
     private final @NonNull AdminRuleAdminService service;
@@ -41,6 +43,7 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
         return ResponseEntity.ok(service.count(support.map(adminRuleFilter)));
     }
 
+    @IsAdmin
     public @Override ResponseEntity<AdminRule> createAdminRule(
             AdminRule adminRule, InsertPosition position) {
 
@@ -61,6 +64,7 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
         }
     }
 
+    @IsAdmin
     public @Override ResponseEntity<Void> deleteAdminRuleById(@NonNull String id) {
         boolean deleted = service.delete(id);
         return ResponseEntity.status(deleted ? OK : NOT_FOUND).build();
@@ -134,21 +138,22 @@ public class AdminRulesApiImpl implements AdminRulesApiDelegate {
                 .body(found.map(support::toApi).orElse(null));
     }
 
+    @IsAdmin
     public @Override ResponseEntity<Integer> shiftAdminRulesByPiority(
             @NonNull Long priorityStart, @NonNull Long offset) {
         return ResponseEntity.ok(service.shift(priorityStart, offset));
     }
 
+    @IsAdmin
     public @Override ResponseEntity<Void> swapAdminRules(@NonNull String id, @NonNull String id2) {
         service.swap(id, id2);
         return ResponseEntity.status(OK).build();
     }
 
+    @IsAdmin
     public @Override ResponseEntity<AdminRule> updateAdminRule(
             @NonNull String id, AdminRule patchBody) {
-        org.geoserver.acl.domain.adminrules.AdminRule rule =
-                service.get(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-
+        org.geoserver.acl.domain.adminrules.AdminRule rule = service.get(id).orElse(null);
         if (null == rule) {
             return support.error(NOT_FOUND, "AdminRule " + id + " does not exist");
         }

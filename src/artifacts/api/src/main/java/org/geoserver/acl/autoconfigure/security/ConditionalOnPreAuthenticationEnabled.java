@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.acl.plugin.autoconfigure.accessmanager;
+package org.geoserver.acl.autoconfigure.security;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
@@ -16,8 +16,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ConditionalOnProperty(
-        prefix = "geoserver.acl",
+        prefix = ConditionalOnPreAuthenticationEnabled.PREFIX,
         name = "enabled",
         havingValue = "true",
-        matchIfMissing = true)
-public @interface ConditionalOnAclEnabled {}
+        matchIfMissing = false)
+public @interface ConditionalOnPreAuthenticationEnabled {
+
+    public static final String PREFIX = SecurityConfigProperties.PREFIX + ".headers";
+}

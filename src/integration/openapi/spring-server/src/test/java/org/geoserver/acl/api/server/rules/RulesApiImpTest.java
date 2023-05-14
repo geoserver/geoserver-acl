@@ -43,7 +43,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-@SpringBootTest(classes = RulesApiConfiguration.class)
+@SpringBootTest(classes = RulesApiConfiguration.class, properties = "spring.main.banner-mode=off")
 class RulesApiImpTest {
 
     private @MockBean RuleAdminService rules;

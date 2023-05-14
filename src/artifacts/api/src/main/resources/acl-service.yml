@@ -16,22 +16,69 @@ geoserver.acl:
         format_sql: true
         default_schema: ${acl.db.schema:public}
         hbm2ddl.auto: ${acl.db.hbm2ddl.auto:validate}
+  security:
+    headers:
+      enabled: false
+      user-header: sec-username
+      roles-header: sec-roles
+      admin-roles: ["ROLE_ADMINISTRATOR"]
+    internal:
+      enabled: true
+      users:
+        admin:
+          admin: true
+          enabled: false
+          # password is the bcrypt encoded value, for example, for pwd s3cr3t:
+          # password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
+#        user:
+#          admin: false
+#          enabled: true
+#          # password is the bcrypt encoded value for s3cr3t
+#          password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
 
+---
+spring.config.activate.on-profile: local
+server.port: 9000
+
+jndi:
+  datasources:
+    acl:
+      enabled: true
+      wait-for-it: true
+      wait-timeout: 15
+      url: jdbc:postgresql://localhost:6432/acl
+      username: acl
+      password: acls3cr3t
+      maximum-pool-size: 50
+      minimum-idle: 2
+      connection-timeout: 3000
+      idle-timeout: 60000
+
+acl.db.jndiName: java:comp/env/jdbc/acl
+acl.db.schema: acl
+acl.db.hbm2ddl.auto: create
 
 ---
 spring.config.activate.on-profile: dev
 
-geoserver.acl:
-  datasource:
-    url: jdbc:h2:mem:geoserver-acl;DB_CLOSE_DELAY=-1
-    hikari:
-      minimum-idle: 1
-      maximum-pool-size: 20
-  jpa:
-    show-sql: false
-    properties:
-      hibernate:
-        hbm2ddl.auto: update
+geoserver:
+  acl:
+    security:
+      headers.enabled: true
+      internal:
+        enabled: true
+        users:
+          admin.enabled: true
+          user.enabled: true        
+    datasource:
+      url: jdbc:h2:mem:geoserver-acl;DB_CLOSE_DELAY=-1
+      hikari:
+        minimum-idle: 1
+        maximum-pool-size: 20
+    jpa:
+      show-sql: true
+      properties:
+        hibernate.hbm2ddl.auto: create
 
 management:
   endpoints:

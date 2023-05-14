@@ -16,7 +16,7 @@ With the application running at [http://localhost:8080/api](http://localhost:808
 mvn clean install
 ```
 
-will create a single-jar executable at `target/gs-cloud-acl-service-<version>-bin.jar`.
+will create a single-jar executable at `target/gs-acl-service-<version>-bin.jar`.
 
 ## Run
 
@@ -27,7 +27,7 @@ Run in development mode with an in-memory H2 database, either with
 
 or
 
-	java -jar target/gs-cloud-acl-service-1.0-SNAPSHOT-bin.jar --spring.profiles.active=dev
+	java -jar target/gs-acl-service-1.0-SNAPSHOT-bin.jar --spring.profiles.active=dev
 
 
 ## Dependency graph

@@ -2,14 +2,15 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.acl.config.springdoc;
+package org.geoserver.acl.autoconfigure.springdoc;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
-public class SpringDocHomeRedirectConfiguration {
+/** {@link AutoConfiguration} redirect the home page to the swagger-ui */
+@AutoConfiguration
+public class SpringDocAutoConfiguration {
 
     @Bean
     SpringDocHomeRedirectController homeController(

@@ -21,7 +21,7 @@ services:
           cpus: '4.0'
           memory: 2G
     ports:
-      - 5432:5432
+      - 6432:5432
 
   acl:
     image: geoservercloud/geoserver-acl:1.0-SNAPSHOT
