@@ -14,7 +14,7 @@ jobs:
     timeout-minutes: 60
     strategy:
       matrix:
-        gs-version: [2.22.2, 2.23.0]
+        gs-profile: ["gs_dev", "gs_stable", "gs_maintenance"]
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -26,4 +26,4 @@ jobs:
         cache: 'maven'
     - name: Test plugin
       run: |
-        ./mvnw -Dgs.version=${{ matrix.gs-version }} verify -pl :gs-acl-client-plugin -am -ntp
+        ./mvnw -P ${{ matrix.gs-profile }} verify -pl :gs-acl-client-plugin -am -ntp
