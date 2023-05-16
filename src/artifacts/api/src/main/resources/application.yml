@@ -1,5 +1,7 @@
 server:
   port: 8080
+  servlet:
+    context-path: /acl
   # Let spring-boot's ForwardedHeaderFilter take care of reflecting the client-originated protocol and address in the HttpServletRequest  
   forward-headers-strategy: framework
   error:
@@ -64,11 +66,12 @@ management:
 openapi.geoServerACL.base-path: /api
 
 springdoc:
+  # see https://springdoc.org/#how-can-i-disable-springdoc-openapi-cache
+  cache.disabled: true
   api-docs:
     enabled: true
-    path: ${openapi.geoServerACL.base-path}/api-docs
+    #path: ${openapi.geoServerACL.base-path}/api-docs
   swagger-ui:
     enabled: true
-    path: ${openapi.geoServerACL.base-path}/swagger-ui.html
-    tryItOutEnabled: false
-
+    #path: ${openapi.geoServerACL.base-path}/swagger-ui.html
+    try-it-out-enabled: true    
