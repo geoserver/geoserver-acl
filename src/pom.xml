@@ -28,7 +28,7 @@
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <spring-cloud.version>2021.0.6</spring-cloud.version>
-    <spring-boot.version>2.7.10</spring-boot.version>
+    <spring-boot.version>2.7.11</spring-boot.version>
     <!-- Default GeoServer version to build and test the plugin against-->
     <gs.version>2.24-SNAPSHOT</gs.version>
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
@@ -39,8 +39,7 @@
     <testcontainers.version>1.17.4</testcontainers.version>
     <geolatte.version>1.8.2</geolatte.version>
     <querydsl.version>5.0.0</querydsl.version>
-    <springdoc.version>1.6.15</springdoc.version>
-    <swagger-ui.version>4.17.1</swagger-ui.version>
+    <springdoc.version>1.7.0</springdoc.version>
     <caffeine.version>3.1.2</caffeine.version>
     <fork.javac>true</fork.javac>
     <javac.maxHeapSize>256M</javac.maxHeapSize>

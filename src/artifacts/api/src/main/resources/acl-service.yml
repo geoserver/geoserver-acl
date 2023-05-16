@@ -60,6 +60,7 @@ acl.db.hbm2ddl.auto: create
 
 ---
 spring.config.activate.on-profile: dev
+server.port: 9000
 
 geoserver:
   acl:
@@ -68,8 +69,12 @@ geoserver:
       internal:
         enabled: true
         users:
-          admin.enabled: true
-          user.enabled: true        
+          admin:
+            enabled: true
+            password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
+          user:
+            enabled: true        
+            password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
     datasource:
       url: jdbc:h2:mem:geoserver-acl;DB_CLOSE_DELAY=-1
       hikari:
