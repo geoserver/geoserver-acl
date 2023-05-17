@@ -4,6 +4,7 @@
  */
 package org.geoserver.acl.app;
 
+import org.geoserver.acl.generateddl.GenerateDDL;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -16,12 +17,15 @@ import java.util.List;
 public class AccesControlListApplication {
 
     private static final String ENCODEPASSWORD = "encodepassword";
+    private static final String GENERATEDDL = "generateddl";
 
-    public static void main(String... args) {
+    public static void main(String... args) throws Exception {
         List<String> arglist = Arrays.asList(args);
 
         if (arglist.contains(ENCODEPASSWORD)) {
             System.exit(encodePassword(arglist));
+        } else if (arglist.contains(GENERATEDDL)) {
+            GenerateDDL.main(args);
         }
 
         try {

@@ -16,6 +16,7 @@ geoserver.acl:
         format_sql: true
         default_schema: ${acl.db.schema:public}
         hbm2ddl.auto: ${acl.db.hbm2ddl.auto:validate}
+        dialect: ${acl.db.dialect:org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect} 
   security:
     headers:
       enabled: false
@@ -62,6 +63,8 @@ acl.db.hbm2ddl.auto: create
 spring.config.activate.on-profile: dev
 server.port: 9000
 
+acl.db.dialect: org.hibernate.spatial.dialect.h2geodb.GeoDBDialect
+
 geoserver:
   acl:
     security:
@@ -83,7 +86,8 @@ geoserver:
     jpa:
       show-sql: true
       properties:
-        hibernate.hbm2ddl.auto: create
+        hibernate:
+          hbm2ddl.auto: create          
 
 management:
   endpoints:
@@ -91,3 +95,4 @@ management:
       exposure:
         include:
         - '*'
+

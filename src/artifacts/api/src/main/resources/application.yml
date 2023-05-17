@@ -75,3 +75,35 @@ springdoc:
     enabled: true
     #path: ${openapi.geoServerACL.base-path}/swagger-ui.html
     try-it-out-enabled: true    
+
+---
+spring.config.activate.on-profile: ddl
+
+spring:
+  main.web-application-type: none  
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration
+      - org.geoserver.acl.autoconfigure.api.RulesApiAutoConfiguration
+      - org.geoserver.acl.autoconfigure.security.AclServiceSecurityAutoConfiguration
+      - org.geoserver.acl.autoconfigure.security.InternalSecurityConfiguration
+      - org.geoserver.acl.autoconfigure.security.PreAuthenticationSecurityAutoConfiguration
+      - org.geoserver.acl.autoconfigure.security.AuthenticationManagerAutoConfiguration
+      - org.geoserver.acl.autoconfigure.springdoc.SpringDocAutoConfiguration
+
+geoserver:
+  acl:
+    jpa:
+      properties:
+        '[javax.persistence.schema-generation.database.action]': none
+        '[javax.persistence.schema-generation.scripts.action]': create
+        '[javax.persistence.schema-generation.scripts.create-source]': metadata
+        '[javax.persistence.schema-generation.scripts.create-target]': ${scripts.create-target:acl-create.sql}
+    datasource.url: jdbc:h2:mem:geoserver-acl;DB_CLOSE_DELAY=-1
+
+logging:
+  level:
+    root: error

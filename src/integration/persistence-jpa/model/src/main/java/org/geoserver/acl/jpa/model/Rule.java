@@ -21,8 +21,10 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Data
@@ -63,7 +65,13 @@ public class Rule extends Auditable implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id @GeneratedValue @Column private Long id;
+    @Id
+    @GeneratedValue(generator = "acl_rules_sequence_generator", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(
+            name = "acl_rules_sequence_generator",
+            sequenceName = "acl_rule_sequence",
+            allocationSize = 1)
+    private Long id;
 
     /**
      * External Id. An ID used in an external systems. This field should simplify Authorization
