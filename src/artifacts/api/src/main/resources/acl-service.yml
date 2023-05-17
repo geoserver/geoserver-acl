@@ -1,3 +1,10 @@
+spring:
+  flyway:
+    enabled: true
+    # this will create the schema if doesn't exist
+    # note the same property is used by geoserver.acl.jpa.properties.hibernate.default_schema
+    default-schema: ${acl.db.schema:acl} 
+
 geoserver.acl:
   datasource:
     jndi-name: ${acl.db.jndiName:} 
@@ -14,7 +21,7 @@ geoserver.acl:
     properties:
       hibernate:
         format_sql: true
-        default_schema: ${acl.db.schema:public}
+        default_schema: ${acl.db.schema:acl}
         hbm2ddl.auto: ${acl.db.hbm2ddl.auto:validate}
         dialect: ${acl.db.dialect:org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect} 
   security:
@@ -56,8 +63,6 @@ jndi:
       idle-timeout: 60000
 
 acl.db.jndiName: java:comp/env/jdbc/acl
-acl.db.schema: acl
-acl.db.hbm2ddl.auto: create
 
 ---
 spring.config.activate.on-profile: dev

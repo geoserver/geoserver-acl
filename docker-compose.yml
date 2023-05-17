@@ -12,8 +12,6 @@ services:
       - POSTGRES_PASSWORD=acls3cr3t
     volumes:
       - acl_data:/var/lib/postgresql/data
-      # mount the db init script to run after 10_postgis.sh
-      - ./docker-compose-initdb.sql:/docker-entrypoint-initdb.d/20-init-acl-db.sql
     restart: always
     deploy:
       resources:
