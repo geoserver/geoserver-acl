@@ -37,7 +37,7 @@ HEALTHCHECK \
 --timeout=5s \
 --start-period=30s \
 --retries=5 \
-CMD curl -f -s -o /dev/null localhost:8080/actuator/health || exit 1
+CMD curl -f -s -o /dev/null localhost:8080/acl/actuator/health || exit 1
 
 ARG APP_ARGS=""
 

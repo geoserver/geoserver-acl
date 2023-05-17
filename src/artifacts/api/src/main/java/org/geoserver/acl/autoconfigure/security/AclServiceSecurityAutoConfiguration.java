@@ -54,6 +54,10 @@ public class AclServiceSecurityAutoConfiguration {
         }
 
         http.authorizeRequests()
+                .antMatchers("/actuator/health/**")
+                .permitAll()
+                .antMatchers("/actuator/**")
+                .hasAuthority("ROLE_ADMIN")
                 .antMatchers("/", "/api/api-docs/**", "/api/swagger-ui.html", "/api/swagger-ui/**")
                 .permitAll()
                 .anyRequest()
