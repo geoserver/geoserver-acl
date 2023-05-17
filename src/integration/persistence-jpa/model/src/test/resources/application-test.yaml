@@ -13,12 +13,13 @@ geoserver.acl:
       hibernate:
         hbm2ddl.auto: create
         show_sql: false
+        dialect: org.hibernate.spatial.dialect.h2geodb.GeoDBDialect
 
 
 logging:
   level:
     root: warn
-    '[org.geoserver.acl]': warn
+    '[org.geoserver.acl]': info
     '[org.springframework.boot.autoconfigure]': warn
     '[org.springframework.boot.test.context]': warn
     '[org.testcontainers]': info

@@ -23,8 +23,10 @@ import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -67,7 +69,15 @@ import javax.persistence.UniqueConstraint;
 public class AdminRule extends Auditable implements Cloneable {
     private static final long serialVersionUID = 422357467611162461L;
 
-    @Id @GeneratedValue @Column private Long id;
+    @Id
+    @GeneratedValue(
+            generator = "acl_adminrules_sequence_generator",
+            strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(
+            name = "acl_adminrules_sequence_generator",
+            sequenceName = "acl_adminrule_sequence",
+            allocationSize = 1)
+    private Long id;
 
     /**
      * External Id. An ID used in an external systems. This field should simplify Authorization

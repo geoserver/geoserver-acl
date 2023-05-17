@@ -38,5 +38,8 @@ class JpaRuleRepositoryPostGIS_IT extends JpaRuleRepositoryTest {
         registry.add("geoserver.acl.datasource.url", () -> postgis.getJdbcUrl());
         registry.add("geoserver.acl.datasource.username", postgis::getUsername);
         registry.add("geoserver.acl.datasource.password", postgis::getPassword);
+        registry.add(
+                "geoserver.acl.jpa.properties.hibernate.dialect",
+                () -> "org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect");
     }
 }
