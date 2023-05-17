@@ -13,8 +13,6 @@ jndi:
       idle-timeout: 60000
 
 acl.db.jndiName: java:comp/env/jdbc/acl
-acl.db.schema: acl
-acl.db.hbm2ddl.auto: update
 
 geoserver:
   acl:
