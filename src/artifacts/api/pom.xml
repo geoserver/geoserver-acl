@@ -115,7 +115,6 @@
             </goals>
             <configuration>
               <classifier>bin</classifier>
-              <mainClass>org.geoserver.acl.app.AccesControlListApplication</mainClass>
             </configuration>
           </execution>
           <execution>
@@ -125,6 +124,9 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <mainClass>org.geoserver.acl.app.AccesControlListApplication</mainClass>
+        </configuration>
       </plugin>
     </plugins>
   </build>

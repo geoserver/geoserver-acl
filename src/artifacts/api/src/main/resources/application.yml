@@ -104,7 +104,6 @@ geoserver:
         '[javax.persistence.schema-generation.scripts.action]': create
         '[javax.persistence.schema-generation.scripts.create-source]': metadata
         '[javax.persistence.schema-generation.scripts.create-target]': ${scripts.create-target:acl-create.sql}
-    datasource.url: jdbc:h2:mem:geoserver-acl;DB_CLOSE_DELAY=-1
 
 logging:
   level:

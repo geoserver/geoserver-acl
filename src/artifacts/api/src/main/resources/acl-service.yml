@@ -69,6 +69,7 @@ spring.config.activate.on-profile: dev
 server.port: 9000
 
 acl.db.dialect: org.hibernate.spatial.dialect.h2geodb.GeoDBDialect
+acl.db.schema: ''
 
 spring.flyway.enabled: false
 geoserver.acl.jpa.properties.hibernate.hbm2ddl.auto: create
