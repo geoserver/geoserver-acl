@@ -70,6 +70,10 @@ server.port: 9000
 
 acl.db.dialect: org.hibernate.spatial.dialect.h2geodb.GeoDBDialect
 
+spring.flyway.enabled: false
+geoserver.acl.jpa.properties.hibernate.hbm2ddl.auto: create
+geoserver.acl.jpa.properties.show-sql: false
+
 geoserver:
   acl:
     security:
@@ -88,11 +92,6 @@ geoserver:
       hikari:
         minimum-idle: 1
         maximum-pool-size: 20
-    jpa:
-      show-sql: true
-      properties:
-        hibernate:
-          hbm2ddl.auto: create          
 
 management:
   endpoints:

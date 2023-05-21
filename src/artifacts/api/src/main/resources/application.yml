@@ -80,6 +80,8 @@ springdoc:
 spring.config.activate.on-profile: ddl
 
 spring:
+  flyway:
+    enabled: false
   main.web-application-type: none  
   autoconfigure:
     exclude:
