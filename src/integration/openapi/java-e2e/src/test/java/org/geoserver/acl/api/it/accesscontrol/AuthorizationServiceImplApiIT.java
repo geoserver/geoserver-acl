@@ -113,6 +113,6 @@ public class AuthorizationServiceImplApiIT extends AuthorizationServiceImplTest 
 
     @Override
     protected AuthorizationService getAuthorizationService() {
-        return clientContext.getAuthorizationService();
+        return clientContext.getInProcessAuthorizationService();
     }
 }

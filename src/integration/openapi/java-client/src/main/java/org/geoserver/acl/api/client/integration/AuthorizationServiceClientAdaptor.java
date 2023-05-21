@@ -24,8 +24,9 @@ import java.util.stream.Collectors;
 public class AuthorizationServiceClientAdaptor implements AuthorizationService {
 
     private final @NonNull AuthorizationApi apiClient;
-    private final @NonNull AuthorizationModelApiMapper mapper;
-    private final @NonNull RuleApiMapper ruleMapper;
+    private final @NonNull AuthorizationModelApiMapper mapper =
+            Mappers.authorizationModelApiMapper();
+    private final @NonNull RuleApiMapper ruleMapper = Mappers.ruleApiMapper();
 
     @Override
     public AccessInfo getAccessInfo(org.geoserver.acl.authorization.AccessRequest request) {
