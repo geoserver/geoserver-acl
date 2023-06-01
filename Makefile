@@ -1,7 +1,7 @@
 DOCKER_REPO="geoservercloud/geoserver-acl"
 
 #default target
-build: install build-image
+build: install build-image test-examples
 
 #build, test, and install all modules, including the API server and GeoServer plugin
 install:
@@ -22,6 +22,9 @@ package:
 
 test:
 	./mvnw verify -ntp -T4
+
+test-examples:
+	./mvnw verify -ntp -T4 -f examples/
 
 # Make sure `make package` was run before if anything changed since the last build
 # Consecutive COPY commands in Dockerfile fail on github runners
