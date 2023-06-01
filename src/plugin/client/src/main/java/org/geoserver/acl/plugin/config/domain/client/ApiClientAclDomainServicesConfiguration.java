@@ -11,8 +11,6 @@ import org.geoserver.acl.api.client.AuthorizationApi;
 import org.geoserver.acl.api.client.RulesApi;
 import org.geoserver.acl.api.client.config.ApiClientConfiguration;
 import org.geoserver.acl.api.client.config.ApiClientProperties;
-import org.geoserver.acl.api.client.config.AuthorizationServiceClientAdaptorConfiguration;
-import org.geoserver.acl.api.client.config.RepositoryClientAdaptorsConfiguration;
 import org.geoserver.acl.authorization.AuthorizationService;
 import org.geoserver.acl.config.domain.AdminRuleAdminServiceConfiguration;
 import org.geoserver.acl.config.domain.RuleAdminServiceConfiguration;
@@ -46,11 +44,10 @@ import org.springframework.core.env.Environment;
 @Configuration
 @Import({
     // repositories from api-client
-    ApiClientConfiguration.class, RepositoryClientAdaptorsConfiguration.class,
+    ApiClientConfiguration.class,
     // services from domain-spring-integration
-    RuleAdminServiceConfiguration.class, AdminRuleAdminServiceConfiguration.class,
-    // AuthorizationService using the OpenAPI client backed rule services
-    AuthorizationServiceClientAdaptorConfiguration.class
+    RuleAdminServiceConfiguration.class,
+    AdminRuleAdminServiceConfiguration.class,
 })
 @Slf4j
 public class ApiClientAclDomainServicesConfiguration {

@@ -73,6 +73,6 @@ public class AuthorizationServiceImpl_GeomApiIT extends AuthorizationServiceImpl
 
     @Override
     protected AuthorizationService getAuthorizationService() {
-        return clientContext.getAuthorizationService();
+        return clientContext.getInProcessAuthorizationService();
     }
 }

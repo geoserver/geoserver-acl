@@ -29,9 +29,9 @@ import java.util.stream.Stream;
 public class AdminRuleRepositoryClientAdaptor implements AdminRuleRepository {
 
     private final AdminRulesApi apiClient;
-    private final AdminRuleApiMapper mapper;
-    private final EnumsApiMapper enumsMapper;
-    private final RuleFilterApiMapper filterMapper = new RuleFilterApiMapper();
+    private final AdminRuleApiMapper mapper = Mappers.adminRuleApiMapper();
+    private final EnumsApiMapper enumsMapper = Mappers.enumsApiMapper();
+    private final RuleFilterApiMapper filterMapper = Mappers.ruleFilterApiMapper();
 
     @Override
     public AdminRule create(AdminRule rule, InsertPosition position) {

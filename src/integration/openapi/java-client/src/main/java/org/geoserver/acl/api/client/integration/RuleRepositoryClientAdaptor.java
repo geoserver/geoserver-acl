@@ -40,12 +40,12 @@ import java.util.stream.Stream;
 public class RuleRepositoryClientAdaptor implements RuleRepository {
 
     private final RulesApi apiClient;
-    private final RuleApiMapper mapper;
-    private final EnumsApiMapper enumsMapper;
-    private final RuleLimitsApiMapper limitsMapper;
-    private final LayerDetailsApiMapper detailsMapper;
+    private final RuleApiMapper mapper = Mappers.ruleApiMapper();
+    private final EnumsApiMapper enumsMapper = Mappers.enumsApiMapper();
+    private final RuleLimitsApiMapper limitsMapper = Mappers.ruleLimitsApiMapper();
+    private final LayerDetailsApiMapper detailsMapper = Mappers.layerDetailsApiMapper();
 
-    private final RuleFilterApiMapper filterMapper = new RuleFilterApiMapper();
+    private final RuleFilterApiMapper filterMapper = Mappers.ruleFilterApiMapper();
 
     @Override
     public boolean existsById(@NonNull String id) {
