@@ -33,16 +33,18 @@ public class AclClient {
         apiClient = new ApiClient(restTemplate);
     }
 
-    public void setBasePath(String basePath) {
+    public AclClient setBasePath(String basePath) {
         apiClient.setBasePath(basePath);
+        return this;
     }
 
     public String getBasePath() {
         return apiClient.getBasePath();
     }
 
-    public void setUsername(String username) {
+    public AclClient setUsername(String username) {
         apiClient.setUsername(username);
+        return this;
     }
 
     public String getUsername() {
@@ -50,8 +52,9 @@ public class AclClient {
         return auth == null ? null : auth.getUsername();
     }
 
-    public void setPassword(String pwd) {
+    public AclClient setPassword(String pwd) {
         apiClient.setPassword(pwd);
+        return this;
     }
 
     public String getPassword() {
@@ -59,8 +62,9 @@ public class AclClient {
         return auth == null ? null : auth.getPassword();
     }
 
-    public void setLogRequests(boolean logRequests) {
+    public AclClient setLogRequests(boolean logRequests) {
         apiClient.setDebugging(logRequests);
+        return this;
     }
 
     public boolean isLogRequests() {

@@ -34,3 +34,14 @@ jobs:
     - name: Test
       run: |
         make test
+
+    - name: Build docker image
+      run: |
+        make build-image
+
+    - name: Build and run examples
+      run: |
+        ./mvnw install -pl :gs-acl-api-client -am -DskipTests
+        make test-examples
+
+        
