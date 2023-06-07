@@ -22,7 +22,7 @@ services:
       - 6432:5432
 
   acl:
-    image: geoservercloud/geoserver-acl:1.0-SNAPSHOT
+    image: geoservercloud/geoserver-acl:1.0.0
     volumes:
       - ./docker-compose-acl-config.yml:/opt/app/bin/acl.yml
     ports:

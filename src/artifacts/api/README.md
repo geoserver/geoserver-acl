@@ -27,7 +27,7 @@ Run in development mode with an in-memory H2 database, either with
 
 or
 
-	java -jar target/gs-acl-service-1.0-SNAPSHOT-bin.jar --spring.profiles.active=dev
+	java -jar target/gs-acl-service-1.0.0-bin.jar --spring.profiles.active=dev
 
 
 ## Dependency graph

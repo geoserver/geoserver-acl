@@ -12,7 +12,7 @@
   <version>1.0</version>
   <packaging>pom</packaging>
   <properties>
-    <acl.version>1.0-SNAPSHOT</acl.version>
+    <acl.version>1.0.0</acl.version>
   </properties>
   
   <modules>

@@ -31,7 +31,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers(disabledWithoutDocker = true)
 class JavaClientAdaptorExampleTest {
 
-	private static final String dockerImageName = "geoservercloud/geoserver-acl:1.0-SNAPSHOT";
+	private static final String dockerImageName = "geoservercloud/geoserver-acl:1.0.0";
 
 	// container port the application runs on with the 'dev' profile
 	private static final int DEV_PORT = 9000;
