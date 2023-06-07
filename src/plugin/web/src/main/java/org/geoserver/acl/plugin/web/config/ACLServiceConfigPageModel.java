@@ -8,7 +8,6 @@ import lombok.Getter;
 
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.acl.plugin.accessmanager.AccessManagerConfig;
 import org.geoserver.acl.plugin.accessmanager.config.AclConfigurationManager;
@@ -22,8 +21,7 @@ public class ACLServiceConfigPageModel implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private @Getter IModel<AccessManagerConfig> configModel;
-    private @Getter CompoundPropertyModel<IModel<AccessManagerConfig>> formModel;
+    private @Getter CompoundPropertyModel<AccessManagerConfig> configModel;
 
     private @Getter IModel<String> instanceName;
 
@@ -40,8 +38,7 @@ public class ACLServiceConfigPageModel implements Serializable {
 
     ACLServiceConfigPageModel() {
         AccessManagerConfig config = getConfigManager().getConfiguration().clone();
-        configModel = new Model<>(config);
-        formModel = new CompoundPropertyModel<IModel<AccessManagerConfig>>(configModel);
+        configModel = new CompoundPropertyModel<>(config);
         instanceName = new PropertyModel<>(configModel, "instanceName");
         serviceUrl = new ExtPropertyModel<String>(configModel, "serviceUrl");
         allowRemoteAndInlineLayers = new PropertyModel<>(configModel, "allowRemoteAndInlineLayers");
@@ -66,9 +63,7 @@ public class ACLServiceConfigPageModel implements Serializable {
     }
 
     public void testConnection() throws Exception {
-        String url = serviceUrl.getObject();
-        AccessManagerConfig newConfig = formModel.getObject().getObject();
-
+        AccessManagerConfig newConfig = configModel.getObject();
         getConfigManager().testConfig(newConfig);
     }
 
