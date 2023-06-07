@@ -12,18 +12,18 @@
 	              <label for="instanceName"><wicket:message key="instanceName"></wicket:message></label>
 	              <input id="instanceName" wicket:id="instanceName" type="text" class="text"></input>
 	            </li>
-	            <!-- 
 	            <li>
                   <label for="servicesUrl"><wicket:message key="servicesUrl"></wicket:message></label>
                   <input id="servicesUrl" wicket:id="servicesUrl" type="text" class="text"></input>
                 </li>
-                 -->
                 <li class="button-group">
                   <a href="#" wicket:id="test"><span><wicket:message key="testConnection"></wicket:message></span></a>
                 </li>
              </ul>
              </fieldset>
              <br/>
+             <wicket:remove>
+             <!--
              <fieldset>
               <legend>
                 <span><wicket:message key="options"></wicket:message></span>
@@ -41,12 +41,10 @@
                   <input id="useRolesToFilter" wicket:id="useRolesToFilter" type="checkbox"></input>
                   <label for="useRolesToFilter"><wicket:message key="useRolesToFilter"></wicket:message></label>
                 </li>
-                <!-- 
                 <li>
                   <label for="acceptedRoles"><wicket:message key="acceptedRoles"></wicket:message></label>
                   <input id="acceptedRoles" wicket:id="acceptedRoles" type="text" class="text"></input>
                 </li>
-	             -->
             </ul>
             </fieldset>
             <br/>
@@ -56,6 +54,8 @@
               <button type="submit" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
             </div>
           </fieldset>
+             -->
+            </wicket:remove>
 	    </form>
      </wicket:extend>
   </body>

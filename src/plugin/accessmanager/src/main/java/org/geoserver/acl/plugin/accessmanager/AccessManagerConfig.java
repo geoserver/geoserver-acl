@@ -36,16 +36,26 @@ public class AccessManagerConfig implements Serializable, Cloneable {
     private boolean useRolesToFilter = true;
     private List<String> roles;
 
+    private String serviceUrl = URL_INTERNAL;
+
     public AccessManagerConfig() {
         initDefaults();
     }
 
     public void initDefaults() {
         instanceName = "default-gs";
-        allowRemoteAndInlineLayers = false;
+        allowRemoteAndInlineLayers = true;
         grantWriteToWorkspacesToAuthenticatedUsers = false;
         useRolesToFilter = true;
         roles = new ArrayList<>(List.of("*"));
+    }
+
+    public String getServiceUrl() {
+        return serviceUrl;
+    }
+
+    public void setServiceUrl(String serviceUrl) {
+        this.serviceUrl = serviceUrl;
     }
 
     /**

@@ -6,6 +6,7 @@
  */
 package org.geoserver.acl.plugin.accessmanager.config;
 
+import org.geoserver.acl.authorization.AccessRequest;
 import org.geoserver.acl.authorization.AuthorizationService;
 import org.geoserver.acl.plugin.accessmanager.ACLResourceAccessManager;
 import org.geoserver.acl.plugin.accessmanager.AccessManagerConfig;
@@ -61,9 +62,7 @@ public class AclConfigurationManager implements AccessManagerConfigProvider {
     }
 
     public void testConfig(AccessManagerConfig config) {
-        throw new UnsupportedOperationException("implement");
-        //		service.getMatchingRules(null)
-        //		ruleReader.getMatchingRules(AccessRequest.builder().build());
+        service.getMatchingRules(AccessRequest.builder().build());
     }
 
     public void storeConfiguration() throws IOException {

@@ -14,7 +14,6 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.acl.plugin.accessmanager.AccessManagerConfig;
 import org.geoserver.web.GeoServerBasePage;
@@ -24,7 +23,7 @@ import org.geoserver.web.wicket.model.ExtPropertyModel;
 import java.util.logging.Level;
 
 /**
- * GeoFence wicket administration UI for GeoServer.
+ * ACL wicket administration UI for GeoServer.
  *
  * @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it" - Originally as part of
  *     GeoFence's GeoServer extension
@@ -38,24 +37,24 @@ public class ACLServiceConfigPage extends GeoServerSecuredPage {
     public ACLServiceConfigPage() {
         pageModel = ACLServiceConfigPageModel.newInstance();
 
-        Form<IModel<AccessManagerConfig>> form = new Form<>("form", pageModel.getFormModel());
+        Form<AccessManagerConfig> form = new Form<>("form", pageModel.getConfigModel());
         form.setOutputMarkupId(true);
         super.add(form);
 
         form.add(instanceName());
         // TODO: allow to configure the url, user, and pwd
-        //		form.add(serviceURLField());
+        form.add(serviceURLField());
         form.add(testConnectionLink());
 
-        form.add(allowRemoteAndInlineLayers());
-        form.add(grantWriteToWorkspacesToAuthenticatedUsers());
-        form.add(useRolesToFilter());
+        //        form.add(allowRemoteAndInlineLayers());
+        //        form.add(grantWriteToWorkspacesToAuthenticatedUsers());
+        //        form.add(useRolesToFilter());
 
         // form.add(new TextField<>("acceptedRoles", new PropertyModel<>(configModel,
         // "acceptedRoles")));
 
-        form.add(submitButton());
-        form.add(cancelButton());
+        //        form.add(submitButton());
+        //        form.add(cancelButton());
     }
 
     private CheckBox useRolesToFilter() {
@@ -74,7 +73,10 @@ public class ACLServiceConfigPage extends GeoServerSecuredPage {
     }
 
     private FormComponent<String> instanceName() {
-        return new TextField<>("instanceName", pageModel.getInstanceName()).setRequired(true);
+        FormComponent<String> instanceName =
+                new TextField<>("instanceName", pageModel.getInstanceName()).setRequired(true);
+        instanceName.setEnabled(false);
+        return instanceName;
     }
 
     private TextField<String> serviceURLField() {
@@ -82,7 +84,8 @@ public class ACLServiceConfigPage extends GeoServerSecuredPage {
         ExtPropertyModel<String> serviceUrl = pageModel.getServiceUrl().setReadOnly(isInternal);
         TextField<String> serviceURLField = new TextField<>("servicesUrl", serviceUrl);
         serviceURLField.setRequired(true);
-        serviceURLField.setEnabled(!isInternal);
+        //        serviceURLField.setEnabled(!isInternal);
+        serviceURLField.setEnabled(false);
         return serviceURLField;
     }
 
