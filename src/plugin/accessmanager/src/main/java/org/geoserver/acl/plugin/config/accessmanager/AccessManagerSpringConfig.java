@@ -6,6 +6,8 @@ import org.geoserver.acl.plugin.accessmanager.ACLResourceAccessManager;
 import org.geoserver.acl.plugin.accessmanager.AccessManagerConfigProvider;
 import org.geoserver.acl.plugin.accessmanager.wps.WPSHelper;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.impl.LocalWorkspaceCatalog;
+import org.geoserver.security.impl.LayerGroupContainmentCache;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +20,10 @@ public class AccessManagerSpringConfig {
             AuthorizationService aclService,
             @Qualifier("rawCatalog") Catalog catalog,
             AccessManagerConfigProvider configProvider,
+            LayerGroupContainmentCache groupsCache,
             WPSHelper wpsHelper) {
-        return new ACLResourceAccessManager(aclService, catalog, configProvider, wpsHelper);
+
+        return new ACLResourceAccessManager(aclService, groupsCache, configProvider, wpsHelper);
     }
 
     @Bean
@@ -27,7 +31,10 @@ public class AccessManagerSpringConfig {
             AuthorizationService aclAuthorizationService,
             @Qualifier("rawCatalog") Catalog catalog,
             AccessManagerConfigProvider configProvider) {
-        return new ACLDispatcherCallback(aclAuthorizationService, catalog, configProvider);
+
+        LocalWorkspaceCatalog localWorkspaceCatalog = new LocalWorkspaceCatalog(catalog);
+        return new ACLDispatcherCallback(
+                aclAuthorizationService, localWorkspaceCatalog, configProvider);
     }
 
     @Bean

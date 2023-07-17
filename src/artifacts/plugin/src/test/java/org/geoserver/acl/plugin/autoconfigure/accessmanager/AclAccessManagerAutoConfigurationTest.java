@@ -5,12 +5,14 @@
 package org.geoserver.acl.plugin.autoconfigure.accessmanager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import org.geoserver.acl.plugin.accessmanager.ACLDispatcherCallback;
 import org.geoserver.acl.plugin.accessmanager.ACLResourceAccessManager;
 import org.geoserver.acl.plugin.accessmanager.wps.WPSHelper;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.security.impl.LayerGroupContainmentCache;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -21,6 +23,10 @@ class AclAccessManagerAutoConfigurationTest {
     private ApplicationContextRunner runner =
             new ApplicationContextRunner()
                     .withBean("rawCatalog", Catalog.class, CatalogImpl::new)
+                    .withBean(
+                            "layerGroupContainmentCache",
+                            LayerGroupContainmentCache.class,
+                            () -> mock(LayerGroupContainmentCache.class))
                     .withConfiguration(
                             AutoConfigurations.of(AclAccessManagerAutoConfiguration.class));
 
