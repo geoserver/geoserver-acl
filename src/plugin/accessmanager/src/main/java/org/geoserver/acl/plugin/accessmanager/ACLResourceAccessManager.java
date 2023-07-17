@@ -24,7 +24,6 @@ import org.geoserver.acl.domain.rules.LayerAttribute.AccessType;
 import org.geoserver.acl.plugin.accessmanager.wps.WPSAccessInfo;
 import org.geoserver.acl.plugin.accessmanager.wps.WPSHelper;
 import org.geoserver.acl.plugin.support.GeomHelper;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -36,7 +35,6 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.impl.LocalWorkspaceCatalog;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.ExtensionPriority;
@@ -112,27 +110,18 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
 
     public ACLResourceAccessManager(
             AuthorizationService aclService,
-            Catalog catalog,
+            LayerGroupContainmentCache groupsCache,
             AccessManagerConfigProvider configurationManager,
             WPSHelper wpsHelper) {
 
         this.aclService = aclService;
         this.configProvider = configurationManager;
-        this.groupsCache = new LayerGroupContainmentCache(new LocalWorkspaceCatalog(catalog));
+        this.groupsCache = groupsCache;
         this.wpsHelper = wpsHelper;
     }
 
     public AccessManagerConfig getConfig() {
         return this.configProvider.get();
-    }
-
-    /**
-     * sets the layer group cache
-     *
-     * @param groupsCache
-     */
-    public void setGroupsCache(LayerGroupContainmentCache groupsCache) {
-        this.groupsCache = groupsCache;
     }
 
     static boolean isAuthenticated(Authentication user) {

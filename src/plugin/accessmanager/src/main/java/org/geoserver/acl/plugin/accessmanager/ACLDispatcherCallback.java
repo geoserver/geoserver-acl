@@ -65,11 +65,11 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
 
     public ACLDispatcherCallback(
             AuthorizationService aclService,
-            Catalog catalog,
+            LocalWorkspaceCatalog catalog,
             AccessManagerConfigProvider configProvider) {
 
         this.aclService = aclService;
-        this.catalog = new LocalWorkspaceCatalog(catalog);
+        this.catalog = catalog;
         this.configProvider = configProvider;
     }
 
