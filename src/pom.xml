@@ -27,12 +27,12 @@
   <properties>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
-    <spring-cloud.version>2021.0.6</spring-cloud.version>
-    <spring-boot.version>2.7.11</spring-boot.version>
+    <spring-cloud.version>2021.0.8</spring-cloud.version>
+    <spring-boot.version>2.7.14</spring-boot.version>
     <!-- Default GeoServer version to build and test the plugin against-->
     <gs.version>2.24-SNAPSHOT</gs.version>
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
-    <gt.version>29.0</gt.version>
+    <gt.version>29.2</gt.version>
     <jts.version>1.19.0</jts.version>
     <lombok.version>1.18.26</lombok.version>
     <mapstruct.version>1.5.3.Final</mapstruct.version>
@@ -46,6 +46,16 @@
   </properties>
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>2.2.220</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>2.7.2</version>
+      </dependency>
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dependencies</artifactId>
@@ -196,8 +206,8 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <gs.version>2.23.0</gs.version>
-        <gt.version>29.0</gt.version>
+        <gs.version>2.23.2</gs.version>
+        <gt.version>29.2</gt.version>
       </properties>
     </profile>
     <profile>
