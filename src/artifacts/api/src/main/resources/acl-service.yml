@@ -26,16 +26,17 @@ geoserver.acl:
         dialect: ${acl.db.dialect:org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect} 
   security:
     headers:
-      enabled: false
-      user-header: sec-username
-      roles-header: sec-roles
+      enabled: ${acl.security.headers.enabled:false}
+      user-header: ${acl.security.headers.user-header:sec-username}
+      roles-header: ${acl.security.headers.roles-header:sec-roles}
       admin-roles: ["ROLE_ADMINISTRATOR"]
     internal:
       enabled: true
       users:
         admin:
           admin: true
-          enabled: false
+          enabled: ${acl.users.admin.enabled:false}
+          password: ${acl.users.admin.password:}
           # password is the bcrypt encoded value, for example, for pwd s3cr3t:
           # password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
 #        user:
@@ -63,7 +64,8 @@ jndi:
       idle-timeout: 60000
 
 acl.db.jndiName: java:comp/env/jdbc/acl
-
+acl.users.admin.enabled: true
+acl.users.admin.password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
 ---
 spring.config.activate.on-profile: dev
 server.port: 9000
@@ -75,19 +77,12 @@ spring.flyway.enabled: false
 geoserver.acl.jpa.properties.hibernate.hbm2ddl.auto: create
 geoserver.acl.jpa.properties.show-sql: false
 
+acl.security.headers.enabled: true
+acl.users.admin.enabled: true
+acl.users.admin.password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
+
 geoserver:
   acl:
-    security:
-      headers.enabled: true
-      internal:
-        enabled: true
-        users:
-          admin:
-            enabled: true
-            password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
-          user:
-            enabled: true        
-            password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
     datasource:
       url: jdbc:h2:mem:geoserver-acl;DB_CLOSE_DELAY=-1
       hikari:
