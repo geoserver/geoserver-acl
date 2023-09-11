@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/* (c) 2023 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver.acl.openapi.spring5</groupId>
+    <artifactId>openapi-spring5</artifactId>
+    <version>${revision}</version>
+  </parent>
+  <artifactId>gs-acl-openapi-model</artifactId>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <!-- @javax.annotation.Nullable annotation -->
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+    </dependency>
+    <dependency>
+      <!-- @javax.annotation.Generated annotation -->
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-generated-openapi-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-shread-java-rules-model</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <skip>${openapi-codegen-skip}</skip>
+              <!-- see https://openapi-generator.tech/docs/generators/java/ -->
+              <generatorName>spring</generatorName>
+              <inputSpec>${project.basedir}/../../acl-api.yaml</inputSpec>
+              <modelPackage>org.geoserver.acl.api.model</modelPackage>
+              <generateModels>true</generateModels>
+              <generateApis>false</generateApis>
+              <generateSupportingFiles>true</generateSupportingFiles>
+              <supportingFilesToGenerate>pom.xml</supportingFilesToGenerate>
+              <generateModelTests>false</generateModelTests>
+              <generateApiTests>false</generateApiTests>
+              <generateApiDocumentation>false</generateApiDocumentation>
+              <generateModelDocumentation>false</generateModelDocumentation>
+              <enablePostProcessFile>true</enablePostProcessFile>
+              <configOptions>
+                <dateLibrary>java8-localdatetime</dateLibrary>
+                <openApiNullable>false</openApiNullable>
+                <serializationLibrary>jackson</serializationLibrary>
+                <addCompileSourceRoot>true</addCompileSourceRoot>
+                <validateSpec>true</validateSpec>
+                <useRuntimeException>true</useRuntimeException>
+                <useBeanValidation>true</useBeanValidation>
+                <performBeanValidation>false</performBeanValidation>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

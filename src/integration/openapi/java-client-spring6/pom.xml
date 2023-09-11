@@ -12,41 +12,36 @@
     <artifactId>openapi-integration</artifactId>
     <version>${revision}</version>
   </parent>
-  <artifactId>gs-acl-api-client</artifactId>
+  <artifactId>gs-acl-api-client-spring6</artifactId>
+  <properties>
+    <spring-boot.version>${spring-boot-3.version}</spring-boot.version>
+  </properties>
   <dependencies>
     <dependency>
-      <groupId>org.geoserver.acl.openapi.spring5</groupId>
-      <artifactId>gs-acl-openapi-client</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.geoserver.acl.integration.openapi</groupId>
-      <artifactId>gs-acl-api-model-mapper</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.acl.domain</groupId>
-      <artifactId>gs-acl-accessrules</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.acl.domain</groupId>
-      <artifactId>gs-acl-adminrules</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.acl</groupId>
-      <artifactId>gs-acl-authorization-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
-      <artifactId>jackson-dataformat-smile</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
+      <artifactId>gs-acl-api-client</artifactId>
       <exclusions>
         <exclusion>
-          <artifactId>commons-logging</artifactId>
-          <groupId>commons-logging</groupId>
+          <artifactId>gs-acl-openapi-client</artifactId>
+          <groupId>org.geoserver.acl.openapi.spring5</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>httpclient</artifactId>
+          <groupId>org.apache.httpcomponents</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>gs-acl-openapi-model</artifactId>
+          <groupId>org.geoserver.acl.openapi.spring5</groupId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.acl.openapi.spring6</groupId>
+      <artifactId>gs-acl-openapi-client-spring6</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>

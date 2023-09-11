@@ -8,8 +8,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.geoserver.acl.openapi</groupId>
-    <artifactId>openapi</artifactId>
+    <groupId>org.geoserver.acl.openapi.spring5</groupId>
+    <artifactId>openapi-spring5</artifactId>
     <version>${revision}</version>
   </parent>
   <artifactId>gs-acl-openapi-spring-server</artifactId>
@@ -24,7 +24,7 @@
       <artifactId>validation-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.acl.openapi</groupId>
+      <groupId>org.geoserver.acl.openapi.spring5</groupId>
       <artifactId>gs-acl-openapi-model</artifactId>
     </dependency>
     <dependency>
@@ -85,7 +85,7 @@
             <configuration>
               <skip>${openapi-codegen-skip}</skip>
               <!-- see https://openapi-generator.tech/docs/generators/spring -->
-              <inputSpec>${project.basedir}/../acl-api.yaml</inputSpec>
+              <inputSpec>${project.basedir}/../../acl-api.yaml</inputSpec>
               <generatorName>spring</generatorName>
               <modelPackage>org.geoserver.acl.api.model</modelPackage>
               <apiPackage>org.geoserver.acl.api.server</apiPackage>
@@ -117,8 +117,6 @@
                 <importMapping>AdminRule=org.geoserver.acl.api.model.AdminRule</importMapping>
                 <importMapping>AdminRuleFilter=org.geoserver.acl.api.model.AdminRuleFilter</importMapping>
                 <importMapping>InsertPosition=org.geoserver.acl.api.model.InsertPosition</importMapping>
-                <importMapping>GeoServerUser=org.geoserver.acl.api.model.GeoServerUser</importMapping>
-                <importMapping>GeoServerUserGroup=org.geoserver.acl.api.model.GeoServerUserGroup</importMapping>
               </importMappings>
             </configuration>
           </execution>

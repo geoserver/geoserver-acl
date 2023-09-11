@@ -72,7 +72,7 @@
     <fmt.action>format</fmt.action>
     <fmt.skip>false</fmt.skip>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <openapi-generator-maven-plugin.version>6.3.0</openapi-generator-maven-plugin.version>
+    <openapi-generator-maven-plugin.version>7.0.0</openapi-generator-maven-plugin.version>
     <openapi-codegen-skip>false</openapi-codegen-skip>
   </properties>
   <dependencyManagement>
@@ -123,18 +123,28 @@
       </dependency>
       <!-- OpenAPI code-gen libraries -->
       <dependency>
-        <groupId>org.geoserver.acl.openapi</groupId>
+        <groupId>org.geoserver.acl.openapi.spring5</groupId>
         <artifactId>gs-acl-openapi-model</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.acl.openapi</groupId>
+        <groupId>org.geoserver.acl.openapi.spring5</groupId>
         <artifactId>gs-acl-openapi-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.acl.openapi</groupId>
+        <groupId>org.geoserver.acl.openapi.spring5</groupId>
         <artifactId>gs-acl-openapi-spring-server</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.openapi.spring6</groupId>
+        <artifactId>gs-acl-openapi-model-spring6</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.openapi.spring6</groupId>
+        <artifactId>gs-acl-openapi-client-spring6</artifactId>
         <version>${project.version}</version>
       </dependency>
       <!-- JPA integration -->
@@ -157,6 +167,11 @@
       <dependency>
         <groupId>org.geoserver.acl.integration.openapi</groupId>
         <artifactId>gs-acl-api-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.integration.openapi</groupId>
+        <artifactId>gs-acl-api-client-spring6</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -189,11 +204,6 @@
       <dependency>
         <groupId>org.geoserver.acl.plugin</groupId>
         <artifactId>gs-acl-plugin-config</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.geoserver.acl.plugin</groupId>
-        <artifactId>gs-acl-plugin-restconfig</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -324,7 +334,20 @@
         <plugin>
           <groupId>com.spotify.fmt</groupId>
           <artifactId>fmt-maven-plugin</artifactId>
-          <version>2.15</version>
+          <version>2.20</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>${fmt.action}</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <verbose>false</verbose>
+            <filesNamePattern>.*\.java</filesNamePattern>
+            <skip>${fmt.skip}</skip>
+            <style>aosp</style>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>com.github.ekryd.sortpom</groupId>
@@ -424,19 +447,6 @@
       <plugin>
         <groupId>com.spotify.fmt</groupId>
         <artifactId>fmt-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>${fmt.action}</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <verbose>false</verbose>
-          <filesNamePattern>.*\.java</filesNamePattern>
-          <skip>${fmt.skip}</skip>
-          <style>aosp</style>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

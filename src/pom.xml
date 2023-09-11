@@ -28,7 +28,8 @@
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <spring-cloud.version>2021.0.8</spring-cloud.version>
-    <spring-boot.version>2.7.14</spring-boot.version>
+    <spring-boot.version>2.7.15</spring-boot.version>
+    <spring-boot-3.version>3.0.10</spring-boot-3.version>
     <!-- Default GeoServer version to build and test the plugin against-->
     <gs.version>2.24-SNAPSHOT</gs.version>
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->

@@ -1505,6 +1505,7 @@ ul.nav-tabs {
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-AdminRules-adminRuleExistsById-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-AdminRules-adminRuleExistsById-0-java">Java</a></li>
+                          <li class=""><a href="#examples-AdminRules-adminRuleExistsById-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-AdminRules-adminRuleExistsById-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-AdminRules-adminRuleExistsById-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-AdminRules-adminRuleExistsById-0-objc">Obj-C</a></li>
@@ -1537,7 +1538,6 @@ import java.util.*;
 public class AdminRulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -1556,6 +1556,23 @@ public class AdminRulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-AdminRules-adminRuleExistsById-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String id = new String(); // String | The rule identifier
+
+try {
+    final result = await api_instance.adminRuleExistsById(id);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->adminRuleExistsById: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -1583,7 +1600,6 @@ public class AdminRulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-AdminRules-adminRuleExistsById-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -1667,7 +1683,6 @@ namespace Example
                             <div class="tab-pane" id="examples-AdminRules-adminRuleExistsById-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -1689,7 +1704,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::AdminRulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -1713,7 +1727,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -1871,6 +1884,7 @@ The rule identifier
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-AdminRules-countAdminRules-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-AdminRules-countAdminRules-0-java">Java</a></li>
+                          <li class=""><a href="#examples-AdminRules-countAdminRules-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-AdminRules-countAdminRules-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-AdminRules-countAdminRules-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-AdminRules-countAdminRules-0-objc">Obj-C</a></li>
@@ -1927,7 +1941,6 @@ import java.util.*;
 public class AdminRulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -1946,6 +1959,23 @@ public class AdminRulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-AdminRules-countAdminRules-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final AdminRuleFilter adminRuleFilter = new AdminRuleFilter(); // AdminRuleFilter | 
+
+try {
+    final result = await api_instance.countAdminRules(adminRuleFilter);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->countAdminRules: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -1973,7 +2003,6 @@ public class AdminRulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-AdminRules-countAdminRules-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -2057,7 +2086,6 @@ namespace Example
                             <div class="tab-pane" id="examples-AdminRules-countAdminRules-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -2079,7 +2107,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::AdminRulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -2103,7 +2130,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -2282,6 +2308,7 @@ $(document).ready(function() {
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-AdminRules-countAllAdminRules-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-AdminRules-countAllAdminRules-0-java">Java</a></li>
+                          <li class=""><a href="#examples-AdminRules-countAllAdminRules-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-AdminRules-countAllAdminRules-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-AdminRules-countAllAdminRules-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-AdminRules-countAllAdminRules-0-objc">Obj-C</a></li>
@@ -2314,7 +2341,6 @@ import java.util.*;
 public class AdminRulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -2332,6 +2358,22 @@ public class AdminRulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-AdminRules-countAllAdminRules-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+
+try {
+    final result = await api_instance.countAllAdminRules();
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->countAllAdminRules: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -2358,7 +2400,6 @@ public class AdminRulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-AdminRules-countAllAdminRules-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -2438,7 +2479,6 @@ namespace Example
                             <div class="tab-pane" id="examples-AdminRules-countAllAdminRules-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -2459,7 +2499,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::AdminRulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -2482,7 +2521,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -2608,6 +2646,7 @@ pub fn main() {
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-AdminRules-createAdminRule-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-AdminRules-createAdminRule-0-java">Java</a></li>
+                          <li class=""><a href="#examples-AdminRules-createAdminRule-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-AdminRules-createAdminRule-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-AdminRules-createAdminRule-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-AdminRules-createAdminRule-0-objc">Obj-C</a></li>
@@ -2654,7 +2693,6 @@ import java.util.*;
 public class AdminRulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -2674,6 +2712,24 @@ public class AdminRulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-AdminRules-createAdminRule-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final AdminRule adminRule = new AdminRule(); // AdminRule | 
+final InsertPosition position = new InsertPosition(); // InsertPosition | Displacement option related to how to interpret the Rule's priority
+
+try {
+    final result = await api_instance.createAdminRule(adminRule, position);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->createAdminRule: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -2702,7 +2758,6 @@ public class AdminRulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-AdminRules-createAdminRule-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -2792,7 +2847,6 @@ namespace Example
                             <div class="tab-pane" id="examples-AdminRules-createAdminRule-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -2815,7 +2869,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::AdminRulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -2840,7 +2893,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -3048,6 +3100,7 @@ Displacement option related to how to interpret the Rule&#39;s priority
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-AdminRules-deleteAdminRuleById-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-AdminRules-deleteAdminRuleById-0-java">Java</a></li>
+                          <li class=""><a href="#examples-AdminRules-deleteAdminRuleById-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-AdminRules-deleteAdminRuleById-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-AdminRules-deleteAdminRuleById-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-AdminRules-deleteAdminRuleById-0-objc">Obj-C</a></li>
@@ -3079,7 +3132,6 @@ import java.util.*;
 public class AdminRulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -3097,6 +3149,23 @@ public class AdminRulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-AdminRules-deleteAdminRuleById-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String id = new String(); // String | The rule identifier
+
+try {
+    final result = await api_instance.deleteAdminRuleById(id);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->deleteAdminRuleById: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -3123,7 +3192,6 @@ public class AdminRulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-AdminRules-deleteAdminRuleById-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -3203,7 +3271,6 @@ namespace Example
                             <div class="tab-pane" id="examples-AdminRules-deleteAdminRuleById-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -3224,7 +3291,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::AdminRulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -3247,7 +3313,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -3386,6 +3451,7 @@ The rule identifier
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-AdminRules-findAdminRules-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-AdminRules-findAdminRules-0-java">Java</a></li>
+                          <li class=""><a href="#examples-AdminRules-findAdminRules-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-AdminRules-findAdminRules-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-AdminRules-findAdminRules-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-AdminRules-findAdminRules-0-objc">Obj-C</a></li>
@@ -3442,7 +3508,6 @@ import java.util.*;
 public class AdminRulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -3463,6 +3528,25 @@ public class AdminRulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-AdminRules-findAdminRules-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final Integer limit = new Integer(); // Integer | Maximum number of rules to return from the query. If there are more rules, the response will return an X-ACL-NEXTCURSOR header with a value that can be used for the nextCursor parameter on a subsequent request, until X-ACL-NEXTCURSOR is null
+final String nextCursor = new String(); // String | The next cursor identifier when doing cursor paging, as returned by the X-ACL-NEXTCURSOR response header
+final AdminRuleFilter adminRuleFilter = new AdminRuleFilter(); // AdminRuleFilter | 
+
+try {
+    final result = await api_instance.findAdminRules(limit, nextCursor, adminRuleFilter);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->findAdminRules: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -3492,7 +3576,6 @@ public class AdminRulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-AdminRules-findAdminRules-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -3586,7 +3669,6 @@ namespace Example
                             <div class="tab-pane" id="examples-AdminRules-findAdminRules-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -3610,7 +3692,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::AdminRulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -3636,7 +3717,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -3885,6 +3965,7 @@ The next cursor identifier when doing cursor paging, as returned by the X-ACL-NE
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-AdminRules-findAllAdminRules-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-AdminRules-findAllAdminRules-0-java">Java</a></li>
+                          <li class=""><a href="#examples-AdminRules-findAllAdminRules-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-AdminRules-findAllAdminRules-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-AdminRules-findAllAdminRules-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-AdminRules-findAllAdminRules-0-objc">Obj-C</a></li>
@@ -3917,7 +3998,6 @@ import java.util.*;
 public class AdminRulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -3937,6 +4017,24 @@ public class AdminRulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-AdminRules-findAllAdminRules-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final Integer limit = new Integer(); // Integer | Maximum number of rules to return from the query. If there are more rules, the response will return an X-ACL-NEXTCURSOR header with a value that can be used for the nextCursor parameter on a subsequent request, until X-ACL-NEXTCURSOR is null
+final String nextCursor = new String(); // String | The next cursor identifier when doing cursor paging, as returned by the X-ACL-NEXTCURSOR response header
+
+try {
+    final result = await api_instance.findAllAdminRules(limit, nextCursor);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->findAllAdminRules: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -3965,7 +4063,6 @@ public class AdminRulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-AdminRules-findAllAdminRules-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -4055,7 +4152,6 @@ namespace Example
                             <div class="tab-pane" id="examples-AdminRules-findAllAdminRules-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -4078,7 +4174,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::AdminRulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -4103,7 +4198,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -4299,6 +4393,7 @@ The next cursor identifier when doing cursor paging, as returned by the X-ACL-NE
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-AdminRules-findFirstAdminRule-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-AdminRules-findFirstAdminRule-0-java">Java</a></li>
+                          <li class=""><a href="#examples-AdminRules-findFirstAdminRule-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-AdminRules-findFirstAdminRule-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-AdminRules-findFirstAdminRule-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-AdminRules-findFirstAdminRule-0-objc">Obj-C</a></li>
@@ -4355,7 +4450,6 @@ import java.util.*;
 public class AdminRulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -4374,6 +4468,23 @@ public class AdminRulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-AdminRules-findFirstAdminRule-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final AdminRuleFilter adminRuleFilter = new AdminRuleFilter(); // AdminRuleFilter | 
+
+try {
+    final result = await api_instance.findFirstAdminRule(adminRuleFilter);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->findFirstAdminRule: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -4401,7 +4512,6 @@ public class AdminRulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-AdminRules-findFirstAdminRule-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -4485,7 +4595,6 @@ namespace Example
                             <div class="tab-pane" id="examples-AdminRules-findFirstAdminRule-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -4507,7 +4616,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::AdminRulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -4531,7 +4639,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -4732,6 +4839,7 @@ $(document).ready(function() {
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-AdminRules-findOneAdminRuleByPriority-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-AdminRules-findOneAdminRuleByPriority-0-java">Java</a></li>
+                          <li class=""><a href="#examples-AdminRules-findOneAdminRuleByPriority-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-AdminRules-findOneAdminRuleByPriority-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-AdminRules-findOneAdminRuleByPriority-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-AdminRules-findOneAdminRuleByPriority-0-objc">Obj-C</a></li>
@@ -4764,7 +4872,6 @@ import java.util.*;
 public class AdminRulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -4783,6 +4890,23 @@ public class AdminRulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-AdminRules-findOneAdminRuleByPriority-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final Long priority = new Long(); // Long | The rule priority to search for
+
+try {
+    final result = await api_instance.findOneAdminRuleByPriority(priority);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->findOneAdminRuleByPriority: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -4810,7 +4934,6 @@ public class AdminRulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-AdminRules-findOneAdminRuleByPriority-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -4894,7 +5017,6 @@ namespace Example
                             <div class="tab-pane" id="examples-AdminRules-findOneAdminRuleByPriority-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -4916,7 +5038,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::AdminRulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -4940,7 +5061,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -5145,6 +5265,7 @@ The rule priority to search for
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-AdminRules-getAdminRuleById-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-AdminRules-getAdminRuleById-0-java">Java</a></li>
+                          <li class=""><a href="#examples-AdminRules-getAdminRuleById-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-AdminRules-getAdminRuleById-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-AdminRules-getAdminRuleById-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-AdminRules-getAdminRuleById-0-objc">Obj-C</a></li>
@@ -5177,7 +5298,6 @@ import java.util.*;
 public class AdminRulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -5196,6 +5316,23 @@ public class AdminRulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-AdminRules-getAdminRuleById-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String id = new String(); // String | The rule identifier
+
+try {
+    final result = await api_instance.getAdminRuleById(id);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getAdminRuleById: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -5223,7 +5360,6 @@ public class AdminRulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-AdminRules-getAdminRuleById-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -5307,7 +5443,6 @@ namespace Example
                             <div class="tab-pane" id="examples-AdminRules-getAdminRuleById-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -5329,7 +5464,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::AdminRulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -5353,7 +5487,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -5533,6 +5666,7 @@ The rule identifier
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-AdminRules-shiftAdminRulesByPiority-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-AdminRules-shiftAdminRulesByPiority-0-java">Java</a></li>
+                          <li class=""><a href="#examples-AdminRules-shiftAdminRulesByPiority-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-AdminRules-shiftAdminRulesByPiority-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-AdminRules-shiftAdminRulesByPiority-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-AdminRules-shiftAdminRulesByPiority-0-objc">Obj-C</a></li>
@@ -5565,7 +5699,6 @@ import java.util.*;
 public class AdminRulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -5585,6 +5718,24 @@ public class AdminRulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-AdminRules-shiftAdminRulesByPiority-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final Long priorityStart = new Long(); // Long | The minimum priority to start shifting at (inclusive)
+final Long offset = new Long(); // Long | The priority offset to apply to all rules from priorityStart onwards
+
+try {
+    final result = await api_instance.shiftAdminRulesByPiority(priorityStart, offset);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->shiftAdminRulesByPiority: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -5613,7 +5764,6 @@ public class AdminRulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-AdminRules-shiftAdminRulesByPiority-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -5701,7 +5851,6 @@ namespace Example
                             <div class="tab-pane" id="examples-AdminRules-shiftAdminRulesByPiority-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -5724,7 +5873,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::AdminRulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -5749,7 +5897,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -5960,6 +6107,7 @@ The priority offset to apply to all rules from priorityStart onwards
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-AdminRules-swapAdminRules-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-AdminRules-swapAdminRules-0-java">Java</a></li>
+                          <li class=""><a href="#examples-AdminRules-swapAdminRules-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-AdminRules-swapAdminRules-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-AdminRules-swapAdminRules-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-AdminRules-swapAdminRules-0-objc">Obj-C</a></li>
@@ -5991,7 +6139,6 @@ import java.util.*;
 public class AdminRulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -6010,6 +6157,24 @@ public class AdminRulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-AdminRules-swapAdminRules-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String id = new String(); // String | The rule identifier
+final String id2 = new String(); // String | The admin rule identifier to swap priorities with
+
+try {
+    final result = await api_instance.swapAdminRules(id, id2);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->swapAdminRules: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -6037,7 +6202,6 @@ public class AdminRulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-AdminRules-swapAdminRules-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -6121,7 +6285,6 @@ namespace Example
                             <div class="tab-pane" id="examples-AdminRules-swapAdminRules-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -6143,7 +6306,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::AdminRulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -6167,7 +6329,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -6331,6 +6492,7 @@ The admin rule identifier to swap priorities with
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-AdminRules-updateAdminRule-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-AdminRules-updateAdminRule-0-java">Java</a></li>
+                          <li class=""><a href="#examples-AdminRules-updateAdminRule-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-AdminRules-updateAdminRule-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-AdminRules-updateAdminRule-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-AdminRules-updateAdminRule-0-objc">Obj-C</a></li>
@@ -6377,7 +6539,6 @@ import java.util.*;
 public class AdminRulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -6397,6 +6558,24 @@ public class AdminRulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-AdminRules-updateAdminRule-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String id = new String(); // String | The rule identifier
+final AdminRule adminRule = new AdminRule(); // AdminRule | 
+
+try {
+    final result = await api_instance.updateAdminRule(id, adminRule);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->updateAdminRule: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -6425,7 +6604,6 @@ public class AdminRulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-AdminRules-updateAdminRule-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -6513,7 +6691,6 @@ namespace Example
                             <div class="tab-pane" id="examples-AdminRules-updateAdminRule-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -6536,7 +6713,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::AdminRulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -6561,7 +6737,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -6841,6 +7016,7 @@ $(document).ready(function() {
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Authorization-getAccessInfo-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Authorization-getAccessInfo-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Authorization-getAccessInfo-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Authorization-getAccessInfo-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Authorization-getAccessInfo-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Authorization-getAccessInfo-0-objc">Obj-C</a></li>
@@ -6886,7 +7062,6 @@ import java.util.*;
 public class AuthorizationApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -6905,6 +7080,23 @@ public class AuthorizationApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Authorization-getAccessInfo-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final AccessRequest accessRequest = new AccessRequest(); // AccessRequest | 
+
+try {
+    final result = await api_instance.getAccessInfo(accessRequest);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getAccessInfo: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -6932,7 +7124,6 @@ public class AuthorizationApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Authorization-getAccessInfo-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -7016,7 +7207,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Authorization-getAccessInfo-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -7038,7 +7228,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::AuthorizationApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -7062,7 +7251,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -7241,6 +7429,7 @@ $(document).ready(function() {
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Authorization-getAdminAuthorization-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Authorization-getAdminAuthorization-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Authorization-getAdminAuthorization-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Authorization-getAdminAuthorization-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Authorization-getAdminAuthorization-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Authorization-getAdminAuthorization-0-objc">Obj-C</a></li>
@@ -7282,7 +7471,6 @@ import java.util.*;
 public class AuthorizationApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -7301,6 +7489,23 @@ public class AuthorizationApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Authorization-getAdminAuthorization-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final AdminAccessRequest adminAccessRequest = new AdminAccessRequest(); // AdminAccessRequest | 
+
+try {
+    final result = await api_instance.getAdminAuthorization(adminAccessRequest);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getAdminAuthorization: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -7328,7 +7533,6 @@ public class AuthorizationApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Authorization-getAdminAuthorization-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -7412,7 +7616,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Authorization-getAdminAuthorization-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -7434,7 +7637,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::AuthorizationApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -7458,7 +7660,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -7637,6 +7838,7 @@ $(document).ready(function() {
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Authorization-getMatchingRules-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Authorization-getMatchingRules-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Authorization-getMatchingRules-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Authorization-getMatchingRules-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Authorization-getMatchingRules-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Authorization-getMatchingRules-0-objc">Obj-C</a></li>
@@ -7682,7 +7884,6 @@ import java.util.*;
 public class AuthorizationApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -7701,6 +7902,23 @@ public class AuthorizationApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Authorization-getMatchingRules-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final AccessRequest accessRequest = new AccessRequest(); // AccessRequest | 
+
+try {
+    final result = await api_instance.getMatchingRules(accessRequest);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getMatchingRules: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -7728,7 +7946,6 @@ public class AuthorizationApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Authorization-getMatchingRules-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -7812,7 +8029,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Authorization-getMatchingRules-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -7834,7 +8050,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::AuthorizationApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -7858,7 +8073,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -8059,6 +8273,7 @@ $(document).ready(function() {
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Rules-countAllRules-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Rules-countAllRules-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Rules-countAllRules-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Rules-countAllRules-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Rules-countAllRules-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Rules-countAllRules-0-objc">Obj-C</a></li>
@@ -8091,7 +8306,6 @@ import java.util.*;
 public class RulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -8109,6 +8323,22 @@ public class RulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Rules-countAllRules-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+
+try {
+    final result = await api_instance.countAllRules();
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->countAllRules: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -8135,7 +8365,6 @@ public class RulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Rules-countAllRules-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -8215,7 +8444,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Rules-countAllRules-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -8236,7 +8464,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -8259,7 +8486,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -8385,6 +8611,7 @@ pub fn main() {
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Rules-countRules-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Rules-countRules-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Rules-countRules-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Rules-countRules-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Rules-countRules-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Rules-countRules-0-objc">Obj-C</a></li>
@@ -8457,7 +8684,6 @@ import java.util.*;
 public class RulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -8476,6 +8702,23 @@ public class RulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Rules-countRules-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final RuleFilter ruleFilter = new RuleFilter(); // RuleFilter | 
+
+try {
+    final result = await api_instance.countRules(ruleFilter);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->countRules: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -8503,7 +8746,6 @@ public class RulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Rules-countRules-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -8587,7 +8829,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Rules-countRules-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -8609,7 +8850,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -8633,7 +8873,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -8812,6 +9051,7 @@ $(document).ready(function() {
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Rules-createRule-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Rules-createRule-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Rules-createRule-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Rules-createRule-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Rules-createRule-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Rules-createRule-0-objc">Obj-C</a></li>
@@ -8863,7 +9103,6 @@ import java.util.*;
 public class RulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -8883,6 +9122,24 @@ public class RulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Rules-createRule-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final Rule rule = new Rule(); // Rule | 
+final InsertPosition position = new InsertPosition(); // InsertPosition | Displacement option related to how to interpret the Rule's priority
+
+try {
+    final result = await api_instance.createRule(rule, position);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->createRule: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -8911,7 +9168,6 @@ public class RulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Rules-createRule-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -9001,7 +9257,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Rules-createRule-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -9024,7 +9279,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -9049,7 +9303,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -9320,6 +9573,7 @@ Displacement option related to how to interpret the Rule&#39;s priority
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Rules-deleteRuleById-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Rules-deleteRuleById-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Rules-deleteRuleById-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Rules-deleteRuleById-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Rules-deleteRuleById-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Rules-deleteRuleById-0-objc">Obj-C</a></li>
@@ -9351,7 +9605,6 @@ import java.util.*;
 public class RulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -9369,6 +9622,23 @@ public class RulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Rules-deleteRuleById-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String id = new String(); // String | The rule identifier
+
+try {
+    final result = await api_instance.deleteRuleById(id);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->deleteRuleById: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -9395,7 +9665,6 @@ public class RulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Rules-deleteRuleById-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -9475,7 +9744,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Rules-deleteRuleById-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -9496,7 +9764,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -9519,7 +9786,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -9658,6 +9924,7 @@ The rule identifier
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Rules-findOneRuleByPriority-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Rules-findOneRuleByPriority-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Rules-findOneRuleByPriority-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Rules-findOneRuleByPriority-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Rules-findOneRuleByPriority-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Rules-findOneRuleByPriority-0-objc">Obj-C</a></li>
@@ -9690,7 +9957,6 @@ import java.util.*;
 public class RulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -9709,6 +9975,23 @@ public class RulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Rules-findOneRuleByPriority-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final Long priority = new Long(); // Long | The rule priority to search for
+
+try {
+    final result = await api_instance.findOneRuleByPriority(priority);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->findOneRuleByPriority: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -9736,7 +10019,6 @@ public class RulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Rules-findOneRuleByPriority-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -9820,7 +10102,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Rules-findOneRuleByPriority-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -9842,7 +10123,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -9866,7 +10146,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -10071,6 +10350,7 @@ The rule priority to search for
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Rules-getLayerDetailsByRuleId-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Rules-getLayerDetailsByRuleId-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Rules-getLayerDetailsByRuleId-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Rules-getLayerDetailsByRuleId-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Rules-getLayerDetailsByRuleId-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Rules-getLayerDetailsByRuleId-0-objc">Obj-C</a></li>
@@ -10103,7 +10383,6 @@ import java.util.*;
 public class RulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -10122,6 +10401,23 @@ public class RulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Rules-getLayerDetailsByRuleId-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String id = new String(); // String | The rule identifier
+
+try {
+    final result = await api_instance.getLayerDetailsByRuleId(id);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getLayerDetailsByRuleId: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -10149,7 +10445,6 @@ public class RulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Rules-getLayerDetailsByRuleId-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -10233,7 +10528,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Rules-getLayerDetailsByRuleId-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -10255,7 +10549,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -10279,7 +10572,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -10503,6 +10795,7 @@ The rule identifier
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Rules-getRuleById-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Rules-getRuleById-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Rules-getRuleById-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Rules-getRuleById-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Rules-getRuleById-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Rules-getRuleById-0-objc">Obj-C</a></li>
@@ -10535,7 +10828,6 @@ import java.util.*;
 public class RulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -10554,6 +10846,23 @@ public class RulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Rules-getRuleById-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String id = new String(); // String | The rule identifier
+
+try {
+    final result = await api_instance.getRuleById(id);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getRuleById: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -10581,7 +10890,6 @@ public class RulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Rules-getRuleById-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -10665,7 +10973,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Rules-getRuleById-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -10687,7 +10994,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -10711,7 +11017,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -10891,6 +11196,7 @@ The rule identifier
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Rules-getRules-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Rules-getRules-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Rules-getRules-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Rules-getRules-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Rules-getRules-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Rules-getRules-0-objc">Obj-C</a></li>
@@ -10923,7 +11229,6 @@ import java.util.*;
 public class RulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -10943,6 +11248,24 @@ public class RulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Rules-getRules-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final Integer limit = new Integer(); // Integer | Maximum number of rules to return from the query. If there are more rules, the response will return an X-ACL-NEXTCURSOR header with a value that can be used for the nextCursor parameter on a subsequent request, until X-ACL-NEXTCURSOR is null
+final String nextCursor = new String(); // String | The next cursor identifier when doing cursor paging, as returned by the X-ACL-NEXTCURSOR response header
+
+try {
+    final result = await api_instance.getRules(limit, nextCursor);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getRules: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -10971,7 +11294,6 @@ public class RulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Rules-getRules-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -11061,7 +11383,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Rules-getRules-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -11084,7 +11405,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -11109,7 +11429,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -11305,6 +11624,7 @@ The next cursor identifier when doing cursor paging, as returned by the X-ACL-NE
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Rules-queryRules-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Rules-queryRules-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Rules-queryRules-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Rules-queryRules-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Rules-queryRules-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Rules-queryRules-0-objc">Obj-C</a></li>
@@ -11377,7 +11697,6 @@ import java.util.*;
 public class RulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -11398,6 +11717,25 @@ public class RulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Rules-queryRules-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final Integer limit = new Integer(); // Integer | Maximum number of rules to return from the query. If there are more rules, the response will return an X-ACL-NEXTCURSOR header with a value that can be used for the nextCursor parameter on a subsequent request, until X-ACL-NEXTCURSOR is null
+final String nextCursor = new String(); // String | The next cursor identifier when doing cursor paging, as returned by the X-ACL-NEXTCURSOR response header
+final RuleFilter ruleFilter = new RuleFilter(); // RuleFilter | 
+
+try {
+    final result = await api_instance.queryRules(limit, nextCursor, ruleFilter);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->queryRules: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -11427,7 +11765,6 @@ public class RulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Rules-queryRules-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -11521,7 +11858,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Rules-queryRules-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -11545,7 +11881,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -11571,7 +11906,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -11820,6 +12154,7 @@ The next cursor identifier when doing cursor paging, as returned by the X-ACL-NE
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Rules-ruleExistsById-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Rules-ruleExistsById-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Rules-ruleExistsById-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Rules-ruleExistsById-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Rules-ruleExistsById-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Rules-ruleExistsById-0-objc">Obj-C</a></li>
@@ -11852,7 +12187,6 @@ import java.util.*;
 public class RulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -11871,6 +12205,23 @@ public class RulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Rules-ruleExistsById-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String id = new String(); // String | The rule identifier
+
+try {
+    final result = await api_instance.ruleExistsById(id);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->ruleExistsById: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -11898,7 +12249,6 @@ public class RulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Rules-ruleExistsById-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -11982,7 +12332,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Rules-ruleExistsById-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -12004,7 +12353,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -12028,7 +12376,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -12186,6 +12533,7 @@ The rule identifier
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Rules-setRuleAllowedStyles-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Rules-setRuleAllowedStyles-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Rules-setRuleAllowedStyles-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Rules-setRuleAllowedStyles-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Rules-setRuleAllowedStyles-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Rules-setRuleAllowedStyles-0-objc">Obj-C</a></li>
@@ -12219,7 +12567,6 @@ import java.util.*;
 public class RulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -12238,6 +12585,24 @@ public class RulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Rules-setRuleAllowedStyles-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String id = new String(); // String | The rule identifier
+final set[String] string = new set[String](); // set[String] | 
+
+try {
+    final result = await api_instance.setRuleAllowedStyles(id, string);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->setRuleAllowedStyles: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -12265,7 +12630,6 @@ public class RulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Rules-setRuleAllowedStyles-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -12351,7 +12715,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Rules-setRuleAllowedStyles-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -12373,7 +12736,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -12397,7 +12759,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -12599,6 +12960,7 @@ $(document).ready(function() {
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Rules-setRuleLayerDetails-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Rules-setRuleLayerDetails-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Rules-setRuleLayerDetails-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Rules-setRuleLayerDetails-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Rules-setRuleLayerDetails-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Rules-setRuleLayerDetails-0-objc">Obj-C</a></li>
@@ -12648,7 +13010,6 @@ import java.util.*;
 public class RulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -12667,6 +13028,24 @@ public class RulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Rules-setRuleLayerDetails-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String id = new String(); // String | The rule identifier
+final LayerDetails layerDetails = new LayerDetails(); // LayerDetails | 
+
+try {
+    final result = await api_instance.setRuleLayerDetails(id, layerDetails);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->setRuleLayerDetails: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -12694,7 +13073,6 @@ public class RulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Rules-setRuleLayerDetails-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -12780,7 +13158,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Rules-setRuleLayerDetails-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -12802,7 +13179,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -12826,7 +13202,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -13018,6 +13393,7 @@ $(document).ready(function() {
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Rules-setRuleLimits-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Rules-setRuleLimits-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Rules-setRuleLimits-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Rules-setRuleLimits-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Rules-setRuleLimits-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Rules-setRuleLimits-0-objc">Obj-C</a></li>
@@ -13052,7 +13428,6 @@ import java.util.*;
 public class RulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -13071,6 +13446,24 @@ public class RulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Rules-setRuleLimits-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String id = new String(); // String | The rule identifier
+final RuleLimits ruleLimits = new RuleLimits(); // RuleLimits | 
+
+try {
+    final result = await api_instance.setRuleLimits(id, ruleLimits);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->setRuleLimits: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -13098,7 +13491,6 @@ public class RulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Rules-setRuleLimits-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -13184,7 +13576,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Rules-setRuleLimits-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -13206,7 +13597,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -13230,7 +13620,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -13444,6 +13833,7 @@ $(document).ready(function() {
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Rules-shiftRulesByPriority-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Rules-shiftRulesByPriority-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Rules-shiftRulesByPriority-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Rules-shiftRulesByPriority-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Rules-shiftRulesByPriority-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Rules-shiftRulesByPriority-0-objc">Obj-C</a></li>
@@ -13476,7 +13866,6 @@ import java.util.*;
 public class RulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -13496,6 +13885,24 @@ public class RulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Rules-shiftRulesByPriority-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final Long priorityStart = new Long(); // Long | The minimum priority to start shifting at (inclusive)
+final Long offset = new Long(); // Long | The priority offset to apply to all rules from priorityStart onwards
+
+try {
+    final result = await api_instance.shiftRulesByPriority(priorityStart, offset);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->shiftRulesByPriority: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -13524,7 +13931,6 @@ public class RulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Rules-shiftRulesByPriority-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -13612,7 +14018,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Rules-shiftRulesByPriority-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -13635,7 +14040,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -13660,7 +14064,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -13871,6 +14274,7 @@ The priority offset to apply to all rules from priorityStart onwards
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Rules-swapRules-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Rules-swapRules-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Rules-swapRules-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Rules-swapRules-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Rules-swapRules-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Rules-swapRules-0-objc">Obj-C</a></li>
@@ -13902,7 +14306,6 @@ import java.util.*;
 public class RulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -13921,6 +14324,24 @@ public class RulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Rules-swapRules-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String id = new String(); // String | The rule identifier
+final String id2 = new String(); // String | The rule identifier to swap priorities with
+
+try {
+    final result = await api_instance.swapRules(id, id2);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->swapRules: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -13948,7 +14369,6 @@ public class RulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Rules-swapRules-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -14032,7 +14452,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Rules-swapRules-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -14054,7 +14473,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -14078,7 +14496,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
@@ -14242,6 +14659,7 @@ The rule identifier to swap priorities with
                         <ul class="nav nav-tabs nav-tabs-examples">
                           <li class="active"><a href="#examples-Rules-updateRuleById-0-curl">Curl</a></li>
                           <li class=""><a href="#examples-Rules-updateRuleById-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Rules-updateRuleById-0-dart">Dart</a></li>
                           <li class=""><a href="#examples-Rules-updateRuleById-0-android">Android</a></li>
                           <!--<li class=""><a href="#examples-Rules-updateRuleById-0-groovy">Groovy</a></li>-->
                           <li class=""><a href="#examples-Rules-updateRuleById-0-objc">Obj-C</a></li>
@@ -14293,7 +14711,6 @@ import java.util.*;
 public class RulesApiExample {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
         // Configure HTTP basic authorization: basicAuth
         HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
         basicAuth.setUsername("YOUR USERNAME");
@@ -14313,6 +14730,24 @@ public class RulesApiExample {
         }
     }
 }
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Rules-updateRuleById-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String id = new String(); // String | The rule identifier
+final Rule rule = new Rule(); // Rule | 
+
+try {
+    final result = await api_instance.updateRuleById(id, rule);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->updateRuleById: $e\n');
+}
+
 </code></pre>
                           </div>
 
@@ -14341,7 +14776,6 @@ public class RulesApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Rules-updateRuleById-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
 // Configure HTTP basic authorization (authentication scheme: basicAuth)
 [apiConfig setUsername:@"YOUR_USERNAME"];
 [apiConfig setPassword:@"YOUR_PASSWORD"];
@@ -14429,7 +14863,6 @@ namespace Example
                             <div class="tab-pane" id="examples-Rules-updateRuleById-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
-
 // Configure HTTP basic authorization: basicAuth
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
 OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
@@ -14452,7 +14885,6 @@ try {
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RulesApi;
-
 # Configure HTTP basic authorization: basicAuth
 $WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
 $WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
@@ -14477,7 +14909,6 @@ import time
 import openapi_client
 from openapi_client.rest import ApiException
 from pprint import pprint
-
 # Configure HTTP basic authorization: basicAuth
 openapi_client.configuration.username = 'YOUR_USERNAME'
 openapi_client.configuration.password = 'YOUR_PASSWORD'
