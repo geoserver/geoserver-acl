@@ -72,7 +72,7 @@
     <fmt.action>format</fmt.action>
     <fmt.skip>false</fmt.skip>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <openapi-generator-maven-plugin.version>6.3.0</openapi-generator-maven-plugin.version>
+    <openapi-generator-maven-plugin.version>7.0.0</openapi-generator-maven-plugin.version>
     <openapi-codegen-skip>false</openapi-codegen-skip>
   </properties>
   <dependencyManagement>
