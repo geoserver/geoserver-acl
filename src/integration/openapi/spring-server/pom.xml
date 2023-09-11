@@ -15,7 +15,7 @@
   <artifactId>gs-acl-api-impl</artifactId>
   <dependencies>
     <dependency>
-      <groupId>org.geoserver.acl.openapi</groupId>
+      <groupId>org.geoserver.acl.openapi.spring5</groupId>
       <artifactId>gs-acl-openapi-spring-server</artifactId>
     </dependency>
     <dependency>

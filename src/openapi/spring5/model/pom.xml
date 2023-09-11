@@ -8,24 +8,38 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.geoserver.acl.openapi</groupId>
-    <artifactId>openapi</artifactId>
+    <groupId>org.geoserver.acl.openapi.spring5</groupId>
+    <artifactId>openapi-spring5</artifactId>
     <version>${revision}</version>
   </parent>
-  <artifactId>gs-acl-openapi-client</artifactId>
+  <artifactId>gs-acl-openapi-model</artifactId>
   <dependencies>
-    <dependency>
-      <groupId>org.geoserver.acl.openapi</groupId>
-      <artifactId>gs-acl-openapi-model</artifactId>
-    </dependency>
-    <dependency>
-      <!-- RestTemplate based API client-->
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>2.2.7</version>
+    </dependency>
+    <dependency>
+      <!-- @javax.annotation.Nullable annotation -->
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
     </dependency>
     <dependency>
       <!-- @javax.annotation.Generated annotation -->
@@ -34,9 +48,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
@@ -64,45 +78,35 @@
         <artifactId>openapi-generator-maven-plugin</artifactId>
         <executions>
           <execution>
-            <?m2e ignore?>
-            <id>generate-client</id>
+            <id>generate-shread-java-rules-model</id>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
               <skip>${openapi-codegen-skip}</skip>
-              <!-- see https://openapi-generator.tech/docs/generators/spring -->
-              <inputSpec>${project.basedir}/../acl-api.yaml</inputSpec>
-              <generatorName>java</generatorName>
+              <!-- see https://openapi-generator.tech/docs/generators/java/ -->
+              <generatorName>spring</generatorName>
+              <inputSpec>${project.basedir}/../../acl-api.yaml</inputSpec>
               <modelPackage>org.geoserver.acl.api.model</modelPackage>
-              <apiPackage>org.geoserver.acl.api.client</apiPackage>
-              <invokerPackage>org.geoserver.acl.api.client</invokerPackage>
-              <generateApis>true</generateApis>
-              <generateModels>false</generateModels>
+              <generateModels>true</generateModels>
+              <generateApis>false</generateApis>
               <generateSupportingFiles>true</generateSupportingFiles>
-              <!--supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate-->
-              <generateApiTests>false</generateApiTests>
+              <supportingFilesToGenerate>pom.xml</supportingFilesToGenerate>
               <generateModelTests>false</generateModelTests>
+              <generateApiTests>false</generateApiTests>
+              <generateApiDocumentation>false</generateApiDocumentation>
+              <generateModelDocumentation>false</generateModelDocumentation>
+              <enablePostProcessFile>true</enablePostProcessFile>
               <configOptions>
-                <library>resttemplate</library>
-                <useTags>true</useTags>
                 <dateLibrary>java8-localdatetime</dateLibrary>
                 <openApiNullable>false</openApiNullable>
+                <serializationLibrary>jackson</serializationLibrary>
+                <addCompileSourceRoot>true</addCompileSourceRoot>
+                <validateSpec>true</validateSpec>
+                <useRuntimeException>true</useRuntimeException>
                 <useBeanValidation>true</useBeanValidation>
                 <performBeanValidation>false</performBeanValidation>
-                <withXml>false</withXml>
               </configOptions>
-              <importMappings>
-                <importMapping>Rule=org.geoserver.acl.api.model.Rule</importMapping>
-                <importMapping>RuleLimits=org.geoserver.acl.api.model.RuleLimits</importMapping>
-                <importMapping>LayerDetails=org.geoserver.acl.api.model.LayerDetails</importMapping>
-                <importMapping>RuleFilter=org.geoserver.acl.api.model.RuleFilter</importMapping>
-                <importMapping>AdminRule=org.geoserver.acl.api.model.AdminRule</importMapping>
-                <importMapping>AdminRuleFilter=org.geoserver.acl.api.model.AdminRuleFilter</importMapping>
-                <importMapping>InsertPosition=org.geoserver.acl.api.model.InsertPosition</importMapping>
-                <importMapping>GeoServerUser=org.geoserver.acl.api.model.GeoServerUser</importMapping>
-                <importMapping>GeoServerUserGroup=org.geoserver.acl.api.model.GeoServerUserGroup</importMapping>
-              </importMappings>
             </configuration>
           </execution>
         </executions>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/* (c) 2023 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver.acl.openapi</groupId>
+    <artifactId>openapi</artifactId>
+    <version>${revision}</version>
+  </parent>
+  <groupId>org.geoserver.acl.openapi.spring5</groupId>
+  <artifactId>openapi-spring5</artifactId>
+  <packaging>pom</packaging>
+  <modules>
+    <module>model</module>
+    <module>server-api</module>
+    <module>java-client</module>
+  </modules>
+  <properties>
+    <jakarta-annotation-version>1.3.5</jakarta-annotation-version>
+  </properties>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <!-- @javax.annotation.Nullable annotation -->
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <version>3.0.2</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>

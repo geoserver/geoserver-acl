@@ -8,47 +8,34 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.geoserver.acl.openapi</groupId>
-    <artifactId>openapi</artifactId>
+    <groupId>org.geoserver.acl.openapi.spring5</groupId>
+    <artifactId>openapi-spring5</artifactId>
     <version>${revision}</version>
   </parent>
-  <artifactId>gs-acl-openapi-spring-server</artifactId>
+  <artifactId>gs-acl-openapi-client</artifactId>
   <dependencies>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.acl.openapi</groupId>
+      <groupId>org.geoserver.acl.openapi.spring5</groupId>
       <artifactId>gs-acl-openapi-model</artifactId>
+    </dependency>
+    <dependency>
+      <!-- RestTemplate based API client-->
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-commons</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
-      <artifactId>jackson-dataformat-smile</artifactId>
     </dependency>
     <dependency>
       <!-- @javax.annotation.Generated annotation -->
       <groupId>jakarta.annotation</groupId>
       <artifactId>jakarta.annotation-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -78,35 +65,31 @@
         <executions>
           <execution>
             <?m2e ignore?>
-            <id>generate-spring-server-stub</id>
+            <id>generate-client</id>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
               <skip>${openapi-codegen-skip}</skip>
               <!-- see https://openapi-generator.tech/docs/generators/spring -->
-              <inputSpec>${project.basedir}/../acl-api.yaml</inputSpec>
-              <generatorName>spring</generatorName>
+              <inputSpec>${project.basedir}/../../acl-api.yaml</inputSpec>
+              <generatorName>java</generatorName>
               <modelPackage>org.geoserver.acl.api.model</modelPackage>
-              <apiPackage>org.geoserver.acl.api.server</apiPackage>
-              <invokerPackage>org.geoserver.acl.api.server</invokerPackage>
+              <apiPackage>org.geoserver.acl.api.client</apiPackage>
+              <invokerPackage>org.geoserver.acl.api.client</invokerPackage>
               <generateApis>true</generateApis>
               <generateModels>false</generateModels>
               <generateSupportingFiles>true</generateSupportingFiles>
-              <supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
+              <!--supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate-->
               <generateApiTests>false</generateApiTests>
               <generateModelTests>false</generateModelTests>
               <configOptions>
-                <library>spring-boot</library>
+                <library>resttemplate</library>
                 <useTags>true</useTags>
-                <reactive>false</reactive>
-                <delegatePattern>true</delegatePattern>
-                <openApiNullable>false</openApiNullable>
-                <interfaceOnly>false</interfaceOnly>
-                <annotationLibrary>swagger2</annotationLibrary>
                 <dateLibrary>java8-localdatetime</dateLibrary>
+                <openApiNullable>false</openApiNullable>
                 <useBeanValidation>true</useBeanValidation>
-                <performBeanValidation>true</performBeanValidation>
+                <performBeanValidation>false</performBeanValidation>
                 <withXml>false</withXml>
               </configOptions>
               <importMappings>

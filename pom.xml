@@ -123,17 +123,17 @@
       </dependency>
       <!-- OpenAPI code-gen libraries -->
       <dependency>
-        <groupId>org.geoserver.acl.openapi</groupId>
+        <groupId>org.geoserver.acl.openapi.spring5</groupId>
         <artifactId>gs-acl-openapi-model</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.acl.openapi</groupId>
+        <groupId>org.geoserver.acl.openapi.spring5</groupId>
         <artifactId>gs-acl-openapi-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.acl.openapi</groupId>
+        <groupId>org.geoserver.acl.openapi.spring5</groupId>
         <artifactId>gs-acl-openapi-spring-server</artifactId>
         <version>${project.version}</version>
       </dependency>
