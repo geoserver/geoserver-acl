@@ -193,11 +193,6 @@
       </dependency>
       <dependency>
         <groupId>org.geoserver.acl.plugin</groupId>
-        <artifactId>gs-acl-plugin-restconfig</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.geoserver.acl.plugin</groupId>
         <artifactId>gs-acl-plugin-webui</artifactId>
         <version>${project.version}</version>
       </dependency>
