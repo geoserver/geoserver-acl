@@ -25,7 +25,6 @@ import org.geoserver.acl.domain.rules.RuleFilter;
 import org.geoserver.acl.domain.rules.RuleIdentifierConflictException;
 import org.geoserver.acl.domain.rules.RuleLimits;
 import org.geoserver.acl.domain.rules.RuleRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientResponseException;
@@ -202,10 +201,10 @@ public class RuleRepositoryClientAdaptor implements RuleRepository {
             throw new IllegalStateException(e.getMessage(), e);
         }
 
-        HttpStatus statusCode = response.getStatusCode();
-        if (OK.equals(statusCode)) {
+        int statusCode = response.getStatusCodeValue();
+        if (OK.value() == statusCode) {
             return Optional.of(detailsMapper.map(response.getBody()));
-        } else if (NO_CONTENT.equals(statusCode)) {
+        } else if (NO_CONTENT.value() == statusCode) {
             return Optional.empty();
         }
         throw new IllegalStateException("Unexpected response status code: " + statusCode);

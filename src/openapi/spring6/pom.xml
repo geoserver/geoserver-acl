@@ -12,16 +12,15 @@
     <artifactId>openapi</artifactId>
     <version>${revision}</version>
   </parent>
-  <groupId>org.geoserver.acl.openapi.spring5</groupId>
-  <artifactId>openapi-spring5</artifactId>
+  <groupId>org.geoserver.acl.openapi.spring6</groupId>
+  <artifactId>openapi-spring6</artifactId>
   <packaging>pom</packaging>
   <modules>
     <module>model</module>
-    <module>server-api</module>
     <module>java-client</module>
   </modules>
   <properties>
-    <jakarta-annotation-version>1.3.5</jakarta-annotation-version>
+    <spring-boot.version>${spring-boot-3.version}</spring-boot.version>
   </properties>
   <dependencyManagement>
     <dependencies>

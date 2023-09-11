@@ -137,6 +137,16 @@
         <artifactId>gs-acl-openapi-spring-server</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.openapi.spring6</groupId>
+        <artifactId>gs-acl-openapi-model-spring6</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.openapi.spring6</groupId>
+        <artifactId>gs-acl-openapi-client-spring6</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <!-- JPA integration -->
       <dependency>
         <groupId>org.geoserver.acl.integration.jpa</groupId>
@@ -157,6 +167,11 @@
       <dependency>
         <groupId>org.geoserver.acl.integration.openapi</groupId>
         <artifactId>gs-acl-api-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.integration.openapi</groupId>
+        <artifactId>gs-acl-api-client-spring6</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
