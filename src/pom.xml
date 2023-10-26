@@ -30,10 +30,8 @@
     <spring-cloud.version>2021.0.8</spring-cloud.version>
     <spring-boot.version>2.7.15</spring-boot.version>
     <spring-boot-3.version>3.0.10</spring-boot-3.version>
-    <!-- Default GeoServer version to build and test the plugin against-->
-    <gs.version>2.24-SNAPSHOT</gs.version>
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
-    <gt.version>29.2</gt.version>
+    <gt.version>30.0</gt.version>
     <jts.version>1.19.0</jts.version>
     <lombok.version>1.18.26</lombok.version>
     <mapstruct.version>1.5.3.Final</mapstruct.version>
@@ -200,36 +198,4 @@
       </plugin>
     </plugins>
   </build>
-  <profiles>
-    <profile>
-      <id>gs_stable</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <gs.version>2.23.2</gs.version>
-        <gt.version>29.2</gt.version>
-      </properties>
-    </profile>
-    <profile>
-      <id>gs_maintenance</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <properties>
-        <gs.version>2.22.3</gs.version>
-        <gt.version>28.3</gt.version>
-      </properties>
-    </profile>
-    <profile>
-      <id>gs_dev</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <properties>
-        <gs.version>2.24-SNAPSHOT</gs.version>
-        <gt.version>30-SNAPSHOT</gt.version>
-      </properties>
-    </profile>
-  </profiles>
 </project>

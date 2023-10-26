@@ -27,10 +27,10 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.style.Style;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.FilterFactory2;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,7 +55,7 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
 
     private static final Logger LOGGER = Logging.getLogger(ACLDispatcherCallback.class);
 
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2(null);
+    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory(null);
 
     private AuthorizationService aclService;
 
@@ -294,6 +294,7 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
                     "The '" + styleName + "' style is not available on this layer");
         }
     }
+
     /**
      * Returns a list that contains the request styles that will correspond to the
      * GetMap.getLayers().

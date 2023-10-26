@@ -38,6 +38,7 @@ class RuleTest {
     private void assertValidRange(String range) {
         testAddressRangeRegEx(range, true);
     }
+
     /**
      * Validates the regex in {@link Rule#getAddressRange()} {@link Pattern @Pattern} annotation,
      * not whether hibernate-validator itself works

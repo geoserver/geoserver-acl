@@ -9,7 +9,6 @@
   <groupId>org.geoserver.acl.plugin</groupId>
   <artifactId>plugin</artifactId>
   <packaging>pom</packaging>
-  <name>GeoServer Integration</name>
   <description>GeoServer Acess Control Lists based authorization GeoServer plugin components</description>
   <modules>
     <module>client</module>
@@ -17,7 +16,13 @@
     <module>web</module>
     <module>wps</module>
     <module>config</module>
+    <module>plugin</module>
   </modules>
+  <properties>
+    <!-- Default GeoServer version to build and test the plugin against-->
+    <gs.version>2.25-SNAPSHOT</gs.version>
+    <gt.version>31-SNAPSHOT</gt.version>
+  </properties>
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -156,4 +161,26 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <profiles>
+    <profile>
+      <id>gs_dev</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <gs.version>2.25-SNAPSHOT</gs.version>
+        <gt.version>31-SNAPSHOT</gt.version>
+      </properties>
+    </profile>
+    <profile>
+      <id>gs_stable</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <gs.version>2.24.0</gs.version>
+        <gt.version>30.0</gt.version>
+      </properties>
+    </profile>
+  </profiles>
 </project>

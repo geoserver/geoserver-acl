@@ -8,7 +8,6 @@
   </parent>
   <artifactId>gs-acl-plugin-wps</artifactId>
   <packaging>jar</packaging>
-  <name>ACL WPS extension</name>
   <description>ACL auth at process level</description>
   <dependencies>
     <dependency>

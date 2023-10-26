@@ -7,7 +7,6 @@
     <version>${revision}</version>
   </parent>
   <artifactId>gs-acl-plugin-client</artifactId>
-  <name>GeoServer ACL client API integration</name>
   <description>Provides a GeoSverver ACL AuthorizationService that uses the OpenAPI client to delegate to the ACL remote service</description>
   <dependencies>
     <dependency>
