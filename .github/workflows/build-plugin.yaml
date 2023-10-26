@@ -8,23 +8,30 @@ on:
     branches: [ main ]
 
 jobs:
-  build-plugin:
-    name: Test Plugin for GeoSever
+  test-gs-dev-plugin:
+    name: GeoServer dev plugin tests
     runs-on: ubuntu-latest
-    timeout-minutes: 60
-    strategy:
-      matrix:
-        gs-profile: ["gs_stable", "gs_maintenance"]
-        # gs-profile: ["gs_dev", "gs_stable", "gs_maintenance"]
+    timeout-minutes: 15
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Setup Java
-      uses: actions/setup-java@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v2
       with:
         distribution: 'temurin'
         java-version: '17'
         cache: 'maven'
-    - name: Test plugin
-      run: |
-        ./mvnw -P ${{ matrix.gs-profile }} verify -pl :gs-acl-client-plugin -am -ntp
+    - run: |
+        make plugin-test-gs-dev
+  test-gs-stable-plugin:
+    name: GeoServer stable plugin tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v2
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        cache: 'maven'
+    - run: |
+        make plugin-test-gs-stable
+        

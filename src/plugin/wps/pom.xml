@@ -8,7 +8,6 @@
   </parent>
   <artifactId>gs-acl-plugin-wps</artifactId>
   <packaging>jar</packaging>
-  <name>ACL WPS extension</name>
   <description>ACL auth at process level</description>
   <dependencies>
     <dependency>
@@ -103,7 +102,7 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.15.3</version>
+      <version>1.16.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -15,6 +15,7 @@ public abstract class RulePredicate<T> implements Predicate<T>, Serializable, Cl
     private static final long serialVersionUID = 6565336016075974626L;
 
     protected FilterType type;
+
     /** Only used in TYPE_NAME, tells if also default Rules should be matched. */
     protected boolean includeDefault = true;
 

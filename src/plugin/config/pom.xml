@@ -7,7 +7,6 @@
     <version>${revision}</version>
   </parent>
   <artifactId>gs-acl-plugin-config</artifactId>
-  <name>GeoServer ACL Plugin Configuration</name>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.acl.plugin</groupId>
@@ -91,7 +90,7 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.15.3</version>
+      <version>1.16.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -11,6 +11,12 @@ install:
 plugin:
 	./mvnw clean install -pl :gs-acl-client-plugin --also-make -ntp
 
+plugin-test-gs-dev:
+	./mvnw -P gs_dev verify -pl :gs-acl-client-plugin -am -ntp
+
+plugin-test-gs-stable:
+	./mvnw -P gs_stable verify -pl :gs-acl-client-plugin -am -ntp
+
 lint:
 	./mvnw sortpom:verify fmt:check -ntp
 

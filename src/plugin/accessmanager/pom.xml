@@ -7,7 +7,6 @@
     <version>${revision}</version>
   </parent>
   <artifactId>gs-acl-plugin-accessmanager</artifactId>
-  <name>GeoServer ACL Access Manager</name>
   <description>Implements a GeoServer ResourceAccessManager against a GeoServer-ACL AuthorizationService</description>
   <dependencies>
     <dependency>

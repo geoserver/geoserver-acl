@@ -1,4 +1,5 @@
 package org.geoserver.acl.plugin.accessmanager;
+
 /* (c) 2023 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -25,12 +26,12 @@ import org.geoserver.rest.catalog.WMTSLayerTest;
 import org.geoserver.security.WMTSAccessLimits;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.Rule;
 import org.junit.Test;
-import org.opengis.filter.Filter;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.w3c.dom.Document;
