@@ -12,9 +12,6 @@ jobs:
     name: Test Plugin for GeoSever
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    strategy:
-      matrix:
-        gs-profile: ["gs_dev", "gs_stable"]
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -24,6 +21,10 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
         cache: 'maven'
-    - name: Test plugin
+    - name: gs-dev plugin tests
       run: |
-        ./mvnw -P ${{ matrix.gs-profile }} verify -pl :gs-acl-client-plugin -am -ntp
+        make plugin-test-gs-dev
+    - name: gs-stable plugin tests
+      run: |
+        make plugin-test-gs-stable
+        
