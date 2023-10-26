@@ -90,16 +90,7 @@
       <plugin>
         <groupId>io.github.git-commit-id</groupId>
         <artifactId>git-commit-id-maven-plugin</artifactId>
-        <version>5.0.0</version>
-        <executions>
-          <execution>
-            <id>get-the-git-infos</id>
-            <phase>initialize</phase>
-            <goals>
-              <goal>revision</goal>
-            </goals>
-          </execution>
-        </executions>
+        <version>7.0.0</version>
         <configuration>
           <failOnNoGitDirectory>false</failOnNoGitDirectory>
           <generateGitPropertiesFile>true</generateGitPropertiesFile>
@@ -107,11 +98,23 @@
           <!-- use native git, jgit won't work with git worktrees -->
           <useNativeGit>true</useNativeGit>
         </configuration>
+        <executions>
+          <execution>
+            <id>get-the-git-infos</id>
+            <goals>
+              <goal>revision</goal>
+            </goals>
+            <phase>initialize</phase>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>${spring-boot.version}</version>
+        <configuration>
+          <mainClass>org.geoserver.acl.app.AccesControlListApplication</mainClass>
+        </configuration>
         <executions>
           <execution>
             <id>repackage</id>
@@ -129,9 +132,6 @@
             </goals>
           </execution>
         </executions>
-        <configuration>
-          <mainClass>org.geoserver.acl.app.AccesControlListApplication</mainClass>
-        </configuration>
       </plugin>
     </plugins>
   </build>

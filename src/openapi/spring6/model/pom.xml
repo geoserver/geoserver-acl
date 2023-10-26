@@ -60,10 +60,10 @@
         <executions>
           <execution>
             <id>add-generated-openapi-sources</id>
-            <phase>generate-sources</phase>
             <goals>
               <goal>add-source</goal>
             </goals>
+            <phase>generate-sources</phase>
             <configuration>
               <sources>
                 <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
