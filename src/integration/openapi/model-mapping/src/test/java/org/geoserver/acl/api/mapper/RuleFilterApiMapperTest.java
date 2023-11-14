@@ -38,7 +38,6 @@ class RuleFilterApiMapperTest {
 
     @Test
     void testIdName_default() {
-        filter.getInstance().setType(SpecialFilterType.DEFAULT);
         testRoundtrip(filter);
     }
 
@@ -80,8 +79,6 @@ class RuleFilterApiMapperTest {
     @Test
     void testFull() {
         RuleFilter model = new RuleFilter();
-        model.setInstance("33L");
-        model.getInstance().setIncludeDefault(false);
         model.setLayer("layer");
         model.getRequest().setHeuristically("*");
         model.setService("service");
@@ -98,7 +95,6 @@ class RuleFilterApiMapperTest {
         org.geoserver.acl.api.model.RuleFilter api = mapper.toApi(model);
         RuleFilter roundtripped = mapper.toModel(api);
         print(model, api, roundtripped);
-        assertEquals(model.getInstance(), roundtripped.getInstance());
         assertEquals(model.getLayer(), roundtripped.getLayer());
         assertEquals(model.getRequest(), roundtripped.getRequest());
         assertEquals(model.getRole(), roundtripped.getRole());

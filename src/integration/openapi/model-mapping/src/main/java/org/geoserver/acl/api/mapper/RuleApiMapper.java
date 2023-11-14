@@ -28,7 +28,6 @@ import org.mapstruct.ReportingPolicy;
         })
 public abstract class RuleApiMapper {
 
-    @Mapping(target = "identifier.instanceName", source = "instance")
     @Mapping(target = "identifier.access", source = "access")
     @Mapping(target = "identifier.username", source = "user")
     @Mapping(target = "identifier.rolename", source = "role")
@@ -42,7 +41,6 @@ public abstract class RuleApiMapper {
     public abstract org.geoserver.acl.domain.rules.Rule toModel(
             org.geoserver.acl.api.model.Rule rule);
 
-    @Mapping(target = "instance", source = "identifier.instanceName")
     @Mapping(target = "access", source = "identifier.access")
     @Mapping(target = "user", source = "identifier.username")
     @Mapping(target = "role", source = "identifier.rolename")
@@ -61,7 +59,6 @@ public abstract class RuleApiMapper {
     abstract Rule updateEntity(
             @MappingTarget Rule.Builder entity, org.geoserver.acl.api.model.Rule dto);
 
-    @Mapping(target = "instanceName", source = "instance")
     @Mapping(target = "username", source = "user")
     @Mapping(target = "rolename", source = "role")
     abstract RuleIdentifier updateIdentifier(

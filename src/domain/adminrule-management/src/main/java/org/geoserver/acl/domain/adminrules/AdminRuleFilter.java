@@ -4,6 +4,7 @@
  */
 package org.geoserver.acl.domain.adminrules;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -17,14 +18,13 @@ import org.geoserver.acl.domain.filter.predicate.TextFilter;
 
 import java.util.Set;
 
-// REVISIT: shouldn't extend RuleFilter, it has only a subset of its properties
+@EqualsAndHashCode
 public class AdminRuleFilter implements Filter<AdminRule>, Cloneable {
 
     private @Getter @Setter AdminGrantType grantType;
 
     private final @Getter TextFilter user;
     private final @Getter InSetPredicate<String> role;
-    private final @Getter TextFilter instance;
     private final @Getter IPAddressRangeFilter sourceAddress;
     private final @Getter TextFilter workspace;
 
@@ -46,7 +46,6 @@ public class AdminRuleFilter implements Filter<AdminRule>, Cloneable {
 
         user = new TextFilter(ft);
         role = new InSetPredicate<String>(ft);
-        instance = new TextFilter(ft);
         sourceAddress = new IPAddressRangeFilter(ft);
         workspace = new TextFilter(ft);
     }
@@ -54,7 +53,6 @@ public class AdminRuleFilter implements Filter<AdminRule>, Cloneable {
     public AdminRuleFilter setIncludeDefault(boolean includeDefault) {
         user.setIncludeDefault(includeDefault);
         role.setIncludeDefault(includeDefault);
-        instance.setIncludeDefault(includeDefault);
         sourceAddress.setIncludeDefault(includeDefault);
         workspace.setIncludeDefault(includeDefault);
         return this;
@@ -65,7 +63,6 @@ public class AdminRuleFilter implements Filter<AdminRule>, Cloneable {
         try {
             user = source.user.clone();
             role = source.role.clone();
-            instance = source.instance.clone();
             sourceAddress = source.sourceAddress.clone();
             workspace = source.workspace.clone();
         } catch (CloneNotSupportedException ex) {
@@ -109,16 +106,6 @@ public class AdminRuleFilter implements Filter<AdminRule>, Cloneable {
         return this;
     }
 
-    public AdminRuleFilter setInstance(@NonNull String name) {
-        instance.setText(name);
-        return this;
-    }
-
-    public AdminRuleFilter setInstance(SpecialFilterType type) {
-        instance.setType(type);
-        return this;
-    }
-
     public AdminRuleFilter setSourceAddress(String dotted) {
         sourceAddress.setAddress(dotted);
         return this;
@@ -140,51 +127,11 @@ public class AdminRuleFilter implements Filter<AdminRule>, Cloneable {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final AdminRuleFilter other = (AdminRuleFilter) obj;
-        if (this.user != other.user && (this.user == null || !this.user.equals(other.user))) {
-            return false;
-        }
-        if (this.role != other.role && (this.role == null || !this.role.equals(other.role))) {
-            return false;
-        }
-        if (this.instance != other.instance
-                && (this.instance == null || !this.instance.equals(other.instance))) {
-            return false;
-        }
-        if (this.workspace != other.workspace
-                && (this.workspace == null || !this.workspace.equals(other.workspace))) {
-            return false;
-        }
-        // NOTE: ipaddress not in equals() bc it is not used for caching
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 37 * hash + (this.user != null ? this.user.hashCode() : 0);
-        hash = 37 * hash + (this.role != null ? this.role.hashCode() : 0);
-        hash = 37 * hash + (this.instance != null ? this.instance.hashCode() : 0);
-        hash = 37 * hash + (this.sourceAddress != null ? this.sourceAddress.hashCode() : 0);
-        hash = 37 * hash + (this.workspace != null ? this.workspace.hashCode() : 0);
-        // NOTE: ipaddress not in hashcode bc it is not used for caching
-        return hash;
-    }
-
-    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getClass().getSimpleName());
         sb.append('[');
         sb.append("user:").append(user);
         sb.append(" role:").append(role);
-        sb.append(" inst:").append(instance);
         sb.append(" ip:").append(sourceAddress);
         sb.append(" ws:").append(workspace);
         sb.append(']');
@@ -196,8 +143,7 @@ public class AdminRuleFilter implements Filter<AdminRule>, Cloneable {
     public boolean test(@NonNull AdminRule rule) {
         AdminRuleIdentifier idf = rule.getIdentifier();
 
-        return getInstance().test(idf.getInstanceName())
-                && getRole().test(idf.getRolename())
+        return getRole().test(idf.getRolename())
                 && getSourceAddress().test(idf.getAddressRange())
                 && getUser().test(idf.getUsername())
                 && getWorkspace().test(idf.getWorkspace())

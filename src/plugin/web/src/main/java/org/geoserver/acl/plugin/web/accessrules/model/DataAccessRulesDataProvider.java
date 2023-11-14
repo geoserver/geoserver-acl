@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 public class DataAccessRulesDataProvider extends RulesDataProvider<MutableRule> {
 
     public static final Property<MutableRule> PRIORITY = new BeanProperty<>("priority");
-    public static final Property<MutableRule> INSTANCE = RuleBeanProperty.of("instanceName");
     public static final Property<MutableRule> ROLE = RuleBeanProperty.of("roleName");
     public static final Property<MutableRule> USER = RuleBeanProperty.of("userName");
     public static final Property<MutableRule> SERVICE = RuleBeanProperty.of("service");
@@ -45,7 +44,6 @@ public class DataAccessRulesDataProvider extends RulesDataProvider<MutableRule> 
     public List<Property<MutableRule>> getProperties() {
         return List.of(
                 PRIORITY,
-                INSTANCE,
                 ROLE,
                 USER,
                 SERVICE,

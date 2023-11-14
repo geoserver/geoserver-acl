@@ -210,7 +210,7 @@ class RuleAdminServiceImplTest {
 
     @Test
     void getRule_multiple_matches() {
-        RuleFilter filter = new RuleFilter().setInstance("1").setLayer("states");
+        RuleFilter filter = new RuleFilter().setLayer("states");
         RuleQuery<RuleFilter> query = RuleQuery.of(filter).setLimit(2);
 
         when(repository.findAll(eq(query))).thenReturn(List.of(Rule.allow(), Rule.deny()).stream());
@@ -222,7 +222,7 @@ class RuleAdminServiceImplTest {
 
     @Test
     void getRule_no_match() {
-        RuleFilter filter = new RuleFilter().setInstance("1").setLayer("states");
+        RuleFilter filter = new RuleFilter().setLayer("states");
         RuleQuery<RuleFilter> query = RuleQuery.of(filter).setLimit(2);
 
         when(repository.findAll(eq(query))).thenReturn(Stream.of());
@@ -231,7 +231,7 @@ class RuleAdminServiceImplTest {
 
     @Test
     void getRule() {
-        RuleFilter filter = new RuleFilter().setInstance("1").setLayer("states");
+        RuleFilter filter = new RuleFilter().setLayer("states");
         RuleQuery<RuleFilter> query = RuleQuery.of(filter).setLimit(2);
 
         Rule match = Rule.allow().withId("10L");
@@ -260,7 +260,7 @@ class RuleAdminServiceImplTest {
 
     @Test
     void countFilter() {
-        RuleFilter filter = new RuleFilter().setInstance("gs1");
+        RuleFilter filter = new RuleFilter().setLayer("L1");
 
         when(repository.count(eq(filter))).thenReturn(1_000_000);
         assertThat(service.count(filter)).isEqualTo(1_000_000);

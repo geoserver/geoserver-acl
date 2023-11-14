@@ -75,11 +75,11 @@ public class RulesTablePanelTest extends AclWicketTestSupport {
             tester.assertComponent(itemPath, OddEvenItem.class);
             tester.assertListView(itemPath + ":itemProperties", expectedProperties);
             tester.assertComponent(
-                    itemPath + ":itemProperties:6:component:up", ImageAjaxLink.class);
+                    itemPath + ":itemProperties:5:component:up", ImageAjaxLink.class);
             tester.assertComponent(
-                    itemPath + ":itemProperties:6:component:down", ImageAjaxLink.class);
+                    itemPath + ":itemProperties:5:component:down", ImageAjaxLink.class);
             tester.assertComponent(
-                    itemPath + ":itemProperties:6:component:edit", ImageAjaxLink.class);
+                    itemPath + ":itemProperties:5:component:edit", ImageAjaxLink.class);
         }
     }
 
@@ -97,7 +97,7 @@ public class RulesTablePanelTest extends AclWicketTestSupport {
         tester.assertNoErrorMessage();
 
         // move item 1 down
-        tester.clickLink("rulesPanel:listContainer:items:1:itemProperties:6:component:down:link");
+        tester.clickLink("rulesPanel:listContainer:items:1:itemProperties:5:component:down:link");
         MutableAdminRule rule = mutableRules.get(0).clone();
         rule.setPriority(2); // priority is changed after moveDown
         verify(data, times(1)).moveDown(eq(rule));
@@ -107,7 +107,7 @@ public class RulesTablePanelTest extends AclWicketTestSupport {
         // tester.clickLink("rulesPanel:listContainer:items:3:itemProperties:5:component:up:link");
         // note we have to use items:6 instead of items:3 since the table is not reusing items and
         // hence creates items with new ids on each update
-        tester.clickLink("rulesPanel:listContainer:items:6:itemProperties:6:component:up:link");
+        tester.clickLink("rulesPanel:listContainer:items:6:itemProperties:5:component:up:link");
         rule = mutableRules.get(2).clone();
         assertEquals(3, rule.getPriority());
         rule.setPriority(2); // priority is changed after moveUp

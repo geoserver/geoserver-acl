@@ -77,10 +77,10 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
      */
     @Test
     public void testRuleLimitsAllowedAreaSRIDIsPreserved() {
-        Rule r1 = insert(10, null, null, null, null, "s1", "r1", null, "w1", "l1", LIMIT);
+        Rule r1 = insert(10, null, null, null, "s1", "r1", null, "w1", "l1", LIMIT);
         setRuleLimits(r1, WKT_3857);
 
-        Rule r2 = insert(11, null, null, null, null, "s1", "r1", null, "w1", "l1", ALLOW);
+        Rule r2 = insert(11, null, null, null, "s1", "r1", null, "w1", "l1", ALLOW);
 
         AccessRequest request =
                 AccessRequest.builder()
@@ -124,12 +124,12 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
      */
     @Test
     public void testRuleLimitsAllowedAreaReprojectionWithDifferentSrid() {
-        Rule r1 = insert(999, null, null, null, null, "s1", "r1", null, "w1", "l1", ALLOW);
+        Rule r1 = insert(999, null, null, null, "s1", "r1", null, "w1", "l1", ALLOW);
 
-        Rule r2 = insert(11, null, null, null, null, "s1", "r1", null, "w1", "l1", LIMIT);
+        Rule r2 = insert(11, null, null, null, "s1", "r1", null, "w1", "l1", LIMIT);
         setRuleLimits(r2, WKT_3003);
 
-        Rule r3 = insert(12, null, null, null, null, "s1", "r1", null, "w1", "l1", LIMIT);
+        Rule r3 = insert(12, null, null, null, "s1", "r1", null, "w1", "l1", LIMIT);
         setRuleLimits(r3, WKT_23032);
 
         AccessRequest request =
@@ -152,14 +152,14 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
      */
     @Test
     public void testRuleSpatialFilterTypeClipSameGroup() {
-        Rule p10 = insert(10, "auth11", "group1", null, null, "s1", "r1", null, "w1", "l1", LIMIT);
+        Rule p10 = insert(10, "auth11", "group1", null, "s1", "r1", null, "w1", "l1", LIMIT);
         RuleLimits limitsp10 = setRuleLimits(p10, WKT_WGS84_1, CLIP, HIDE);
 
-        Rule p11 = insert(11, "auth11", "group1", null, null, "s1", "r1", null, "w1", "l1", LIMIT);
+        Rule p11 = insert(11, "auth11", "group1", null, "s1", "r1", null, "w1", "l1", LIMIT);
         RuleLimits llimitsp11 = setRuleLimits(p11, WKT_WGS84_3, INTERSECT, HIDE);
 
-        Rule p9999 = insert(9999, null, "group1", null, null, "s1", "r1", null, "w1", "l1", ALLOW);
-        Rule p10k = insert(10_000, null, "group2", null, null, null, null, null, null, null, DENY);
+        Rule p9999 = insert(9999, null, "group1", null, "s1", "r1", null, "w1", "l1", ALLOW);
+        Rule p10k = insert(10_000, null, "group2", null, null, null, null, null, null, DENY);
 
         final AccessRequest request =
                 createRequest("auth11", "group1", "group2")
@@ -195,11 +195,11 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
     @Test
     public void testRuleSpatialFilterTypeIntersectsSameGroup() {
 
-        Rule p9999 = insert(9999, null, "g1", null, null, "s11", "r11", null, "w11", "l11", ALLOW);
-        Rule p13 = insert(13, "u1", "g1", null, null, "s11", "r11", null, "w11", "l11", LIMIT);
+        Rule p9999 = insert(9999, null, "g1", null, "s11", "r11", null, "w11", "l11", ALLOW);
+        Rule p13 = insert(13, "u1", "g1", null, "s11", "r11", null, "w11", "l11", LIMIT);
         RuleLimits limitsp13 = setRuleLimits(p13, WKT_WGS84_1, INTERSECT, HIDE);
 
-        Rule p14 = insert(14, "u1", "g1", null, null, "s11", "r11", null, "w11", "l11", LIMIT);
+        Rule p14 = insert(14, "u1", "g1", null, "s11", "r11", null, "w11", "l11", LIMIT);
         RuleLimits limitsp14 = setRuleLimits(p14, WKT_WGS84_3, INTERSECT, HIDE);
 
         AccessRequest request =
@@ -235,12 +235,12 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
     @Test
     public void testRuleSpatialFilterTypeEnlargeAccess() {
 
-        insert(999, null, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
+        insert(999, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
 
-        Rule p15 = insert(15, null, "group22", null, null, "s22", "r22", null, "w22", "l22", LIMIT);
+        Rule p15 = insert(15, null, "group22", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp15 = setRuleLimits(p15, WKT_WGS84_1, INTERSECT, HIDE);
 
-        Rule p16 = insert(16, null, "group23", null, null, "s22", "r22", null, "w22", "l22", LIMIT);
+        Rule p16 = insert(16, null, "group23", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp16 = setRuleLimits(p16, WKT_WGS84_3, CLIP, HIDE);
 
         AccessRequest request =
@@ -282,18 +282,18 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
     @Test
     public void testRuleSpatialFilterTypeFourRules() {
 
-        insert(999, null, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
+        insert(999, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
 
-        Rule p17 = insert(17, null, "group31", null, null, "s22", "r22", null, "w22", "l22", LIMIT);
+        Rule p17 = insert(17, null, "group31", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp17 = setRuleLimits(p17, WKT_WGS84_1, INTERSECT, HIDE);
 
-        Rule p18 = insert(18, null, "group31", null, null, "s22", "r22", null, "w22", "l22", LIMIT);
+        Rule p18 = insert(18, null, "group31", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp18 = setRuleLimits(p18, WKT_WGS84_2, CLIP, HIDE);
 
-        Rule p19 = insert(19, null, "group32", null, null, "s22", "r22", null, "w22", "l22", LIMIT);
+        Rule p19 = insert(19, null, "group32", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp19 = setRuleLimits(p19, WKT_WGS84_3, CLIP, HIDE);
 
-        Rule p20 = insert(20, null, "group32", null, null, "s22", "r22", null, "w22", "l22", LIMIT);
+        Rule p20 = insert(20, null, "group32", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp20 = setRuleLimits(p20, WKT_WGS84_4, CLIP, HIDE);
 
         AccessRequest request =
@@ -331,18 +331,18 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
     @Test
     public void testRuleSpatialFilterTypeFourRules2() {
 
-        insert(999, null, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
+        insert(999, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
 
-        Rule p21 = insert(21, null, "group41", null, null, "s22", "r22", null, "w22", "l22", LIMIT);
+        Rule p21 = insert(21, null, "group41", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp21 = setRuleLimits(p21, WKT_WGS84_1, CLIP, HIDE);
 
-        Rule p22 = insert(22, null, "group41", null, null, "s22", "r22", null, "w22", "l22", LIMIT);
+        Rule p22 = insert(22, null, "group41", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp22 = setRuleLimits(p22, WKT_WGS84_2, CLIP, HIDE);
 
-        Rule p23 = insert(23, null, "group42", null, null, "s22", "r22", null, "w22", "l22", LIMIT);
+        Rule p23 = insert(23, null, "group42", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp23 = setRuleLimits(p23, WKT_WGS84_3, INTERSECT, HIDE);
 
-        Rule p24 = insert(24, null, "group42", null, null, "s22", "r22", null, "w22", "l22", LIMIT);
+        Rule p24 = insert(24, null, "group42", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp24 = setRuleLimits(p24, WKT_WGS84_4, INTERSECT, HIDE);
 
         AccessRequest request =

@@ -18,9 +18,6 @@ public class RuleIdentifier {
 
     @NonNull @Default private GrantType access = GrantType.DENY;
 
-    /** The GeoServer instance name this rule belongs to */
-    private String instanceName;
-
     private String username;
 
     private String rolename;
@@ -40,7 +37,6 @@ public class RuleIdentifier {
     public String toShortString() {
         StringBuilder builder = new StringBuilder();
         addNonNull(builder, "access", access);
-        addNonNull(builder, "instanceName", instanceName);
         addNonNull(builder, "username", username);
         addNonNull(builder, "rolename", rolename);
         addNonNull(builder, "addressRange", addressRange);

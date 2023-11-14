@@ -16,7 +16,6 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class MutableAccessRequest implements Serializable {
 
-    private String instance;
     private String user;
     private Set<String> roles = new HashSet<>();
     private String sourceAddress;
@@ -30,7 +29,6 @@ public class MutableAccessRequest implements Serializable {
 
     public AccessRequest toRequest() {
         return AccessRequest.builder()
-                .instance(instance)
                 .layer(layer)
                 .request(request)
                 .roles(roles)

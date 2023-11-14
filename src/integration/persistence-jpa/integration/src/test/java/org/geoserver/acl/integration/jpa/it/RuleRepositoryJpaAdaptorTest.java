@@ -56,7 +56,7 @@ class RuleRepositoryJpaAdaptorTest {
 
     @Test
     void create_fixedPriorityPosition() {
-        Rule r1 = Rule.allow().withPriority(1).withInstanceName("default-gs");
+        Rule r1 = Rule.allow().withPriority(1);
 
         Rule r1Created = repo.create(r1, InsertPosition.FIXED);
         assertThat(repo.count()).isOne();
@@ -69,7 +69,6 @@ class RuleRepositoryJpaAdaptorTest {
     void create_duplicateKey() {
         Rule r = Rule.allow();
         testCreateDuplicateIdentifier(r);
-        testCreateDuplicateIdentifier(r = r.withPriority(1).withInstanceName("default-gs"));
         testCreateDuplicateIdentifier(r = r.withPriority(2).withUsername("user"));
         testCreateDuplicateIdentifier(r = r.withPriority(3).withRolename("role"));
         testCreateDuplicateIdentifier(r = r.withPriority(4).withService("WMS"));
@@ -114,7 +113,7 @@ class RuleRepositoryJpaAdaptorTest {
     @Test
     void count() {
         assertThat(repo.count()).isZero();
-        Rule r1 = Rule.allow().withPriority(1).withInstanceName("default-gs");
+        Rule r1 = Rule.allow().withPriority(1);
 
         r1 = repo.create(r1, InsertPosition.FIXED);
         assertThat(repo.count()).isOne();

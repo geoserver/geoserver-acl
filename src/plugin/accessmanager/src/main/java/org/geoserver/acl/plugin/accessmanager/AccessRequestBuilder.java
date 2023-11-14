@@ -83,7 +83,6 @@ class AccessRequestBuilder {
         builder.user(userResolver.getUsername());
         builder.roles(roles);
 
-        builder.instance(config.getInstanceName());
         // get info from the current request
         String service = this.service;
         String request = this.request;

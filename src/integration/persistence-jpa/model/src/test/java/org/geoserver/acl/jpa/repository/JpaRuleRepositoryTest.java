@@ -32,7 +32,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -75,7 +74,6 @@ public class JpaRuleRepositoryTest {
         Rule rule = new Rule();
         assertNotNull(rule.getIdentifier());
         RuleIdentifier identifier = rule.getIdentifier();
-        assertEquals("*", identifier.getInstance());
         assertEquals("*", identifier.getLayer());
         assertEquals("*", identifier.getRequest());
         assertEquals("*", identifier.getRolename());
@@ -100,13 +98,6 @@ public class JpaRuleRepositoryTest {
         assertThrows(NullPointerException.class, () -> identifier.setSubfield(null));
         assertThrows(NullPointerException.class, () -> identifier.setUsername(null));
         assertThrows(NullPointerException.class, () -> identifier.setWorkspace(null));
-
-        entity.getIdentifier().setInstance(null);
-        DataIntegrityViolationException expected =
-                assertThrows(DataIntegrityViolationException.class, () -> repo.save(entity));
-        assertThat(expected)
-                .hasMessageContaining("not-null property references a null or transient value")
-                .hasMessageContaining("identifier.instance");
     }
 
     @Test
@@ -126,7 +117,6 @@ public class JpaRuleRepositoryTest {
                 entity.getIdentifier()
                         .setAccess(GrantType.DENY)
                         .setAddressRange(new IPAddressRange(1000L, 2000L, 32))
-                        .setInstance("gsInstance")
                         .setLayer("layer")
                         .setRequest("GetCapabilities")
                         .setRolename("ROLE_USER")

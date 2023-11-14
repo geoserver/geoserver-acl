@@ -53,14 +53,6 @@ public abstract class AbstractRulesModel implements Serializable {
      */
     protected static final int MAX_SUGGESTIONS = 100;
 
-    /**
-     * Returns the {@link AccessManagerConfig#getInstanceName()}, required for the "use instance
-     * name" checkbox label, and to set the rule's instance name
-     */
-    public String getInstanceName() {
-        return config().getInstanceName();
-    }
-
     private Stream<Service> findServices() {
         return GeoServerExtensions.extensions(Service.class).stream();
     }

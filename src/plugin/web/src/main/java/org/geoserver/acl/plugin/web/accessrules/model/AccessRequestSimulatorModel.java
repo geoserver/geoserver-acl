@@ -81,8 +81,6 @@ public class AccessRequestSimulatorModel extends AbstractRulesModel {
 
     private AccessInfo getAccessInfo() {
         AccessRequest request = getModel().getObject().toRequest();
-        String instanceName = getInstanceName();
-        request = request.withInstance(instanceName);
         AuthorizationService authorizationService = authorizationService();
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
         log.info("{}", request);

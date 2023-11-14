@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 public class AdminRulesTableDataProvider extends RulesDataProvider<MutableAdminRule> {
 
     public static final Property<MutableAdminRule> PRIORITY = RuleBeanProperty.of("priority");
-    public static final Property<MutableAdminRule> INSTANCE = RuleBeanProperty.of("instanceName");
     public static final Property<MutableAdminRule> ROLE = RuleBeanProperty.of("roleName");
     public static final Property<MutableAdminRule> USER = RuleBeanProperty.of("userName");
     public static final Property<MutableAdminRule> WORKSPACE = RuleBeanProperty.of("workspace");
@@ -39,7 +38,7 @@ public class AdminRulesTableDataProvider extends RulesDataProvider<MutableAdminR
 
     @Override
     public List<Property<MutableAdminRule>> getProperties() {
-        return List.of(PRIORITY, INSTANCE, ROLE, USER, WORKSPACE, ACCESS, BUTTONS);
+        return List.of(PRIORITY, ROLE, USER, WORKSPACE, ACCESS, BUTTONS);
     }
 
     @Override

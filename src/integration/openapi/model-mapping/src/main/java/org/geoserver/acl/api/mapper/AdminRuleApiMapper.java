@@ -23,7 +23,6 @@ import org.mapstruct.ReportingPolicy;
         uses = {OptionalApiMapper.class, GeometryApiMapper.class, EnumsApiMapper.class})
 public abstract class AdminRuleApiMapper {
 
-    @Mapping(target = "identifier.instanceName", source = "instance")
     @Mapping(target = "identifier.username", source = "user")
     @Mapping(target = "identifier.rolename", source = "role")
     @Mapping(target = "identifier.workspace", source = "workspace")
@@ -31,7 +30,6 @@ public abstract class AdminRuleApiMapper {
     public abstract org.geoserver.acl.domain.adminrules.AdminRule toModel(
             org.geoserver.acl.api.model.AdminRule rule);
 
-    @Mapping(target = "instance", source = "identifier.instanceName")
     @Mapping(target = "user", source = "identifier.username")
     @Mapping(target = "role", source = "identifier.rolename")
     @Mapping(target = "workspace", source = "identifier.workspace")
@@ -43,7 +41,6 @@ public abstract class AdminRuleApiMapper {
     abstract AdminRule updateEntity(
             @MappingTarget AdminRule.Builder entity, org.geoserver.acl.api.model.AdminRule dto);
 
-    @Mapping(target = "instanceName", source = "instance")
     @Mapping(target = "username", source = "user")
     @Mapping(target = "rolename", source = "role")
     abstract AdminRuleIdentifier updateIdentifier(

@@ -45,7 +45,7 @@ class AdminRuleRepositoryJpaAdaptorTest {
 
     @Test
     void create_fixedPriorityPosition() {
-        AdminRule r1 = AdminRule.user().withPriority(1).withInstanceName("default-gs");
+        AdminRule r1 = AdminRule.user().withPriority(1);
 
         AdminRule r1Created = repo.create(r1, InsertPosition.FIXED);
         assertThat(repo.count()).isOne();
@@ -58,7 +58,6 @@ class AdminRuleRepositoryJpaAdaptorTest {
     void create_duplicateKey() {
         AdminRule r = AdminRule.user();
         testCreateDuplicateIdentifier(r);
-        testCreateDuplicateIdentifier(r = r.withPriority(1).withInstanceName("default-gs"));
         testCreateDuplicateIdentifier(r = r.withPriority(2).withUsername("user"));
         testCreateDuplicateIdentifier(r = r.withPriority(3).withRolename("role"));
         testCreateDuplicateIdentifier(r = r.withPriority(6).withAddressRange("10.0.0.1/24"));
@@ -99,7 +98,7 @@ class AdminRuleRepositoryJpaAdaptorTest {
     @Test
     void count() {
         assertThat(repo.count()).isZero();
-        AdminRule r1 = AdminRule.admin().withPriority(1).withInstanceName("default-gs");
+        AdminRule r1 = AdminRule.admin().withPriority(1);
 
         r1 = repo.create(r1, InsertPosition.FIXED);
         assertThat(repo.count()).isOne();
@@ -157,7 +156,6 @@ class AdminRuleRepositoryJpaAdaptorTest {
                         AdminRuleIdentifier.builder()
                                 .addressRange("10.1.1.1/32")
                                 .workspace("ws-" + priority)
-                                .instanceName("test-instance")
                                 .rolename("ROLE_1")
                                 .username("user-" + priority)
                                 .build())

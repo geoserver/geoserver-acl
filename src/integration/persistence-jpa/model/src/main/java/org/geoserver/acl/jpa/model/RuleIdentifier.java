@@ -40,9 +40,6 @@ public class RuleIdentifier implements Serializable, Cloneable {
     @Column(name = "grant_type", nullable = false)
     private GrantType access = GrantType.DENY;
 
-    @Column(name = "instance", nullable = false)
-    private String instance = ANY;
-
     @NonNull
     @Column(name = "username", nullable = false)
     private String username = ANY;
@@ -89,10 +86,6 @@ public class RuleIdentifier implements Serializable, Cloneable {
         }
         clone.addressRange = addressRange.clone();
         return clone;
-    }
-
-    public String instance() {
-        return ANY.equals(instance) ? null : instance;
     }
 
     public String username() {

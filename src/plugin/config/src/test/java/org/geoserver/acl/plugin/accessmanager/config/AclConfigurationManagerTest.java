@@ -62,7 +62,6 @@ public class AclConfigurationManagerTest extends GeoServerTestSupport {
         ACLTestUtils.emptyFile("test-config.properties");
 
         AccessManagerConfig config = new AccessManagerConfig();
-        config.setInstanceName("TEST_INSTANCE");
         config.setAllowRemoteAndInlineLayers(true);
         config.setGrantWriteToWorkspacesToAuthenticatedUsers(true);
         config.setUseRolesToFilter(true);

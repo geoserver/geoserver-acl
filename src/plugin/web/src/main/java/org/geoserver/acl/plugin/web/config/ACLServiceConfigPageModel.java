@@ -23,8 +23,6 @@ public class ACLServiceConfigPageModel implements Serializable {
 
     private @Getter CompoundPropertyModel<AccessManagerConfig> configModel;
 
-    private @Getter IModel<String> instanceName;
-
     private @Getter ExtPropertyModel<String> serviceUrl;
 
     private @Getter IModel<Boolean> allowRemoteAndInlineLayers;
@@ -39,7 +37,6 @@ public class ACLServiceConfigPageModel implements Serializable {
     ACLServiceConfigPageModel() {
         AccessManagerConfig config = getConfigManager().getConfiguration().clone();
         configModel = new CompoundPropertyModel<>(config);
-        instanceName = new PropertyModel<>(configModel, "instanceName");
         serviceUrl = new ExtPropertyModel<String>(configModel, "serviceUrl");
         allowRemoteAndInlineLayers = new PropertyModel<>(configModel, "allowRemoteAndInlineLayers");
         grantWriteToWorkspacesToAuthenticatedUsers =

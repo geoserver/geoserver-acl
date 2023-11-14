@@ -41,7 +41,6 @@ public class ACLServiceConfigPage extends GeoServerSecuredPage {
         form.setOutputMarkupId(true);
         super.add(form);
 
-        form.add(instanceName());
         // TODO: allow to configure the url, user, and pwd
         form.add(serviceURLField());
         form.add(testConnectionLink());
@@ -70,13 +69,6 @@ public class ACLServiceConfigPage extends GeoServerSecuredPage {
     private CheckBox allowRemoteAndInlineLayers() {
         return new CheckBox(
                 "allowRemoteAndInlineLayers", pageModel.getAllowRemoteAndInlineLayers());
-    }
-
-    private FormComponent<String> instanceName() {
-        FormComponent<String> instanceName =
-                new TextField<>("instanceName", pageModel.getInstanceName()).setRequired(true);
-        instanceName.setEnabled(false);
-        return instanceName;
     }
 
     private TextField<String> serviceURLField() {

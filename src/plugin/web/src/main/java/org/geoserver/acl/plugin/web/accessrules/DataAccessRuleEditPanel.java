@@ -4,7 +4,6 @@
  */
 package org.geoserver.acl.plugin.web.accessrules;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -13,7 +12,6 @@ import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -25,7 +23,6 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.acl.domain.rules.CatalogMode;
 import org.geoserver.acl.domain.rules.GrantType;
@@ -57,7 +54,6 @@ import java.util.List;
 @SuppressWarnings("serial")
 class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
 
-    protected final FormComponent<Boolean> includeInstanceName;
     protected final FormComponent<GrantType> grantType;
 
     protected final FormComponent<Long> priority;
@@ -89,8 +85,6 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
     public DataAccessRuleEditPanel(String id, DataAccessRuleEditModel pageModel) {
         super(id, pageModel.getModel());
         this.pageModel = pageModel;
-        add(instanceNameLabel());
-        add(includeInstanceName = instanceNameChoice());
         add(addressRange = addressRangeChoice());
         add(grantType = grantTypeChoice());
 
@@ -144,17 +138,6 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
         p.setRequired(true);
         p.setType(Long.class);
         return p;
-    }
-
-    private Component instanceNameLabel() {
-        return new Label("instanceName", pageModel.getInstanceName());
-    }
-
-    private FormComponent<Boolean> instanceNameChoice() {
-        IModel<Boolean> model = new PropertyModel<>(pageModel, "includeInstanceName");
-        CheckBox check = new CheckBox("includeInstanceName", model);
-        check.setOutputMarkupId(true);
-        return check;
     }
 
     private FormComponent<String> roleChoice() {

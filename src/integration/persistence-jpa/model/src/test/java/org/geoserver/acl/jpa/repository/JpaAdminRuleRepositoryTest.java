@@ -59,7 +59,6 @@ public class JpaAdminRuleRepositoryTest {
         AdminRule rule = new AdminRule();
         assertNotNull(rule.getIdentifier());
         AdminRuleIdentifier identifier = rule.getIdentifier();
-        assertEquals("*", identifier.getInstance());
         assertEquals("*", identifier.getRolename());
         assertEquals("*", identifier.getUsername());
         assertEquals("*", identifier.getWorkspace());
@@ -80,13 +79,6 @@ public class JpaAdminRuleRepositoryTest {
         assertThrows(NullPointerException.class, () -> identifier.setUsername(null));
         assertThrows(NullPointerException.class, () -> identifier.setWorkspace(null));
         assertThrows(NullPointerException.class, () -> entity.setAccess(null));
-
-        entity.getIdentifier().setInstance(null);
-        DataIntegrityViolationException expected =
-                assertThrows(DataIntegrityViolationException.class, () -> repo.save(entity));
-        assertThat(expected)
-                .hasMessageContaining("not-null property references a null or transient value")
-                .hasMessageContaining("identifier.instance");
     }
 
     @Test
@@ -99,7 +91,6 @@ public class JpaAdminRuleRepositoryTest {
         entity.setAccess(AdminGrantType.ADMIN)
                 .getIdentifier()
                 .setAddressRange(new IPAddressRange(1000L, 2000L, 32))
-                .setInstance("default")
                 .setRolename("ROLE_USER")
                 .setWorkspace("workspace");
 
@@ -121,7 +112,6 @@ public class JpaAdminRuleRepositoryTest {
         AdminRuleIdentifier expected =
                 entity.getIdentifier()
                         .setAddressRange(new IPAddressRange(1000L, 2000L, 32))
-                        .setInstance("secondInstance")
                         .setRolename("ROLE_USER")
                         .setUsername("user")
                         .setWorkspace("workspace")
@@ -168,9 +158,7 @@ public class JpaAdminRuleRepositoryTest {
         AdminRule rule = this.entity;
         List<AdminRule> expected = new ArrayList<>();
 
-        expected.add(rule.clone());
-
-        rule.setAccess(AdminGrantType.ADMIN).getIdentifier().setInstance("secondInstance");
+        rule.setAccess(AdminGrantType.ADMIN).getIdentifier();
         expected.add(rule.clone());
 
         rule.getIdentifier().setAddressRange(new IPAddressRange(1000L, 2000L, 32));

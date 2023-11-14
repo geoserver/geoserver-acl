@@ -8,10 +8,7 @@ package org.geoserver.acl.plugin.web.adminrules;
 
 import lombok.NonNull;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.Radio;
@@ -23,7 +20,6 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.geoserver.acl.domain.adminrules.AdminGrantType;
 import org.geoserver.acl.plugin.web.adminrules.model.AdminRuleEditModel;
 import org.geoserver.acl.plugin.web.adminrules.model.MutableAdminRule;
@@ -41,7 +37,6 @@ public class AdminRuleEditPage extends GeoServerSecuredPage {
     private final Form<MutableAdminRule> form;
 
     protected FormComponent<Long> priority;
-    protected FormComponent<Boolean> includeInstanceName;
     protected FormComponent<String> roleChoice;
     protected FormComponent<String> userChoice;
     protected FormComponent<String> workspaceChoice;
@@ -55,8 +50,6 @@ public class AdminRuleEditPage extends GeoServerSecuredPage {
 
         ruleModel = pageModel.getModel();
         add(form = new Form<>("form", ruleModel));
-        form.add(instanceNameLabel());
-        form.add(includeInstanceName = instanceNameChoice());
 
         form.add(priority = priority());
         form.add(roleChoice = roleChoice());
@@ -68,17 +61,6 @@ public class AdminRuleEditPage extends GeoServerSecuredPage {
 
         // feedback panel for error messages
         form.add(new FeedbackPanel("feedback"));
-    }
-
-    private Component instanceNameLabel() {
-        return new Label("instanceName", pageModel.getInstanceName());
-    }
-
-    private FormComponent<Boolean> instanceNameChoice() {
-        IModel<Boolean> model = new PropertyModel<>(pageModel, "includeInstanceName");
-        CheckBox check = new CheckBox("includeInstanceName", model);
-        check.setOutputMarkupId(true);
-        return check;
     }
 
     private FormComponent<String> roleChoice() {
