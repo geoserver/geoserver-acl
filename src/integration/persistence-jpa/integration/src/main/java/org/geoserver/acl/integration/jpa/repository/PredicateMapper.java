@@ -53,7 +53,6 @@ class PredicateMapper {
         QAdminRuleIdentifier qIdentifier = QAdminRule.adminRule.identifier;
 
         Predicate grantType = map(filter.getGrantType(), QAdminRule.adminRule.access);
-        Predicate gsInstance = map(filter.getInstance(), qIdentifier.instance);
         Predicate user = map(filter.getUser(), qIdentifier.username);
         Predicate role = map(filter.getRole(), qIdentifier.rolename);
         // Predicate address = map(filter.getSourceAddress(), identifier.addressRange);
@@ -61,7 +60,6 @@ class PredicateMapper {
         BooleanBuilder predicate =
                 new BooleanBuilder()
                         .and(grantType)
-                        .and(gsInstance)
                         .and(user)
                         .and(role)
                         // .and(address)
@@ -99,7 +97,6 @@ class PredicateMapper {
 
         QRuleIdentifier qIdentifier = QRule.rule.identifier;
 
-        Predicate gsInstance = map(filter.getInstance(), qIdentifier.instance);
         Predicate user = map(filter.getUser(), qIdentifier.username);
         Predicate role = map(filter.getRole(), qIdentifier.rolename);
 
@@ -114,7 +111,6 @@ class PredicateMapper {
 
         BooleanBuilder predicate =
                 new BooleanBuilder()
-                        .and(gsInstance)
                         .and(user)
                         .and(role)
                         .and(service)

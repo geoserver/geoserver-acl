@@ -61,9 +61,8 @@ import java.util.Set;
  * <p>
  *
  * <ul>
- *   <li>{@link MutableLayerDetails#getLayerType() layerType} (VECTOR, LAYER, LAYERGROUP) is
- *       editable if the rule is not tied to this geoserver instance, otherwise it's fixed to the
- *       resolved value from the current instance layer/group.
+ *   <li>{@link MutableLayerDetails#getLayerType() layerType} (VECTOR, LAYER, LAYERGROUP) is fixed
+ *       to the resolved value from the current instance layer/group.
  *   <li>If the {@link MutableLayerDetails#getLayerType() layerType} is {@link LayerType#RASTER
  *       RASTER}, the {@link MutableLayerDetails#getSpatialFilterType() spatialFilterType} is fixed
  *       to {@link SpatialFilterType#CLIP CLIP}.

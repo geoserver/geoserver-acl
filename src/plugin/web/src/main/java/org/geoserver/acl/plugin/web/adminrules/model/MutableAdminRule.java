@@ -29,7 +29,6 @@ public class MutableAdminRule implements Serializable, Cloneable {
     private String name;
     private String description;
 
-    private String instanceName;
     private String addressRange;
 
     private String workspace;
@@ -56,7 +55,6 @@ public class MutableAdminRule implements Serializable, Cloneable {
         setName(rule.getName());
         setDescription(rule.getDescription());
 
-        setInstanceName(rule.getIdentifier().getInstanceName());
         setAddressRange(rule.getIdentifier().getAddressRange());
 
         setWorkspace(rule.getIdentifier().getWorkspace());
@@ -83,7 +81,6 @@ public class MutableAdminRule implements Serializable, Cloneable {
                         AdminRuleIdentifier.builder()
                                 .username(getUserName())
                                 .rolename(getRoleName())
-                                .instanceName(getInstanceName())
                                 .addressRange(getAddressRange())
                                 .workspace(getWorkspace())
                                 .build())

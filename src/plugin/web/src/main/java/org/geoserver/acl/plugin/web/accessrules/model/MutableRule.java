@@ -32,7 +32,6 @@ public class MutableRule implements Serializable, Cloneable {
     private String userName;
     private String roleName;
 
-    private String instanceName;
     private String addressRange;
 
     private String service;
@@ -64,7 +63,6 @@ public class MutableRule implements Serializable, Cloneable {
         setName(rule.getName());
         setDescription(rule.getDescription());
 
-        setInstanceName(rule.getIdentifier().getInstanceName());
         setAddressRange(rule.getIdentifier().getAddressRange());
 
         setUserName(rule.getIdentifier().getUsername());
@@ -142,7 +140,6 @@ public class MutableRule implements Serializable, Cloneable {
 
     private Rule toRule(Builder builder) {
         RuleIdentifier.Builder idb = RuleIdentifier.builder();
-        idb.instanceName(getInstanceName());
         idb.access(getAccess());
         idb.addressRange(getAddressRange());
 

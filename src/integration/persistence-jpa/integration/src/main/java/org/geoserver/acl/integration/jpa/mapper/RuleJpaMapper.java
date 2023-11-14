@@ -26,7 +26,6 @@ import java.util.Optional;
 public interface RuleJpaMapper {
     static final String ANY = org.geoserver.acl.jpa.model.RuleIdentifier.ANY;
 
-    @Mapping(target = "instanceName", expression = "java(i.instance())")
     @Mapping(target = "username", expression = "java(i.username())")
     @Mapping(target = "rolename", expression = "java(i.rolename())")
     @Mapping(target = "service", expression = "java(i.service())")
@@ -36,7 +35,6 @@ public interface RuleJpaMapper {
     @Mapping(target = "layer", expression = "java(i.layer())")
     public abstract RuleIdentifier toModel(org.geoserver.acl.jpa.model.RuleIdentifier i);
 
-    @Mapping(target = "instance", source = "instanceName", defaultValue = ANY)
     @Mapping(target = "username", defaultValue = ANY)
     @Mapping(target = "rolename", defaultValue = ANY)
     @Mapping(target = "service", defaultValue = ANY)

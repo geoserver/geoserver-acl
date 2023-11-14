@@ -29,8 +29,6 @@ public class AccessManagerConfig implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 3L;
 
-    private boolean createWithInstanceName;
-    private String instanceName;
     private boolean allowRemoteAndInlineLayers;
     private boolean grantWriteToWorkspacesToAuthenticatedUsers;
     private boolean useRolesToFilter = true;
@@ -43,7 +41,6 @@ public class AccessManagerConfig implements Serializable, Cloneable {
     }
 
     public void initDefaults() {
-        instanceName = "default-gs";
         allowRemoteAndInlineLayers = true;
         grantWriteToWorkspacesToAuthenticatedUsers = false;
         useRolesToFilter = true;
@@ -56,38 +53,6 @@ public class AccessManagerConfig implements Serializable, Cloneable {
 
     public void setServiceUrl(String serviceUrl) {
         this.serviceUrl = serviceUrl;
-    }
-
-    /**
-     * Name of this GeoServer instance for ACL rule configuration.
-     *
-     * <p>All {@link AccessRequest}s to the ACL service will have this instance name {@link
-     * AccessRequest#getInstance() set}.
-     *
-     * @param instanceName the instanceName to set
-     */
-    public void setInstanceName(String instanceName) {
-        this.instanceName = instanceName;
-    }
-
-    /**
-     * Name of this GeoServer instance for ACL rule configuration.
-     *
-     * <p>All {@link AccessRequest}s to the ACL service will have this instance name {@link
-     * AccessRequest#getInstance() set}.
-     *
-     * @return the instanceName
-     */
-    public String getInstanceName() {
-        return instanceName;
-    }
-
-    public boolean isCreateWithInstanceName() {
-        return createWithInstanceName;
-    }
-
-    public void setCreateWithInstanceName(boolean createWithInstanceName) {
-        this.createWithInstanceName = createWithInstanceName;
     }
 
     /** Flag to allow usage of remote and inline layers in SLDs. */

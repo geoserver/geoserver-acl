@@ -911,10 +911,6 @@ ul.nav-tabs {
         "type" : "string"
       }
     },
-    "instance" : {
-      "type" : "string",
-      "default" : "*"
-    },
     "sourceAddress" : {
       "type" : "string",
       "default" : "*"
@@ -987,10 +983,6 @@ ul.nav-tabs {
         "type" : "string"
       }
     },
-    "instance" : {
-      "type" : "string",
-      "default" : "*"
-    },
     "sourceAddress" : {
       "type" : "string",
       "default" : "*"
@@ -1035,10 +1027,6 @@ ul.nav-tabs {
       "type" : "string",
       "nullable" : true
     },
-    "instance" : {
-      "type" : "string",
-      "nullable" : true
-    },
     "role" : {
       "type" : "string",
       "nullable" : true
@@ -1060,9 +1048,6 @@ ul.nav-tabs {
     defs["AdminRuleFilter"] = {
   "type" : "object",
   "properties" : {
-    "instance" : {
-      "$ref" : "#/components/schemas/TextFilter"
-    },
     "grantType" : {
       "$ref" : "#/components/schemas/AdminGrantType"
     },
@@ -1169,7 +1154,7 @@ ul.nav-tabs {
       }
     }
   },
-  "description" : "Details may be set only for ules with non-wildcarded profile, instance, workspace, layer",
+  "description" : "Details may be set only for ules with non-wildcarded profile, workspace, layer",
   "nullable" : true
 };
     defs["Rule"] = {
@@ -1193,10 +1178,6 @@ ul.nav-tabs {
       "nullable" : true
     },
     "description" : {
-      "type" : "string",
-      "nullable" : true
-    },
-    "instance" : {
       "type" : "string",
       "nullable" : true
     },
@@ -1243,9 +1224,6 @@ ul.nav-tabs {
     defs["RuleFilter"] = {
   "type" : "object",
   "properties" : {
-    "instance" : {
-      "$ref" : "#/components/schemas/TextFilter"
-    },
     "user" : {
       "$ref" : "#/components/schemas/TextFilter"
     },
@@ -1906,10 +1884,6 @@ The rule identifier
  "http://localhost:8080/api/adminrules/query/count" \
  -d '{
   &quot;workspace&quot; : {
-    &quot;includeDefault&quot; : true,
-    &quot;value&quot; : &quot;value&quot;
-  },
-  &quot;instance&quot; : {
     &quot;includeDefault&quot; : true,
     &quot;value&quot; : &quot;value&quot;
   },
@@ -2668,7 +2642,6 @@ pub fn main() {
  "http://localhost:8080/api/adminrules?position=" \
  -d '{
   &quot;workspace&quot; : &quot;workspace&quot;,
-  &quot;instance&quot; : &quot;instance&quot;,
   &quot;role&quot; : &quot;role&quot;,
   &quot;name&quot; : &quot;name&quot;,
   &quot;addressRange&quot; : &quot;addressRange&quot;,
@@ -3473,10 +3446,6 @@ The rule identifier
  "http://localhost:8080/api/adminrules/query?limit=56&nextCursor=nextCursor_example" \
  -d '{
   &quot;workspace&quot; : {
-    &quot;includeDefault&quot; : true,
-    &quot;value&quot; : &quot;value&quot;
-  },
-  &quot;instance&quot; : {
     &quot;includeDefault&quot; : true,
     &quot;value&quot; : &quot;value&quot;
   },
@@ -4415,10 +4384,6 @@ The next cursor identifier when doing cursor paging, as returned by the X-ACL-NE
  "http://localhost:8080/api/adminrules/query/first" \
  -d '{
   &quot;workspace&quot; : {
-    &quot;includeDefault&quot; : true,
-    &quot;value&quot; : &quot;value&quot;
-  },
-  &quot;instance&quot; : {
     &quot;includeDefault&quot; : true,
     &quot;value&quot; : &quot;value&quot;
   },
@@ -6514,7 +6479,6 @@ The admin rule identifier to swap priorities with
  "http://localhost:8080/api/adminrules/id/{id}" \
  -d '{
   &quot;workspace&quot; : &quot;workspace&quot;,
-  &quot;instance&quot; : &quot;instance&quot;,
   &quot;role&quot; : &quot;role&quot;,
   &quot;name&quot; : &quot;name&quot;,
   &quot;addressRange&quot; : &quot;addressRange&quot;,
@@ -7039,7 +7003,6 @@ $(document).ready(function() {
  -d '{
   &quot;request&quot; : &quot;*&quot;,
   &quot;workspace&quot; : &quot;*&quot;,
-  &quot;instance&quot; : &quot;*&quot;,
   &quot;sourceAddress&quot; : &quot;*&quot;,
   &quot;subfield&quot; : &quot;*&quot;,
   &quot;service&quot; : &quot;*&quot;,
@@ -7451,7 +7414,6 @@ $(document).ready(function() {
  "http://localhost:8080/api/authorization/admin" \
  -d '{
   &quot;workspace&quot; : &quot;*&quot;,
-  &quot;instance&quot; : &quot;*&quot;,
   &quot;sourceAddress&quot; : &quot;*&quot;,
   &quot;roles&quot; : [ &quot;roles&quot;, &quot;roles&quot; ],
   &quot;user&quot; : &quot;user&quot;
@@ -7861,7 +7823,6 @@ $(document).ready(function() {
  -d '{
   &quot;request&quot; : &quot;*&quot;,
   &quot;workspace&quot; : &quot;*&quot;,
-  &quot;instance&quot; : &quot;*&quot;,
   &quot;sourceAddress&quot; : &quot;*&quot;,
   &quot;subfield&quot; : &quot;*&quot;,
   &quot;service&quot; : &quot;*&quot;,
@@ -8640,10 +8601,6 @@ pub fn main() {
     &quot;includeDefault&quot; : true,
     &quot;value&quot; : &quot;value&quot;
   },
-  &quot;instance&quot; : {
-    &quot;includeDefault&quot; : true,
-    &quot;value&quot; : &quot;value&quot;
-  },
   &quot;subfield&quot; : {
     &quot;includeDefault&quot; : true,
     &quot;value&quot; : &quot;value&quot;
@@ -9074,7 +9031,6 @@ $(document).ready(function() {
  -d '{
   &quot;request&quot; : &quot;request&quot;,
   &quot;workspace&quot; : &quot;workspace&quot;,
-  &quot;instance&quot; : &quot;instance&quot;,
   &quot;role&quot; : &quot;role&quot;,
   &quot;addressRange&quot; : &quot;addressRange&quot;,
   &quot;description&quot; : &quot;description&quot;,
@@ -9513,7 +9469,7 @@ Displacement option related to how to interpret the Rule&#39;s priority
                             <h3 id="examples-Rules-createRule-title-409"></h3>
                             <p id="examples-Rules-createRule-description-409" class="marked"></p>
                             <script>
-                              var responseRules409_description = `A Rule with the same identifier already exists (i.e. with the same values for instanceName, username, rolename, service, request, subfield, workspace, layer, and addressRange)`;
+                              var responseRules409_description = `A Rule with the same identifier already exists (i.e. with the same values for username, rolename, service, request, subfield, workspace, layer, and addressRange)`;
                               var responseRules409_description_break = responseRules409_description.indexOf('\n');
                               if (responseRules409_description_break == -1) {
                                 $("#examples-Rules-createRule-title-409").text("Status: 409 - " + responseRules409_description);
@@ -11650,10 +11606,6 @@ The next cursor identifier when doing cursor paging, as returned by the X-ACL-NE
     &quot;value&quot; : &quot;value&quot;
   },
   &quot;workspace&quot; : {
-    &quot;includeDefault&quot; : true,
-    &quot;value&quot; : &quot;value&quot;
-  },
-  &quot;instance&quot; : {
     &quot;includeDefault&quot; : true,
     &quot;value&quot; : &quot;value&quot;
   },
@@ -14682,7 +14634,6 @@ The rule identifier to swap priorities with
  -d '{
   &quot;request&quot; : &quot;request&quot;,
   &quot;workspace&quot; : &quot;workspace&quot;,
-  &quot;instance&quot; : &quot;instance&quot;,
   &quot;role&quot; : &quot;role&quot;,
   &quot;addressRange&quot; : &quot;addressRange&quot;,
   &quot;description&quot; : &quot;description&quot;,

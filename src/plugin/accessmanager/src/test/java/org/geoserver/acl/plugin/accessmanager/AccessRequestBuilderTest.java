@@ -40,7 +40,6 @@ public class AccessRequestBuilderTest {
         assertEquals("GETMAP", request.getRequest());
         assertEquals("topp", request.getWorkspace());
         assertEquals("states", request.getLayer());
-        assertEquals(configuration.getInstanceName(), request.getInstance());
         assertNull(request.getSourceAddress());
         assertNull(request.getSubfield());
     }
@@ -65,7 +64,6 @@ public class AccessRequestBuilderTest {
         assertEquals("GETMAP", request.getRequest());
         assertEquals("topp", request.getWorkspace());
         assertEquals("states", request.getLayer());
-        assertEquals(configuration.getInstanceName(), request.getInstance());
         assertNull(request.getSourceAddress());
         assertNull(request.getSubfield());
     }
@@ -96,7 +94,6 @@ public class AccessRequestBuilderTest {
 
     private AccessManagerConfig getAccessManagerConfiguration() {
         AccessManagerConfig configuration = new AccessManagerConfig();
-        configuration.setInstanceName("geoserver");
         return configuration;
     }
 

@@ -68,7 +68,6 @@ public abstract class ServiceTestBase {
             long priority,
             String username,
             String rolename,
-            String instance,
             String addressRange,
             String service,
             String request,
@@ -82,7 +81,6 @@ public abstract class ServiceTestBase {
                         priority,
                         username,
                         rolename,
-                        instance,
                         addressRange,
                         service,
                         request,
@@ -101,7 +99,6 @@ public abstract class ServiceTestBase {
             long priority,
             String username,
             String rolename,
-            String instance,
             String addressRange,
             String service,
             String request,
@@ -114,7 +111,6 @@ public abstract class ServiceTestBase {
                 RuleIdentifier.builder()
                         .username(username)
                         .rolename(rolename)
-                        .instanceName(instance)
                         .addressRange(addressRange)
                         .service(service)
                         .request(request)

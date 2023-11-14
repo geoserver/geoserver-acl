@@ -22,13 +22,11 @@ import org.mapstruct.ReportingPolicy;
 public interface AdminRuleJpaMapper {
     static final String ANY = org.geoserver.acl.jpa.model.AdminRuleIdentifier.ANY;
 
-    @Mapping(target = "instanceName", expression = "java(i.instance())")
     @Mapping(target = "username", expression = "java(i.username())")
     @Mapping(target = "rolename", expression = "java(i.rolename())")
     @Mapping(target = "workspace", expression = "java(i.workspace())")
     public abstract AdminRuleIdentifier toModel(org.geoserver.acl.jpa.model.AdminRuleIdentifier i);
 
-    @Mapping(target = "instance", source = "instanceName", defaultValue = ANY)
     @Mapping(target = "username", defaultValue = ANY)
     @Mapping(target = "rolename", defaultValue = ANY)
     @Mapping(target = "workspace", defaultValue = ANY)

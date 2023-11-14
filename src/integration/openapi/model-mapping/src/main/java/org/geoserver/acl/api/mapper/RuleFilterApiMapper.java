@@ -24,7 +24,6 @@ public class RuleFilterApiMapper {
                 new org.geoserver.acl.api.model.AdminRuleFilter();
 
         api.setGrantType(map(filter.getGrantType()));
-        api.setInstance(textFilterToApi(filter.getInstance()));
         api.setRoles(setFilterToApi(filter.getRole()));
         api.setSourceAddress(addressRangeToApi(filter.getSourceAddress()));
         api.setUser(textFilterToApi(filter.getUser()));
@@ -36,7 +35,6 @@ public class RuleFilterApiMapper {
         if (filter == null) return null;
         AdminRuleFilter model = new AdminRuleFilter();
         model.setGrantType(map(filter.getGrantType()));
-        textFilterToModel(model.getInstance(), filter.getInstance());
         setFilterToModel(model.getRole(), filter.getRoles());
         addressRangeToModel(model.getSourceAddress(), filter.getSourceAddress());
         textFilterToModel(model.getUser(), filter.getUser());
@@ -75,7 +73,6 @@ public class RuleFilterApiMapper {
         if (filter == null) return null;
         org.geoserver.acl.api.model.RuleFilter api = new org.geoserver.acl.api.model.RuleFilter();
 
-        api.setInstance(textFilterToApi(filter.getInstance()));
         api.setLayer(textFilterToApi(filter.getLayer()));
         api.setRoles(setFilterToApi(filter.getRole()));
         api.setRequest(textFilterToApi(filter.getRequest()));
@@ -90,7 +87,6 @@ public class RuleFilterApiMapper {
     public RuleFilter toModel(org.geoserver.acl.api.model.RuleFilter filter) {
         if (filter == null) return null;
         RuleFilter model = new RuleFilter();
-        textFilterToModel(model.getInstance(), filter.getInstance());
         textFilterToModel(model.getLayer(), filter.getLayer());
         textFilterToModel(model.getRequest(), filter.getRequest());
         setFilterToModel(model.getRole(), filter.getRoles());

@@ -45,10 +45,6 @@ public class Rule {
         return getIdentifier().getAddressRange();
     }
 
-    public Rule withInstanceName(String instanceName) {
-        return withIdentifier(identifier.withInstanceName(instanceName));
-    }
-
     public Rule withUsername(String username) {
         return withIdentifier(identifier.withUsername(username));
     }

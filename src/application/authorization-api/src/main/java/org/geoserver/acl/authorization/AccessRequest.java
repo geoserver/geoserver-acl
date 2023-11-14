@@ -22,7 +22,6 @@ public class AccessRequest {
     @NonNull private Set<String> roles;
 
     private String sourceAddress;
-    private String instance;
 
     private String service;
     private String request;
@@ -38,7 +37,6 @@ public class AccessRequest {
         checkNotAny("user", user);
         roles.forEach(role -> checkNotAny("roles", role));
         checkNotAny("sourceAddress", sourceAddress);
-        checkNotAny("instance", instance);
         checkNotAny("service", service);
         checkNotAny("request", request);
         checkNotAny("subfield", subfield);
@@ -49,9 +47,8 @@ public class AccessRequest {
 
     public @Override String toString() {
         return String.format(
-                "%s[instance:%s, from:%s, by: %s(%s), for:%s:%s%s, layer:%s%s]",
+                "%s[from:%s, by: %s(%s), for:%s:%s%s, layer:%s%s]",
                 getClass().getSimpleName(),
-                instance,
                 sourceAddress == null ? "<no IP>" : sourceAddress,
                 user,
                 roles.stream().collect(Collectors.joining(", ")),

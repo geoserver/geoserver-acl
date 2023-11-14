@@ -485,7 +485,6 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         filter.getRole().setHeuristically(userRoles);
 
         filter.getSourceAddress().setHeuristically(request.getSourceAddress());
-        filter.getInstance().setHeuristically(request.getInstance());
         filter.getService().setHeuristically(request.getService());
         filter.getRequest().setHeuristically(request.getRequest());
         filter.getSubfield().setHeuristically(request.getSubfield());
@@ -594,7 +593,6 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         request = request.validate();
         // AdminRuleFilter adminRuleFilter = AdminRuleFilter.of(request.getFilter());
         AdminRuleFilter adminRuleFilter = new AdminRuleFilter();
-        adminRuleFilter.getInstance().setHeuristically(request.getInstance());
         adminRuleFilter.getSourceAddress().setHeuristically(request.getSourceAddress());
         adminRuleFilter.getUser().setHeuristically(request.getUser());
         adminRuleFilter.getRole().setHeuristically(request.getRoles());

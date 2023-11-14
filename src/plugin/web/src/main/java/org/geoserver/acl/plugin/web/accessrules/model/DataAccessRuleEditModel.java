@@ -86,12 +86,6 @@ public class DataAccessRuleEditModel extends AbstractRuleEditModel<MutableRule> 
     @Override
     public void save() {
         final MutableRule modelRule = getModelObject();
-        if (isIncludeInstanceName()) {
-            String instanceName = getInstanceName();
-            modelRule.setInstanceName(instanceName);
-        } else {
-            modelRule.setInstanceName(null);
-        }
 
         RuleAdminService service = adminService();
         final Rule rule;
@@ -123,11 +117,6 @@ public class DataAccessRuleEditModel extends AbstractRuleEditModel<MutableRule> 
 
     private RuleAdminService adminService() {
         return GeoServerApplication.get().getBeanOfType(RuleAdminService.class);
-    }
-
-    @Override
-    protected String getInstanceName(MutableRule rule) {
-        return rule.getInstanceName();
     }
 
     protected @Override String getSelectedWorkspace() {

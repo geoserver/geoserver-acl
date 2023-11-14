@@ -18,7 +18,6 @@ public class AdminAccessRequest {
 
     private String user;
     @NonNull private Set<String> roles;
-    private String instance;
     private String workspace;
     private String sourceAddress;
 
@@ -28,7 +27,6 @@ public class AdminAccessRequest {
      */
     public AdminAccessRequest validate() {
         checkNotAny("user", user);
-        checkNotAny("instance", instance);
         checkNotAny("workspace", workspace);
         checkNotAny("sourceAddress", sourceAddress);
         roles.forEach(role -> checkNotAny("roles", role));

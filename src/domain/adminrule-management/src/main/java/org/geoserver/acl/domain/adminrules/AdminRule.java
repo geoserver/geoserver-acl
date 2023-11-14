@@ -49,10 +49,6 @@ public class AdminRule {
         return String.format("AdminRule[id: %s, %s]", id, toShortString());
     }
 
-    public AdminRule withInstanceName(String instanceName) {
-        return withIdentifier(identifier.withInstanceName(instanceName));
-    }
-
     public AdminRule withUsername(String username) {
         return withIdentifier(identifier.withUsername(username));
     }

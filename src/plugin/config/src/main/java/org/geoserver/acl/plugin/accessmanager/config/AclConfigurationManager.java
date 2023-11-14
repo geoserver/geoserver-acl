@@ -20,7 +20,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.util.Objects;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -55,10 +54,6 @@ public class AclConfigurationManager implements AccessManagerConfigProvider {
     /** Updates the configuration. */
     public void setConfiguration(AccessManagerConfig configuration) throws Exception {
         this.accessManagerConfiguration = configuration;
-        LOGGER.log(
-                Level.INFO,
-                "ACL AccessManager configuration: instance name is {0}",
-                configuration.getInstanceName());
     }
 
     public void testConfig(AccessManagerConfig config) {
@@ -86,7 +81,6 @@ public class AclConfigurationManager implements AccessManagerConfigProvider {
 
         writer.write("### GeoSever ACL main configuration\n\n");
 
-        saveConfig(writer, "instanceName", configuration.getInstanceName());
         saveConfig(
                 writer, "allowRemoteAndInlineLayers", configuration.isAllowRemoteAndInlineLayers());
         saveConfig(

@@ -28,9 +28,6 @@ import javax.persistence.Embedded;
 public class AdminRuleIdentifier implements Cloneable {
     public static final String ANY = "*";
 
-    @Column(name = "instance", nullable = false)
-    private String instance = ANY;
-
     @NonNull
     @Column(nullable = false)
     private String username = ANY;
@@ -61,10 +58,6 @@ public class AdminRuleIdentifier implements Cloneable {
         }
         clone.addressRange = addressRange.clone();
         return clone;
-    }
-
-    public String instance() {
-        return ANY.equals(instance) ? null : instance;
     }
 
     public String username() {

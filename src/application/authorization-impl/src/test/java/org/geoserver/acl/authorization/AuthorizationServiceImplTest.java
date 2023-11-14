@@ -84,12 +84,12 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
 
         final AccessRequest u3 = createRequest("TestUser3", "g3a", "g3b");
 
-        Rule p10 = insert(10, u1.getUser(), "p1", null, null, "s1", "r1", null, "w1", "l1", ALLOW);
-        Rule p20 = insert(20, u2.getUser(), "p2", null, null, "s1", "r2", null, "w2", "l2", ALLOW);
-        Rule p30 = insert(30, u1.getUser(), "p1", null, null, "s3", null, null, "w3", null, ALLOW);
-        Rule p40 = insert(40, null, "p1", null, null, null, null, null, null, null, ALLOW);
-        Rule p50 = insert(50, null, "g3a", null, null, null, null, null, null, null, ALLOW);
-        Rule p60 = insert(60, null, "g3b", null, null, null, null, null, null, null, ALLOW);
+        Rule p10 = insert(10, u1.getUser(), "p1", null, "s1", "r1", null, "w1", "l1", ALLOW);
+        Rule p20 = insert(20, u2.getUser(), "p2", null, "s1", "r2", null, "w2", "l2", ALLOW);
+        Rule p30 = insert(30, u1.getUser(), "p1", null, "s3", null, null, "w3", null, ALLOW);
+        Rule p40 = insert(40, null, "p1", null, null, null, null, null, null, ALLOW);
+        Rule p50 = insert(50, null, "g3a", null, null, null, null, null, null, ALLOW);
+        Rule p60 = insert(60, null, "g3b", null, null, null, null, null, null, ALLOW);
 
         assertThat(getMatchingRules(u1)).isEqualTo(of(p10, p40));
         assertThat(getMatchingRules(u2)).isEqualTo(of(p20));
@@ -114,11 +114,11 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
 
         assertEquals(0, ruleAdminService.count(RuleFilter.any()));
 
-        Rule p10 = insert(10, null, "p1", null, null, "s1", "r1", null, "w1", "l1", ALLOW);
-        Rule p20 = insert(20, null, "p2", null, null, "s1", "r1", null, "w1", "l1", ALLOW);
-        Rule p30 = insert(30, null, "p1", null, null, "s3", null, null, null, null, ALLOW);
-        Rule p40 = insert(40, null, "p1", null, null, null, null, null, null, null, ALLOW);
-        Rule p50 = insert(50, null, "p2", null, null, null, null, null, null, null, ALLOW);
+        Rule p10 = insert(10, null, "p1", null, "s1", "r1", null, "w1", "l1", ALLOW);
+        Rule p20 = insert(20, null, "p2", null, "s1", "r1", null, "w1", "l1", ALLOW);
+        Rule p30 = insert(30, null, "p1", null, "s3", null, null, null, null, ALLOW);
+        Rule p40 = insert(40, null, "p1", null, null, null, null, null, null, ALLOW);
+        Rule p50 = insert(50, null, "p2", null, null, null, null, null, null, ALLOW);
 
         AccessRequest u1 = createRequest("u1", "p1");
         AccessRequest u1s1 =
@@ -166,7 +166,6 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
 
         AccessRequest req =
                 createRequest("u0", "p0")
-                        .withInstance("i0")
                         .withService("WCS")
                         .withRequest(null)
                         .withWorkspace("W0")
@@ -219,25 +218,17 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
 
         insert(Rule.allow().withService("WCS"));
 
-        assertEquals(1, getMatchingRules("u0", null, "i0", null, "WCS", null, "W0", "l0").size());
-        assertEquals(
-                ALLOW, getAccessInfo("u0", null, "i0", null, "WCS", null, "W0", "l0").getGrant());
+        assertEquals(1, getMatchingRules("u0", null, null, "WCS", null, "W0", "l0").size());
+        assertEquals(ALLOW, getAccessInfo("u0", null, null, "WCS", null, "W0", "l0").getGrant());
 
-        assertEquals(1, getMatchingRules(null, "p0", "i0", null, "WCS", null, "W0", "l0").size());
-        assertEquals(
-                ALLOW, getAccessInfo(null, "p0", "i0", null, "WCS", null, "W0", "l0").getGrant());
+        assertEquals(1, getMatchingRules(null, "p0", null, "WCS", null, "W0", "l0").size());
+        assertEquals(ALLOW, getAccessInfo(null, "p0", null, "WCS", null, "W0", "l0").getGrant());
 
-        assertEquals(
-                0, getMatchingRules("u0", null, "i0", null, "UNMATCH", null, "W0", "l0").size());
-        assertEquals(
-                DENY,
-                getAccessInfo("u0", null, "i0", null, "UNMATCH", null, "W0", "l0").getGrant());
+        assertEquals(0, getMatchingRules("u0", null, null, "UNMATCH", null, "W0", "l0").size());
+        assertEquals(DENY, getAccessInfo("u0", null, null, "UNMATCH", null, "W0", "l0").getGrant());
 
-        assertEquals(
-                0, getMatchingRules(null, "p0", "i0", null, "UNMATCH", null, "W0", "l0").size());
-        assertEquals(
-                DENY,
-                getAccessInfo(null, "p0", "i0", null, "UNMATCH", null, "W0", "l0").getGrant());
+        assertEquals(0, getMatchingRules(null, "p0", null, "UNMATCH", null, "W0", "l0").size());
+        assertEquals(DENY, getAccessInfo(null, "p0", null, "UNMATCH", null, "W0", "l0").getGrant());
     }
 
     @Test
@@ -467,12 +458,12 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
     public void testGetRulesForUserOnly() {
         assertEquals(0, ruleAdminService.count());
 
-        insert(10, "u1", null, null, null, "s1", "r1", null, "w1", "l1", ALLOW);
-        insert(20, "u2", null, null, null, "s2", "r2", null, "w2", "l2", ALLOW);
-        insert(30, "u1", null, null, null, "s3", "r3", null, "w3", "l3", ALLOW);
-        insert(40, "u1", null, null, null, null, null, null, null, null, ALLOW);
-        insert(50, "u3a", null, null, null, null, null, null, null, null, ALLOW);
-        insert(60, "u3b", null, null, null, null, null, null, null, null, ALLOW);
+        insert(10, "u1", null, null, "s1", "r1", null, "w1", "l1", ALLOW);
+        insert(20, "u2", null, null, "s2", "r2", null, "w2", "l2", ALLOW);
+        insert(30, "u1", null, null, "s3", "r3", null, "w3", "l3", ALLOW);
+        insert(40, "u1", null, null, null, null, null, null, null, ALLOW);
+        insert(50, "u3a", null, null, null, null, null, null, null, ALLOW);
+        insert(60, "u3b", null, null, null, null, null, null, null, ALLOW);
 
         final AccessRequest u1 = createRequest("u1", "g1");
         assertMatchingRules(u1, 40);
@@ -507,8 +498,8 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
         final AdminAccessRequest adminReq =
                 AdminAccessRequest.builder().user("auth00").workspace("w1").build();
 
-        Rule r10 = insert(10, "auth00", null, null, null, "s1", "r1", null, "w1", "l1", ALLOW);
-        Rule r20 = insert(20, "auth00", null, null, null, null, null, null, "w1", null, ALLOW);
+        Rule r10 = insert(10, "auth00", null, null, "s1", "r1", null, "w1", "l1", ALLOW);
+        Rule r20 = insert(20, "auth00", null, null, null, null, null, "w1", null, ALLOW);
 
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
         assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
@@ -565,19 +556,19 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
                 p2.withService("s1").withRequest("r1").withWorkspace("w2").withLayer("l2");
         AccessRequest p1p2s1 = p1p2.withService("s1");
 
-        insert(10, null, "p1", null, null, "s1", "r1", null, "w1", "l1", ALLOW);
-        insert(20, null, "p2", null, null, "s1", "r1", null, "w2", "l2", ALLOW);
-        insert(30, "u1", null, null, null, null, null, null, null, null, ALLOW);
-        insert(40, "u2", null, null, null, null, null, null, null, null, ALLOW);
-        insert(50, "u3", null, null, null, null, null, null, null, null, ALLOW);
-        insert(51, "u3", "p1", null, null, null, null, null, null, null, ALLOW);
-        insert(52, "u3", "p2", null, null, null, null, null, null, null, ALLOW);
-        insert(60, null, "p1", null, null, null, null, null, null, null, ALLOW);
-        insert(70, null, "p2", null, null, null, null, null, null, null, ALLOW);
-        insert(80, null, "p3", null, null, null, null, null, null, null, ALLOW);
-        insert(901, "u1", "p2", null, null, null, null, null, null, null, ALLOW);
-        insert(902, "u2", "p1", null, null, null, null, null, null, null, ALLOW);
-        insert(999, null, null, null, null, null, null, null, null, null, ALLOW);
+        insert(10, null, "p1", null, "s1", "r1", null, "w1", "l1", ALLOW);
+        insert(20, null, "p2", null, "s1", "r1", null, "w2", "l2", ALLOW);
+        insert(30, "u1", null, null, null, null, null, null, null, ALLOW);
+        insert(40, "u2", null, null, null, null, null, null, null, ALLOW);
+        insert(50, "u3", null, null, null, null, null, null, null, ALLOW);
+        insert(51, "u3", "p1", null, null, null, null, null, null, ALLOW);
+        insert(52, "u3", "p2", null, null, null, null, null, null, ALLOW);
+        insert(60, null, "p1", null, null, null, null, null, null, ALLOW);
+        insert(70, null, "p2", null, null, null, null, null, null, ALLOW);
+        insert(80, null, "p3", null, null, null, null, null, null, ALLOW);
+        insert(901, "u1", "p2", null, null, null, null, null, null, ALLOW);
+        insert(902, "u2", "p1", null, null, null, null, null, null, ALLOW);
+        insert(999, null, null, null, null, null, null, null, null, ALLOW);
 
         assertGetMatchingRules(null, null, 999);
         assertGetMatchingRules("u1", null, 30, 999);
@@ -628,7 +619,6 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
     private List<Rule> getMatchingRules(
             String userName,
             String roleName,
-            String instanceName,
             String sourceAddress,
             String service,
             String request,
@@ -637,7 +627,6 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
 
         return getMatchingRules(
                 createRequest(userName, roleName),
-                instanceName,
                 sourceAddress,
                 service,
                 request,
@@ -647,7 +636,6 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
 
     private List<Rule> getMatchingRules(
             AccessRequest baseRequest,
-            String instanceName,
             String sourceAddress,
             String service,
             String request,
@@ -656,7 +644,6 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
 
         AccessRequest req =
                 baseRequest
-                        .withInstance(validateNotAny(instanceName))
                         .withSourceAddress(validateNotAny(sourceAddress))
                         .withService(validateNotAny(service))
                         .withRequest(validateNotAny(request))
@@ -673,7 +660,6 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
     private AccessInfo getAccessInfo(
             String userName,
             String roleName,
-            String instanceName,
             String sourceAddress,
             String service,
             String request,
@@ -682,7 +668,6 @@ public class AuthorizationServiceImplTest extends ServiceTestBase {
 
         AccessRequest req =
                 createRequest(userName, roleName)
-                        .withInstance(instanceName)
                         .withSourceAddress(sourceAddress)
                         .withService(service)
                         .withRequest(request)

@@ -7,6 +7,7 @@
 
 package org.geoserver.acl.domain.rules;
 
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 import org.geoserver.acl.domain.filter.Filter;
@@ -34,11 +35,11 @@ import java.util.Set;
  *
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
  */
+@EqualsAndHashCode
 public class RuleFilter implements Filter<Rule>, Cloneable {
 
     private final TextFilter user;
     private final InSetPredicate<String> role;
-    private final TextFilter instance;
     private final IPAddressRangeFilter sourceAddress;
     private final TextFilter service;
     private final TextFilter request;
@@ -64,7 +65,6 @@ public class RuleFilter implements Filter<Rule>, Cloneable {
 
         user = new TextFilter(ft);
         role = new InSetPredicate<>(ft);
-        instance = new TextFilter(ft);
         sourceAddress = new IPAddressRangeFilter(ft);
         service = new TextFilter(ft, true);
         request = new TextFilter(ft, true);
@@ -80,7 +80,6 @@ public class RuleFilter implements Filter<Rule>, Cloneable {
         user.setIncludeDefault(includeDefault);
         role = new InSetPredicate<>(ft);
         role.setIncludeDefault(includeDefault);
-        instance = new TextFilter(ft, includeDefault);
         sourceAddress = new IPAddressRangeFilter(ft);
         sourceAddress.setIncludeDefault(includeDefault);
         service = new TextFilter(ft, true);
@@ -111,7 +110,6 @@ public class RuleFilter implements Filter<Rule>, Cloneable {
     public RuleFilter(
             String userName,
             String groupName,
-            String instanceName,
             String sourceAddress,
             String service,
             String request,
@@ -122,7 +120,6 @@ public class RuleFilter implements Filter<Rule>, Cloneable {
 
         this.user.setHeuristically(userName);
         this.role.setHeuristically(groupName);
-        this.instance.setHeuristically(instanceName);
         this.sourceAddress.setHeuristically(sourceAddress);
 
         this.service.setHeuristically(service);
@@ -136,7 +133,6 @@ public class RuleFilter implements Filter<Rule>, Cloneable {
         try {
             user = source.user.clone();
             role = source.role.clone();
-            instance = source.instance.clone();
             sourceAddress = source.sourceAddress.clone();
             service = source.service.clone();
             request = source.request.clone();
@@ -174,16 +170,6 @@ public class RuleFilter implements Filter<Rule>, Cloneable {
 
     public RuleFilter setRole(SpecialFilterType type) {
         role.setType(type);
-        return this;
-    }
-
-    public RuleFilter setInstance(String name) {
-        instance.setText(name);
-        return this;
-    }
-
-    public RuleFilter setInstance(SpecialFilterType type) {
-        instance.setType(type);
         return this;
     }
 
@@ -247,10 +233,6 @@ public class RuleFilter implements Filter<Rule>, Cloneable {
         return this;
     }
 
-    public TextFilter getInstance() {
-        return instance;
-    }
-
     public IPAddressRangeFilter getSourceAddress() {
         return sourceAddress;
     }
@@ -284,70 +266,11 @@ public class RuleFilter implements Filter<Rule>, Cloneable {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final RuleFilter other = (RuleFilter) obj;
-        if (this.user != other.user && (this.user == null || !this.user.equals(other.user))) {
-            return false;
-        }
-        if (this.role != other.role && (this.role == null || !this.role.equals(other.role))) {
-            return false;
-        }
-        if (this.instance != other.instance
-                && (this.instance == null || !this.instance.equals(other.instance))) {
-            return false;
-        }
-        if (this.service != other.service
-                && (this.service == null || !this.service.equals(other.service))) {
-            return false;
-        }
-        if (this.request != other.request
-                && (this.request == null || !this.request.equals(other.request))) {
-            return false;
-        }
-        if (this.subfield != other.subfield
-                && (this.subfield == null || !this.subfield.equals(other.subfield))) {
-            return false;
-        }
-        if (this.workspace != other.workspace
-                && (this.workspace == null || !this.workspace.equals(other.workspace))) {
-            return false;
-        }
-        if (this.layer != other.layer && (this.layer == null || !this.layer.equals(other.layer))) {
-            return false;
-        }
-        // NOTE: ipaddress not in equals() bc it is not used for caching
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 37 * hash + (this.user != null ? this.user.hashCode() : 0);
-        hash = 37 * hash + (this.role != null ? this.role.hashCode() : 0);
-        hash = 37 * hash + (this.instance != null ? this.instance.hashCode() : 0);
-        hash = 37 * hash + (this.sourceAddress != null ? this.sourceAddress.hashCode() : 0);
-        hash = 37 * hash + (this.service != null ? this.service.hashCode() : 0);
-        hash = 37 * hash + (this.request != null ? this.request.hashCode() : 0);
-        hash = 37 * hash + (this.subfield != null ? this.subfield.hashCode() : 0);
-        hash = 37 * hash + (this.workspace != null ? this.workspace.hashCode() : 0);
-        hash = 37 * hash + (this.layer != null ? this.layer.hashCode() : 0);
-        // NOTE: ipaddress not in hashcode bc it is not used for caching
-        return hash;
-    }
-
-    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getClass().getSimpleName());
         sb.append('[');
         sb.append("user:").append(user);
         sb.append(" role:").append(role);
-        sb.append(" inst:").append(instance);
         sb.append(" ip:").append(sourceAddress);
         sb.append(" serv:").append(service);
         sb.append(" req:").append(request);
@@ -367,8 +290,7 @@ public class RuleFilter implements Filter<Rule>, Cloneable {
     @Override
     public boolean test(@NonNull Rule rule) {
         RuleIdentifier idf = rule.getIdentifier();
-        return getInstance().test(idf.getInstanceName())
-                && getLayer().test(idf.getLayer())
+        return getLayer().test(idf.getLayer())
                 && getRequest().test(idf.getRequest())
                 && getRole().test(idf.getRolename())
                 && getService().test(idf.getService())

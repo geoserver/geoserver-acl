@@ -27,11 +27,6 @@ public class AdminRuleEditModel extends AbstractRuleEditModel<MutableAdminRule> 
         return rule.getRoleName();
     }
 
-    @Override
-    protected String getInstanceName(MutableAdminRule rule) {
-        return rule.getInstanceName();
-    }
-
     // no-op
     protected @Override String getSelectedWorkspace() {
         return null;
@@ -40,13 +35,6 @@ public class AdminRuleEditModel extends AbstractRuleEditModel<MutableAdminRule> 
     @Override
     public void save() {
         MutableAdminRule modelRule = getModel().getObject();
-        if (isIncludeInstanceName()) {
-            String instanceName = getInstanceName();
-            modelRule.setInstanceName(instanceName);
-        } else {
-            modelRule.setInstanceName(null);
-        }
-
         AdminRuleAdminService service = adminService();
         if (null == modelRule.getId()) {
             AdminRule newRule = modelRule.toRule();

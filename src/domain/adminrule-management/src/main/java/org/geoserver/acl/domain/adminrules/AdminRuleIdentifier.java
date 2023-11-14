@@ -14,8 +14,6 @@ import lombok.With;
 @Builder(toBuilder = true, builderClassName = "Builder")
 public class AdminRuleIdentifier {
 
-    private String instanceName;
-
     private String username;
 
     private String rolename;
@@ -26,7 +24,6 @@ public class AdminRuleIdentifier {
 
     public String toShortString() {
         StringBuilder builder = new StringBuilder();
-        addNonNull(builder, "instanceName", instanceName);
         addNonNull(builder, "username", username);
         addNonNull(builder, "rolename", rolename);
         addNonNull(builder, "workspace", workspace);

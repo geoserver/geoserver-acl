@@ -50,7 +50,7 @@ paths:
           description: Bad request body, for example providing a Rule with a non null id
         '409':
           description: A Rule with the same identifier already exists (i.e. with the same values for
-              instanceName, username, rolename, service, request, subfield, workspace, layer, and addressRange)
+              username, rolename, service, request, subfield, workspace, layer, and addressRange)
           headers:
            X-Reason:
              schema:
@@ -802,9 +802,6 @@ components:
         description:
           type: string
           nullable: true
-        instance:
-          type: string
-          nullable: true
         access:
           $ref: '#/components/schemas/GrantType'
         limits:
@@ -846,7 +843,7 @@ components:
 
     LayerDetails:
       type: object
-      description: Details may be set only for ules with non-wildcarded profile, instance, workspace, layer
+      description: Details may be set only for ules with non-wildcarded profile, workspace, layer
       nullable: true
       properties:
         type:
@@ -952,9 +949,6 @@ components:
         description:
           type: string
           nullable: true
-        instance:
-          type: string
-          nullable: true
         role:
           type: string
           nullable: true
@@ -1010,8 +1004,6 @@ components:
       description: A filter definition to query Rules
       nullable: true
       properties:
-        instance:
-          $ref: '#/components/schemas/TextFilter'
         user:
           $ref: '#/components/schemas/TextFilter'
         roles:
@@ -1034,8 +1026,6 @@ components:
       description: A filter definition to query Rules
       nullable: true
       properties:
-        instance:
-          $ref: '#/components/schemas/TextFilter'
         grantType:
           $ref: '#/components/schemas/AdminGrantType'
         user:
@@ -1061,9 +1051,6 @@ components:
           uniqueItems: true
           items:
             type: string
-        instance:
-          type: string
-          default: '*'
         sourceAddress:
           type: string
           default: '*'
@@ -1097,9 +1084,6 @@ components:
           uniqueItems: true
           items:
             type: string
-        instance:
-          type: string
-          default: '*'
         sourceAddress:
           type: string
           default: '*'

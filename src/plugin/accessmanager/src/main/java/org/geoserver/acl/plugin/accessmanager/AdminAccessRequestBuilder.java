@@ -51,7 +51,6 @@ class AdminAccessRequestBuilder {
         builder.user(userResolver.getUsername());
         builder.roles(userResolver.getUnfilteredRoles());
 
-        builder.instance(config.getInstanceName());
         builder.workspace(workspace);
         String sourceAddress = ipAddress;
         if (sourceAddress != null) {
