@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 
@@ -53,6 +54,15 @@ public class AclServiceSecurityAutoConfiguration {
             http.addFilterAfter(preAuthFilter, RequestHeaderAuthenticationFilter.class);
         }
 
+        http =
+                http.sessionManagement()
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        .and();
+
+        if (config.getInternal().isEnabled()) {
+            http = http.httpBasic().and();
+        }
+
         http.authorizeRequests()
                 .antMatchers("/actuator/health/**")
                 .permitAll()
@@ -61,12 +71,8 @@ public class AclServiceSecurityAutoConfiguration {
                 .antMatchers("/", "/api/api-docs/**", "/api/swagger-ui.html", "/api/swagger-ui/**")
                 .permitAll()
                 .anyRequest()
-                .authenticated()
-                .and();
+                .authenticated();
 
-        if (config.getInternal().isEnabled()) {
-            http.httpBasic();
-        }
         return http.build();
     }
 }
