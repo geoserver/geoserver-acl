@@ -31,7 +31,7 @@ geoserver.acl:
       roles-header: ${acl.security.headers.roles-header:sec-roles}
       admin-roles: ["ROLE_ADMINISTRATOR"]
     internal:
-      enabled: true
+      enabled: ${acl.security.basic.enabled:true}
       users:
         admin:
           admin: true
