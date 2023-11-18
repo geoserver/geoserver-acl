@@ -63,17 +63,16 @@ management:
 #        include:
 #        - '*'
 
-openapi.geoServerACL.base-path: /api
-
 springdoc:
   # see https://springdoc.org/#how-can-i-disable-springdoc-openapi-cache
   cache.disabled: true
   api-docs:
     enabled: true
-    #path: ${openapi.geoServerACL.base-path}/api-docs
+    path: /api-docs
   swagger-ui:
     enabled: true
-    #path: ${openapi.geoServerACL.base-path}/swagger-ui.html
+    #results in /swagger-ui/index.html
+    path: /index.html
     try-it-out-enabled: true    
 
 ---
