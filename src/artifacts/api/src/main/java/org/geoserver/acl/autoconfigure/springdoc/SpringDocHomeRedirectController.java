@@ -13,7 +13,7 @@ public class SpringDocHomeRedirectController {
     private String basePath;
 
     /**
-     * @param basePath e.g. {@literal /api/swagger-ui/index.html"}
+     * @param basePath e.g. {@literal /swagger-ui/index.html"}
      */
     public SpringDocHomeRedirectController(String basePath) {
         this.basePath = basePath;
