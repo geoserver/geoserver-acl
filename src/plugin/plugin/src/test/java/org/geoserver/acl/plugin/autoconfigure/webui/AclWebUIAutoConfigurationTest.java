@@ -13,80 +13,65 @@ import org.geoserver.web.GeoServerBasePage;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 /** {@link AclWebUIAutoConfiguration} tests */
 class AclWebUIAutoConfigurationTest {
 
-    private Category securityCategory = mock(Category.class);
-
     private ApplicationContextRunner runner =
             new ApplicationContextRunner()
+                    .withBean("securityCategory", Category.class, () -> mock(Category.class))
                     .withConfiguration(AutoConfigurations.of(AclWebUIAutoConfiguration.class));
 
     @Test
-    void testEnabledWhenAllConditionsMatch() {
-        runner.withBean("securityCategory", Category.class, () -> securityCategory)
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasNotFailed()
-                                    .hasBean("aclServiceConfigPageMenuInfo")
-                                    .hasBean("accessRulesACLPageMenuInfo")
-                                    .hasBean("adminRulesAclPageMenuInfo");
-                        });
+    void testWebUiDisabledByDefault() {
+        runner.run(this::assertDisabled);
+    }
+
+    @Test
+    void testConditionalOnProperty() {
+        runner.withPropertyValues("geoserver.acl.enabled=true", "geoserver.web-ui.acl.enabled=true")
+                .run(context -> assertEnabled(context));
+    }
+
+    @Test
+    void testConditionalOnAclEnabled() {
+        runner.withPropertyValues(
+                        "geoserver.acl.enabled=false", "geoserver.web-ui.acl.enabled=true")
+                .run(this::assertDisabled);
+    }
+
+    @Test
+    void testWebUiEnabledWithAclEnabledByDefault() {
+        runner.withPropertyValues("geoserver.web-ui.acl.enabled=true").run(this::assertEnabled);
     }
 
     @Test
     void testConditionalOnGeoServerBasePage() {
         runner.withClassLoader(new FilteredClassLoader(GeoServerBasePage.class))
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasNotFailed()
-                                    .doesNotHaveBean("aclServiceConfigPageMenuInfo")
-                                    .doesNotHaveBean("accessRulesACLPageMenuInfo")
-                                    .doesNotHaveBean("adminRulesAclPageMenuInfo");
-                        });
+                .run(this::assertDisabled);
     }
 
     @Test
     void testConditionalOnSecuritySettingsPage() {
         runner.withClassLoader(new FilteredClassLoader(SecuritySettingsPage.class))
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasNotFailed()
-                                    .doesNotHaveBean("aclServiceConfigPageMenuInfo")
-                                    .doesNotHaveBean("accessRulesACLPageMenuInfo")
-                                    .doesNotHaveBean("adminRulesAclPageMenuInfo");
-                        });
+                .run(this::assertDisabled);
     }
 
-    @Test
-    void testConditionalOnAclEnabled() {
-        runner.withPropertyValues("geoserver.acl.enabled=false")
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasNotFailed()
-                                    .doesNotHaveBean("aclServiceConfigPageMenuInfo")
-                                    .doesNotHaveBean("accessRulesACLPageMenuInfo")
-                                    .doesNotHaveBean("adminRulesAclPageMenuInfo");
-                        });
+    private void assertEnabled(AssertableApplicationContext context) {
+        assertThat(context)
+                .hasNotFailed()
+                .hasBean("aclServiceConfigPageMenuInfo")
+                .hasBean("accessRulesACLPageMenuInfo")
+                .hasBean("adminRulesAclPageMenuInfo");
     }
 
-    @Test
-    void testConditionalOnProperty() {
-        runner.withPropertyValues(
-                        "geoserver.acl.enabled=true", "geoserver.web-ui.acl.enabled=false")
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasNotFailed()
-                                    .doesNotHaveBean("aclServiceConfigPageMenuInfo")
-                                    .doesNotHaveBean("accessRulesACLPageMenuInfo")
-                                    .doesNotHaveBean("adminRulesAclPageMenuInfo");
-                        });
+    private void assertDisabled(AssertableApplicationContext context) {
+        assertThat(context)
+                .hasNotFailed()
+                .doesNotHaveBean("aclServiceConfigPageMenuInfo")
+                .doesNotHaveBean("accessRulesACLPageMenuInfo")
+                .doesNotHaveBean("adminRulesAclPageMenuInfo");
     }
 }
