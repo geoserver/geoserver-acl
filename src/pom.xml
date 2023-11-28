@@ -35,7 +35,7 @@
     <jts.version>1.19.0</jts.version>
     <lombok.version>1.18.26</lombok.version>
     <mapstruct.version>1.5.3.Final</mapstruct.version>
-    <testcontainers.version>1.17.4</testcontainers.version>
+    <testcontainers.version>1.19.3</testcontainers.version>
     <geolatte.version>1.8.2</geolatte.version>
     <querydsl.version>5.0.0</querydsl.version>
     <springdoc.version>1.7.0</springdoc.version>
