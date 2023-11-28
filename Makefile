@@ -30,6 +30,7 @@ test:
 	./mvnw verify -ntp -T4
 
 test-examples:
+	./mvnw install -DskipTests -ntp -pl :gs-acl-testcontainer
 	./mvnw verify -ntp -T4 -f examples/
 
 # Make sure `make package` was run before if anything changed since the last build
@@ -47,3 +48,8 @@ push-image:
 	@VERSION=`./mvnw help:evaluate -q -DforceStdout -Dexpression=project.version` && \
 	docker push $(DOCKER_REPO):$${VERSION}
 
+deploy:
+	./mvnw clean package deploy \
+		-s $$MAVEN_SETTINGS \
+		-pl :gs-acl-client-plugin -pl :gs-acl-api-client-spring6 -pl :gs-acl-testcontainer \
+		--also-make -ntp -T2 -fae -Dfmt.skip -U -DskipTests
