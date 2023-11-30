@@ -41,13 +41,12 @@ about GeoServer ACL.
 
 Requirements:
 
-- Java 11 JDK
+- Java 17 JDK
 
-A Java 11 JDK is required to build the project.
+A Java 17 JDK is required to build the project.
 
-If built with Java 17, the artifacts (e.g. those under [src/domain](./src/domain/README.md)
-and [src/plugin](./src/plugin/README.md) ) that are part of the GeoServer plugin,
-will nonetheless be compiled to Java 11 class compatibility.
+The artifacts (e.g. those under [src/domain](./src/domain/README.md)
+and [src/plugin](./src/plugin/README.md) ) that are part of the GeoServer plugin will still be compiled to Java 11 class compatibility.
 
 ```
 ./mvnw clean install
