@@ -68,7 +68,6 @@ acl.users.admin.enabled: true
 acl.users.admin.password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
 ---
 spring.config.activate.on-profile: dev
-server.port: 9000
 
 acl.db.dialect: org.hibernate.spatial.dialect.h2geodb.GeoDBDialect
 acl.db.schema: ''

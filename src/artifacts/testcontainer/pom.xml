@@ -9,13 +9,21 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.geoserver.acl</groupId>
-    <artifactId>gs-acl</artifactId>
+    <artifactId>artifacts</artifactId>
     <version>${revision}</version>
   </parent>
-  <artifactId>artifacts</artifactId>
-  <packaging>pom</packaging>
-  <modules>
-    <module>api</module>
-    <module>testcontainer</module>
-  </modules>
+  <artifactId>gs-acl-testcontainer</artifactId>
+  <packaging>jar</packaging>
+  <name>acl-testcontainer</name>
+  <properties>
+    <maven.compiler.source>1</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>

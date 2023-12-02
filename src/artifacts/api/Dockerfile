@@ -35,7 +35,7 @@ COPY --from=builder application/ ./
 HEALTHCHECK \
 --interval=10s \
 --timeout=5s \
---start-period=30s \
+--start-period=3s \
 --retries=5 \
 CMD curl -f -s -o /dev/null localhost:8080/acl/actuator/health || exit 1
 
