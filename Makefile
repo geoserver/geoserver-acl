@@ -49,7 +49,10 @@ push-image:
 	docker push $(DOCKER_REPO):$${VERSION}
 
 deploy:
-	./mvnw clean package deploy \
+	./mvnw clean package \
+		-pl :gs-acl-client-plugin -pl :gs-acl-api-client-spring6 -pl :gs-acl-testcontainer \
+		--also-make -ntp -T2 -fae -Dfmt.skip -U -DskipTests
+	./mvnw deploy \
 		-s $$MAVEN_SETTINGS \
 		-pl :gs-acl-client-plugin -pl :gs-acl-api-client-spring6 -pl :gs-acl-testcontainer \
 		--also-make -ntp -T2 -fae -Dfmt.skip -U -DskipTests
