@@ -31,7 +31,6 @@ import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.style.Style;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.logging.Logging;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -81,21 +80,10 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
 
         // get the user
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
-        String username = null;
-        if ((user != null) && !(user instanceof AnonymousAuthenticationToken)) {
-            // shortcut, if the user is the admin, he can do everything
-            if (ACLResourceAccessManager.isAdmin(user)) {
-                LOGGER.log(
-                        Level.FINE,
-                        "Admin level access, not applying default style for this request");
-
-                return operation;
-            } else {
-                username = user.getName();
-                if (username != null && username.isEmpty()) {
-                    username = null;
-                }
-            }
+        // shortcut, if the user is the admin, he can do everything
+        if (ACLResourceAccessManager.isAdmin(user)) {
+            LOGGER.finer("Admin level access, not applying default style for this request");
+            return operation;
         }
 
         if ((request != null)
@@ -154,7 +142,6 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
             ResourceInfo resource = layer.getResource();
 
             // get the rule, it contains default and allowed styles
-            //            RuleFilter ruleFilter = new RuleFilter(SpecialFilterType.DEFAULT);
             AccessRequest ruleFilter =
                     new AccessRequestBuilder(configProvider.get())
                             .user(user)
@@ -164,7 +151,7 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
                             .layer(resource.getName())
                             .build();
 
-            LOGGER.log(Level.FINE, "Getting access limits for getLegendGraphic", ruleFilter);
+            LOGGER.log(Level.FINEST, "Getting access limits for getLegendGraphic: {0}", ruleFilter);
             AccessInfo grant = aclService.getAccessInfo(ruleFilter);
 
             // get the requested style
@@ -224,18 +211,6 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
             }
 
             // get the rule, it contains default and allowed styles
-            //            RuleFilter ruleFilter = new RuleFilter(SpecialFilterType.DEFAULT);
-            //
-            // ruleFilter.setInstance(configurationManager.getConfiguration().getInstanceName());
-            //            ruleFilter.setService(service);
-            //            ruleFilter.setRequest(request);
-            //            if (info != null) {
-            //                ruleFilter.setWorkspace(info.getStore().getWorkspace().getName());
-            //                ruleFilter.setLayer(info.getName());
-            //            } else {
-            //                ruleFilter.setWorkspace(SpecialFilterType.DEFAULT);
-            //                ruleFilter.setLayer(SpecialFilterType.DEFAULT);
-            //            }
             AccessRequest ruleFilter;
             {
                 String workspace = info == null ? null : info.getStore().getWorkspace().getName();
@@ -249,7 +224,7 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
                                 .layer(layerName)
                                 .build();
             }
-            LOGGER.log(Level.FINE, "Getting access limits for getMap", ruleFilter);
+            LOGGER.log(Level.FINEST, "Getting access limits for getMap {0}:", ruleFilter);
 
             AccessInfo rule = aclService.getAccessInfo(ruleFilter);
 
