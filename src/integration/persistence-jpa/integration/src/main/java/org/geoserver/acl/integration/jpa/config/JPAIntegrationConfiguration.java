@@ -32,7 +32,7 @@ import javax.persistence.EntityManager;
 public class JPAIntegrationConfiguration {
 
     @Bean
-    public RuleRepository aclRuleRepositoryJpaAdaptor(
+    RuleRepository aclRuleRepositoryJpaAdaptor(
             EntityManager em,
             JpaRuleRepository jpaRuleRepository,
             RuleJpaMapper modelMapper,
@@ -46,7 +46,7 @@ public class JPAIntegrationConfiguration {
     }
 
     @Bean
-    public AdminRuleRepository aclAdminRuleRepositoryJpaAdaptor(
+    AdminRuleRepository aclAdminRuleRepositoryJpaAdaptor(
             EntityManager em,
             JpaAdminRuleRepository jpaAdminRuleRepo,
             AdminRuleJpaMapper modelMapper,

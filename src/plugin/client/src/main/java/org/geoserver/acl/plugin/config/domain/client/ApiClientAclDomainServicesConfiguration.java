@@ -53,7 +53,7 @@ import org.springframework.core.env.Environment;
 public class ApiClientAclDomainServicesConfiguration {
 
     @Bean
-    public ApiClientProperties aclApiClientProperties(Environment env) {
+    ApiClientProperties aclApiClientProperties(Environment env) {
         String basePath = env.getProperty("geoserver.acl.client.basePath");
         String username = env.getProperty("geoserver.acl.client.username");
         String password = env.getProperty("geoserver.acl.client.password");

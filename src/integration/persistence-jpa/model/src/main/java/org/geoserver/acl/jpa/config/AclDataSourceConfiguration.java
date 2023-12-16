@@ -41,7 +41,7 @@ public class AclDataSourceConfiguration {
      */
     @Primary
     @Bean("authorizationDataSource")
-    public DataSource authorizationDataSource(AclJpaProperties props) {
+    DataSource authorizationDataSource(AclJpaProperties props) {
         DataSourceProperties dsprops = props.getDatasource();
         final String jndiName = dsprops.getJndiName();
         if (StringUtils.hasText(jndiName)) {

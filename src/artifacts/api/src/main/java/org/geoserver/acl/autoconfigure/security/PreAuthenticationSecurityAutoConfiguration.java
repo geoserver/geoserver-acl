@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 public class PreAuthenticationSecurityAutoConfiguration {
 
     @Bean
-    public RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter(
+    RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter(
             AuthenticationManager authenticationManager, SecurityConfigProperties config)
             throws Exception {
         RequestHeaderAuthenticationFilter filter = new RequestHeaderAuthenticationFilter();
