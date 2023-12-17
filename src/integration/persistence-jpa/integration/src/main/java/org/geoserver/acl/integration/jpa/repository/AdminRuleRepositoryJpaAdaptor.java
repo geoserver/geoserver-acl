@@ -131,7 +131,7 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
 
     @Override
     public Optional<AdminRule> findById(@NonNull String id) {
-        return jparepo.findById(decodeId(id).longValue()).map(modelMapper::toModel);
+        return jparepo.findById(decodeId(id)).map(modelMapper::toModel);
     }
 
     @Override
@@ -142,8 +142,7 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     @Override
     public int count(AdminRuleFilter filter) {
         Optional<? extends Predicate> predicate = queryMapper.toPredicate(filter);
-        if (predicate.isEmpty()) return (int) jparepo.count(predicate.get());
-        return (int) jparepo.count();
+        return predicate.map(jparepo::count).map(Long::intValue).orElseGet(this::count);
     }
 
     @Override
@@ -222,13 +221,11 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     private CloseableIterator<org.geoserver.acl.jpa.model.AdminRule> queryOrderByPriority(
             Predicate predicate) {
 
-        CloseableIterator<org.geoserver.acl.jpa.model.AdminRule> iterator =
-                new JPAQuery<org.geoserver.acl.jpa.model.AdminRule>(em)
-                        .from(QAdminRule.adminRule)
-                        .where(predicate)
-                        .orderBy(new OrderSpecifier<>(Order.ASC, QAdminRule.adminRule.priority))
-                        .iterate();
-        return iterator;
+        return new JPAQuery<org.geoserver.acl.jpa.model.AdminRule>(em)
+                .from(QAdminRule.adminRule)
+                .where(predicate)
+                .orderBy(new OrderSpecifier<>(Order.ASC, QAdminRule.adminRule.priority))
+                .iterate();
     }
 
     private Stream<org.geoserver.acl.jpa.model.AdminRule> stream(
@@ -242,9 +239,7 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
         if (filter.isEmpty()) return r -> true;
 
         IPAddressRangeFilter ipFilter = filter.get().getSourceAddress();
-        return rule -> {
-            return ipFilter.test(rule.getIdentifier().getAddressRange());
-        };
+        return rule -> ipFilter.test(rule.getIdentifier().getAddressRange());
     }
 
     @Override
@@ -284,7 +279,7 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     private org.geoserver.acl.jpa.model.AdminRule getOrThrowIAE(@NonNull String ruleId) {
         org.geoserver.acl.jpa.model.AdminRule rule;
         try {
-            rule = jparepo.getReferenceById(decodeId(ruleId).longValue());
+            rule = jparepo.getReferenceById(decodeId(ruleId));
         } catch (EntityNotFoundException e) {
             throw new NoSuchElementException("AdminRule " + ruleId + " does not exist");
         }
