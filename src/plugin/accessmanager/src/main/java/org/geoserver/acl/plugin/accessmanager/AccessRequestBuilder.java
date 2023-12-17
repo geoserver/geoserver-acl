@@ -6,15 +6,25 @@
  */
 package org.geoserver.acl.plugin.accessmanager;
 
+import static java.util.logging.Level.WARNING;
+
 import org.geoserver.acl.authorization.AccessRequest;
 import org.geoserver.acl.domain.rules.RuleFilter;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.net.InetAddress;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
 
 /** Builder class for a {@link RuleFilter}. */
 class AccessRequestBuilder {
@@ -26,6 +36,7 @@ class AccessRequestBuilder {
     private String ipAddress;
     private String workspace;
     private String layer;
+
     private Authentication user;
     private AccessManagerConfig config;
 
@@ -75,7 +86,7 @@ class AccessRequestBuilder {
      */
     public AccessRequest build() {
         AccessRequestUserResolver userResolver =
-                new AccessRequestUserResolver(config).user(user).resolve();
+                new AccessRequestUserResolver(config).withUser(user).resolve();
 
         Set<String> roles = userResolver.getUserRoles();
 
@@ -84,34 +95,113 @@ class AccessRequestBuilder {
         builder.roles(roles);
 
         // get info from the current request
-        String service = this.service;
-        String request = this.request;
-        if (owsRequest != null) {
-            service = owsRequest.getService();
-            request = owsRequest.getRequest();
-        }
-        if ("*".equals(service)) {
-            builder.service(null);
-        } else {
-            builder.service(service);
-        }
-        if ("*".equals(request)) {
-            builder.request(null);
-        } else {
-            builder.request(request);
-        }
+        Optional<Request> owsReq = resolveOwsRequest();
+        String requestedService = resoleService(owsReq);
+        String requestedServiceRequest = resolveServiceRequest(owsReq);
 
+        builder.service(requestedService);
+        builder.request(requestedServiceRequest);
         builder.workspace(workspace);
         builder.layer(layer);
-        String sourceAddress = ipAddress;
-        if (sourceAddress == null) {
-            LOGGER.log(Level.WARNING, "No source IP address found");
-        }
+        String sourceAddress = resolveSourceAddress();
         builder.sourceAddress(sourceAddress);
 
         AccessRequest accessRequest = builder.build();
         LOGGER.log(Level.FINEST, "AccessRequest: {0}", accessRequest);
 
         return accessRequest;
+    }
+
+    private String resolveServiceRequest(Optional<Request> owsReq) {
+        String requestedServiceRequest = this.request;
+        if (requestedServiceRequest == null && owsReq.isPresent()) {
+            requestedServiceRequest = owsReq.orElseThrow().getRequest();
+        }
+        if ("*".equals(requestedServiceRequest)) {
+            requestedServiceRequest = null;
+        }
+        return requestedServiceRequest;
+    }
+
+    private String resoleService(Optional<Request> owsReq) {
+        String requestedService = this.service;
+        if (requestedService == null && owsReq.isPresent()) {
+            requestedService = owsReq.orElseThrow().getService();
+        }
+        if ("*".equals(requestedService)) {
+            requestedService = null;
+        }
+        return requestedService;
+    }
+
+    private Optional<Request> resolveOwsRequest() {
+        return Optional.ofNullable(this.owsRequest)
+                .or(() -> Optional.ofNullable(Dispatcher.REQUEST.get()));
+    }
+
+    private String resolveSourceAddress() {
+        String sourceAddress = ipAddress;
+        if (sourceAddress == null) {
+            sourceAddress = retrieveCallerIpAddress(resolveOwsRequest());
+        }
+        if (sourceAddress == null) {
+            LOGGER.warning("No source IP address found");
+        }
+        return sourceAddress;
+    }
+
+    static String retrieveCallerIpAddress(Optional<Request> owsRequest) {
+
+        String reqSource = "Dispatcher.REQUEST";
+        final HttpServletRequest request;
+
+        // is this an OWS request
+        if (owsRequest.isPresent()) {
+            request = owsRequest.orElseThrow().getHttpRequest();
+        } else {
+            reqSource = "Spring Request";
+            RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+            request =
+                    requestAttributes == null
+                            ? null
+                            : ((ServletRequestAttributes) requestAttributes).getRequest();
+        }
+        try {
+            String sourceAddress = getSourceAddress(request);
+            if (sourceAddress == null) {
+                LOGGER.log(WARNING, "Could not retrieve source address from {0}", reqSource);
+            }
+            return sourceAddress;
+        } catch (RuntimeException ex) {
+            LOGGER.log(
+                    WARNING,
+                    "Error retrieving source address with {0}: {1}",
+                    new Object[] {reqSource, ex.getMessage()});
+            return null;
+        }
+    }
+
+    static String getSourceAddress(HttpServletRequest http) {
+        if (http == null) {
+            LOGGER.warning("No HTTP request available.");
+            return null;
+        }
+
+        String sourceAddress = null;
+        try {
+            final String forwardedFor = http.getHeader("X-Forwarded-For");
+            final String remoteAddr = http.getRemoteAddr();
+            if (forwardedFor != null) {
+                String[] ips = forwardedFor.split(", ");
+                sourceAddress = InetAddress.getByName(ips[0]).getHostAddress();
+            } else if (remoteAddr != null) {
+                // Returns an IP address, removes surrounding brackets present in case of IPV6
+                // addresses
+                sourceAddress = remoteAddr.replaceAll("[\\[\\]]", "");
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.INFO, "Failed to get remote address", e);
+        }
+        return sourceAddress;
     }
 }

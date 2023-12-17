@@ -4,8 +4,13 @@
  */
 package org.geoserver.acl.api.client.integration;
 
+import lombok.experimental.UtilityClass;
+
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.Optional;
+
+@UtilityClass
 class ClientExceptionHelper {
 
     static String reason(HttpClientErrorException e) {
@@ -13,7 +18,8 @@ class ClientExceptionHelper {
     }
 
     static String reason(HttpClientErrorException e, String defaultValue) {
-        String reason = e.getResponseHeaders().getFirst("X-Reason");
-        return reason == null ? defaultValue : reason;
+        return Optional.ofNullable(e.getResponseHeaders())
+                .map(h -> h.getFirst("X-Reason"))
+                .orElse(defaultValue);
     }
 }

@@ -5,9 +5,12 @@
 package org.geoserver.acl.plugin.accessmanager;
 
 import org.geoserver.acl.authorization.AdminAccessRequest;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,24 +48,31 @@ class AdminAccessRequestBuilder {
      */
     public AdminAccessRequest build() {
         AccessRequestUserResolver userResolver =
-                new AccessRequestUserResolver(config).user(user).resolve();
+                new AccessRequestUserResolver(config).withUser(user).resolve();
         AdminAccessRequest.Builder builder = AdminAccessRequest.builder();
 
         builder.user(userResolver.getUsername());
         builder.roles(userResolver.getUnfilteredRoles());
 
         builder.workspace(workspace);
-        String sourceAddress = ipAddress;
-        if (sourceAddress != null) {
-            builder.sourceAddress(sourceAddress);
-        } else {
-            LOGGER.log(Level.WARNING, "No source IP address found");
-            builder.sourceAddress(null);
-        }
+        String sourceAddress = resolveSourceAddress();
+        builder.sourceAddress(sourceAddress);
 
         AdminAccessRequest accessRequest = builder.build();
         LOGGER.log(Level.FINEST, "AdminAccessRequest: {0}", accessRequest);
 
         return accessRequest;
+    }
+
+    private String resolveSourceAddress() {
+        String sourceAddress = ipAddress;
+        if (sourceAddress == null) {
+            Optional<Request> req = Optional.ofNullable(Dispatcher.REQUEST.get());
+            sourceAddress = AccessRequestBuilder.retrieveCallerIpAddress(req);
+        }
+        if (sourceAddress == null) {
+            LOGGER.warning("No source IP address found");
+        }
+        return sourceAddress;
     }
 }

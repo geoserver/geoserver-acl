@@ -50,7 +50,7 @@ public class AuthorizationJPAConfiguration {
 
     @Bean("authorizationEntityManagerFactory")
     @DependsOn({"authorizationDataSource", "authorizationVendorAdapter"})
-    public LocalContainerEntityManagerFactoryBean authorizationEntityManagerFactory( //
+    LocalContainerEntityManagerFactoryBean authorizationEntityManagerFactory( //
             @Qualifier("authorizationVendorAdapter")
                     HibernateJpaVendorAdapter authorizationVendorAdapter,
             @Qualifier("authorizationDataSource") DataSource dataSource,
@@ -68,7 +68,7 @@ public class AuthorizationJPAConfiguration {
     }
 
     @Bean("authorizationTransactionManager")
-    public JpaTransactionManager authorizationTransactionManager(
+    JpaTransactionManager authorizationTransactionManager(
             @Qualifier("authorizationEntityManagerFactory") final EntityManagerFactory emf) {
 
         JpaTransactionManager transactionManager = new JpaTransactionManager();

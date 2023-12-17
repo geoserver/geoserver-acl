@@ -342,7 +342,7 @@ public class ACLResourceAccessManagerTest extends AclBaseTest {
     public void testIPv6Address() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setRemoteAddr("[0:0:0:0:0:0:0:1]");
-        String sourceAddress = accessManager.getSourceAddress(request);
+        String sourceAddress = AccessRequestBuilder.getSourceAddress(request);
         // assert that address does not contain any brackets
         assertFalse(sourceAddress.matches("\\[(.*)\\]"));
     }

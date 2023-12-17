@@ -12,11 +12,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class AccessRequestUserResolver {
 
@@ -34,12 +35,12 @@ class AccessRequestUserResolver {
         this.config = configuration;
     }
 
-    AccessRequestUserResolver user(String username) {
+    AccessRequestUserResolver withUserName(String username) {
         this.authorizationName = username;
         return this;
     }
 
-    AccessRequestUserResolver user(Authentication user) {
+    AccessRequestUserResolver withUser(Authentication user) {
         if (user == null) {
             authorities = null;
         } else {
@@ -49,7 +50,7 @@ class AccessRequestUserResolver {
         return this;
     }
 
-    AccessRequestUserResolver authorities(Collection<? extends GrantedAuthority> authorities) {
+    AccessRequestUserResolver withAuthorities(Collection<? extends GrantedAuthority> authorities) {
         this.authorities = authorities;
         return this;
     }
@@ -79,27 +80,22 @@ class AccessRequestUserResolver {
     }
 
     private Set<String> resolveRoleNames() {
-        // just some loggings here
-        if (config.isUseRolesToFilter() && config.getAcceptedRoles().isEmpty()) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Role filtering requested, but no roles provided. Will only use user authorizations");
+        Set<String> roles = Set.of();
+        if (config.isUseRolesToFilter()) {
+            final List<String> acceptedRoles = config.getAcceptedRoles();
+            if (acceptedRoles.isEmpty()) {
+                LOGGER.warning(
+                        "Role filtering requested, but no roles provided. Will only use user authorizations");
+            } else {
+                roles = getFilteredRoles();
+                LOGGER.log(Level.FINEST, "Setting role for filter: {0}", new Object[] {roles});
+            }
         }
-
-        if (config.isUseRolesToFilter() && !config.getAcceptedRoles().isEmpty()) {
-
-            Set<String> roles = getFilteredRoles();
-            //            if (roles.isEmpty()) {
-            //                roles.add("UNKNOWN");
-            //            }
-            LOGGER.log(Level.FINE, "Setting role for filter: {0}", new Object[] {roles});
-            return roles;
-        }
-        return Set.of();
+        return roles;
     }
 
     public Set<String> getFilteredRoles() {
-        boolean getAllRoles = config.getAcceptedRoles().contains("*");
+        final boolean getAllRoles = config.getAcceptedRoles().contains("*");
         Set<String> excluded =
                 config.getAcceptedRoles().stream()
                         .filter(r -> r.startsWith("-"))
@@ -110,21 +106,20 @@ class AccessRequestUserResolver {
     }
 
     private Set<String> getFilteredRoles(boolean getAllRoles, Set<String> excluded) {
-        if (authorities == null || authorities.isEmpty()) {
-            return Set.of();
-        }
-        Set<String> roles = new HashSet<>();
-        for (String authRole : getUnfilteredRoles()) {
-            if (addRole(authRole, excluded, getAllRoles)) roles.add(authRole);
-        }
-        return roles;
+        return getUnfilteredRoleNames()
+                .filter(authRole -> addRole(authRole, excluded, getAllRoles))
+                .collect(Collectors.toSet());
     }
 
     public Set<String> getUnfilteredRoles() {
+        return getUnfilteredRoleNames().collect(Collectors.toSet());
+    }
+
+    private Stream<String> getUnfilteredRoleNames() {
         if (authorities == null || authorities.isEmpty()) {
-            return Set.of();
+            return Stream.empty();
         }
-        return authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
+        return authorities.stream().map(GrantedAuthority::getAuthority);
     }
 
     private boolean addRole(String role, Set<String> excluded, boolean getAllRoles) {

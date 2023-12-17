@@ -6,7 +6,6 @@ package org.geoserver.acl.autoconfigure.security;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +17,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 
+import java.util.Optional;
+
 @AutoConfiguration
 @EnableWebSecurity
 @EnableConfigurationProperties(SecurityConfigProperties.class)
@@ -25,13 +26,12 @@ import org.springframework.security.web.authentication.preauth.RequestHeaderAuth
 @Slf4j(topic = "org.geoserver.acl.autoconfigure.security")
 public class AclServiceSecurityAutoConfiguration {
 
-    private @Autowired(required = false) RequestHeaderAuthenticationFilter preAuthFilter;
-
     @Bean
-    public SecurityFilterChain securityFilterChain(
+    SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             AuthenticationManager authenticationManager,
-            SecurityConfigProperties config)
+            SecurityConfigProperties config,
+            Optional<RequestHeaderAuthenticationFilter> preAuthFilter)
             throws Exception {
 
         http.csrf().disable();
@@ -43,15 +43,16 @@ public class AclServiceSecurityAutoConfiguration {
 
         http.authenticationManager(authenticationManager);
 
-        if (null == preAuthFilter) {
-            log.info("Pre-authentication headers disabled");
-        } else {
+        if (preAuthFilter.isPresent()) {
+            RequestHeaderAuthenticationFilter preAuth = preAuthFilter.orElseThrow();
             log.info(
                     "Pre-authentication headers enabled for {}/{}. Admin roles: {}",
                     config.getHeaders().getUserHeader(),
                     config.getHeaders().getRolesHeader(),
                     config.getHeaders().getAdminRoles());
-            http.addFilterAfter(preAuthFilter, RequestHeaderAuthenticationFilter.class);
+            http = http.addFilterAfter(preAuth, RequestHeaderAuthenticationFilter.class);
+        } else {
+            log.info("Pre-authentication headers disabled");
         }
 
         http =

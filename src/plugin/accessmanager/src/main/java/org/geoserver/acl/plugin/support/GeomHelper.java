@@ -155,9 +155,10 @@ public class GeomHelper {
     /**
      * Reproject a geometry to target CRS.
      *
-     * @param geometry the geometry.
-     * @param targetCRS the target CRS.
-     * @return the reprojected geometry.
+     * @param geometry the geometry, may be {@code null}
+     * @param targetCRS the target CRS. If {@code null} or same as the input geometry's, no
+     *     reprojection is performed
+     * @return the reprojected geometry, or {@code null} if {@code geometry == null}
      */
     public static Geometry reprojectGeometry(
             Geometry geometry, CoordinateReferenceSystem targetCRS) {
@@ -193,7 +194,7 @@ public class GeomHelper {
         } else if (info instanceof LayerGroupInfo) {
             crs = ((LayerGroupInfo) info).getBounds().getCoordinateReferenceSystem();
         } else {
-            throw new RuntimeException(
+            throw new IllegalArgumentException(
                     "Cannot retrieve CRS from info " + info.getClass().getSimpleName());
         }
         return crs;

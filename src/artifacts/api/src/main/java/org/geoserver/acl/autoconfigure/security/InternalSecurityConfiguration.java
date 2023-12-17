@@ -51,7 +51,7 @@ public class InternalSecurityConfiguration {
     }
 
     @Bean("internalUserDetailsService")
-    public UserDetailsService internalUserDetailsService(SecurityConfigProperties config) {
+    UserDetailsService internalUserDetailsService(SecurityConfigProperties config) {
 
         Map<String, SecurityConfigProperties.Internal.UserInfo> users =
                 config.getInternal().getUsers();
