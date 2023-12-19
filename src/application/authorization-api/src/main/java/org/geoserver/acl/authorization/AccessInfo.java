@@ -73,7 +73,11 @@ public class AccessInfo {
 
     public static class Builder {
         // explicitly implement only mutators that need to ensure immutability
+        // Ignore squid:S1068, private field required for the lombok-generated build() method
+        @SuppressWarnings("squid:S1068")
         private Set<LayerAttribute> attributes = Set.of();
+
+        @SuppressWarnings("squid:S1068")
         private Set<String> allowedStyles = Set.of();
 
         public Builder attributes(Set<LayerAttribute> value) {
