@@ -21,7 +21,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 import org.geoserver.acl.api.server.config.RulesApiConfiguration;
-import org.geoserver.acl.api.server.support.RulesApiSupport;
+import org.geoserver.acl.api.server.support.DataRulesApiSupport;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.filter.RuleQuery;
 import org.geoserver.acl.domain.rules.InsertPosition;
@@ -49,8 +49,8 @@ class RulesApiImpTest {
     private @MockBean RuleAdminService rules;
     private @MockBean AdminRuleAdminService adminRules;
 
-    private @Autowired RulesApiSupport support;
-    private @Autowired RulesApiImpl api;
+    private @Autowired DataRulesApiSupport support;
+    private @Autowired DataRulesApiImpl api;
 
     @Test
     void testCreateRule() {

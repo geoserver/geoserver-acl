@@ -21,10 +21,10 @@ import org.geoserver.acl.api.model.LayerDetails;
 import org.geoserver.acl.api.model.Rule;
 import org.geoserver.acl.api.model.RuleFilter;
 import org.geoserver.acl.api.model.RuleLimits;
-import org.geoserver.acl.api.server.AdminRulesApi;
 import org.geoserver.acl.api.server.AuthorizationApi;
-import org.geoserver.acl.api.server.RulesApi;
-import org.geoserver.acl.api.server.support.RulesApiSupport;
+import org.geoserver.acl.api.server.DataRulesApi;
+import org.geoserver.acl.api.server.WorkspaceAdminRulesApi;
+import org.geoserver.acl.api.server.support.DataRulesApiSupport;
 import org.geoserver.acl.authorization.AuthorizationService;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.rules.RuleAdminService;
@@ -42,17 +42,17 @@ import java.util.Set;
 @SpringBootTest(
         classes = SecurityTestConfiguration.class,
         properties = "spring.main.banner-mode=off")
-class RulesApiSecurityIT {
+class DataRulesApiSecurityIT {
 
     private @MockBean RuleAdminService rulesService;
     private @MockBean AdminRuleAdminService adminRulesService;
     private @MockBean AuthorizationService authService;
 
-    private @Autowired RulesApi rulesApi;
-    private @Autowired AdminRulesApi adminRulesApi;
+    private @Autowired DataRulesApi rulesApi;
+    private @Autowired WorkspaceAdminRulesApi adminRulesApi;
     private @Autowired AuthorizationApi authApi;
 
-    private @Autowired RulesApiSupport support;
+    private @Autowired DataRulesApiSupport support;
 
     @Test
     void rulesApiNoSecuritySetUp() {

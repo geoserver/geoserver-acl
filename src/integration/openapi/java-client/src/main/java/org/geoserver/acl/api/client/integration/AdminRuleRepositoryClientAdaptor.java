@@ -9,7 +9,7 @@ import static org.geoserver.acl.api.client.integration.ClientExceptionHelper.rea
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import org.geoserver.acl.api.client.AdminRulesApi;
+import org.geoserver.acl.api.client.WorkspaceAdminRulesApi;
 import org.geoserver.acl.api.mapper.AdminRuleApiMapper;
 import org.geoserver.acl.api.mapper.EnumsApiMapper;
 import org.geoserver.acl.api.mapper.RuleFilterApiMapper;
@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class AdminRuleRepositoryClientAdaptor implements AdminRuleRepository {
 
-    private final AdminRulesApi apiClient;
+    private final WorkspaceAdminRulesApi apiClient;
     private final AdminRuleApiMapper mapper = Mappers.adminRuleApiMapper();
     private final EnumsApiMapper enumsMapper = Mappers.enumsApiMapper();
     private final RuleFilterApiMapper filterMapper = Mappers.ruleFilterApiMapper();

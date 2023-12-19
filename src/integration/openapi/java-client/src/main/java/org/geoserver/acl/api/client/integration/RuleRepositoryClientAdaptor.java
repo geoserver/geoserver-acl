@@ -11,7 +11,7 @@ import static org.springframework.http.HttpStatus.OK;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import org.geoserver.acl.api.client.RulesApi;
+import org.geoserver.acl.api.client.DataRulesApi;
 import org.geoserver.acl.api.mapper.EnumsApiMapper;
 import org.geoserver.acl.api.mapper.LayerDetailsApiMapper;
 import org.geoserver.acl.api.mapper.RuleApiMapper;
@@ -38,7 +38,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class RuleRepositoryClientAdaptor implements RuleRepository {
 
-    private final RulesApi apiClient;
+    private final DataRulesApi apiClient;
     private final RuleApiMapper mapper = Mappers.ruleApiMapper();
     private final EnumsApiMapper enumsMapper = Mappers.enumsApiMapper();
     private final RuleLimitsApiMapper limitsMapper = Mappers.ruleLimitsApiMapper();

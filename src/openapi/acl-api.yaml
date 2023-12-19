@@ -7,9 +7,9 @@ servers:
 - url: http://localhost:8080/api
 - url: http://localhost:8080/geoserver/rest/acl
 tags:
-  - name: Rules
+  - name: DataRules
     description: CRUD operations on GeoServer ACL Rules.
-  - name: AdminRules
+  - name: WorkspaceAdminRules
     description: CRUD operations on GeoServer ACL AdminRules.
   - name: Authorization
     description: Access Control List based authorization requests
@@ -21,7 +21,7 @@ paths:
       operationId: getRules
       description: Returns an (optionally) paginated list of rules. See also the count operation.
       tags:
-        - Rules
+        - DataRules
       parameters:
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/nextCursor'
@@ -31,7 +31,7 @@ paths:
     post:
       operationId: createRule
       tags:
-        - Rules
+        - DataRules
       parameters:
         - $ref: '#/components/parameters/insertPosition'
       requestBody:
@@ -64,7 +64,7 @@ paths:
         - $ref: '#/components/parameters/nextCursor'
       operationId: queryRules
       tags:
-        - Rules
+        - DataRules
       requestBody:
         required: false
         content:
@@ -82,7 +82,7 @@ paths:
       operationId: countAllRules
       description: Returns the total number of rules
       tags:
-        - Rules
+        - DataRules
       responses:
         '200':
           $ref: '#/components/responses/Count'
@@ -90,7 +90,7 @@ paths:
       operationId: countRules
       description: Returns the number of rules that matches the search criteria
       tags:
-        - Rules
+        - DataRules
       requestBody:
         required: true
         content:
@@ -108,7 +108,7 @@ paths:
       operationId: findOneRuleByPriority
       description: Finds the Rule with the given priority
       tags:
-        - Rules
+        - DataRules
       parameters:
       - name: priority
         in: path
@@ -132,7 +132,7 @@ paths:
       operationId: getRuleById
       description: Returns the Rule with the given identifier
       tags:
-        - Rules
+        - DataRules
       responses:
         '200':
           $ref: '#/components/responses/Rule'
@@ -141,7 +141,7 @@ paths:
     patch:
       operationId: updateRuleById
       tags:
-        - Rules
+        - DataRules
       requestBody:
         required: true
         content:
@@ -163,7 +163,7 @@ paths:
     delete:
       operationId: deleteRuleById
       tags:
-        - Rules
+        - DataRules
       responses:
         '200':
           description: OK
@@ -176,7 +176,7 @@ paths:
       operationId: ruleExistsById
       description: Returns the Rule with the given identifier
       tags:
-        - Rules
+        - DataRules
       responses:
         '200':
           description: boolean indicating whether the rule with the provided identifier exists
@@ -195,7 +195,7 @@ paths:
       operationId: getLayerDetailsByRuleId
       description: Returns the LayerDetails for the Rule with the given identifier
       tags:
-        - Rules
+        - DataRules
       responses:
         '200':
           $ref: '#/components/responses/LayerDetails'
@@ -208,7 +208,7 @@ paths:
     put:
       operationId: setRuleLayerDetails
       tags:
-        - Rules
+        - DataRules
       requestBody:
         required: false
         content:
@@ -229,7 +229,7 @@ paths:
     put:
       operationId: setRuleLimits
       tags:
-        - Rules
+        - DataRules
       requestBody:
         required: false
         content:
@@ -252,7 +252,7 @@ paths:
     put:
       operationId: setRuleAllowedStyles
       tags:
-        - Rules
+        - DataRules
       requestBody:
         required: false
         content:
@@ -288,7 +288,7 @@ paths:
     post:
       operationId: swapRules
       tags:
-        - Rules
+        - DataRules
       responses:
         '204':
           description: Updated
@@ -314,7 +314,7 @@ paths:
             format: int64
             minimum: 1
       tags:
-        - Rules
+        - DataRules
       responses:
         '200':
           description: The number of rules whose priority was shifted by the required offset
@@ -332,7 +332,7 @@ paths:
       operationId: findAllAdminRules
       description: Returns an (optionally) paginated list of admin rules.
       tags:
-        - AdminRules
+        - WorkspaceAdminRules
       parameters:
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/nextCursor'
@@ -342,7 +342,7 @@ paths:
     post:
       operationId: createAdminRule
       tags:
-        - AdminRules
+        - WorkspaceAdminRules
       parameters:
         - $ref: '#/components/parameters/insertPosition'
       requestBody:
@@ -364,7 +364,7 @@ paths:
         - $ref: '#/components/parameters/nextCursor'
       operationId: findAdminRules
       tags:
-        - AdminRules
+        - WorkspaceAdminRules
       requestBody:
         required: false
         content:
@@ -382,7 +382,7 @@ paths:
       operationId: countAllAdminRules
       description: Returns the total number of rules
       tags:
-        - AdminRules
+        - WorkspaceAdminRules
       responses:
         '200':
           $ref: '#/components/responses/Count'
@@ -390,7 +390,7 @@ paths:
       operationId: countAdminRules
       description: Returns the number of rules that matches the search criteria
       tags:
-        - AdminRules
+        - WorkspaceAdminRules
       requestBody:
         required: true
         content:
@@ -408,7 +408,7 @@ paths:
       operationId: findOneAdminRuleByPriority
       description: Finds the AdminRule with the given priority
       tags:
-        - AdminRules
+        - WorkspaceAdminRules
       parameters:
       - name: priority
         in: path
@@ -429,7 +429,7 @@ paths:
       operationId: findFirstAdminRule
       description: Finds the first rule that satisfies the query criteria
       tags:
-        - AdminRules
+        - WorkspaceAdminRules
       requestBody:
         required: true
         content:
@@ -452,7 +452,7 @@ paths:
       operationId: getAdminRuleById
       description: Returns the AdminRule with the given identifier
       tags:
-        - AdminRules
+        - WorkspaceAdminRules
       responses:
         '200':
           $ref: '#/components/responses/AdminRule'
@@ -461,7 +461,7 @@ paths:
     patch:
       operationId: updateAdminRule
       tags:
-        - AdminRules
+        - WorkspaceAdminRules
       requestBody:
         required: true
         content:
@@ -483,7 +483,7 @@ paths:
     delete:
       operationId: deleteAdminRuleById
       tags:
-        - AdminRules
+        - WorkspaceAdminRules
       responses:
         '200':
           description: OK
@@ -496,7 +496,7 @@ paths:
       operationId: adminRuleExistsById
       description: Returns whether the AdminRule with the given identifier exists
       tags:
-        - AdminRules
+        - WorkspaceAdminRules
       responses:
         '200':
           description: boolean indicating whether the admin rule with the provided identifier exists
@@ -520,7 +520,7 @@ paths:
     post:
       operationId: swapAdminRules
       tags:
-        - AdminRules
+        - WorkspaceAdminRules
       responses:
         '204':
           description: Updated
@@ -546,7 +546,7 @@ paths:
             format: int64
             minimum: 1
       tags:
-        - AdminRules
+        - WorkspaceAdminRules
       responses:
         '200':
           description: The number of admin rules whose priority was shifted by the required offset

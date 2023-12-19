@@ -8,15 +8,15 @@ import org.geoserver.acl.api.mapper.AdminRuleApiMapper;
 import org.geoserver.acl.api.mapper.LayerDetailsApiMapper;
 import org.geoserver.acl.api.mapper.RuleApiMapper;
 import org.geoserver.acl.api.mapper.RuleLimitsApiMapper;
-import org.geoserver.acl.api.server.AdminRulesApiController;
-import org.geoserver.acl.api.server.AdminRulesApiDelegate;
-import org.geoserver.acl.api.server.RulesApiController;
-import org.geoserver.acl.api.server.RulesApiDelegate;
-import org.geoserver.acl.api.server.rules.AdminRulesApiImpl;
-import org.geoserver.acl.api.server.rules.RulesApiImpl;
-import org.geoserver.acl.api.server.support.AdminRulesApiSupport;
+import org.geoserver.acl.api.server.DataRulesApiController;
+import org.geoserver.acl.api.server.DataRulesApiDelegate;
+import org.geoserver.acl.api.server.WorkspaceAdminRulesApiController;
+import org.geoserver.acl.api.server.WorkspaceAdminRulesApiDelegate;
+import org.geoserver.acl.api.server.rules.DataRulesApiImpl;
+import org.geoserver.acl.api.server.rules.WorkspaceAdminRulesApiImpl;
+import org.geoserver.acl.api.server.support.DataRulesApiSupport;
 import org.geoserver.acl.api.server.support.RequestBodyBufferingServletFilter;
-import org.geoserver.acl.api.server.support.RulesApiSupport;
+import org.geoserver.acl.api.server.support.WorkspaceAdminRulesApiSupport;
 import org.geoserver.acl.config.domain.AdminRuleAdminServiceConfiguration;
 import org.geoserver.acl.config.domain.AuthorizationServiceConfiguration;
 import org.geoserver.acl.config.domain.RuleAdminServiceConfiguration;
@@ -43,40 +43,41 @@ public class RulesApiConfiguration {
     }
 
     @Bean
-    RulesApiController rulesApiController(RulesApiDelegate delegate) {
-        return new RulesApiController(delegate);
+    DataRulesApiController rulesApiController(DataRulesApiDelegate delegate) {
+        return new DataRulesApiController(delegate);
     }
 
     @Bean
-    AdminRulesApiController adminRulesApiController(AdminRulesApiDelegate delegate) {
-        return new AdminRulesApiController(delegate);
+    WorkspaceAdminRulesApiController adminRulesApiController(
+            WorkspaceAdminRulesApiDelegate delegate) {
+        return new WorkspaceAdminRulesApiController(delegate);
     }
 
     @Bean
-    RulesApiDelegate rulesApiDelegate(RuleAdminService rules, RulesApiSupport support) {
-        return new RulesApiImpl(rules, support);
+    DataRulesApiDelegate rulesApiDelegate(RuleAdminService rules, DataRulesApiSupport support) {
+        return new DataRulesApiImpl(rules, support);
     }
 
     @Bean
-    RulesApiSupport rulesApiImplSupport(
+    DataRulesApiSupport rulesApiImplSupport(
             NativeWebRequest nativeReq,
             RuleApiMapper mapper,
             LayerDetailsApiMapper layerDetailsMapper,
             RuleLimitsApiMapper limitsMapper) {
 
-        return new RulesApiSupport(nativeReq, mapper, layerDetailsMapper, limitsMapper);
+        return new DataRulesApiSupport(nativeReq, mapper, layerDetailsMapper, limitsMapper);
     }
 
     @Bean
-    AdminRulesApiDelegate adminRulesApiDelegate(
-            AdminRuleAdminService service, AdminRulesApiSupport support) {
-        return new AdminRulesApiImpl(service, support);
+    WorkspaceAdminRulesApiDelegate adminRulesApiDelegate(
+            AdminRuleAdminService service, WorkspaceAdminRulesApiSupport support) {
+        return new WorkspaceAdminRulesApiImpl(service, support);
     }
 
     @Bean
-    AdminRulesApiSupport adminRulesApiImplSupport(
+    WorkspaceAdminRulesApiSupport adminRulesApiImplSupport(
             NativeWebRequest nativeReq, AdminRuleApiMapper mapper) {
 
-        return new AdminRulesApiSupport(nativeReq, mapper);
+        return new WorkspaceAdminRulesApiSupport(nativeReq, mapper);
     }
 }

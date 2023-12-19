@@ -43,10 +43,10 @@ import org.springframework.test.annotation.DirtiesContext;
  *                    | <HTTP>                      | <HTTP>
  * SERVER:            |                             |
  *                    v                             v
- *      RulesApiImplController <codegen>   AdminRulesApiController <codegen>
+ *       DataRulesApiController <codegen>  WorkspaceAdminRulesApiController <codegen>
  *                    |                             |
  *                    v                             v
- *              RulesApiImpl                 AdminRulesApiImpl
+ *            DataRulesApiImpl              WorkspaceAdminRulesApiImpl
  *                    |                             |
  *                    v                             v
  *            RuleAdminService            AdminRuleAdminService

@@ -14,12 +14,12 @@ import org.geoserver.acl.domain.rules.LayerDetails;
 import org.geoserver.acl.domain.rules.RuleLimits;
 import org.springframework.web.context.request.NativeWebRequest;
 
-public class RulesApiSupport extends ApiImplSupport<Rule, org.geoserver.acl.domain.rules.Rule> {
+public class DataRulesApiSupport extends ApiImplSupport<Rule, org.geoserver.acl.domain.rules.Rule> {
 
     private final @NonNull LayerDetailsApiMapper layerDetailsMapper;
     private final @NonNull RuleLimitsApiMapper limitsMapper;
 
-    public RulesApiSupport(
+    public DataRulesApiSupport(
             @NonNull NativeWebRequest nativeRequest,
             RuleApiMapper mapper,
             LayerDetailsApiMapper layerDetailsMapper,

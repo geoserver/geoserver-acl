@@ -12,10 +12,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.geoserver.acl.api.mapper.AdminRuleApiMapper;
 import org.geoserver.acl.api.mapper.EnumsApiMapper;
 import org.geoserver.acl.api.mapper.RuleApiMapper;
-import org.geoserver.acl.api.server.AdminRulesApiController;
-import org.geoserver.acl.api.server.AdminRulesApiDelegate;
-import org.geoserver.acl.api.server.RulesApiController;
-import org.geoserver.acl.api.server.RulesApiDelegate;
+import org.geoserver.acl.api.server.DataRulesApiController;
+import org.geoserver.acl.api.server.DataRulesApiDelegate;
+import org.geoserver.acl.api.server.WorkspaceAdminRulesApiController;
+import org.geoserver.acl.api.server.WorkspaceAdminRulesApiDelegate;
 import org.geoserver.acl.domain.adminrules.AdminRuleRepository;
 import org.geoserver.acl.domain.rules.RuleRepository;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.web.context.request.NativeWebRequest;
 
-class RulesApiConfigurationTest {
+class DataRulesApiConfigurationTest {
 
     private ApplicationContextRunner runner =
             new ApplicationContextRunner()
@@ -47,11 +47,11 @@ class RulesApiConfigurationTest {
                 .run(
                         context -> {
                             assertThat(context)
-                                    .hasSingleBean(RulesApiController.class)
-                                    .hasSingleBean(RulesApiDelegate.class)
+                                    .hasSingleBean(DataRulesApiController.class)
+                                    .hasSingleBean(DataRulesApiDelegate.class)
                                     .hasSingleBean(RuleApiMapper.class)
-                                    .hasSingleBean(AdminRulesApiController.class)
-                                    .hasSingleBean(AdminRulesApiDelegate.class)
+                                    .hasSingleBean(WorkspaceAdminRulesApiController.class)
+                                    .hasSingleBean(WorkspaceAdminRulesApiDelegate.class)
                                     .hasSingleBean(AdminRuleApiMapper.class)
                                     .hasSingleBean(JavaTimeModule.class)
                                     .hasSingleBean(EnumsApiMapper.class);
