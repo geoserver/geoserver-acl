@@ -73,7 +73,8 @@ springdoc:
     enabled: true
     #results in /swagger-ui/index.html
     path: /index.html
-    try-it-out-enabled: true    
+    try-it-out-enabled: true
+    tags-sorter: alpha    
 
 ---
 spring.config.activate.on-profile: ddl

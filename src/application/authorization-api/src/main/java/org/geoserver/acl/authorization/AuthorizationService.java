@@ -14,7 +14,9 @@ import java.util.List;
 /**
  * Operations on
  *
- * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
+ * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence's
+ *     AdminRuleService)
+ * @author Gabriel Roldan adapt from RuleFilter to immutable parameters and return types
  */
 public interface AuthorizationService {
 

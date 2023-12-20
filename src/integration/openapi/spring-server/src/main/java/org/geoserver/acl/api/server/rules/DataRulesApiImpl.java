@@ -18,10 +18,10 @@ import org.geoserver.acl.api.model.LayerDetails;
 import org.geoserver.acl.api.model.Rule;
 import org.geoserver.acl.api.model.RuleFilter;
 import org.geoserver.acl.api.model.RuleLimits;
-import org.geoserver.acl.api.server.RulesApiDelegate;
+import org.geoserver.acl.api.server.DataRulesApiDelegate;
+import org.geoserver.acl.api.server.support.DataRulesApiSupport;
 import org.geoserver.acl.api.server.support.IsAdmin;
 import org.geoserver.acl.api.server.support.IsAuthenticated;
-import org.geoserver.acl.api.server.support.RulesApiSupport;
 import org.geoserver.acl.domain.filter.RuleQuery;
 import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.geoserver.acl.domain.rules.RuleIdentifierConflictException;
@@ -36,10 +36,10 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @IsAuthenticated
-public class RulesApiImpl implements RulesApiDelegate {
+public class DataRulesApiImpl implements DataRulesApiDelegate {
 
     private final @NonNull RuleAdminService service;
-    private final @NonNull RulesApiSupport support;
+    private final @NonNull DataRulesApiSupport support;
 
     @Override
     @IsAdmin

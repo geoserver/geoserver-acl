@@ -15,10 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.geoserver.acl.api.model.AdminRule;
 import org.geoserver.acl.api.model.AdminRuleFilter;
 import org.geoserver.acl.api.model.InsertPosition;
-import org.geoserver.acl.api.server.AdminRulesApiDelegate;
-import org.geoserver.acl.api.server.support.AdminRulesApiSupport;
+import org.geoserver.acl.api.server.WorkspaceAdminRulesApiDelegate;
 import org.geoserver.acl.api.server.support.IsAdmin;
 import org.geoserver.acl.api.server.support.IsAuthenticated;
+import org.geoserver.acl.api.server.support.WorkspaceAdminRulesApiSupport;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.adminrules.AdminRuleIdentifierConflictException;
 import org.geoserver.acl.domain.filter.RuleQuery;
@@ -30,10 +30,10 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @IsAuthenticated
-public class AdminRulesApiImpl implements AdminRulesApiDelegate {
+public class WorkspaceAdminRulesApiImpl implements WorkspaceAdminRulesApiDelegate {
 
     private final @NonNull AdminRuleAdminService service;
-    private final @NonNull AdminRulesApiSupport support;
+    private final @NonNull WorkspaceAdminRulesApiSupport support;
 
     public @Override ResponseEntity<Integer> countAllAdminRules() {
         return ResponseEntity.ok(service.count());

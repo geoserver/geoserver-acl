@@ -60,6 +60,8 @@ public class AccessRequest {
     }
 
     public static class Builder {
+        // Ignore squid:S1068, private field required for the lombok-generated build() method
+        @SuppressWarnings("squid:S1068")
         private Set<String> roles = Set.of();
 
         public Builder roles(String... roleNames) {

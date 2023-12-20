@@ -7,10 +7,10 @@ package org.geoserver.acl.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import org.geoserver.acl.api.client.AdminRulesApi;
 import org.geoserver.acl.api.client.ApiClient;
 import org.geoserver.acl.api.client.AuthorizationApi;
-import org.geoserver.acl.api.client.RulesApi;
+import org.geoserver.acl.api.client.DataRulesApi;
+import org.geoserver.acl.api.client.WorkspaceAdminRulesApi;
 import org.geoserver.acl.api.client.auth.HttpBasicAuth;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -79,12 +79,12 @@ public class AclClient {
                 .orElse(null);
     }
 
-    public RulesApi getRulesApi() {
-        return new RulesApi(apiClient);
+    public DataRulesApi getRulesApi() {
+        return new DataRulesApi(apiClient);
     }
 
-    public AdminRulesApi getAdminRulesApi() {
-        return new AdminRulesApi(apiClient);
+    public WorkspaceAdminRulesApi getAdminRulesApi() {
+        return new WorkspaceAdminRulesApi(apiClient);
     }
 
     public AuthorizationApi getAuthorizationApi() {
