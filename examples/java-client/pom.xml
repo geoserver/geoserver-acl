@@ -14,8 +14,6 @@
   </parent>
   <artifactId>acl-java-client-example</artifactId>
   <properties>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
     <testcontainers.version>1.19.3</testcontainers.version>
   </properties>
   <dependencyManagement>
