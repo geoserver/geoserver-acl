@@ -26,7 +26,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @IsAuthenticated
@@ -114,13 +113,13 @@ public class WorkspaceAdminRulesApiImpl implements WorkspaceAdminRulesApiDelegat
             query.setLimit(query.getLimit() + 1);
         }
         try {
-            list = service.getAll(query).collect(Collectors.toList());
+            list = service.getAll(query).toList();
             query.setLimit(requestedLimit); // avoid side effect once the method returns
         } catch (IllegalArgumentException e) {
             return support.error(BAD_REQUEST, e.getMessage());
         }
 
-        List<AdminRule> body = list.stream().map(support::toApi).collect(Collectors.toList());
+        List<AdminRule> body = list.stream().map(support::toApi).toList();
         String nextCursor;
         if (requestedLimit != null && body.size() > requestedLimit) {
             nextCursor = body.get(requestedLimit).getId();

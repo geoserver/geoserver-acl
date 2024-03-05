@@ -102,9 +102,7 @@ public class PreAuthenticationSecurityAutoConfiguration {
             }
 
             List<SimpleGrantedAuthority> authorities =
-                    credentials.stream()
-                            .map(SimpleGrantedAuthority::new)
-                            .collect(Collectors.toList());
+                    credentials.stream().map(SimpleGrantedAuthority::new).toList();
 
             return new User(principal, "", authorities);
         }

@@ -28,7 +28,6 @@ import org.geoserver.acl.jpa.model.QRuleIdentifier;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -177,8 +176,7 @@ class PredicateMapper {
 
                     if (includeDefault) {
                         return propertyPath.in(
-                                Stream.concat(Stream.of("*"), values.stream())
-                                        .collect(Collectors.toList()));
+                                Stream.concat(Stream.of("*"), values.stream()).toList());
                     }
                     return propertyPath.in(values);
                 }

@@ -127,25 +127,22 @@ class RuleRepositoryJpaAdaptorTest {
         repo.findById(r1.getId());
         repo.findById(r2.getId());
 
-        List<Rule> collect = repo.findAll().collect(Collectors.toList());
+        List<Rule> collect = repo.findAll().toList();
         assertEquals(2, collect.size());
     }
 
     @Test
     void streamAll() {
-        List<Rule> limits =
-                IntStream.rangeClosed(1, 100)
-                        .mapToObj(this::addLimitsRule)
-                        .collect(Collectors.toList());
+        List<Rule> limits = IntStream.rangeClosed(1, 100).mapToObj(this::addLimitsRule).toList();
         List<Rule> allows =
                 IntStream.rangeClosed(101, 200)
                         .mapToObj(this::addAllowRuleWithLayerDetails)
-                        .collect(Collectors.toList());
+                        .toList();
 
         List<Rule> expected = new ArrayList<>(limits);
         expected.addAll(allows);
 
-        List<Rule> result = repo.findAll(RuleQuery.of()).collect(Collectors.toList());
+        List<Rule> result = repo.findAll(RuleQuery.of()).toList();
         assertThat(result).isEqualTo(expected);
     }
 

@@ -12,7 +12,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Data
@@ -41,7 +40,7 @@ public class SecurityConfigProperties {
             public List<SimpleGrantedAuthority> authorities() {
                 return Stream.of(admin ? "ROLE_ADMIN" : "ROLE_USER")
                         .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+                        .toList();
             }
         }
     }

@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class CachingAuthorizationService implements AuthorizationService {
 
@@ -103,7 +102,7 @@ public class CachingAuthorizationService implements AuthorizationService {
                                         e.getValue().getMatchingRules().stream()
                                                 .anyMatch(affectedRuleIds::contains))
                         .map(Map.Entry::getKey)
-                        .collect(Collectors.toList());
+                        .toList();
 
         ruleAccessCache.invalidateAll(matchingRequests);
     }
@@ -121,7 +120,7 @@ public class CachingAuthorizationService implements AuthorizationService {
                         .parallel()
                         .filter(adminRulePredicate)
                         .map(Map.Entry::getKey)
-                        .collect(Collectors.toList());
+                        .toList();
 
         adminRuleAccessCache.invalidateAll(matchingRequests);
     }

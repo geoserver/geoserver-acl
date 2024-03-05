@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 @SpringBootTest(classes = RulesApiConfiguration.class, properties = "spring.main.banner-mode=off")
 class RulesApiImpTest {
@@ -119,7 +118,7 @@ class RulesApiImpTest {
         ResponseEntity<List<org.geoserver.acl.api.model.Rule>> response = call.get();
         assertThat(response.getStatusCode()).isEqualTo(status);
         assertThat(response.getBody()).isNotNull();
-        return response.getBody().stream().map(support::toModel).collect(Collectors.toList());
+        return response.getBody().stream().map(support::toModel).toList();
     }
 
     @Disabled("Filter mapping not yet implemented")

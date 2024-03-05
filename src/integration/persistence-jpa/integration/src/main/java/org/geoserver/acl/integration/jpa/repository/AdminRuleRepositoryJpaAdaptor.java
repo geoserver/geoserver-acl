@@ -214,7 +214,7 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
             if (null != query.getLimit()) {
                 rules = rules.limit(query.getLimit());
             }
-            return rules.collect(Collectors.toList()).stream();
+            return rules.toList().stream();
         }
     }
 

@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class RuleAdminServiceImplTest {
@@ -176,7 +175,7 @@ class RuleAdminServiceImplTest {
         List<Rule> expected = List.of(Rule.allow(), Rule.deny(), Rule.limit());
         when(repository.findAll()).thenReturn(expected.stream());
 
-        List<Rule> actual = service.getAll().collect(Collectors.toList());
+        List<Rule> actual = service.getAll().toList();
         verify(repository, times(1)).findAll();
         verifyNoMoreInteractions(repository);
         assertThat(actual).isEqualTo(expected);
@@ -197,7 +196,7 @@ class RuleAdminServiceImplTest {
 
         when(repository.findAll(query)).thenReturn(expected.stream());
 
-        List<Rule> actual = service.getAll(query).collect(Collectors.toList());
+        List<Rule> actual = service.getAll(query).toList();
         verify(repository, times(1)).findAll(eq(query));
         verifyNoMoreInteractions(repository);
         assertThat(actual).isEqualTo(expected);

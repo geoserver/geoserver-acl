@@ -18,7 +18,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -182,7 +181,7 @@ public class RuleAdminServiceImpl implements RuleAdminService {
     @Override
     public Optional<Rule> getRule(@NonNull RuleFilter filter) throws IllegalArgumentException {
         RuleQuery<RuleFilter> query = RuleQuery.of(filter).setLimit(2);
-        List<Rule> found = ruleRepository.findAll(query).collect(Collectors.toList());
+        List<Rule> found = ruleRepository.findAll(query).toList();
         if (found.size() > 1) {
             throw new IllegalArgumentException(
                     "Unexpected rule count for filter " + filter + " : " + found.size());

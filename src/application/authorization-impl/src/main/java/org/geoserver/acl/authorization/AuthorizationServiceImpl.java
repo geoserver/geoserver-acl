@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * <B>Note:</B> <TT>service</TT> and <TT>request</TT> params are usually set by the client, and by
@@ -76,7 +75,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                 .flatMap(List::stream)
                 .sorted((r1, r2) -> Long.compare(r1.getPriority(), r2.getPriority()))
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -113,8 +112,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         }
 
         log.debug("Returning {} for {}", ret, request);
-        List<String> matchingIds =
-                flatten(groupedRules).stream().map(Rule::getId).collect(Collectors.toList());
+        List<String> matchingIds = flatten(groupedRules).stream().map(Rule::getId).toList();
         return ret.withMatchingRules(matchingIds);
     }
 
@@ -500,8 +498,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                 filter = filter.clone();
                 filter.getRole().setType(SpecialFilterType.DEFAULT);
             }
-            List<Rule> found =
-                    ruleService.getAll(RuleQuery.of(filter)).collect(Collectors.toList());
+            List<Rule> found = ruleService.getAll(RuleQuery.of(filter)).toList();
             ret.put(null, found);
         } else {
             for (String role : finalRoleFilter) {
@@ -516,7 +513,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         filter = filter.clone();
         filter.setRole(role);
         filter.getRole().setIncludeDefault(true);
-        return ruleService.getAll(RuleQuery.of(filter)).collect(Collectors.toList());
+        return ruleService.getAll(RuleQuery.of(filter)).toList();
     }
 
     /**

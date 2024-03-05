@@ -21,7 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @SpringBootTest(
@@ -112,15 +111,14 @@ class AdminRuleRepositoryJpaAdaptorTest {
         repo.findById(r1.getId());
         repo.findById(r2.getId());
 
-        List<AdminRule> collect = repo.findAll().collect(Collectors.toList());
+        List<AdminRule> collect = repo.findAll().toList();
         assertEquals(2, collect.size());
     }
 
     @Test
     void streamAll() {
-        List<AdminRule> all =
-                IntStream.rangeClosed(1, 100).mapToObj(this::addFull).collect(Collectors.toList());
-        List<AdminRule> result = repo.findAll(RuleQuery.of()).collect(Collectors.toList());
+        List<AdminRule> all = IntStream.rangeClosed(1, 100).mapToObj(this::addFull).toList();
+        List<AdminRule> result = repo.findAll(RuleQuery.of()).toList();
         assertThat(result).isEqualTo(all);
     }
 

@@ -19,7 +19,6 @@ import org.geoserver.acl.authorization.AuthorizationService;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @IsAuthenticated
@@ -63,8 +62,7 @@ public class AuthorizationApiImpl implements AuthorizationApiDelegate {
         modelResponse = service.getMatchingRules(modelRequest);
 
         support.setPreferredGeometryEncoding();
-        List<Rule> apiResponse =
-                modelResponse.stream().map(support::toApi).collect(Collectors.toList());
+        List<Rule> apiResponse = modelResponse.stream().map(support::toApi).toList();
         return ResponseEntity.ok(apiResponse);
     }
 }

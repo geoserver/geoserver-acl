@@ -253,7 +253,7 @@ public class JpaRuleRepositoryTest {
                                 r ->
                                         r.getPriority() > 2L
                                                 && "*".equals(r.getIdentifier().getLayer()))
-                        .collect(Collectors.toList());
+                        .toList();
 
         Iterable<Rule> res = repo.findAll(predicate, Sort.by("priority"));
         List<Rule> actual = new ArrayList<>();

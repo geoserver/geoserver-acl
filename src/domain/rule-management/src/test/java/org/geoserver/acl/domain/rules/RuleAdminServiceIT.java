@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class RuleAdminServiceIT {
@@ -236,7 +235,7 @@ public class RuleAdminServiceIT {
         ruleAdminService.setLayerDetails(r2.getId(), details2);
 
         List<Rule> expected = List.of(r1, r2);
-        List<Rule> actual = ruleAdminService.getAll().collect(Collectors.toList());
+        List<Rule> actual = ruleAdminService.getAll().toList();
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -259,7 +258,7 @@ public class RuleAdminServiceIT {
         String nextCursorId = null;
         for (int page = 0; page < maxPages; page++) {
             query.setNextId(nextCursorId);
-            List<Rule> result = ruleAdminService.getAll(query).collect(Collectors.toList());
+            List<Rule> result = ruleAdminService.getAll(query).toList();
             if (result.size() > pageSize) {
                 assertThat(result.size()).isEqualTo(1 + pageSize);
                 nextCursorId = result.get(pageSize).getId();
@@ -589,7 +588,7 @@ public class RuleAdminServiceIT {
         r1 = r1.withPriority(4);
         r4 = r4.withPriority(5);
         assertThat(ruleAdminService.update(r3)).isEqualTo(r3);
-        List<Rule> collect = ruleAdminService.getAll().collect(Collectors.toList());
+        List<Rule> collect = ruleAdminService.getAll().toList();
 
         assertGet(r2).as("r2 should have kept priority 2").isEqualTo(r2);
 
@@ -673,7 +672,7 @@ public class RuleAdminServiceIT {
         assertThat(expectedOrder.size())
                 .as("mismatch in expectations")
                 .isEqualTo(expectedPriorities.size());
-        List<Rule> all = ruleAdminService.getAll().collect(Collectors.toList());
+        List<Rule> all = ruleAdminService.getAll().toList();
         assertThat(all.size()).isEqualTo(expectedPriorities.size());
 
         for (int i = 0; i < expectedOrder.size(); i++) {

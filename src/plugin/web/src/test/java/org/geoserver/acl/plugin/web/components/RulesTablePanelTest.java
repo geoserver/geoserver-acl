@@ -21,7 +21,6 @@ import org.geoserver.web.wicket.ImageAjaxLink;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @SuppressWarnings("unused")
@@ -31,7 +30,7 @@ public class RulesTablePanelTest extends AclWicketTestSupport {
         AdminRuleAdminService adminService = adminService();
         assertEquals(0, adminService.count());
         IntStream.rangeClosed(1, count).mapToObj(this::testRule).forEach(adminService::insert);
-        return adminService.getAll().collect(Collectors.toList());
+        return adminService.getAll().toList();
     }
 
     private AdminRule testRule(int i) {
@@ -86,8 +85,7 @@ public class RulesTablePanelTest extends AclWicketTestSupport {
     @Test
     public void testUpDown() {
         List<AdminRule> rules = createTestRules(3);
-        List<MutableAdminRule> mutableRules =
-                rules.stream().map(MutableAdminRule::new).collect(Collectors.toList());
+        List<MutableAdminRule> mutableRules = rules.stream().map(MutableAdminRule::new).toList();
 
         AdminRulesTableDataProvider data = spy(new AdminRulesTableDataProvider());
 

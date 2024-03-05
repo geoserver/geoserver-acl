@@ -135,7 +135,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
             if (null != pageSize) {
                 rules = rules.limit(query.getLimit());
             }
-            return rules.collect(Collectors.toList()).stream();
+            return rules.toList().stream();
         }
     }
 

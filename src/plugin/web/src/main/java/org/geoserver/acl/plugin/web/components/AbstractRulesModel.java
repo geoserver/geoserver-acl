@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -64,7 +63,7 @@ public abstract class AbstractRulesModel implements Serializable {
                 .sorted()
                 .distinct()
                 .filter(service -> !"GWC".equalsIgnoreCase(service))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -86,7 +85,7 @@ public abstract class AbstractRulesModel implements Serializable {
                                 .orElseGet(Stream::empty))
                 .sorted()
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Iterator<String> getSubfieldChoices(@Nullable String input) {
@@ -149,7 +148,7 @@ public abstract class AbstractRulesModel implements Serializable {
                                 .filter(PublishedInfo::isAdvertised)
                                 .filter(PublishedInfo::isEnabled)
                                 .limit(MAX_SUGGESTIONS)
-                                .collect(Collectors.toList())
+                                .toList()
                                 .stream();
             }
         } else {

@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.persistence.EntityManager;
@@ -144,7 +143,7 @@ public class JpaAdminRuleRepositoryTest {
                                 r ->
                                         r.getPriority() > 2L
                                                 && "*".equals(r.getIdentifier().getWorkspace()))
-                        .collect(Collectors.toList());
+                        .toList();
 
         Iterable<AdminRule> res = repo.findAll(predicate, Sort.by("priority"));
         List<AdminRule> actual = new ArrayList<>();

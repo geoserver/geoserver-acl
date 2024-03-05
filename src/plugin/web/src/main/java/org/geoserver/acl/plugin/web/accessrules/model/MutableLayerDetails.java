@@ -51,10 +51,7 @@ public class MutableLayerDetails implements Serializable {
         setCatalogMode(ld.getCatalogMode());
         setSpatialFilterType(ld.getSpatialFilterType());
         setAllowedStyles(new TreeSet<>(ld.getAllowedStyles()));
-        setAttributes(
-                ld.getAttributes().stream()
-                        .map(MutableLayerAttribute::new)
-                        .collect(Collectors.toList()));
+        setAttributes(ld.getAttributes().stream().map(MutableLayerAttribute::new).toList());
     }
 
     public LayerDetails toLayerDetails() {
