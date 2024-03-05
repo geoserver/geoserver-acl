@@ -288,7 +288,7 @@ public abstract class AbstractRulesModel implements Serializable {
         return context.getBean(AccessManagerConfigProvider.class);
     }
 
-    protected static Map<String, List<String>> KNOWN_SERVICES =
+    protected static final Map<String, List<String>> KNOWN_SERVICES =
             Map.of(
                     "WMS",
                     List.of(
@@ -305,7 +305,16 @@ public abstract class AbstractRulesModel implements Serializable {
                             "DescribeFeatureType",
                             "LockFeature",
                             "GetFeatureWithLock",
-                            "Transaction"),
+                            "Transaction",
+                            // WFS 1.1 additional operations:
+                            "GetGMLObject",
+                            // WFS 2.0 additional operations:
+                            "GetPropertyValue",
+                            "GetFeatureWithLock",
+                            "CreateStoredQuery",
+                            "DropStoredQuery",
+                            "ListStoredQueries",
+                            "DescribeStoredQueries"),
                     "WCS",
                     List.of("GetCapabilities", "GetCoverage", "DescribeCoverage"),
                     "WPS",
