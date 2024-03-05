@@ -24,8 +24,10 @@ ENV DEF_JAVA_TOOL_OPTS="\
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=80 -XshowSettings:system"
 
 ENV JAVA_TOOL_OPTS="$DEF_JAVA_TOOL_OPTS $JAVA_OPTS"
+ENV MANAGEMENT_SERVER_PORT=8081
 
 EXPOSE 8080
+EXPOSE 8081
 
 COPY --from=builder dependencies/ ./
 COPY --from=builder snapshot-dependencies/ ./
@@ -37,7 +39,7 @@ HEALTHCHECK \
 --timeout=5s \
 --start-period=3s \
 --retries=5 \
-CMD curl -f -s -o /dev/null localhost:8080/acl/actuator/health || exit 1
+CMD curl -f -s -o /dev/null localhost:$MANAGEMENT_SERVER_PORT/acl/actuator/health || exit 1
 
 ARG APP_ARGS=""
 

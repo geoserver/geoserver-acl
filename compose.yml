@@ -18,15 +18,14 @@ services:
         limits:
           cpus: '4.0'
           memory: 2G
-    ports:
-      - 6432:5432
 
   acl:
     image: geoservercloud/geoserver-acl:2.0-SNAPSHOT
     volumes:
-      - ./docker-compose-acl-config.yml:/opt/app/bin/acl.yml
+      - ./compose-acl-config.yml:/opt/app/bin/acl.yml
     ports:
-      - 9000:8080
+      - 8080:8080
+      - 8081:8081
     deploy:
       resources:
         limits:
