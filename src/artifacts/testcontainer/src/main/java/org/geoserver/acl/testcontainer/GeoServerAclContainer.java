@@ -10,7 +10,6 @@ import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
-import java.util.Objects;
 
 public class GeoServerAclContainer extends GenericContainer<GeoServerAclContainer> {
 
@@ -30,9 +29,9 @@ public class GeoServerAclContainer extends GenericContainer<GeoServerAclContaine
     public static final DockerImageName V1_2_0 =
             DockerImageName.parse(DEFAULT_IMAGE_REPOSITORY + ":1.2.0");
 
-    public static final String CURRENT_VERSION =
-            Objects.requireNonNull(
-                    GeoServerAclContainer.class.getPackage().getImplementationVersion());
+    public static final String CURRENT_VERSION = "2.0-SNAPSHOT";
+    //
+    // Objects.requireNonNull(GeoServerAclContainer.class.getPackage().getImplementationVersion());
 
     public static final DockerImageName CURRENT =
             DockerImageName.parse(DEFAULT_IMAGE_REPOSITORY + ":" + CURRENT_VERSION);

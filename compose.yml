@@ -13,6 +13,8 @@ services:
     volumes:
       - acl_data:/var/lib/postgresql/data
     restart: always
+    ports:
+      - 6432:5432
     deploy:
       resources:
         limits:
@@ -21,8 +23,13 @@ services:
 
   acl:
     image: geoservercloud/geoserver-acl:2.0-SNAPSHOT
-    volumes:
-      - ./compose-acl-config.yml:/opt/app/bin/acl.yml
+    environment:
+      - PG_HOST=acldb
+      - PG_PORT=5432
+      - PG_DB=acl
+      - PG_SCHEMA=acl
+      - PG_USER=acl
+      - PG_PASSWORD=acls3cr3t
     ports:
       - 8080:8080
       - 8081:8081

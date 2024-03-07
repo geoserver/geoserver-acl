@@ -1,0 +1,39 @@
+pg.host: acldb
+pg.port: 5432
+pg.db: acl
+pg.schema: acl
+pg.username: acl
+pg.password: acls3cr3t
+pg.pool.min: 2
+pg.pool.max: 50
+pg.pool.connectionTimeout: 3000
+pg.pool.idleTimeout: 60000
+
+#
+# Basic auth security configuration
+#
+acl.security.basic.enabled: true
+acl.users.admin.enabled: true
+acl.users.admin.password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
+acl.users.geoserver.enabled: true
+acl.users.geoserver.password: "{noop}s3cr3t"
+
+#Example of how to add additional users:
+#geoserver:
+#  acl:
+#    security:
+#      internal:
+#        users:
+#         sampleuser:
+#           admin: false
+#           enabled: true
+#           password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
+
+#
+# HTTP headers pre-authentication security configuration
+#
+acl.security.headers.enabled: false
+acl.security.headers.user-header: sec-username
+acl.security.headers.roles-header: sec-roles
+acl.security.headers.admin-roles: ["ROLE_ADMINISTRATOR"]
+
