@@ -59,7 +59,6 @@ public class AclDataSourceConfiguration {
         if (null == hikariConfig.getJdbcUrl()) hikariConfig.setJdbcUrl(url);
         if (null == hikariConfig.getUsername()) hikariConfig.setUsername(username);
         if (null == hikariConfig.getPassword()) hikariConfig.setPassword(pwd);
-        HikariDataSource ds = new HikariDataSource(hikariConfig);
-        return ds;
+        return new HikariDataSource(hikariConfig);
     }
 }

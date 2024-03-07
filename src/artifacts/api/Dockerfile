@@ -25,9 +25,12 @@ ENV JAVA_OPTS="-XX:MaxRAMPercentage=80 -XshowSettings:system"
 
 ENV JAVA_TOOL_OPTS="$DEF_JAVA_TOOL_OPTS $JAVA_OPTS"
 ENV MANAGEMENT_SERVER_PORT=8081
-
 EXPOSE 8080
 EXPOSE 8081
+
+# application.yml loads this optional config file
+RUN mkdir /etc/geoserver && chmod 0777 /etc/geoserver
+COPY src/main/resources/values.yml /etc/geoserver/acl-service.yml
 
 COPY --from=builder dependencies/ ./
 COPY --from=builder snapshot-dependencies/ ./
