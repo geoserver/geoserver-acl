@@ -7,10 +7,22 @@
 
 package org.geoserver.acl.authorization;
 
+import static org.geoserver.acl.domain.adminrules.AdminGrantType.ADMIN;
+import static org.geoserver.acl.domain.adminrules.AdminGrantType.USER;
+import static org.geoserver.acl.domain.rules.CatalogMode.CHALLENGE;
+import static org.geoserver.acl.domain.rules.CatalogMode.HIDE;
+import static org.geoserver.acl.domain.rules.CatalogMode.MIXED;
+import static org.geoserver.acl.domain.rules.GrantType.ALLOW;
+import static org.geoserver.acl.domain.rules.GrantType.DENY;
+import static org.geoserver.acl.domain.rules.GrantType.LIMIT;
+import static org.geoserver.acl.domain.rules.LayerAttribute.AccessType.READONLY;
+import static org.geoserver.acl.domain.rules.LayerAttribute.AccessType.READWRITE;
+import static org.geoserver.acl.domain.rules.SpatialFilterType.CLIP;
+import static org.geoserver.acl.domain.rules.SpatialFilterType.INTERSECT;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.geoserver.acl.domain.adminrules.AdminGrantType;
 import org.geoserver.acl.domain.adminrules.AdminRule;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.adminrules.AdminRuleFilter;
@@ -20,7 +32,6 @@ import org.geoserver.acl.domain.filter.predicate.SpecialFilterType;
 import org.geoserver.acl.domain.rules.CatalogMode;
 import org.geoserver.acl.domain.rules.GrantType;
 import org.geoserver.acl.domain.rules.LayerAttribute;
-import org.geoserver.acl.domain.rules.LayerAttribute.AccessType;
 import org.geoserver.acl.domain.rules.LayerDetails;
 import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleAdminService;
@@ -34,7 +45,6 @@ import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.MultiPolygon;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +52,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -81,39 +92,23 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     @Override
     public AccessInfo getAccessInfo(AccessRequest request) {
         request = request.validate();
-        log.debug("Requesting access for {}", request);
+
         Map<String, List<Rule>> groupedRules = getMatchingRulesByRole(request);
 
-        AccessInfo currAccessInfo = null;
-
-        //        List<Rule> flattened = flatten(groupedRules);
-        //        currAccessInfo = resolveRuleset(flattened);
+        AccessInfo ret = null;
 
         for (Entry<String, List<Rule>> ruleGroup : groupedRules.entrySet()) {
-            String role = ruleGroup.getKey();
             List<Rule> rules = ruleGroup.getValue();
-
             AccessInfo accessInfo = resolveRuleset(rules);
-            if (log.isDebugEnabled()) {
-                log.debug("Filter {} on role {} has access {}", request, role, accessInfo);
-            }
-
-            currAccessInfo = enlargeAccessInfo(currAccessInfo, accessInfo);
+            ret = enlargeAccessInfo(ret, accessInfo);
         }
 
-        AccessInfo ret;
+        if (null == ret) ret = AccessInfo.DENY_ALL;
 
-        if (currAccessInfo == null) {
-            log.debug("No access for filter " + request);
-            // Denying by default
-            ret = AccessInfo.DENY_ALL;
-        } else {
-            ret = currAccessInfo;
-        }
-
-        log.debug("Returning {} for {}", ret, request);
         List<String> matchingIds = flatten(groupedRules).stream().map(Rule::getId).toList();
-        return ret.withMatchingRules(matchingIds);
+        ret = ret.withMatchingRules(matchingIds);
+        log.debug("Request: {}, response: {}", ret, request);
+        return ret;
     }
 
     @Override
@@ -131,14 +126,14 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     private AccessInfo enlargeAccessInfo(AccessInfo baseAccess, AccessInfo moreAccess) {
         if (baseAccess == null) {
             if (moreAccess == null) return null;
-            else if (moreAccess.getGrant() == GrantType.ALLOW) return moreAccess;
+            else if (moreAccess.getGrant() == ALLOW) return moreAccess;
             else return null;
         } else {
             if (moreAccess == null) return baseAccess;
-            else if (moreAccess.getGrant() == GrantType.DENY) return baseAccess;
+            else if (moreAccess.getGrant() == DENY) return baseAccess;
             else {
                 // ok: extending grants
-                AccessInfo.Builder ret = AccessInfo.builder().grant(GrantType.ALLOW);
+                AccessInfo.Builder ret = AccessInfo.builder().grant(ALLOW);
 
                 String cqlRead =
                         unionCQL(baseAccess.getCqlFilterRead(), moreAccess.getCqlFilterRead());
@@ -157,13 +152,10 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                     ret.defaultStyle(baseAccess.getDefaultStyle()); // just pick one
                 }
 
-                Set<String> allowedStyles =
-                        unionAllowedStyles(
-                                baseAccess.getAllowedStyles(), moreAccess.getAllowedStyles());
+                Set<String> allowedStyles = unionAllowedStyles(baseAccess, moreAccess);
                 ret.allowedStyles(allowedStyles);
 
-                Set<LayerAttribute> attributes =
-                        unionAttributes(baseAccess.getAttributes(), moreAccess.getAttributes());
+                Set<LayerAttribute> attributes = unionAttributes(baseAccess, moreAccess);
                 ret.attributes(attributes);
 
                 setAllowedAreas(baseAccess, moreAccess, ret);
@@ -210,69 +202,74 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     private String unionCQL(String c1, String c2) {
         if (c1 == null || c2 == null) return null;
-
-        return "(" + c1 + ") OR (" + c2 + ")";
+        return "(%s) OR (%s)".formatted(c1, c2);
     }
 
     private Geometry unionGeometry(Geometry g1, Geometry g2) {
         if (g1 == null || g2 == null) return null;
 
-        return union(g1, g2);
+        int targetSRID = g1.getSRID();
+        Geometry result = g1.union(reprojectGeometry(targetSRID, g2));
+        result.setSRID(targetSRID);
+        return result;
+    }
+
+    private static Set<LayerAttribute> unionAttributes(AccessInfo a0, AccessInfo a1) {
+        return unionAttributes(a0.getAttributes(), a1.getAttributes());
     }
 
     private static Set<LayerAttribute> unionAttributes(
             Set<LayerAttribute> a0, Set<LayerAttribute> a1) {
-        // TODO: check how geoserver deals with empty set
+        if (null == a0) a0 = Set.of();
+        if (null == a1) a1 = Set.of();
+        // if at least one of the two set is empty, the result will be an empty set,
+        // that means attributes are not restricted
+        if (a0.isEmpty() || a1.isEmpty()) return Set.of();
 
-        if (a0 == null || a0.isEmpty()) return Set.of();
-        // return a1;
-        if (a1 == null || a1.isEmpty()) return Set.of();
-        // return a0;
-
-        Set<LayerAttribute> ret = new HashSet<LayerAttribute>();
+        Set<LayerAttribute> ret = new HashSet<>();
         // add both attributes only in a0, and enlarge common attributes
         for (LayerAttribute attr0 : a0) {
-            LayerAttribute attr1 = getAttribute(attr0.getName(), a1);
-            if (attr1 == null) {
-                ret.add(attr0);
-            } else {
-                LayerAttribute attr = attr0;
-                if (attr0.getAccess() == AccessType.READWRITE
-                        || attr1.getAccess() == AccessType.READWRITE)
-                    attr = attr.withAccess(AccessType.READWRITE);
-                else if (attr0.getAccess() == AccessType.READONLY
-                        || attr1.getAccess() == AccessType.READONLY)
-                    attr = attr.withAccess(AccessType.READONLY);
-                ret.add(attr);
-            }
+            getAttribute(attr0.getName(), a1)
+                    .ifPresentOrElse(
+                            attr1 -> ret.add(enlargeAccess(attr0, attr1)), () -> ret.add(attr0));
         }
         // now add attributes that are only in a1
         for (LayerAttribute attr1 : a1) {
-            LayerAttribute attr0 = getAttribute(attr1.getName(), a0);
-            if (attr0 == null) {
-                ret.add(attr1);
-            }
+            getAttribute(attr1.getName(), a0)
+                    .ifPresentOrElse(
+                            attr0 -> log.trace("ignoring att {}", attr0.getName()),
+                            () -> ret.add(attr1));
         }
 
         return ret;
     }
 
-    private static LayerAttribute getAttribute(String name, Set<LayerAttribute> set) {
-        for (LayerAttribute layerAttribute : set) {
-            if (layerAttribute.getName().equals(name)) return layerAttribute;
-        }
-        return null;
+    private static LayerAttribute enlargeAccess(LayerAttribute attr0, LayerAttribute attr1) {
+        LayerAttribute attr = attr0;
+        if (attr0.getAccess() == READWRITE || attr1.getAccess() == READWRITE)
+            attr = attr.withAccess(READWRITE);
+        else if (attr0.getAccess() == READONLY || attr1.getAccess() == READONLY)
+            attr = attr.withAccess(READONLY);
+        return attr;
+    }
+
+    private static Optional<LayerAttribute> getAttribute(String name, Set<LayerAttribute> set) {
+        return set.stream().filter(la -> name.equals(la.getName())).findFirst();
+    }
+
+    private static Set<String> unionAllowedStyles(AccessInfo a0, AccessInfo a1) {
+        return unionAllowedStyles(a0.getAllowedStyles(), a1.getAllowedStyles());
     }
 
     private static Set<String> unionAllowedStyles(Set<String> a0, Set<String> a1) {
+        if (null == a0) a0 = Set.of();
+        if (null == a1) a1 = Set.of();
 
         // if at least one of the two set is empty, the result will be an empty set,
         // that means styles are not restricted
-        if (a0 == null || a0.isEmpty()) return Set.of();
+        if (a0.isEmpty() || a1.isEmpty()) return Set.of();
 
-        if (a1 == null || a1.isEmpty()) return Set.of();
-
-        Set<String> allowedStyles = new HashSet<String>();
+        Set<String> allowedStyles = new HashSet<>();
         allowedStyles.addAll(a0);
         allowedStyles.addAll(a1);
         return allowedStyles;
@@ -283,51 +280,35 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         List<RuleLimits> limits = new ArrayList<>();
         AccessInfo ret = null;
         for (Rule rule : ruleList) {
-            if (ret != null) break;
-
-            switch (rule.getIdentifier().getAccess()) {
-                case LIMIT:
-                    RuleLimits rl = rule.getRuleLimits();
-                    if (rl != null) {
-                        log.trace("Collecting limits: {}", rl);
-                        limits.add(rl);
-                    } else
-                        log.trace(
-                                "Rule has no associated limits (id: {}, priority: {})",
-                                rule.getId(),
-                                rule.getPriority());
-                    break;
-
-                case DENY:
-                    ret = AccessInfo.DENY_ALL;
-                    break;
-
+            final GrantType access = rule.getIdentifier().getAccess();
+            switch (access) {
                 case ALLOW:
-                    ret = buildAllowAccessInfo(rule, limits);
+                    return buildAllowAccessInfo(rule, limits);
+                case DENY:
+                    return AccessInfo.DENY_ALL;
+                case LIMIT:
+                    if (null != rule.getRuleLimits()) limits.add(rule.getRuleLimits());
                     break;
-
                 default:
-                    throw new IllegalStateException(
-                            "Unknown GrantType " + rule.getIdentifier().getAccess());
+                    throw new IllegalStateException("Unknown GrantType " + access);
             }
         }
         return ret;
     }
 
     private AccessInfo buildAllowAccessInfo(Rule rule, List<RuleLimits> limits) {
-        AccessInfo.Builder accessInfo = AccessInfo.builder().grant(GrantType.ALLOW);
+        AccessInfo.Builder accessInfo = AccessInfo.builder().grant(ALLOW);
 
         // first intersects geometry of same type
         Geometry area = intersect(limits);
         boolean atLeastOneClip =
-                limits.stream()
-                        .anyMatch(l -> l.getSpatialFilterType().equals(SpatialFilterType.CLIP));
+                limits.stream().map(RuleLimits::getSpatialFilterType).anyMatch(CLIP::equals);
         CatalogMode cmode = resolveCatalogMode(limits);
         final LayerDetails details = getLayerDetails(rule);
         if (null != details) {
             // intersect the allowed area of the rule to the proper type
             SpatialFilterType spatialFilterType = getSpatialFilterType(rule, details);
-            atLeastOneClip = spatialFilterType.equals(SpatialFilterType.CLIP);
+            atLeastOneClip = spatialFilterType.equals(CLIP);
 
             area = intersect(area, toJTS(details.getArea()));
 
@@ -343,13 +324,13 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         accessInfo.catalogMode(cmode);
 
         if (area != null) {
-            // if we have a clip area we apply clip type
-            // since is more restrictive, otherwise we keep
-            // the intersect
+            // if we have a clip area we apply clip type since is more restrictive, otherwise we
+            // keep the intersect
+            org.geolatte.geom.Geometry<?> finalArea = org.geolatte.geom.jts.JTS.from(area);
             if (atLeastOneClip) {
-                accessInfo.clipArea(org.geolatte.geom.jts.JTS.from(area));
+                accessInfo.clipArea(finalArea);
             } else {
-                accessInfo.area(org.geolatte.geom.jts.JTS.from(area));
+                accessInfo.area(finalArea);
             }
         }
         return accessInfo.build();
@@ -365,63 +346,41 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     private SpatialFilterType getSpatialFilterType(Rule rule, LayerDetails details) {
         SpatialFilterType spatialFilterType = null;
-        if (GrantType.LIMIT.equals(rule.getIdentifier().getAccess())
-                && null != rule.getRuleLimits()) {
+        if (LIMIT.equals(rule.getIdentifier().getAccess()) && null != rule.getRuleLimits()) {
             spatialFilterType = rule.getRuleLimits().getSpatialFilterType();
         } else if (null != details) {
             spatialFilterType = details.getSpatialFilterType();
         }
-        if (null == spatialFilterType) spatialFilterType = SpatialFilterType.INTERSECT;
+        if (null == spatialFilterType) spatialFilterType = INTERSECT;
 
         return spatialFilterType;
     }
 
     private Geometry intersect(List<RuleLimits> limits) {
-        org.locationtech.jts.geom.Geometry g = null;
-        for (RuleLimits limit : limits) {
-            org.locationtech.jts.geom.MultiPolygon area =
-                    (MultiPolygon) toJTS(limit.getAllowedArea());
-            if (area != null) {
-                if (g == null) {
-                    g = area;
-                } else {
-                    int targetSRID = g.getSRID();
-                    g = g.intersection(reprojectGeometry(targetSRID, area));
-                    g.setSRID(targetSRID);
-                }
-            }
+        List<Geometry> geoms =
+                limits.stream()
+                        .map(RuleLimits::getAllowedArea)
+                        .filter(Objects::nonNull)
+                        .map(this::toJTS)
+                        .toList();
+        if (geoms.isEmpty()) return null;
+        if (1 == geoms.size()) return geoms.get(0);
+
+        org.locationtech.jts.geom.Geometry intersection = geoms.get(0);
+        for (int i = 1; i < geoms.size(); i++) {
+            intersection = intersect(intersection, geoms.get(i));
         }
-        return g;
+        return intersection;
     }
 
     private Geometry intersect(Geometry g1, Geometry g2) {
-        if (g1 != null) {
-            if (g2 == null) {
-                return g1;
-            } else {
-                int targetSRID = g1.getSRID();
-                Geometry result = g1.intersection(reprojectGeometry(targetSRID, g2));
-                result.setSRID(targetSRID);
-                return result;
-            }
-        } else {
-            return g2;
-        }
-    }
+        if (g1 == null) return g2;
+        if (g2 == null) return g1;
 
-    private Geometry union(Geometry g1, Geometry g2) {
-        if (g1 != null) {
-            if (g2 == null) {
-                return g1;
-            } else {
-                int targetSRID = g1.getSRID();
-                Geometry result = g1.union(reprojectGeometry(targetSRID, g2));
-                result.setSRID(targetSRID);
-                return result;
-            }
-        } else {
-            return g2;
-        }
+        int targetSRID = g1.getSRID();
+        Geometry result = g1.intersection(reprojectGeometry(targetSRID, g2));
+        result.setSRID(targetSRID);
+        return result;
     }
 
     /** Returns the stricter catalog mode. */
@@ -438,11 +397,11 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         if (m1 == null) return m2;
         if (m2 == null) return m1;
 
-        if (CatalogMode.HIDE == m1 || CatalogMode.HIDE == m2) return CatalogMode.HIDE;
+        if (HIDE == m1 || HIDE == m2) return HIDE;
 
-        if (CatalogMode.MIXED == m1 || CatalogMode.MIXED == m2) return CatalogMode.MIXED;
+        if (MIXED == m1 || MIXED == m2) return MIXED;
 
-        return CatalogMode.CHALLENGE;
+        return CHALLENGE;
     }
 
     protected static CatalogMode getLarger(CatalogMode m1, CatalogMode m2) {
@@ -450,12 +409,11 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         if (m1 == null) return m2;
         if (m2 == null) return m1;
 
-        if (CatalogMode.CHALLENGE == m1 || CatalogMode.CHALLENGE == m2)
-            return CatalogMode.CHALLENGE;
+        if (CHALLENGE == m1 || CHALLENGE == m2) return CHALLENGE;
 
-        if (CatalogMode.MIXED == m1 || CatalogMode.MIXED == m2) return CatalogMode.MIXED;
+        if (MIXED == m1 || MIXED == m2) return MIXED;
 
-        return CatalogMode.HIDE;
+        return HIDE;
     }
 
     // ==========================================================================
@@ -475,7 +433,6 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     protected Map<String, List<Rule>> getMatchingRulesByRole(AccessRequest request)
             throws IllegalArgumentException {
 
-        //        RuleFilter filter = request.getFilter();
         RuleFilter filter = new RuleFilter(SpecialFilterType.DEFAULT);
         filter.getUser().setHeuristically(request.getUser());
 
@@ -491,8 +448,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
         Map<String, List<Rule>> ret = new HashMap<>();
 
-        final Set<String> finalRoleFilter =
-                filter.getRole().getValues(); // validateUserRoles(request);
+        final Set<String> finalRoleFilter = filter.getRole().getValues();
         if (finalRoleFilter.isEmpty()) {
             if (filter.getRole().getType() != FilterType.ANY) {
                 filter = filter.clone();
@@ -516,96 +472,26 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         return ruleService.getAll(RuleQuery.of(filter)).toList();
     }
 
-    /**
-     * Check requested user and group filter. <br>
-     * The input filter <b>may be altered</b> for fixing some request inconsistencies.
-     *
-     * @param filter
-     * @return a Set of group names, or null if provided user/group are invalid.
-     * @throws IllegalArgumentException
-     */
-    //    protected Set<String> validateUserRoles(String username, Set<String> userRoles) throws
-    // IllegalArgumentException {
-    //
-    //        // username can be null if the user filter asks for ANY or DEFAULT
-    //        //String username = validateUsername(filter.getUser());
-    //
-    //        Set<String> finalRoleFilter = new HashSet<>();
-    //        // If both user and group are defined in filter
-    //        // if user doesn't belong to group, no rule is returned
-    //        // otherwise assigned or default rules are searched for
-    //
-    //        switch (filter.getRole().getType()) {
-    //            case NAMEVALUE:
-    //                // rolename can be null if the group filter asks for ANY or DEFAULT
-    //                final Set<String> requestedRoles = userRoles;//validateRolenames(userRoles);
-    //                // rolenames
-    //
-    //                if (username != null) {
-    //                    for (String role : requestedRoles) {
-    //                        if (userRoles.contains(role)) {
-    //                            finalRoleFilter.add(role);
-    //                        } else {
-    //                            log.debug(
-    //                                    "User does not belong to role [User:{}] [Role:{}]
-    // [ResolvedRoles:{}]",
-    //                                    filter.getUser(),
-    //                                    role,
-    //                                    userRoles);
-    //                        }
-    //                    }
-    //                } else {
-    //                    finalRoleFilter.addAll(requestedRoles);
-    //                }
-    //                break;
-    //
-    //            case ANY:
-    //                if (username != null) {
-    //                    Set<String> resolvedRoles = request.userRoles();
-    //                    if (!resolvedRoles.isEmpty()) {
-    //                        finalRoleFilter = resolvedRoles;
-    //                    } else {
-    //                        filter.setRole(SpecialFilterType.DEFAULT);
-    //                    }
-    //                } else {
-    //                    // no changes, use requested filtering
-    //                }
-    //                break;
-    //
-    //            default:
-    //                // no changes
-    //                break;
-    //        }
-    //
-    //        return finalRoleFilter;
-    //    }
-
-    // ==========================================================================
-
     private boolean isAdminAuth(Optional<AdminRule> rule) {
-        return rule.isEmpty() ? false : rule.orElseThrow().getAccess() == AdminGrantType.ADMIN;
+        return rule.map(AdminRule::getAccess).orElse(USER) == ADMIN;
     }
 
     private Optional<AdminRule> getAdminAuth(AdminAccessRequest request) {
         request = request.validate();
-        // AdminRuleFilter adminRuleFilter = AdminRuleFilter.of(request.getFilter());
         AdminRuleFilter adminRuleFilter = new AdminRuleFilter();
         adminRuleFilter.getSourceAddress().setHeuristically(request.getSourceAddress());
         adminRuleFilter.getUser().setHeuristically(request.getUser());
         adminRuleFilter.getRole().setHeuristically(request.getRoles());
         adminRuleFilter.getWorkspace().setHeuristically(request.getWorkspace());
 
-        Set<String> finalRoleFilter =
-                adminRuleFilter.getRole().getValues(); // validateUserRoles(request);
+        Set<String> finalRoleFilter = adminRuleFilter.getRole().getValues();
 
         if (finalRoleFilter.isEmpty()) {
             return adminRuleService.getFirstMatch(adminRuleFilter);
         }
 
-        //        adminRuleFilter.setRole(RuleFilter.asTextValue(finalRoleFilter));
         adminRuleFilter.getRole().setIncludeDefault(true);
-        Optional<AdminRule> found = adminRuleService.getFirstMatch(adminRuleFilter);
-        return found;
+        return adminRuleService.getFirstMatch(adminRuleFilter);
     }
 
     private Geometry reprojectGeometry(int targetSRID, Geometry geom) {
@@ -618,13 +504,13 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             result.setSRID(targetSRID);
             return result;
         } catch (FactoryException e) {
-            throw new RuntimeException(
+            throw new IllegalStateException(
                     "Unable to find transformation for SRIDs: "
                             + geom.getSRID()
                             + " to "
                             + targetSRID);
         } catch (TransformException e) {
-            throw new RuntimeException(
+            throw new IllegalStateException(
                     "Unable to reproject geometry from " + geom.getSRID() + " to " + targetSRID);
         }
     }
