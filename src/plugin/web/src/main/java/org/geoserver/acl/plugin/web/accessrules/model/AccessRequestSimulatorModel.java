@@ -82,10 +82,7 @@ public class AccessRequestSimulatorModel extends AbstractRulesModel {
     private AccessInfo getAccessInfo() {
         AccessRequest request = getModel().getObject().toRequest();
         AuthorizationService authorizationService = authorizationService();
-        AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-        log.info("{}", request);
-        log.info("{}", accessInfo);
-        return accessInfo;
+        return authorizationService.getAccessInfo(request);
     }
 
     public boolean isMatchingRules() {

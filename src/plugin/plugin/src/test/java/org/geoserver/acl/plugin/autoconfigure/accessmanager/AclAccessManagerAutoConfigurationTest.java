@@ -32,7 +32,9 @@ class AclAccessManagerAutoConfigurationTest {
 
     @Test
     void testEnabledByDefaultWhenServiceUrlIsProvided() {
-        runner.withPropertyValues("geoserver.acl.client.basePath=http://acl.test:9000")
+        runner.withPropertyValues(
+                        "geoserver.acl.client.startupCheck=false",
+                        "geoserver.acl.client.basePath=http://acl.test:9000")
                 .run(
                         context -> {
                             assertThat(context)
@@ -59,6 +61,7 @@ class AclAccessManagerAutoConfigurationTest {
 
         runner.withPropertyValues(
                         "geoserver.acl.enabled=true",
+                        "geoserver.acl.client.startupCheck=false",
                         "geoserver.acl.client.basePath=http://acl.test:9000")
                 .run(
                         context -> {

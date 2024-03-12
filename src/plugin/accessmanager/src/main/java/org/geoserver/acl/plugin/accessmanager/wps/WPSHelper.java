@@ -16,7 +16,6 @@ import org.geoserver.acl.domain.rules.GrantType;
 import org.geoserver.acl.domain.rules.LayerAttribute;
 import org.geoserver.acl.plugin.support.AccessInfoUtils;
 import org.geoserver.acl.plugin.support.GeomHelper;
-import org.geoserver.ows.Request;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.BeansException;
@@ -68,7 +67,7 @@ public class WPSHelper implements ApplicationContextAware {
      *     resolution was computed.
      */
     public WPSAccessInfo resolveWPSAccess(
-            final Request req, final AccessRequest accessRequest, final AccessInfo wpsAccessInfo) {
+            final AccessRequest accessRequest, final AccessInfo wpsAccessInfo) {
         if (!helperAvailable) {
             LOGGER.warning("WPSHelper not available");
             // For more security we should deny the access, anyway let's tell

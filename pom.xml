@@ -190,7 +190,17 @@
       </dependency>
       <dependency>
         <groupId>org.geoserver.acl.integration</groupId>
+        <artifactId>gs-acl-cache</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.integration</groupId>
         <artifactId>spring-boot-simplejndi</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.integration</groupId>
+        <artifactId>gs-acl-spring-cloud-bus</artifactId>
         <version>${project.version}</version>
       </dependency>
       <!-- GeoServer plugin components -->

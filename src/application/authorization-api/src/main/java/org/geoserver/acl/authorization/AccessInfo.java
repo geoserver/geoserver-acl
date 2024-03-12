@@ -58,17 +58,19 @@ public class AccessInfo {
 
     @Override
     public String toString() {
-        return String.format(
-                "AccessInfo[grant: %s, catalogMode: %s, area: %s, clip: %s, styles[def: %s, allowed: %s], cql[r: %s, w: %s], atts: %s",
-                grant,
-                catalogMode,
-                area == null ? "no" : "yes",
-                clipArea == null ? "no" : "yes",
-                defaultStyle,
-                allowedStyles == null || allowedStyles.isEmpty() ? "no" : allowedStyles.size(),
-                cqlFilterRead == null ? "no" : "yes",
-                cqlFilterWrite == null ? "no" : "yes",
-                attributes == null || attributes.isEmpty() ? "no" : attributes.size());
+        StringBuilder sb = new StringBuilder("AccessInfo[grant: ").append(grant);
+        if (catalogMode != null) sb.append(", catalogMode: ").append(catalogMode);
+        if (area != null) sb.append(", area: yes");
+        if (clipArea != null) sb.append(", clipArea: yes");
+        if (defaultStyle != null) sb.append(", def style: ").append(defaultStyle);
+        if (null != allowedStyles && !allowedStyles.isEmpty())
+            sb.append("allowed styles: ").append(allowedStyles);
+        if (cqlFilterRead != null) sb.append(", cql read filter: present");
+        if (cqlFilterWrite != null) sb.append(", cql write filter: present");
+        if (null != attributes && !attributes.isEmpty())
+            sb.append(", attributes: ").append(attributes.size());
+        sb.append(", matchingRules: ").append(matchingRules);
+        return sb.append("]").toString();
     }
 
     public static class Builder {

@@ -49,7 +49,7 @@ import org.springframework.core.env.Environment;
     RuleAdminServiceConfiguration.class,
     AdminRuleAdminServiceConfiguration.class,
 })
-@Slf4j
+@Slf4j(topic = "org.geoserver.acl.plugin.config.domain.client")
 public class ApiClientAclDomainServicesConfiguration {
 
     @Bean
@@ -58,13 +58,24 @@ public class ApiClientAclDomainServicesConfiguration {
         String username = env.getProperty("geoserver.acl.client.username");
         String password = env.getProperty("geoserver.acl.client.password");
         boolean debug = env.getProperty("geoserver.acl.client.debug", Boolean.class, false);
+        boolean caching = env.getProperty("geoserver.acl.client.caching", Boolean.class, true);
+        boolean startupCheck =
+                env.getProperty("geoserver.acl.client.startupCheck", Boolean.class, true);
+        Integer initTimeout = env.getProperty("geoserver.acl.client.initTimeout", Integer.class);
 
-        log.info("GeoServer Acess Control List server URL: " + basePath);
+        log.info(
+                "GeoServer Acess Control List API: {}, user: {}, caching: {}",
+                basePath,
+                username,
+                caching);
         ApiClientProperties configProps = new ApiClientProperties();
         configProps.setBasePath(basePath);
         configProps.setUsername(username);
         configProps.setPassword(password);
         configProps.setDebug(debug);
+        configProps.setCaching(caching);
+        configProps.setStartupCheck(startupCheck);
+        if (null != initTimeout) configProps.setInitTimeout(initTimeout);
 
         return configProps;
     }

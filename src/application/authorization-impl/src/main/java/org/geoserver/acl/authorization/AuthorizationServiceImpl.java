@@ -20,6 +20,7 @@ import static org.geoserver.acl.domain.rules.LayerAttribute.AccessType.READWRITE
 import static org.geoserver.acl.domain.rules.SpatialFilterType.CLIP;
 import static org.geoserver.acl.domain.rules.SpatialFilterType.INTERSECT;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,7 +64,7 @@ import java.util.Set;
  *
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
  */
-@Slf4j
+@Slf4j(topic = "org.geoserver.acl.authorization")
 @RequiredArgsConstructor
 public class AuthorizationServiceImpl implements AuthorizationService {
 
@@ -75,7 +76,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
      * @return a plain List of the grouped matching Rules.
      */
     @Override
-    public List<Rule> getMatchingRules(AccessRequest request) {
+    public List<Rule> getMatchingRules(@NonNull AccessRequest request) {
         request = request.validate();
         Map<String, List<Rule>> found = getMatchingRulesByRole(request);
         return flatten(found);
@@ -90,7 +91,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     }
 
     @Override
-    public AccessInfo getAccessInfo(AccessRequest request) {
+    public AccessInfo getAccessInfo(@NonNull AccessRequest request) {
         request = request.validate();
 
         Map<String, List<Rule>> groupedRules = getMatchingRulesByRole(request);
@@ -107,12 +108,12 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
         List<String> matchingIds = flatten(groupedRules).stream().map(Rule::getId).toList();
         ret = ret.withMatchingRules(matchingIds);
-        log.debug("Request: {}, response: {}", ret, request);
+        log.debug("Request: {}, response: {}", request, ret);
         return ret;
     }
 
     @Override
-    public AdminAccessInfo getAdminAuthorization(AdminAccessRequest request) {
+    public AdminAccessInfo getAdminAuthorization(@NonNull AdminAccessRequest request) {
         Optional<AdminRule> adminAuth = getAdminAuth(request);
         boolean adminRigths = isAdminAuth(adminAuth);
         String adminRuleId = adminAuth.map(AdminRule::getId).orElse(null);
