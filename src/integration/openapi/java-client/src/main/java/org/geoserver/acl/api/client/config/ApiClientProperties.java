@@ -13,4 +13,13 @@ public class ApiClientProperties {
     private String username;
     private String password;
     private boolean debug;
+    private boolean caching = true;
+
+    /** whether to check the connection at startup */
+    private boolean startupCheck = true;
+
+    /**
+     * timeout in seconds for startup to fail if API is not available. Ignored if startupCheck=false
+     */
+    private int initTimeout = 5;
 }

@@ -1,0 +1,34 @@
+geoserver.bus.enabled: true
+server:
+  port: 0
+spring:
+  main.banner-mode: off
+  rabbitmq:
+#    host: localhost
+#   port: 5672
+    username: guest
+    password: guest
+    virtual-host:
+  cloud:
+    bus:
+      enabled: ${geoserver.bus.enabled}
+#      id: app:1
+      trace.enabled: false #switch on tracing of acks (default off).
+    stream:
+      bindings:
+        # same bindings as for geoserver cloud
+        springCloudBusOutput:
+          destination: geoserver
+        springCloudBusInput:
+          destination: geoserver
+
+  autoconfigure.exclude:
+    - org.springframework.cloud.stream.test.binder.TestSupportBinderAutoConfiguration
+
+
+logging:
+  level:
+    root: warn
+    org.geoserver.acl.bus.bridge: debug
+    org.springframework.cloud.bus: info
+    org.springframework.amqp.rabbit: info

@@ -10,5 +10,6 @@ org.geoserver.acl.autoconfigure.security.AclServiceSecurityAutoConfiguration,\
 org.geoserver.acl.autoconfigure.security.InternalSecurityConfiguration,\
 org.geoserver.acl.autoconfigure.security.PreAuthenticationSecurityAutoConfiguration,\
 org.geoserver.acl.autoconfigure.security.AuthenticationManagerAutoConfiguration,\
-org.geoserver.acl.autoconfigure.springdoc.SpringDocAutoConfiguration
+org.geoserver.acl.autoconfigure.springdoc.SpringDocAutoConfiguration,\
+org.geoserver.acl.autoconfigure.bus.RabbitAutoConfiguration
 

@@ -16,5 +16,6 @@
   <packaging>pom</packaging>
   <modules>
     <module>domain</module>
+    <module>cache</module>
   </modules>
 </project>

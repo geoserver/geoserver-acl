@@ -46,17 +46,16 @@ public class AccessRequest {
     }
 
     public @Override String toString() {
-        return String.format(
-                "%s[from:%s, by: %s(%s), for:%s:%s%s, layer:%s%s]",
-                getClass().getSimpleName(),
-                sourceAddress == null ? "<no IP>" : sourceAddress,
-                user,
-                roles.stream().collect(Collectors.joining(", ")),
-                service,
-                request,
-                subfield == null ? "" : "(" + subfield + ")",
-                workspace == null ? "<null ws>" : (workspace.isEmpty() ? "" : workspace + ":"),
-                layer);
+        StringBuilder sb = new StringBuilder("AccessRequest[");
+        sb.append("user: ").append(user == null ? "" : user);
+        sb.append(", roles: ").append(roles.stream().collect(Collectors.joining(",")));
+        if (null != sourceAddress) sb.append(", origin IP: ").append(sourceAddress);
+        if (null != service) sb.append(", service: ").append(service);
+        if (null != request) sb.append(", request: ").append(request);
+        if (null != subfield) sb.append(", subfield: ").append(subfield);
+        if (null != workspace) sb.append(", workspace: ").append(workspace);
+        if (null != layer) sb.append(", layer: ").append(layer);
+        return sb.append("]").toString();
     }
 
     public static class Builder {

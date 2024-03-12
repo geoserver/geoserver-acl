@@ -4,14 +4,17 @@
  */
 package org.geoserver.acl.domain.rules;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NonNull;
-import lombok.Value;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Value
+@Data
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class RuleEvent {
 
     public enum EventType {
@@ -41,5 +44,10 @@ public class RuleEvent {
 
     public static RuleEvent deleted(@NonNull String... ids) {
         return new RuleEvent(EventType.DELETED, Set.of(ids));
+    }
+
+    @Override
+    public String toString() {
+        return "%s%s".formatted(eventType, ruleIds);
     }
 }

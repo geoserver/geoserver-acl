@@ -1,3 +1,6 @@
+#
+# ACL PostgreSQL database configuration
+#
 pg.host: acldb
 pg.port: 5432
 pg.db: acl
@@ -8,6 +11,16 @@ pg.pool.min: 2
 pg.pool.max: 50
 pg.pool.connectionTimeout: 3000
 pg.pool.idleTimeout: 60000
+
+#
+# Spring Cloud Bus integration with RabbitMQ
+#
+geoserver.bus.enabled: false
+rabbitmq.host: rabbitmq
+rabbitmq.port: 5672
+rabbitmq.user: guest
+rabbitmq.password: guest
+#rabbitmq.vhost:
 
 #
 # Basic auth security configuration
@@ -36,4 +49,18 @@ acl.security.headers.enabled: false
 acl.security.headers.user-header: sec-username
 acl.security.headers.roles-header: sec-roles
 acl.security.headers.admin-roles: ["ROLE_ADMINISTRATOR"]
+
+
+---
+spring.config.activate.on-profile: logging_debug
+logging:
+  level:
+    root: info
+    org.geoserver.acl: debug
+    org.geoserver.acl.bus.bridge: debug
+
+---
+spring.config.activate.on-profile: logging_debug_events
+logging:
+    org.geoserver.acl.bus.bridge: debug
 

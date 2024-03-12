@@ -28,7 +28,8 @@ public class AuthorizationServiceClientAdaptor implements AuthorizationService {
     private final @NonNull RuleApiMapper ruleMapper = Mappers.ruleApiMapper();
 
     @Override
-    public AccessInfo getAccessInfo(org.geoserver.acl.authorization.AccessRequest request) {
+    public AccessInfo getAccessInfo(
+            @NonNull org.geoserver.acl.authorization.AccessRequest request) {
         org.geoserver.acl.api.model.AccessRequest apiRequest;
         org.geoserver.acl.api.model.AccessInfo apiResponse;
 
@@ -44,7 +45,7 @@ public class AuthorizationServiceClientAdaptor implements AuthorizationService {
 
     @Override
     public AdminAccessInfo getAdminAuthorization(
-            org.geoserver.acl.authorization.AdminAccessRequest request) {
+            @NonNull org.geoserver.acl.authorization.AdminAccessRequest request) {
         org.geoserver.acl.api.model.AdminAccessRequest apiRequest;
         org.geoserver.acl.api.model.AdminAccessInfo apiResponse;
 
@@ -59,7 +60,8 @@ public class AuthorizationServiceClientAdaptor implements AuthorizationService {
     }
 
     @Override
-    public List<Rule> getMatchingRules(org.geoserver.acl.authorization.AccessRequest request) {
+    public List<Rule> getMatchingRules(
+            @NonNull org.geoserver.acl.authorization.AccessRequest request) {
         org.geoserver.acl.api.model.AccessRequest apiRequest;
         List<org.geoserver.acl.api.model.Rule> apiResponse;
 

@@ -32,7 +32,8 @@ class ApiClientAclDomainServicesConfigurationTest {
         runner.withPropertyValues(
                         "geoserver.acl.client.basePath=http://localhost:8181/acl/api",
                         "geoserver.acl.client.username=testme",
-                        "geoserver.acl.client.password=s3cr3t")
+                        "geoserver.acl.client.password=s3cr3t",
+                        "geoserver.acl.client.startupCheck=false")
                 .run(
                         context -> {
                             assertThat(context).hasNotFailed();
@@ -41,6 +42,24 @@ class ApiClientAclDomainServicesConfigurationTest {
                             assertThat(context).hasSingleBean(AuthorizationService.class);
                             assertThat(context)
                                     .hasSingleBean(AuthorizationServiceClientAdaptor.class);
+                        });
+    }
+
+    @Test
+    void testStartupCheck() {
+        runner.withPropertyValues(
+                        "geoserver.acl.client.basePath=http://localhost:8181/acl/api",
+                        "geoserver.acl.client.username=testme",
+                        "geoserver.acl.client.password=s3cr3t",
+                        "geoserver.acl.client.startupCheck=true",
+                        "geoserver.acl.client.initTimeout=2")
+                .run(
+                        context -> {
+                            assertThat(context)
+                                    .hasFailed()
+                                    .getFailure()
+                                    .hasMessageContaining(
+                                            "Unable to connect to ACL after 2 seconds");
                         });
     }
 }

@@ -4,12 +4,15 @@
  */
 package org.geoserver.acl.domain.adminrules;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NonNull;
-import lombok.Value;
 
 import java.util.Set;
 
-@Value
+@Data
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class AdminRuleEvent {
 
     public enum EventType {

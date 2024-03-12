@@ -7,7 +7,6 @@
 package org.geoserver.acl.plugin.accessmanager;
 
 import static java.util.logging.Level.FINE;
-import static java.util.logging.Level.FINER;
 import static java.util.logging.Level.WARNING;
 
 import com.google.common.base.Stopwatch;
@@ -241,24 +240,17 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
             List<LayerGroupInfo> containers) {
         // shortcut, if the user is the admin, he can do everything
         if (isAdmin(user)) {
-            log(FINER, "Admin level access, returning full rights for layer {0}", layer);
+            log(FINE, "Admin level access, returning full rights for layer {0}", layer);
             return buildAdminAccessLimits(info);
         }
 
         AccessRequest accessRequest = buildAccessRequest(workspace, layer, user);
-        Stopwatch sw = Stopwatch.createStarted();
-        AccessInfo accessInfo = aclService.getAccessInfo(accessRequest);
-        sw.stop();
-        log(FINE, "ACL auth run in {0}: {0}. response ({1}): {2}", sw, accessRequest, accessInfo);
-
-        if (accessInfo == null) {
-            accessInfo = AccessInfo.DENY_ALL;
-            log(WARNING, "ACL returning null AccessInfo for {0}", accessRequest);
-        }
+        AccessInfo accessInfo = getAccessInfo(accessRequest);
 
         final Request req = Dispatcher.REQUEST.get();
         final String service = req != null ? req.getService() : null;
         final boolean isWms = "WMS".equalsIgnoreCase(service);
+        final boolean isWps = "WPS".equalsIgnoreCase(service);
         final boolean layerGroupsRequested = CollectionUtils.isNotEmpty(containers);
 
         ProcessingResult processingResult = null;
@@ -279,35 +271,29 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
                 }
             }
         } else if (layerGroupsRequested) {
-            // layer is requested in context of a layer group.
-            // we need to process the containers limits.
+            // layer is requested in context of a layer group, we need to process the containers
+            // limits.
             processingResult =
                     getContainerResolverResult(info, layer, workspace, user, containers, List.of());
         }
 
-        if ("WPS".equalsIgnoreCase(service)) {
+        if (isWps) {
             if (layerGroupsRequested) {
                 log(
                         WARNING,
                         "Don't know how to deal with WPS requests for group data. Won't dive into single process limits.");
             } else {
                 WPSAccessInfo resolvedAccessInfo =
-                        wpsHelper.resolveWPSAccess(req, accessRequest, accessInfo);
+                        wpsHelper.resolveWPSAccess(accessRequest, accessInfo);
                 if (resolvedAccessInfo != null) {
                     accessInfo = resolvedAccessInfo.getAccessInfo();
-                    processingResult =
-                            new ProcessingResult(
-                                    resolvedAccessInfo.getArea(),
-                                    resolvedAccessInfo.getClip(),
-                                    accessInfo.getCatalogMode());
-
-                    String userNameFromAuth = getUserNameFromAuth(user);
+                    processingResult = wpsProcessingResult(accessInfo, resolvedAccessInfo);
                     log(
                             FINE,
                             "Got WPS access {0} for layer {1} and user {2}",
                             accessInfo,
                             layer,
-                            userNameFromAuth);
+                            getUserNameFromAuth(user));
                 }
             }
         }
@@ -315,12 +301,13 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
         AccessLimits limits;
         if (info instanceof LayerGroupInfo) {
             limits = buildLayerGroupAccessLimits(accessInfo);
-        } else if (info instanceof ResourceInfo) {
-            limits = buildResourceAccessLimits((ResourceInfo) info, accessInfo, processingResult);
+        } else if (info instanceof ResourceInfo ri) {
+            limits = buildResourceAccessLimits(ri, accessInfo, processingResult);
+        } else if (info instanceof LayerInfo li) {
+            limits = buildResourceAccessLimits(li.getResource(), accessInfo, processingResult);
         } else {
-            limits =
-                    buildResourceAccessLimits(
-                            ((LayerInfo) info).getResource(), accessInfo, processingResult);
+            throw new IllegalArgumentException(
+                    "Expected LayerInfo|LayerGroupInfo|ResourceInfo, got " + info);
         }
 
         log(
@@ -331,6 +318,31 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
                 getUserNameFromAuth(user));
 
         return limits;
+    }
+
+    private ProcessingResult wpsProcessingResult(
+            AccessInfo accessInfo, WPSAccessInfo wpsAccessInfo) {
+        ProcessingResult processingResult;
+        processingResult =
+                new ProcessingResult(
+                        wpsAccessInfo.getArea(),
+                        wpsAccessInfo.getClip(),
+                        accessInfo.getCatalogMode());
+        return processingResult;
+    }
+
+    private AccessInfo getAccessInfo(AccessRequest accessRequest) {
+        Stopwatch sw = Stopwatch.createStarted();
+        AccessInfo accessInfo = aclService.getAccessInfo(accessRequest);
+        sw.stop();
+        log(FINE, "ACL auth run in {0}: {1} -> {2}", sw, accessRequest, accessInfo);
+
+        if (accessInfo == null) {
+            accessInfo = AccessInfo.DENY_ALL;
+            log(WARNING, "ACL returned null for {0}, defaulting to DENY_ALL", accessRequest);
+        }
+
+        return accessInfo;
     }
 
     private static void log(Level level, String msg, Object... params) {
@@ -354,9 +366,8 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
         AccessLimits accessLimits;
         if (info instanceof LayerGroupInfo)
             accessLimits = buildLayerGroupAccessLimits(AccessInfo.ALLOW_ALL);
-        else if (info instanceof ResourceInfo)
-            accessLimits =
-                    buildResourceAccessLimits((ResourceInfo) info, AccessInfo.ALLOW_ALL, null);
+        else if (info instanceof ResourceInfo ri)
+            accessLimits = buildResourceAccessLimits(ri, AccessInfo.ALLOW_ALL, null);
         else
             accessLimits =
                     buildResourceAccessLimits(
@@ -374,10 +385,9 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
 
     private Collection<LayerGroupSummary> getGroupSummary(Object resource) {
         Collection<LayerGroupSummary> summaries;
-        if (resource instanceof ResourceInfo)
-            summaries = groupsCache.getContainerGroupsFor((ResourceInfo) resource);
-        else if (resource instanceof LayerInfo)
-            summaries = groupsCache.getContainerGroupsFor(((LayerInfo) resource).getResource());
+        if (resource instanceof ResourceInfo ri) summaries = groupsCache.getContainerGroupsFor(ri);
+        else if (resource instanceof LayerInfo li)
+            summaries = groupsCache.getContainerGroupsFor(li.getResource());
         else summaries = groupsCache.getContainerGroupsFor((LayerGroupInfo) resource);
         return summaries == null ? List.of() : summaries;
     }
@@ -479,23 +489,18 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
                 areaFilter = FF.or(areaFilter, intersectClipArea);
             }
             readFilter = mergeFilter(readFilter, areaFilter);
-
             writeFilter = mergeFilter(writeFilter, areaFilter);
         }
 
         // get the attributes
-        final List<PropertyName> readAttributes =
-                toPropertyNames(accessInfo.getAttributes(), PropertyAccessMode.READ);
-        final List<PropertyName> writeAttributes =
-                toPropertyNames(accessInfo.getAttributes(), PropertyAccessMode.WRITE);
+        var readAttributes = toPropertyNames(accessInfo.getAttributes(), PropertyAccessMode.READ);
+        var writeAttributes = toPropertyNames(accessInfo.getAttributes(), PropertyAccessMode.WRITE);
 
-        VectorAccessLimits accessLimits =
+        var accessLimits =
                 new VectorAccessLimits(
                         catalogMode, readAttributes, readFilter, writeAttributes, writeFilter);
 
-        if (clipArea != null) {
-            accessLimits.setClipVectorFilter(clipArea);
-        }
+        if (clipArea != null) accessLimits.setClipVectorFilter(clipArea);
         if (intersectsArea != null) accessLimits.setIntersectVectorFilter(intersectsArea);
 
         return accessLimits;
