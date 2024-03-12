@@ -22,7 +22,7 @@ services:
           memory: 2G
 
   acl:
-    image: geoservercloud/geoserver-acl:2.0
+    image: geoservercloud/geoserver-acl:2.1-SNAPSHOT
     environment:
       - PG_HOST=acldb
       - PG_PORT=5432
