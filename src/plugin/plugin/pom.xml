@@ -14,10 +14,6 @@
       <artifactId>gs-acl-plugin-accessmanager</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.acl.integration</groupId>
-      <artifactId>gs-acl-cache</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.geoserver.acl.plugin</groupId>
       <artifactId>gs-acl-plugin-client</artifactId>
     </dependency>
@@ -32,6 +28,20 @@
     <dependency>
       <groupId>org.geoserver.acl.plugin</groupId>
       <artifactId>gs-acl-plugin-wps</artifactId>
+    </dependency>
+    <dependency>
+      <!-- Optional, if present, the AuthorizationService will be a CachingAuthorizationService decorating the API client one, and gs-acl-spring-cloud-bus is recommended also if using spring-cloud-bus for inter-process communication to evict cached authorizations upon distributed rule events -->
+      <groupId>org.geoserver.acl.integration</groupId>
+      <artifactId>gs-acl-cache</artifactId>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <!-- Optiona, if present, Rule and AdminRule events will be sent to the event-bus, and incoming events will be published locally as RuleEvent and AdminRuleEvent respectively -->
+      <groupId>org.geoserver.acl.integration</groupId>
+      <artifactId>gs-acl-spring-cloud-bus</artifactId>
+      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
