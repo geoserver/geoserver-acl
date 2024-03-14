@@ -37,8 +37,8 @@ public class MutableLayerDetails implements Serializable {
     private MultiPolygon<?> area;
     private SpatialFilterType spatialFilterType;
     private CatalogMode catalogMode;
-    private Set<String> allowedStyles = new TreeSet<>();
-    private List<MutableLayerAttribute> attributes = new ArrayList<>();
+    private final Set<String> allowedStyles = new TreeSet<>();
+    private final List<MutableLayerAttribute> attributes = new ArrayList<>();
 
     public MutableLayerDetails() {}
 
@@ -50,17 +50,25 @@ public class MutableLayerDetails implements Serializable {
         setArea(ld.getArea());
         setCatalogMode(ld.getCatalogMode());
         setSpatialFilterType(ld.getSpatialFilterType());
-        setAllowedStyles(new TreeSet<>(ld.getAllowedStyles()));
+        setAllowedStyles(ld.getAllowedStyles());
         setAttributes(ld.getAttributes().stream().map(MutableLayerAttribute::new).toList());
+    }
+
+    public void setAllowedStyles(Set<String> styles) {
+        this.allowedStyles.clear();
+        if (null != styles) this.allowedStyles.addAll(styles);
+    }
+
+    public void setAttributes(List<MutableLayerAttribute> list) {
+        this.attributes.clear();
+        if (null != list) this.attributes.addAll(list);
     }
 
     public LayerDetails toLayerDetails() {
         Set<LayerAttribute> atts =
-                attributes == null || attributes.isEmpty()
-                        ? Set.of()
-                        : attributes.stream()
-                                .map(MutableLayerAttribute::toLayerAttribute)
-                                .collect(Collectors.toSet());
+                attributes.stream()
+                        .map(MutableLayerAttribute::toLayerAttribute)
+                        .collect(Collectors.toSet());
         Builder builder =
                 LayerDetails.builder()
                         .type(layerType)
