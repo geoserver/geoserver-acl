@@ -29,7 +29,7 @@ acl.security.basic.enabled: true
 acl.users.admin.enabled: true
 acl.users.admin.password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
 acl.users.geoserver.enabled: true
-acl.users.geoserver.password: "{noop}s3cr3t"
+acl.users.geoserver.password: "s3cr3t"
 
 #Example of how to add additional users:
 #geoserver:
