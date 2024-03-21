@@ -26,15 +26,16 @@ public class AccesControlListApplication {
             System.exit(encodePassword(arglist));
         } else if (arglist.contains(GENERATEDDL)) {
             GenerateDDL.main(args);
-        }
-
-        try {
-            SpringApplication.run(AccesControlListApplication.class, args);
-        } catch (RuntimeException e) {
-            System.exit(-1);
+        } else {
+            try {
+                SpringApplication.run(AccesControlListApplication.class, args);
+            } catch (RuntimeException e) {
+                System.exit(-1);
+            }
         }
     }
 
+    @SuppressWarnings("java:S106")
     private static int encodePassword(List<String> arglist) {
         int pwdIndex = 1 + arglist.indexOf(ENCODEPASSWORD);
         if (arglist.size() < pwdIndex) {

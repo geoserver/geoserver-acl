@@ -40,6 +40,7 @@ public class GenerateDDL implements CommandLineRunner {
     }
 
     @Override
+    @SuppressWarnings("java:S106")
     public void run(String... args) throws Exception {
         try (FileInputStream in = new FileInputStream(tmpfile)) {
             FileCopyUtils.copy(in, System.out);

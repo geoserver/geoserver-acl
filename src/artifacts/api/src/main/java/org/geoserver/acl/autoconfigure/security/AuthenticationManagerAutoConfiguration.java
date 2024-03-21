@@ -16,8 +16,7 @@ import java.util.List;
 public class AuthenticationManagerAutoConfiguration {
 
     @Bean
-    AuthenticationManager authenticationManager(List<AuthenticationProvider> providers)
-            throws Exception {
+    AuthenticationManager authenticationManager(List<AuthenticationProvider> providers) {
         return new ProviderManager(providers);
     }
 }

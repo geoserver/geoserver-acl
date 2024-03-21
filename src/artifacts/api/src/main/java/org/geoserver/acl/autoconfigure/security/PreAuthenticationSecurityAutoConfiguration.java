@@ -35,26 +35,26 @@ public class PreAuthenticationSecurityAutoConfiguration {
 
     @Bean
     RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter(
-            AuthenticationManager authenticationManager, SecurityConfigProperties config)
-            throws Exception {
-        RequestHeaderAuthenticationFilter filter = new RequestHeaderAuthenticationFilter();
+            AuthenticationManager authenticationManager, SecurityConfigProperties config) {
 
         String userHeader = config.getHeaders().getUserHeader();
         String rolesHeader = config.getHeaders().getRolesHeader();
         if (!StringUtils.hasText(userHeader) || !StringUtils.hasText(rolesHeader)) {
             throw new IllegalStateException(
-                    "Both user and roles header names must be provided, got geoserver.acl.security.headers.userHeader: "
-                            + userHeader
-                            + ", geoserver.acl.security.headers.rolesHeader: "
-                            + rolesHeader);
+                    """
+                    Both user and roles header names must be provided, got \
+                    geoserver.acl.security.headers.userHeader: %s, \
+                    geoserver.acl.security.headers.rolesHeader: %s
+                    """
+                            .formatted(userHeader, rolesHeader));
         }
 
+        RequestHeaderAuthenticationFilter filter = new RequestHeaderAuthenticationFilter();
         filter.setPrincipalRequestHeader(userHeader);
         filter.setCredentialsRequestHeader(rolesHeader);
-
         filter.setAuthenticationManager(authenticationManager);
         // do not throw exception when header is not present.
-        // one use case is for actuator endpoints and static assets where security
+        // one use case is for actuator end-points and static assets where security
         // headers are not required.
         filter.setExceptionIfHeaderMissing(false);
         return filter;
@@ -63,11 +63,9 @@ public class PreAuthenticationSecurityAutoConfiguration {
     @Bean
     PreAuthenticatedAuthenticationProvider preauthAuthProvider(SecurityConfigProperties config)
             throws Exception {
-        PreAuthenticatedAuthenticationProvider provider =
-                new PreAuthenticatedAuthenticationProvider();
         Supplier<Collection<String>> adminRoles = config.getHeaders()::getAdminRoles;
-        AuthorizationUserDetailsService detailsService =
-                new AuthorizationUserDetailsService(adminRoles);
+        var provider = new PreAuthenticatedAuthenticationProvider();
+        var detailsService = new AuthorizationUserDetailsService(adminRoles);
         provider.setPreAuthenticatedUserDetailsService(detailsService);
         return provider;
     }
