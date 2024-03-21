@@ -6,6 +6,7 @@ package org.geoserver.acl.autoconfigure.security;
 
 import static org.springframework.util.StringUtils.hasText;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,7 +20,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import java.util.ArrayList;
@@ -30,24 +31,25 @@ import java.util.Map;
 @ConditionalOnInternalAuthenticationEnabled
 @EnableConfigurationProperties(SecurityConfigProperties.class)
 @Slf4j(topic = "org.geoserver.acl.autoconfigure.security")
-public class InternalSecurityConfiguration {
+public class InternalSecurityAutoConfiguration {
 
     @Bean
     AuthenticationProvider internalAuthenticationProvider(
-            @Qualifier("internalUserDetailsService")
-                    UserDetailsService internalUserDetailsService) {
+            @Qualifier("internalUserDetailsService") UserDetailsService internalUserDetailsService,
+            PasswordEncoder encoder) {
 
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setAuthoritiesMapper(new NullAuthoritiesMapper());
         provider.setUserDetailsService(internalUserDetailsService);
 
-        DelegatingPasswordEncoder encoder =
-                (DelegatingPasswordEncoder)
-                        PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
         provider.setPasswordEncoder(encoder);
 
         return provider;
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean("internalUserDetailsService")
@@ -58,14 +60,15 @@ public class InternalSecurityConfiguration {
         Collection<UserDetails> authUsers = new ArrayList<>();
         users.forEach(
                 (username, userinfo) -> {
-                    validate(username, userinfo);
-                    log.info(
-                            "Loading internal user {}, admin: {}, enabled: {}",
-                            username,
-                            userinfo.isAdmin(),
-                            userinfo.isEnabled());
-                    UserDetails user = toUserDetails(username, userinfo);
-                    authUsers.add(user);
+                    if (userinfo.isEnabled()) {
+                        log.info(
+                                "Loading internal user {}, admin: {}, enabled: {}",
+                                username,
+                                userinfo.isAdmin(),
+                                userinfo.isEnabled());
+                        UserDetails user = toUserDetails(username, userinfo);
+                        authUsers.add(user);
+                    }
                 });
 
         long enabledUsers = authUsers.stream().filter(UserDetails::isEnabled).count();
@@ -79,20 +82,27 @@ public class InternalSecurityConfiguration {
     }
 
     private UserDetails toUserDetails(
-            String username, SecurityConfigProperties.Internal.UserInfo u) {
+            String username, SecurityConfigProperties.Internal.UserInfo userinfo) {
+        validate(username, userinfo);
         return User.builder()
                 .username(username)
-                .password(u.getPassword())
-                .authorities(u.authorities())
-                .disabled(!u.isEnabled())
+                .password(ensurePrefixed(userinfo.getPassword()))
+                .authorities(userinfo.authorities())
+                .disabled(!userinfo.isEnabled())
                 .build();
     }
 
-    private void validate(final String name, SecurityConfigProperties.Internal.UserInfo info) {
-        if (info.isEnabled()) {
-            if (!hasText(name)) throw new IllegalArgumentException("User has no name: " + info);
-            if (!hasText(info.getPassword()))
-                throw new IllegalArgumentException("User has no password " + name + ": " + info);
+    private String ensurePrefixed(@NonNull String password) {
+        if (!password.matches("(\\{.+\\}).+")) {
+            return "{noop}%s".formatted(password);
         }
+
+        return password;
+    }
+
+    private void validate(final String name, SecurityConfigProperties.Internal.UserInfo info) {
+        if (!hasText(name)) throw new IllegalArgumentException("User has no name: " + info);
+        if (!hasText(info.getPassword()))
+            throw new IllegalArgumentException("User %s has no password".formatted(name));
     }
 }
