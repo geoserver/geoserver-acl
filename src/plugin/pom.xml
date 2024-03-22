@@ -20,8 +20,8 @@
   </modules>
   <properties>
     <!-- Default GeoServer version to build and test the plugin against-->
-    <gs.version>2.25-SNAPSHOT</gs.version>
-    <gt.version>31-SNAPSHOT</gt.version>
+    <gs.version>2.26-SNAPSHOT</gs.version>
+    <gt.version>32-SNAPSHOT</gt.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -168,8 +168,8 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <gs.version>2.25-SNAPSHOT</gs.version>
-        <gt.version>31-SNAPSHOT</gt.version>
+        <gs.version>2.26-SNAPSHOT</gs.version>
+        <gt.version>32-SNAPSHOT</gt.version>
       </properties>
     </profile>
     <profile>
@@ -178,8 +178,8 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <gs.version>2.24.2</gs.version>
-        <gt.version>30.2</gt.version>
+        <gs.version>2.25.0</gs.version>
+        <gt.version>31.0</gt.version>
       </properties>
     </profile>
   </profiles>
