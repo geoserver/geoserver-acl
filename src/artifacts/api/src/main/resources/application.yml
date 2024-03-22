@@ -1,3 +1,7 @@
+# this is the embedded application configuration properties.
+# Most common configurable properties are defined in values.yml, which is included by default (see spring.config.import below)
+# Additionally, values.yml is copied to the Docker image container under /etc/geoserver/acl-service.yml and also
+# imported by default as an optional property source
 info:
   component: Access Control List service
   instance-id: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${spring.cloud.client.ip-address}}:${server.port}}
