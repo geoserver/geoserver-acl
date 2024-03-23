@@ -25,23 +25,24 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Objects;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
-public abstract class ApiImplSupport<DTO, T> {
+public abstract class ApiImplSupport<D, T> {
 
     private final @NonNull NativeWebRequest nativeRequest;
-    private final @NonNull Function<T, DTO> toApi;
-    private final @NonNull Function<DTO, T> toModel;
+    private final @NonNull Function<T, D> toApi;
+    private final @NonNull Function<D, T> toModel;
 
     private final RuleFilterApiMapper filterMapper = new RuleFilterApiMapper();
 
-    public T toModel(DTO dto) {
+    public T toModel(D dto) {
         return toModel.apply(dto);
     }
 
-    public DTO toApi(T model) {
+    public D toApi(T model) {
         return toApi.apply(model);
     }
 
@@ -68,7 +69,7 @@ public abstract class ApiImplSupport<DTO, T> {
     }
 
     public T mergePatch(final T orig) {
-        DTO merged;
+        D merged;
         try {
             RequestBodyBufferingServletRequest bufferedRequest =
                     nativeRequest.getNativeRequest(RequestBodyBufferingServletRequest.class);
@@ -77,14 +78,13 @@ public abstract class ApiImplSupport<DTO, T> {
                     "Servlet Filter not set up, expected RequestBodyBufferingServletRequest");
             BufferedReader reader = bufferedRequest.getReader();
 
-            DTO current = toApi.apply(orig);
+            D current = toApi.apply(orig);
             ObjectReader readerForUpdating = new ObjectMapper().readerForUpdating(current);
             merged = readerForUpdating.readValue(reader);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
-        T patched = toModel.apply(merged);
-        return patched;
+        return toModel.apply(merged);
     }
 
     public <R> ResponseEntity<R> error(HttpStatus code, String reason) {
@@ -95,8 +95,13 @@ public abstract class ApiImplSupport<DTO, T> {
         String acceptContentType = nativeRequest.getHeader("Accept");
         boolean useWkb = true;
         if (StringUtils.hasText(acceptContentType)) {
-            MediaType mediaType = MediaType.parseMediaType(acceptContentType);
-            useWkb = !MediaType.APPLICATION_JSON.isCompatibleWith(mediaType);
+            try {
+                String contentType = acceptContentType.split(",")[0];
+                MediaType mediaType = MediaType.parseMediaType(contentType);
+                useWkb = !MediaType.APPLICATION_JSON.isCompatibleWith(mediaType);
+            } catch (Exception e) {
+                useWkb = false;
+            }
         } else {
             useWkb = false;
         }

@@ -38,7 +38,7 @@ class JpaAdminRuleRepositoryPostGIS_IT extends JpaAdminRuleRepositoryTest {
     static PostgreSQLContainer<?> postgis = new PostgreSQLContainer<>(POSTGIS_IMAGE_NAME);
 
     @DynamicPropertySource
-    static void registerMySQLProperties(DynamicPropertyRegistry registry) {
+    static void registerPostgresProperties(DynamicPropertyRegistry registry) {
         registry.add("geoserver.acl.datasource.url", () -> postgis.getJdbcUrl());
         registry.add("geoserver.acl.datasource.username", postgis::getUsername);
         registry.add("geoserver.acl.datasource.password", postgis::getPassword);
