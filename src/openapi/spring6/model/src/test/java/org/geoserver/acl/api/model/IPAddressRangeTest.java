@@ -1,15 +1,19 @@
+/* (c) 2023  Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.acl.api.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import jakarta.validation.constraints.Pattern;
 
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.stream.IntStream;
 
-import javax.validation.constraints.Pattern;
-
-class IPAdressRangeTest {
+class IPAddressRangeTest {
 
     @Test
     void testAddressRangeRegEx_invalid_values() throws Exception {
@@ -54,8 +58,8 @@ class IPAdressRangeTest {
         } catch (NoSuchMethodException | SecurityException e) {
             throw new RuntimeException(e);
         }
-        javax.validation.constraints.Pattern[] annotations =
-                getAddressRange.getAnnotationsByType(javax.validation.constraints.Pattern.class);
+        jakarta.validation.constraints.Pattern[] annotations =
+                getAddressRange.getAnnotationsByType(jakarta.validation.constraints.Pattern.class);
 
         final String regexp = annotations[0].regexp();
         assertEquals(range.matches(regexp), validates);
