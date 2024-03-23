@@ -27,18 +27,20 @@
   <properties>
     <spring-cloud.version>2021.0.8</spring-cloud.version>
     <spring-boot.version>2.7.18</spring-boot.version>
-    <spring-boot-3.version>3.0.13</spring-boot-3.version>
+    <spring-boot-3.version>3.2.4</spring-boot-3.version>
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
-    <gt.version>30.1</gt.version>
+    <gt.version>31.0</gt.version>
     <jts.version>1.19.0</jts.version>
-    <lombok.version>1.18.30</lombok.version>
-    <mapstruct.version>1.5.5.Final</mapstruct.version>
-    <testcontainers.version>1.19.3</testcontainers.version>
-    <geolatte.version>1.8.2</geolatte.version>
-    <querydsl.version>5.0.0</querydsl.version>
-    <springdoc.version>1.7.0</springdoc.version>
+    <lombok.version>1.18.32</lombok.version>
+    <mapstruct.version>1.6.0.Beta1</mapstruct.version>
+    <testcontainers.version>1.19.7</testcontainers.version>
+    <geolatte.version>1.9.1</geolatte.version>
+    <querydsl.version>5.1.0</querydsl.version>
+    <springdoc.version>1.8.0</springdoc.version>
     <caffeine.version>3.1.8</caffeine.version>
-    <flyway.version>9.22.3</flyway.version>
+    <snakeyaml.version>2.2</snakeyaml.version>
+    <flyway.version>10.10.0</flyway.version>
+    <h2.version>2.2.224</h2.version>
     <fork.javac>true</fork.javac>
     <javac.maxHeapSize>256M</javac.maxHeapSize>
   </properties>
@@ -47,7 +49,7 @@
       <dependency>
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
-        <version>2.2.224</version>
+        <version>${h2.version}</version>
       </dependency>
       <dependency>
         <groupId>org.hsqldb</groupId>
@@ -72,7 +74,7 @@
         <!-- Override version 1.30 transitive from spring-boot-starter to fix a couple CVE's -->
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
-        <version>2.2</version>
+        <version>${snakeyaml.version}</version>
       </dependency>
       <dependency>
         <groupId>org.testcontainers</groupId>
