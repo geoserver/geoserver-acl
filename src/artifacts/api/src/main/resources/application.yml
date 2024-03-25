@@ -43,7 +43,7 @@ server:
 spring:
   config:
     import:
-    - optional:./values.yml
+    - classpath:/values.yml
     - optional:file:/etc/geoserver/acl-service.yml
   main:
     banner-mode: off

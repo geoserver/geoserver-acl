@@ -54,11 +54,11 @@ class RulesApiImpTest {
     @Test
     void testCreateRule() {
         Rule ret = Rule.allow().withId("1");
-        when(rules.insert(eq(Rule.allow()))).thenReturn(ret);
+        when(rules.insert(Rule.allow())).thenReturn(ret);
 
         assertResponse(() -> api.createRule(support.toApi(Rule.allow()), null), CREATED, ret);
 
-        verify(rules, times(1)).insert(eq(Rule.allow()));
+        verify(rules, times(1)).insert(Rule.allow());
         verifyNoMoreInteractions(rules);
         clearInvocations(rules);
 
@@ -66,7 +66,7 @@ class RulesApiImpTest {
                 .thenThrow(new RuleIdentifierConflictException("Duplicate identifier"));
 
         assertError(create(Rule.deny(), InsertPosition.FROM_END), CONFLICT, "Duplicate identifier");
-        verify(rules, times(1)).insert(eq(Rule.deny()), eq(InsertPosition.FROM_END));
+        verify(rules, times(1)).insert(Rule.deny(), InsertPosition.FROM_END);
     }
 
     private Supplier<ResponseEntity<org.geoserver.acl.api.model.Rule>> create(
@@ -105,11 +105,11 @@ class RulesApiImpTest {
     void testGetRules() {
         RuleQuery<RuleFilter> expectedQuery = RuleQuery.of();
         List<Rule> expected = List.of(Rule.allow(), Rule.deny());
-        when(rules.getAll(eq(expectedQuery))).thenReturn(expected.stream());
+        when(rules.getAll(expectedQuery)).thenReturn(expected.stream());
 
         List<Rule> actual = assertList(() -> api.getRules(null, null), OK);
         assertThat(actual).isEqualTo(expected);
-        verify(rules, times(1)).getAll(eq(expectedQuery));
+        verify(rules, times(1)).getAll(expectedQuery);
     }
 
     private List<Rule> assertList(
@@ -132,8 +132,8 @@ class RulesApiImpTest {
     @Test
     void testGetRuleById() {
         Rule found = Rule.allow().withId("id1");
-        when(rules.get(eq("id1"))).thenReturn(Optional.of(found));
-        when(rules.get(eq("id2"))).thenReturn(Optional.empty());
+        when(rules.get("id1")).thenReturn(Optional.of(found));
+        when(rules.get("id2")).thenReturn(Optional.empty());
 
         assertResponse(() -> api.getRuleById("id1"), OK, found);
         assertResponse(() -> api.getRuleById("id2"), NOT_FOUND, null);
@@ -142,8 +142,8 @@ class RulesApiImpTest {
     @Test
     void testFindOneRuleByPriority() {
         Rule found = Rule.allow().withId("id1");
-        when(rules.getRuleByPriority(eq(1000L))).thenReturn(Optional.of(found));
-        when(rules.getRuleByPriority(eq(1001L))).thenReturn(Optional.empty());
+        when(rules.getRuleByPriority(1000L)).thenReturn(Optional.of(found));
+        when(rules.getRuleByPriority(1001L)).thenReturn(Optional.empty());
 
         assertResponse(() -> api.findOneRuleByPriority(1000L), OK, found);
         assertResponse(() -> api.findOneRuleByPriority(1001L), NOT_FOUND, null);
@@ -166,8 +166,8 @@ class RulesApiImpTest {
     @Test
     void testRuleExistsById() {
         Rule found = Rule.allow().withId("id1");
-        when(rules.get(eq("id1"))).thenReturn(Optional.of(found));
-        when(rules.get(eq("id2"))).thenReturn(Optional.empty());
+        when(rules.get("id1")).thenReturn(Optional.of(found));
+        when(rules.get("id2")).thenReturn(Optional.empty());
 
         assertThat(api.ruleExistsById("id1").getStatusCode()).isEqualByComparingTo(OK);
         assertThat(api.ruleExistsById("id1").getBody()).isTrue();
