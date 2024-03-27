@@ -4,8 +4,7 @@ info:
   description: GeoServer Access Control List API
   version: 1.0.0
 servers:
-- url: http://localhost:8080/api
-- url: http://localhost:8080/geoserver/rest/acl
+- url: /api
 tags:
   - name: DataRules
     description: CRUD operations on GeoServer ACL Rules.

@@ -1,0 +1,77 @@
+version: "3.8"
+
+volumes:
+  acl_data:
+
+services:
+  acldb:
+    image: postgis/postgis:15-3.3
+    environment:
+      - POSTGRES_DB=acl
+      - POSTGRES_USER=acl
+      - POSTGRES_PASSWORD=acls3cr3t
+    volumes:
+      - acl_data:/var/lib/postgresql/data
+    restart: always
+    ports:
+      - 6432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U acl"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 2G
+
+  acl:
+    image: geoservercloud/geoserver-acl:${TAG}
+    environment:
+      - PG_HOST=acldb
+      - PG_PORT=5432
+      - PG_DB=acl
+      - PG_SCHEMA=acl
+      - PG_USER=acl
+      - PG_PASSWORD=acls3cr3t
+      - SPRING_PROFILES_ACTIVE=logging_debug_requests
+    depends_on:
+      acldb:
+        condition: service_healthy
+        required: true    
+    ports:
+      - 8080:8080
+      - 8081:8081
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 2G
+
+  gateway:
+    image: geoservercloud/geoserver-cloud-gateway:${GATEWAY_TAG}
+    user: 1000:1000
+    environment:
+      SPRING_PROFILES_ACTIVE: standalone
+      GEOSERVER_BASE_PATH: /geoserver/cloud
+    volumes:
+      - ./gateway-service.yml:/etc/geoserver/gateway-service.yml
+    ports:
+      - 9090:8080
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 1G
+
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./key.pem:/root/ssl/key.pem
+      - ./cert.pem:/root/ssl/cert.pem
+    ports:
+      - "443:443"
+    depends_on:
+      - gateway

@@ -15,7 +15,7 @@ import java.util.Objects;
 public class GeoServerAclContainer extends GenericContainer<GeoServerAclContainer> {
 
     private static final WaitStrategy ACTUATOR_READINESS_PROBE =
-            Wait.forHttp("/acl/actuator/health/readiness")
+            Wait.forHttp("/actuator/health/readiness")
                     .forPort(8081)
                     .withStartupTimeout(Duration.ofSeconds(10));
 

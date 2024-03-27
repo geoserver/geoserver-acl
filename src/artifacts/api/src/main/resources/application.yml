@@ -11,10 +11,9 @@ info:
 # or through environment variables or system properties.
 server:
   port: 8080
-  servlet:
-    context-path: /acl
+  servlet.context-path: /acl
   # Let spring-boot's ForwardedHeaderFilter take care of reflecting the client-originated protocol and address in the HttpServletRequest  
-  forward-headers-strategy: framework
+  forward-headers-strategy: native
   error:
     # one of never, always, on_trace_param (deprecated), on_param
     include-stacktrace: on-param
@@ -43,6 +42,8 @@ server:
 spring:
   config:
     import:
+    - classpath:/springdoc.yml
+    - classpath:/security.yml
     - classpath:/values.yml
     - optional:file:/etc/geoserver/acl-service.yml
   main:
@@ -89,9 +90,17 @@ spring:
 
 management:
   server:
-    base-path: /acl
     port: 8081
+  info:
+    defaults.enabled: true
+    env.enabled: true
+    build.enabled: true
+    git.enabled: true
+    java.enabled: true
+    os.enabled: true
   endpoint:
+    httptrace:
+      enabled: true
     health:
       probes:
         enabled: true
@@ -100,20 +109,6 @@ management:
     caches.enabled: true
   endpoints:
     web.exposure.include: ['*']
-
-springdoc:
-  # see https://springdoc.org/#how-can-i-disable-springdoc-openapi-cache
-  cache.disabled: true
-  api-docs:
-    enabled: true
-    path: /api-docs
-  swagger-ui:
-    enabled: true
-    #results in /swagger-ui/index.html
-    path: /index.html
-    disable-swagger-default-url: true
-    try-it-out-enabled: true
-    tags-sorter: alpha    
 
 jndi:
   datasources:
@@ -150,36 +145,6 @@ geoserver:
           default_schema: ${pg.schema}
           hbm2ddl.auto: ${acl.db.hbm2ddl.auto:validate}
           dialect: ${acl.db.dialect:org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect} 
-    security:
-      headers:
-        enabled: ${acl.security.headers.enabled}
-        user-header: ${acl.security.headers.user-header}
-        roles-header: ${acl.security.headers.roles-header}
-        admin-roles: ${acl.security.headers.admin-roles}
-      internal:
-        enabled: ${acl.security.basic.enabled}
-        users:
-          admin:
-            admin: true
-            enabled: ${acl.users.admin.enabled}
-            password: "${acl.users.admin.password}"
-            # the following sample password is the bcrypt encoded value, for example, for pwd s3cr3t:
-            # password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
-          geoserver:
-            # special user for GeoServer to ACL communication
-            # Using a `{noop}` default credentials for performance, since bcrypt adds a significant per-request overhead
-            # in the orther of 100ms. In production it should be replaced by a docker/k8s secret. To simplify defining and
-            # reusing secrets for both the server and client config, a noop encrypted password is allowed not to have the
-            # {noop} prefix.
-            admin: true
-            enabled: ${acl.users.geoserver.enabled}
-            password: "${acl.users.geoserver.password}"
-# Sample non-admin user: 
-#         user:
-#            admin: false
-#            enabled: true
-#            # password is the bcrypt encoded value for s3cr3t
-#            password: "{noop}changeme"
 
 ---
 spring.config.activate.on-profile: local
@@ -245,3 +210,9 @@ logging:
   level:
     root: error
     org.geoserver.acl: info
+
+---
+spring.config.activate.on-profile: logging_debug_requests
+logging:
+  level:
+    org.springframework.web.filter.CommonsRequestLoggingFilter: trace
