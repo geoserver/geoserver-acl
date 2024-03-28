@@ -23,7 +23,7 @@ ENV DEF_JAVA_TOOL_OPTS="\
 -Djava.awt.headless=true"
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=80 -XshowSettings:system"
 
-ENV JAVA_TOOL_OPTS="$DEF_JAVA_TOOL_OPTS $JAVA_OPTS"
+ENV JAVA_TOOL_OPTS="$DEF_JAVA_TOOL_OPTS"
 ENV MANAGEMENT_SERVER_PORT=8081
 EXPOSE 8080
 EXPOSE 8081
@@ -46,6 +46,6 @@ CMD curl -f -s -o /dev/null localhost:$MANAGEMENT_SERVER_PORT/acl/actuator/healt
 
 ARG APP_ARGS=""
 
-ENTRYPOINT [ "/bin/bash", "-c", "exec java $JAVA_TOOL_OPTS org.springframework.boot.loader.JarLauncher \"${@}\"", "--" ]
+ENTRYPOINT [ "/bin/bash", "-c", "exec java $JAVA_OPTS $JAVA_TOOL_OPTS org.springframework.boot.loader.JarLauncher \"${@}\"", "--" ]
 
 CMD ["${APP_ARGS}"]
