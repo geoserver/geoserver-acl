@@ -1,0 +1,35 @@
+geoserver.base-path: ${geoserver_base_path:}
+
+targets.acl: http://10.0.0.71:8080
+
+server:
+  forward-headers-strategy: framework
+
+spring:
+  cloud:
+    gateway:
+      x-forwarded:
+        for-enabled: true
+        host-enabled: true
+        port-enabled: true
+        proto-enabled: true
+        prefix-enabled: true
+      globalcors:
+        cors-configurations:
+          "[/**]":
+            allowedOrigins: "*"
+            allowedHeaders: "*"
+            allowedMethods: GET, PUT, POST, DELETE, OPTIONS, HEAD
+      default-filters:
+        - StripBasePath=${geoserver.base-path} #remove the base path on downstream requests
+      routes:
+        - id: acl
+          uri: ${targets.acl}
+          predicates:
+          - Path=${geoserver.base-path}/acl,${geoserver.base-path}/acl/**
+          filters:
+          - RewritePath=/acl,/acl/
+---
+spring.config.activate.on-profile: debug
+logging.level.root: debug
+

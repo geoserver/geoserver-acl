@@ -1502,7 +1502,7 @@ ul.nav-tabs {
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
  -H "Content-Type: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/authorization/resources" \
+ "/api/authorization/resources" \
  -d '{
   &quot;request&quot; : &quot;*&quot;,
   &quot;workspace&quot; : &quot;*&quot;,
@@ -1914,7 +1914,7 @@ $(document).ready(function() {
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
  -H "Content-Type: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/authorization/admin" \
+ "/api/authorization/admin" \
  -d '{
   &quot;workspace&quot; : &quot;*&quot;,
   &quot;sourceAddress&quot; : &quot;*&quot;,
@@ -2322,7 +2322,7 @@ $(document).ready(function() {
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
  -H "Content-Type: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/authorization/resources/matchingrules" \
+ "/api/authorization/resources/matchingrules" \
  -d '{
   &quot;request&quot; : &quot;*&quot;,
   &quot;workspace&quot; : &quot;*&quot;,
@@ -2755,7 +2755,7 @@ $(document).ready(function() {
                             <pre class="prettyprint"><code class="language-bsh">curl -X GET \
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json" \
- "http://localhost:8080/api/rules/query/count"
+ "/api/rules/query/count"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-DataRules-countAllRules-0-java">
@@ -3094,7 +3094,7 @@ pub fn main() {
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json" \
  -H "Content-Type: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/rules/query/count" \
+ "/api/rules/query/count" \
  -d '{
   &quot;request&quot; : {
     &quot;includeDefault&quot; : true,
@@ -3530,7 +3530,7 @@ $(document).ready(function() {
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
  -H "Content-Type: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/rules?position=" \
+ "/api/rules?position=" \
  -d '{
   &quot;request&quot; : &quot;request&quot;,
   &quot;workspace&quot; : &quot;workspace&quot;,
@@ -4049,7 +4049,7 @@ Displacement option related to how to interpret the Rule&#39;s priority
                           <div class="tab-pane active" id="examples-DataRules-deleteRuleById-0-curl">
                             <pre class="prettyprint"><code class="language-bsh">curl -X DELETE \
  -H "Authorization: Basic [[basicHash]]" \
- "http://localhost:8080/api/rules/id/{id}"
+ "/api/rules/id/{id}"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-DataRules-deleteRuleById-0-java">
@@ -4401,7 +4401,7 @@ The rule identifier
                             <pre class="prettyprint"><code class="language-bsh">curl -X GET \
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/rules/query/one/priority/{priority}"
+ "/api/rules/query/one/priority/{priority}"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-DataRules-findOneRuleByPriority-0-java">
@@ -4827,7 +4827,7 @@ The rule priority to search for
                             <pre class="prettyprint"><code class="language-bsh">curl -X GET \
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/rules/id/{id}/layer-details"
+ "/api/rules/id/{id}/layer-details"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-DataRules-getLayerDetailsByRuleId-0-java">
@@ -5272,7 +5272,7 @@ The rule identifier
                             <pre class="prettyprint"><code class="language-bsh">curl -X GET \
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/rules/id/{id}"
+ "/api/rules/id/{id}"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-DataRules-getRuleById-0-java">
@@ -5673,7 +5673,7 @@ The rule identifier
                             <pre class="prettyprint"><code class="language-bsh">curl -X GET \
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/rules?limit=56&nextCursor=nextCursor_example"
+ "/api/rules?limit=56&nextCursor=nextCursor_example"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-DataRules-getRules-0-java">
@@ -6102,7 +6102,7 @@ The next cursor identifier when doing cursor paging, as returned by the X-ACL-NE
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
  -H "Content-Type: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/rules/query?limit=56&nextCursor=nextCursor_example" \
+ "/api/rules/query?limit=56&nextCursor=nextCursor_example" \
  -d '{
   &quot;request&quot; : {
     &quot;includeDefault&quot; : true,
@@ -6627,7 +6627,7 @@ The next cursor identifier when doing cursor paging, as returned by the X-ACL-NE
                             <pre class="prettyprint"><code class="language-bsh">curl -X GET \
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/rules/id/{id}/exists"
+ "/api/rules/id/{id}/exists"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-DataRules-ruleExistsById-0-java">
@@ -7006,7 +7006,7 @@ The rule identifier
                             <pre class="prettyprint"><code class="language-bsh">curl -X PUT \
  -H "Authorization: Basic [[basicHash]]" \
  -H "Content-Type: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/rules/id/{id}/styles" \
+ "/api/rules/id/{id}/styles" \
  -d 'Custom MIME type example not yet supported: application/x-jackson-smile'
 </code></pre>
                           </div>
@@ -7433,7 +7433,7 @@ $(document).ready(function() {
                             <pre class="prettyprint"><code class="language-bsh">curl -X PUT \
  -H "Authorization: Basic [[basicHash]]" \
  -H "Content-Type: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/rules/id/{id}/layer-details" \
+ "/api/rules/id/{id}/layer-details" \
  -d '{
   &quot;cqlFilterWrite&quot; : &quot;cqlFilterWrite&quot;,
   &quot;cqlFilterRead&quot; : &quot;cqlFilterRead&quot;,
@@ -7866,7 +7866,7 @@ $(document).ready(function() {
                             <pre class="prettyprint"><code class="language-bsh">curl -X PUT \
  -H "Authorization: Basic [[basicHash]]" \
  -H "Content-Type: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/rules/id/{id}/limits" \
+ "/api/rules/id/{id}/limits" \
  -d '{ }' \
  -d 'Custom MIME type example not yet supported: application/x-jackson-smile'
 </code></pre>
@@ -8306,7 +8306,7 @@ $(document).ready(function() {
                             <pre class="prettyprint"><code class="language-bsh">curl -X POST \
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/rules/shift?priorityStart=789&offset=789"
+ "/api/rules/shift?priorityStart=789&offset=789"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-DataRules-shiftRulesByPriority-0-java">
@@ -8746,7 +8746,7 @@ The priority offset to apply to all rules from priorityStart onwards
                           <div class="tab-pane active" id="examples-DataRules-swapRules-0-curl">
                             <pre class="prettyprint"><code class="language-bsh">curl -X POST \
  -H "Authorization: Basic [[basicHash]]" \
- "http://localhost:8080/api/rules/id/{id}/swapwith/{id2}"
+ "/api/rules/id/{id}/swapwith/{id2}"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-DataRules-swapRules-0-java">
@@ -9133,7 +9133,7 @@ The rule identifier to swap priorities with
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
  -H "Content-Type: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/rules/id/{id}" \
+ "/api/rules/id/{id}" \
  -d '{
   &quot;request&quot; : &quot;request&quot;,
   &quot;workspace&quot; : &quot;workspace&quot;,
@@ -9660,7 +9660,7 @@ $(document).ready(function() {
                             <pre class="prettyprint"><code class="language-bsh">curl -X GET \
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/adminrules/id/{id}/exists"
+ "/api/adminrules/id/{id}/exists"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-WorkspaceAdminRules-adminRuleExistsById-0-java">
@@ -10040,7 +10040,7 @@ The rule identifier
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json" \
  -H "Content-Type: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/adminrules/query/count" \
+ "/api/adminrules/query/count" \
  -d '{
   &quot;workspace&quot; : {
     &quot;includeDefault&quot; : true,
@@ -10459,7 +10459,7 @@ $(document).ready(function() {
                             <pre class="prettyprint"><code class="language-bsh">curl -X GET \
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json" \
- "http://localhost:8080/api/adminrules/query/count"
+ "/api/adminrules/query/count"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-WorkspaceAdminRules-countAllAdminRules-0-java">
@@ -10798,7 +10798,7 @@ pub fn main() {
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
  -H "Content-Type: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/adminrules?position=" \
+ "/api/adminrules?position=" \
  -d '{
   &quot;workspace&quot; : &quot;workspace&quot;,
   &quot;role&quot; : &quot;role&quot;,
@@ -11249,7 +11249,7 @@ Displacement option related to how to interpret the Rule&#39;s priority
                           <div class="tab-pane active" id="examples-WorkspaceAdminRules-deleteAdminRuleById-0-curl">
                             <pre class="prettyprint"><code class="language-bsh">curl -X DELETE \
  -H "Authorization: Basic [[basicHash]]" \
- "http://localhost:8080/api/adminrules/id/{id}"
+ "/api/adminrules/id/{id}"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-WorkspaceAdminRules-deleteAdminRuleById-0-java">
@@ -11602,7 +11602,7 @@ The rule identifier
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
  -H "Content-Type: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/adminrules/query?limit=56&nextCursor=nextCursor_example" \
+ "/api/adminrules/query?limit=56&nextCursor=nextCursor_example" \
  -d '{
   &quot;workspace&quot; : {
     &quot;includeDefault&quot; : true,
@@ -12111,7 +12111,7 @@ The next cursor identifier when doing cursor paging, as returned by the X-ACL-NE
                             <pre class="prettyprint"><code class="language-bsh">curl -X GET \
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/adminrules?limit=56&nextCursor=nextCursor_example"
+ "/api/adminrules?limit=56&nextCursor=nextCursor_example"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-WorkspaceAdminRules-findAllAdminRules-0-java">
@@ -12540,7 +12540,7 @@ The next cursor identifier when doing cursor paging, as returned by the X-ACL-NE
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
  -H "Content-Type: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/adminrules/query/first" \
+ "/api/adminrules/query/first" \
  -d '{
   &quot;workspace&quot; : {
     &quot;includeDefault&quot; : true,
@@ -12981,7 +12981,7 @@ $(document).ready(function() {
                             <pre class="prettyprint"><code class="language-bsh">curl -X GET \
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/adminrules/query/one/priority/{priority}"
+ "/api/adminrules/query/one/priority/{priority}"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-WorkspaceAdminRules-findOneAdminRuleByPriority-0-java">
@@ -13407,7 +13407,7 @@ The rule priority to search for
                             <pre class="prettyprint"><code class="language-bsh">curl -X GET \
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/adminrules/id/{id}"
+ "/api/adminrules/id/{id}"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-WorkspaceAdminRules-getAdminRuleById-0-java">
@@ -13808,7 +13808,7 @@ The rule identifier
                             <pre class="prettyprint"><code class="language-bsh">curl -X POST \
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json" \
- "http://localhost:8080/api/adminrules/shift?priorityStart=789&offset=789"
+ "/api/adminrules/shift?priorityStart=789&offset=789"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-WorkspaceAdminRules-shiftAdminRulesByPiority-0-java">
@@ -14248,7 +14248,7 @@ The priority offset to apply to all rules from priorityStart onwards
                           <div class="tab-pane active" id="examples-WorkspaceAdminRules-swapAdminRules-0-curl">
                             <pre class="prettyprint"><code class="language-bsh">curl -X POST \
  -H "Authorization: Basic [[basicHash]]" \
- "http://localhost:8080/api/adminrules/id/{id}/swapwith/{id2}"
+ "/api/adminrules/id/{id}/swapwith/{id2}"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-WorkspaceAdminRules-swapAdminRules-0-java">
@@ -14635,7 +14635,7 @@ The admin rule identifier to swap priorities with
  -H "Authorization: Basic [[basicHash]]" \
  -H "Accept: application/json,application/x-jackson-smile" \
  -H "Content-Type: application/json,application/x-jackson-smile" \
- "http://localhost:8080/api/adminrules/id/{id}" \
+ "/api/adminrules/id/{id}" \
  -d '{
   &quot;workspace&quot; : &quot;workspace&quot;,
   &quot;role&quot; : &quot;role&quot;,

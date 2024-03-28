@@ -4,23 +4,29 @@
  */
 package org.geoserver.acl.autoconfigure.springdoc;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Controller
-public class SpringDocHomeRedirectController {
+@RequiredArgsConstructor
+class SpringDocHomeRedirectController {
 
-    private String basePath;
-
-    /**
-     * @param basePath e.g. {@literal /swagger-ui/index.html"}
-     */
-    public SpringDocHomeRedirectController(String basePath) {
-        this.basePath = basePath;
-    }
+    private final @NonNull NativeWebRequest req;
 
     @GetMapping(value = "/")
     public String redirectToSwaggerUI() {
-        return "redirect:" + basePath;
+        String url = ((HttpServletRequest) req.getNativeRequest()).getRequestURL().toString();
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+        builder.path("openapi/swagger-ui/index.html");
+        String fullUrl = builder.build().toString();
+        String xForwardedPrefixUrl = SpringDocAutoConfiguration.customizeUrl(fullUrl, req);
+        return "redirect:" + xForwardedPrefixUrl;
     }
 }

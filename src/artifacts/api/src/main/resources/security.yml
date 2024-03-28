@@ -1,0 +1,32 @@
+geoserver:
+  acl:
+    security:
+      headers:
+        enabled: ${acl.security.headers.enabled}
+        user-header: ${acl.security.headers.user-header}
+        roles-header: ${acl.security.headers.roles-header}
+        admin-roles: ${acl.security.headers.admin-roles}
+      internal:
+        enabled: ${acl.security.basic.enabled}
+        users:
+          admin:
+            admin: true
+            enabled: ${acl.users.admin.enabled}
+            password: "${acl.users.admin.password}"
+            # the following sample password is the bcrypt encoded value, for example, for pwd s3cr3t:
+            # password: "{bcrypt}$2a$10$eMyaZRLZBAZdor8nOX.qwuwOyWazXjR2hddGLCT6f6c382WiwdQGG"
+          geoserver:
+            # special user for GeoServer to ACL communication
+            # Using a `{noop}` default credentials for performance, since bcrypt adds a significant per-request overhead
+            # in the orther of 100ms. In production it should be replaced by a docker/k8s secret. To simplify defining and
+            # reusing secrets for both the server and client config, a noop encrypted password is allowed not to have the
+            # {noop} prefix.
+            admin: true
+            enabled: ${acl.users.geoserver.enabled}
+            password: "${acl.users.geoserver.password}"
+# Sample non-admin user: 
+#         user:
+#            admin: false
+#            enabled: true
+#            # password is the bcrypt encoded value for s3cr3t
+#            password: "{noop}changeme"
