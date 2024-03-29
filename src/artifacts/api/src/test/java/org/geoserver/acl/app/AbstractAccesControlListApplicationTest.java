@@ -109,11 +109,17 @@ abstract class AbstractAccesControlListApplicationTest {
         client = client.withBasicAuth(user, pwd);
     }
 
-    protected <T> ResponseEntity<T> get(String url, Class<T> responseType) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+    protected <T> ResponseEntity<T> get(String path, Class<T> responseType) {
+        return get(path, responseType, new HttpHeaders());
+    }
+
+    protected <T> ResponseEntity<T> get(String path, Class<T> responseType, HttpHeaders headers) {
+        if (headers.getAccept().isEmpty()) {
+            headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        }
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
+        var url = fullUrl(path);
         return client.exchange(url, HttpMethod.GET, entity, responseType);
     }
 
@@ -122,13 +128,20 @@ abstract class AbstractAccesControlListApplicationTest {
     }
 
     protected <T> ResponseEntity<T> post(
-            String url, String requestBodyJson, Class<T> responseType, Object... urlVariables) {
+            String path, String requestBodyJson, Class<T> responseType, Object... urlVariables) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         HttpEntity<String> entity = new HttpEntity<>(requestBodyJson, headers);
 
+        var url = fullUrl(path);
         return client.postForEntity(url, entity, responseType, urlVariables);
+    }
+
+    private String fullUrl(String path) {
+        String rootUri = client.getRootUri();
+        assertThat(rootUri).endsWith("/acl");
+        return rootUri + path;
     }
 }

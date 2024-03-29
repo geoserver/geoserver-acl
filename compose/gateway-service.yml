@@ -1,6 +1,6 @@
 geoserver.base-path: ${geoserver_base_path:}
 
-targets.acl: http://10.0.0.71:8080
+targets.acl: http://acl:8080
 
 server:
   forward-headers-strategy: framework
