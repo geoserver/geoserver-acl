@@ -10,7 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,14 +20,19 @@ import javax.servlet.http.HttpServletRequest;
 class SpringDocHomeRedirectController {
 
     private final @NonNull NativeWebRequest req;
+    private final @NonNull String servletContextPath;
 
-    @GetMapping(value = "/")
+    @GetMapping(value = {"", "/"})
     public String redirectToSwaggerUI() {
-        String url = ((HttpServletRequest) req.getNativeRequest()).getRequestURL().toString();
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
-        builder.path("openapi/swagger-ui/index.html");
-        String fullUrl = builder.build().toString();
-        String xForwardedPrefixUrl = SpringDocAutoConfiguration.customizeUrl(fullUrl, req);
-        return "redirect:" + xForwardedPrefixUrl;
+        var target = "/openapi/swagger-ui/index.html";
+        URI url =
+                URI.create(
+                        ((HttpServletRequest) req.getNativeRequest()).getRequestURL().toString());
+        var path = url.getPath();
+        if (path != null) {
+            if (path.endsWith("/")) path = path.substring(0, path.length() - 1);
+            if (!path.endsWith(servletContextPath)) target = servletContextPath + target;
+        }
+        return "redirect:%s".formatted(target);
     }
 }

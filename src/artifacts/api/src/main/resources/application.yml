@@ -13,7 +13,7 @@ server:
   port: 8080
   servlet.context-path: /acl
   # Let spring-boot's ForwardedHeaderFilter take care of reflecting the client-originated protocol and address in the HttpServletRequest  
-  forward-headers-strategy: native
+  forward-headers-strategy: framework
   error:
     # one of never, always, on_trace_param (deprecated), on_param
     include-stacktrace: on-param
@@ -25,6 +25,7 @@ server:
     - application/json
     - application/x-jackson-smile
   tomcat:
+    use-relative-redirects: true
     # Maximum number of connections that the server accepts and processes at any given time.
     # Once the limit has been reached, the operating system may still accept connections based on the "acceptCount" property.
     max-connections: ${tomcat.max.connections:8192}

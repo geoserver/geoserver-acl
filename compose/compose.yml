@@ -36,6 +36,8 @@ services:
       - PG_USER=acl
       - PG_PASSWORD=acls3cr3t
       - SPRING_PROFILES_ACTIVE=logging_debug_requests
+      # uncomment for remote debugging
+      #- JAVA_OPTS=-Xdebug -agentlib:jdwp=transport=dt_socket,address=*:15005,server=y,suspend=n
     depends_on:
       acldb:
         condition: service_healthy
@@ -43,6 +45,7 @@ services:
     ports:
       - 8080:8080
       - 8081:8081
+      - 15005:15005
     deploy:
       resources:
         limits:
