@@ -17,10 +17,17 @@ import org.geoserver.acl.domain.adminrules.AdminRuleEvent;
 import org.geoserver.acl.domain.rules.RuleEvent;
 import org.springframework.context.event.EventListener;
 
-import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * {@link AuthorizationService} decorator that caches requests and responses, listens to events for
+ * eviction.
+ *
+ * <p>All {@link RuleEvent rule events} result in a full eviction of the {@link AccessInfo} cache,
+ * and all {@link AdminRuleEvent adminrule events} in the eviction of the {@link AdminAccessInfo}
+ * cache.
+ */
 @Slf4j(topic = "org.geoserver.acl.authorization.cache")
 public class CachingAuthorizationService extends ForwardingAuthorizationService {
 
@@ -40,89 +47,52 @@ public class CachingAuthorizationService extends ForwardingAuthorizationService 
     @Override
     public AccessInfo getAccessInfo(@NonNull AccessRequest request) {
         AccessInfo grant = ruleAccessCache.computeIfAbsent(request, this::load);
-        if (grant.getMatchingRules().isEmpty()) {}
+        if (grant.getMatchingRules().isEmpty()) {
+            // do not cache results with no matching rules. It'll make it impossible to evict them
+            this.ruleAccessCache.remove(request);
+        }
 
         return grant;
     }
 
     private AccessInfo load(AccessRequest request) {
-        return super.getAccessInfo(request);
+        return logLoaded(request, super.getAccessInfo(request));
     }
 
     @Override
     public AdminAccessInfo getAdminAuthorization(@NonNull AdminAccessRequest request) {
-        return adminRuleAccessCache.computeIfAbsent(request, this::load);
+        AdminAccessInfo grant = adminRuleAccessCache.computeIfAbsent(request, this::load);
+        if (grant.getMatchingAdminRule() == null) {
+            // do not cache results with no matching rules. It'll make it impossible to evict them
+            this.adminRuleAccessCache.remove(request);
+        }
+        return grant;
     }
 
     private AdminAccessInfo load(AdminAccessRequest request) {
-        return super.getAdminAuthorization(request);
+        return logLoaded(request, super.getAdminAuthorization(request));
+    }
+
+    private <A> A logLoaded(Object request, A accessInfo) {
+        log.debug("loaded and cached {} -> {}", request, accessInfo);
+        return accessInfo;
     }
 
     @EventListener(RuleEvent.class)
     public void onRuleEvent(RuleEvent event) {
-        switch (event.getEventType()) {
-            case DELETED, UPDATED:
-                evictRuleAccessCache(event);
-                break;
-            case CREATED:
-            default:
-                break;
-        }
+        int evictCount = evictAll(ruleAccessCache);
+        log.debug("evicted all {} authorizations upon event {}", evictCount, event);
+    }
+
+    private int evictAll(Map<?, ?> cache) {
+        int size = cache.size();
+        cache.clear();
+        return size;
     }
 
     @EventListener(AdminRuleEvent.class)
     public void onAdminRuleEvent(AdminRuleEvent event) {
-        switch (event.getEventType()) {
-            case DELETED, UPDATED:
-                evictAdminAccessCache(event);
-                break;
-            case CREATED:
-            default:
-                break;
-        }
-    }
-
-    private void evictRuleAccessCache(RuleEvent event) {
-        final Set<String> affectedRuleIds = event.getRuleIds();
-        ruleAccessCache.entrySet().stream()
-                .parallel()
-                .filter(e -> matches(e.getValue(), affectedRuleIds))
-                .forEach(
-                        e -> {
-                            AccessRequest req = e.getKey();
-                            AccessInfo grant = e.getValue();
-                            ruleAccessCache.remove(req);
-                            logEvicted(event, req, grant);
-                        });
-    }
-
-    private void evictAdminAccessCache(AdminRuleEvent event) {
-        final Set<String> affectedRuleIds = event.getRuleIds();
-        adminRuleAccessCache.entrySet().stream()
-                .parallel()
-                .filter(e -> matches(e.getValue(), affectedRuleIds))
-                .forEach(
-                        e -> {
-                            AdminAccessRequest req = e.getKey();
-                            AdminAccessInfo grant = e.getValue();
-                            adminRuleAccessCache.remove(req);
-                            logEvicted(event, req, grant);
-                        });
-    }
-
-    private boolean matches(AccessInfo cached, final Set<String> affectedRuleIds) {
-        List<String> matchingRules = cached.getMatchingRules();
-        return matchingRules.stream().anyMatch(affectedRuleIds::contains);
-    }
-
-    private boolean matches(AdminAccessInfo cached, final Set<String> affectedRuleIds) {
-        String matchingRuleId = cached.getMatchingAdminRule();
-        return affectedRuleIds.contains(matchingRuleId);
-    }
-
-    private void logEvicted(Object event, Object req, Object grant) {
-        if (log.isDebugEnabled()) {
-            log.debug("event: {}, evicted {} -> {}", event, req, grant);
-        }
+        int evictCount = evictAll(adminRuleAccessCache);
+        log.debug("evicted all {} admin authorizations upon event {}", evictCount, event);
     }
 }

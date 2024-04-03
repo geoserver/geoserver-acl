@@ -33,7 +33,7 @@ public class Select2SetMultiChoice<T> extends FormComponentPanel<Set<T>> {
                 new ArrayList<T>(model.getObject() == null ? Set.of() : model.getObject());
         IModel<Collection<T>> selectModel = Model.of(initalValue);
 
-        add(select2 = new Select2MultiChoice<T>("select", selectModel, provider));
+        add(select2 = new Select2MultiChoice<>("select", selectModel, provider));
         select2.getSettings().setQueryParam("qm");
         select2.getSettings().setPlaceholder("select"); // required for allowClear
         select2.getSettings().setAllowClear(true);

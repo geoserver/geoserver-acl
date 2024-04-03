@@ -56,7 +56,7 @@ class CachingAuthorizationServiceTest {
     @Test
     void testGetAccessInfo() {
         AccessRequest req = AccessRequest.builder().roles("ROLE_AUTHENTICATED").build();
-        AccessInfo expected = AccessInfo.DENY_ALL;
+        AccessInfo expected = AccessInfo.DENY_ALL.withMatchingRules(List.of("1", "2"));
         when(delegate.getAccessInfo(req)).thenReturn(expected);
 
         AccessInfo r1 = caching.getAccessInfo(req);
@@ -70,10 +70,28 @@ class CachingAuthorizationServiceTest {
     }
 
     @Test
+    void testGetAccessInfoNotCachedIfNoMatchingrules() {
+        AccessRequest req = AccessRequest.builder().roles("ROLE_UNMATCHED").build();
+        AccessInfo expected = AccessInfo.DENY_ALL.withMatchingRules(List.of());
+        when(delegate.getAccessInfo(req)).thenReturn(expected);
+
+        AccessInfo r1 = caching.getAccessInfo(req);
+        assertSame(expected, r1);
+        assertThat(this.dataAccessCache)
+                .as("AccessInfo with no matching rules should not be cached")
+                .doesNotContainKey(req);
+    }
+
+    @Test
     void testGetAdminAuthorization() {
         AdminAccessRequest req =
                 AdminAccessRequest.builder().roles("ROLE_AUTHENTICATED").workspace("test").build();
-        AdminAccessInfo expected = AdminAccessInfo.builder().admin(false).workspace("test").build();
+        AdminAccessInfo expected =
+                AdminAccessInfo.builder()
+                        .admin(false)
+                        .workspace("test")
+                        .matchingAdminRule("1")
+                        .build();
         when(delegate.getAdminAuthorization(req)).thenReturn(expected);
 
         AdminAccessInfo r1 = caching.getAdminAuthorization(req);
@@ -87,35 +105,62 @@ class CachingAuthorizationServiceTest {
     }
 
     @Test
-    void testOnRuleEvent() {
+    void testGetAdminAuthorizationNotCachedIfNoMatchingrule() {
+        AdminAccessRequest req =
+                AdminAccessRequest.builder().roles("ROLE_UNMATCHED").workspace("test").build();
+        AdminAccessInfo expected =
+                AdminAccessInfo.builder()
+                        .admin(false)
+                        .workspace("test")
+                        // no matching rule
+                        .matchingAdminRule(null)
+                        .build();
+        when(delegate.getAdminAuthorization(req)).thenReturn(expected);
+
+        AdminAccessInfo r1 = caching.getAdminAuthorization(req);
+        assertSame(expected, r1);
+        assertThat(this.adminAccessCache).doesNotContainKey(req);
+        verify(delegate, times(1)).getAdminAuthorization(req);
+    }
+
+    @Test
+    void testOnRuleEventEvictsAll() {
         Rule rule1 = Rule.allow().withId("r1").withWorkspace("ws1").withLayer("l1");
         Rule rule2 = rule1.withId("r2").withLayer("l2");
         Rule rule3 = rule1.withId("r3").withLayer("l3");
-        Rule rule4 = rule1.withId("r4").withLayer("l4");
-        Rule rule5 = rule1.withId("r5").withLayer("l5");
 
         AccessRequest req1 = req(rule1);
         AccessRequest req2 = req(rule2);
         AccessRequest req3 = req(rule3);
-        AccessRequest req4 = req(rule4);
-        AccessRequest req5 = req(rule5);
 
+        grantAll(rule1, rule2, rule3, req1, req2, req3);
+        caching.onRuleEvent(RuleEvent.updated(rule1));
+        assertThat(dataAccessCache).isEmpty();
+
+        grantAll(rule1, rule2, rule3, req1, req2, req3);
+        caching.onRuleEvent(RuleEvent.deleted(rule2.getId()));
+        assertThat(dataAccessCache).isEmpty();
+
+        grantAll(rule1, rule2, rule3, req1, req2, req3);
+        caching.onRuleEvent(RuleEvent.created(rule3));
+        assertThat(dataAccessCache).isEmpty();
+    }
+
+    private void grantAll(
+            Rule rule1,
+            Rule rule2,
+            Rule rule3,
+            AccessRequest req1,
+            AccessRequest req2,
+            AccessRequest req3) {
         grant(req1, rule1);
         grant(req2, rule1, rule2);
         grant(req3, rule1, rule2, rule3);
-        grant(req4, rule4, rule5);
-        grant(req5, rule5);
-
-        // change to rule5 evicts req5 and req4, both have rule5.id int their matching rules
-        testOnRuleEvent(rule5, req5, req4);
-
-        // change to rule1 evicts req1, req2, and req3, all of them have rule1.id in their matching
-        // rules
-        testOnRuleEvent(rule1, req1, req2, req3);
+        assertThat(dataAccessCache).containsKeys(req1, req2, req3);
     }
 
     @Test
-    void testOnAdminRuleEvent() {
+    void testOnAdminRuleEventEvictsAll() {
         var rule1 = AdminRule.admin().withId("r1").withWorkspace("ws1");
         var rule2 = rule1.withId("r2");
         var rule3 = rule1.withId("r3");
@@ -124,36 +169,30 @@ class CachingAuthorizationServiceTest {
         var req2 = req1.withUser("user2");
         var req3 = req1.withUser("user3");
 
+        grantAll(rule1, rule2, rule3, req1, req2, req3);
+        caching.onAdminRuleEvent(AdminRuleEvent.created(rule1));
+        assertThat(adminAccessCache).isEmpty();
+
+        grantAll(rule1, rule2, rule3, req1, req2, req3);
+        caching.onAdminRuleEvent(AdminRuleEvent.updated(rule2));
+        assertThat(adminAccessCache).isEmpty();
+
+        grantAll(rule1, rule2, rule3, req1, req2, req3);
+        caching.onAdminRuleEvent(AdminRuleEvent.deleted(rule3.getId()));
+        assertThat(adminAccessCache).isEmpty();
+    }
+
+    private void grantAll(
+            AdminRule rule1,
+            AdminRule rule2,
+            AdminRule rule3,
+            AdminAccessRequest req1,
+            AdminAccessRequest req2,
+            AdminAccessRequest req3) {
         grant(req1, rule1);
         grant(req2, rule2);
         grant(req3, rule3);
-
-        testOnAdminRuleEvent(rule1, req1);
-        testOnAdminRuleEvent(rule2, req2);
-        testOnAdminRuleEvent(rule3, req3);
-    }
-
-    private void testOnAdminRuleEvent(AdminRule modified, AdminAccessRequest expectedEviction) {
-        assertThat(adminAccessCache.get(expectedEviction)).isNotNull();
-        var event = AdminRuleEvent.updated(modified);
-        caching.onAdminRuleEvent(event);
-        assertThat(adminAccessCache.get(expectedEviction)).isNull();
-    }
-
-    private void testOnRuleEvent(Rule modified, AccessRequest... expectedEvictions) {
-        // pre-flight
-        for (AccessRequest req : expectedEvictions) {
-            AccessInfo grant = dataAccessCache.get(req);
-            assertThat(grant).isNotNull();
-            assertThat(grant.getMatchingRules()).contains(modified.getId());
-        }
-
-        RuleEvent event = RuleEvent.updated(modified);
-        caching.onRuleEvent(event);
-
-        for (AccessRequest req : expectedEvictions) {
-            assertThat(dataAccessCache).doesNotContainKey(req);
-        }
+        assertThat(adminAccessCache).hasSize(3);
     }
 
     private AccessInfo grant(AccessRequest req, Rule... matching) {
