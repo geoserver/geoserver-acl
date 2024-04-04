@@ -2,13 +2,11 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.acl.plugin.autoconfigure.cache;
+package org.geoserver.acl.autoconfigure.cache;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.geoserver.acl.authorization.cache.CachingAuthorizationServiceConfiguration;
-import org.geoserver.acl.plugin.autoconfigure.accessmanager.AclAccessManagerAutoConfiguration;
-import org.geoserver.acl.plugin.autoconfigure.accessmanager.ConditionalOnAclEnabled;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Import;
@@ -16,18 +14,17 @@ import org.springframework.context.annotation.Import;
 import javax.annotation.PostConstruct;
 
 /**
- * @since 1.0
+ * @since 2.2
  * @see CachingAuthorizationServiceConfiguration
  */
-@AutoConfiguration(after = AclAccessManagerAutoConfiguration.class)
-@ConditionalOnAclEnabled
+@AutoConfiguration
 @ConditionalOnProperty(
-        name = "geoserver.acl.client.caching",
+        name = "geoserver.acl.caching.enabled",
         havingValue = "true",
         matchIfMissing = true)
 @Import(CachingAuthorizationServiceConfiguration.class)
-@Slf4j(topic = "org.geoserver.acl.plugin.autoconfigure.cache")
-public class CachingAuthorizationServiceAutoConfiguration {
+@Slf4j(topic = "org.geoserver.acl.autoconfigure.cache")
+public class CachingAuthorizationServiceServerAutoConfiguration {
 
     @PostConstruct
     void logUsing() {
