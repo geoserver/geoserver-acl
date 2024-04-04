@@ -72,7 +72,6 @@
     <java.version>17</java.version>
     <fmt.action>format</fmt.action>
     <fmt.skip>false</fmt.skip>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <openapi-generator-maven-plugin.version>7.0.1</openapi-generator-maven-plugin.version>
     <openapi-codegen-skip>false</openapi-codegen-skip>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -487,4 +486,16 @@
       </extension>
     </extensions>
   </build>
+  <profiles>
+    <profile>
+      <id>examples</id>
+      <!-- used by make test-examples, see Makefile -->
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+        <module>examples</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

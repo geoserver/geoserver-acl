@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.geoserver.acl.examples</groupId>
     <artifactId>acl-examples</artifactId>
-    <version>2.2-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
   <artifactId>acl-java-client-example</artifactId>
   <properties>
