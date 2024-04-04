@@ -61,6 +61,21 @@ spring:
     default-property-inclusion: non-empty
     serialization:
       indent-output: true
+  cache:
+    type: caffeine
+    caffeine:
+      #CaffeineSpec supports parsing configuration off of a string
+      #The string syntax is a series of comma-separated keys or key-value pairs, each corresponding to a Caffeine builder method.
+      #
+      #initialCapacity=[integer]
+      #maximumSize=[long]
+      #maximumWeight=[long]
+      #expireAfterAccess=[duration]
+      #expireAfterWrite=[duration]
+      #refreshAfterWrite=[duration]
+      #softValues: sets Caffeine.softValues.
+      #recordStats: sets Caffeine.recordStats.
+      spec: softValues,initialCapacity=10000,recordStats
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
@@ -128,6 +143,8 @@ jndi:
 geoserver:
   bus.enabled: false
   acl:
+    caching:
+      enabled: ${acl.caching:true}
     datasource:
       jndi-name: ${acl.db.jndiName:java:comp/env/jdbc/acl}
       url: ${acl.db.url:}

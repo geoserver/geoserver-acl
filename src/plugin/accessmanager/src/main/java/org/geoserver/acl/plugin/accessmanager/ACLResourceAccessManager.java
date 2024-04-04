@@ -332,10 +332,13 @@ public class ACLResourceAccessManager implements ResourceAccessManager, Extensio
     }
 
     private AccessInfo getAccessInfo(AccessRequest accessRequest) {
-        Stopwatch sw = Stopwatch.createStarted();
+        final Level timeLogLevel = FINE;
+        final Stopwatch sw = LOGGER.isLoggable(timeLogLevel) ? Stopwatch.createStarted() : null;
         AccessInfo accessInfo = aclService.getAccessInfo(accessRequest);
-        sw.stop();
-        log(FINE, "ACL auth run in {0}: {1} -> {2}", sw, accessRequest, accessInfo);
+        if (null != sw) {
+            sw.stop();
+            log(timeLogLevel, "ACL auth run in {0}: {1} -> {2}", sw, accessRequest, accessInfo);
+        }
 
         if (accessInfo == null) {
             accessInfo = AccessInfo.DENY_ALL;
