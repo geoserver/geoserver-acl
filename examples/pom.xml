@@ -7,98 +7,16 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver.acl</groupId>
+    <artifactId>gs-acl-bom</artifactId>
+    <version>${revision}</version>
+  </parent>
   <groupId>org.geoserver.acl.examples</groupId>
   <artifactId>acl-examples</artifactId>
-  <version>2.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
     <module>java-client</module>
   </modules>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-  </properties>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.11.0</version>
-        <inherited>true</inherited>
-        <configuration>
-          <release>17</release>
-          <debug>true</debug>
-          <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.spotify.fmt</groupId>
-        <artifactId>fmt-maven-plugin</artifactId>
-        <version>2.21.1</version>
-        <configuration>
-          <verbose>false</verbose>
-          <filesNamePattern>.*\.java</filesNamePattern>
-          <skip>${fmt.skip}</skip>
-          <style>aosp</style>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>format</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>flatten-maven-plugin</artifactId>
-        <version>1.5.0</version>
-        <inherited>true</inherited>
-        <configuration>
-          <updatePomFile>true</updatePomFile>
-          <!-- see https://www.mojohaus.org/flatten-maven-plugin/flatten-mojo.html#flattenMode -->
-          <flattenMode>ossrh</flattenMode>
-        </configuration>
-        <executions>
-          <execution>
-            <id>flatten</id>
-            <goals>
-              <goal>flatten</goal>
-            </goals>
-            <phase>process-resources</phase>
-          </execution>
-          <execution>
-            <id>flatten.clean</id>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-            <phase>clean</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>com.github.ekryd.sortpom</groupId>
-        <artifactId>sortpom-maven-plugin</artifactId>
-        <version>3.3.0</version>
-        <configuration>
-          <encoding>UTF-8</encoding>
-          <createBackupFile>false</createBackupFile>
-          <lineSeparator>\n</lineSeparator>
-          <nrOfIndentSpace>2</nrOfIndentSpace>
-          <verifyFail>stop</verifyFail>
-          <verifyFailOn>strict</verifyFailOn>
-        </configuration>
-        <executions>
-          <execution>
-            <id>sort</id>
-            <goals>
-              <goal>sort</goal>
-            </goals>
-            <phase>validate</phase>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>
