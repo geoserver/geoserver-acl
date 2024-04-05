@@ -194,7 +194,7 @@
       </dependency>
       <dependency>
         <groupId>org.geoserver.acl.integration</groupId>
-        <artifactId>spring-boot-simplejndi</artifactId>
+        <artifactId>gs-acl-simplejndi</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

@@ -6,7 +6,7 @@
     <artifactId>spring-boot-integration</artifactId>
     <version>${revision}</version>
   </parent>
-  <artifactId>spring-boot-simplejndi</artifactId>
+  <artifactId>gs-acl-simplejndi</artifactId>
   <packaging>jar</packaging>
   <description>Simple, servlet container agnostic, JNDI implementation for spring-boot</description>
   <dependencies>

@@ -15,7 +15,7 @@
   <artifactId>spring-boot-integration</artifactId>
   <packaging>pom</packaging>
   <modules>
-    <module>spring-boot-simplejndi</module>
+    <module>simplejndi</module>
     <module>spring-cloud-bus</module>
   </modules>
 </project>
