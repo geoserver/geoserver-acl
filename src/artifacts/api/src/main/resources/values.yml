@@ -49,7 +49,8 @@ acl.users.geoserver.password: "s3cr3t"
 acl.security.headers.enabled: false
 acl.security.headers.user-header: sec-username
 acl.security.headers.roles-header: sec-roles
-acl.security.headers.admin-roles: ["ROLE_ADMINISTRATOR"]
+# comma-separated list of role names provided in the roles header to be given admin rights
+acl.security.headers.admin-roles: ROLE_ADMINISTRATOR
 
 
 ---
