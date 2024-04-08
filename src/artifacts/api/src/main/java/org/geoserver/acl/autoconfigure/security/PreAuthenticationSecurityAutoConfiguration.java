@@ -7,9 +7,9 @@ package org.geoserver.acl.autoconfigure.security;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-@Configuration
+@AutoConfiguration(before = AuthenticationManagerAutoConfiguration.class)
 @ConditionalOnPreAuthenticationEnabled
 @EnableConfigurationProperties(SecurityConfigProperties.class)
 public class PreAuthenticationSecurityAutoConfiguration {
