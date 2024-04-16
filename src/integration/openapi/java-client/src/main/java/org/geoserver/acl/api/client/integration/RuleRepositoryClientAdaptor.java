@@ -90,6 +90,11 @@ public class RuleRepositoryClientAdaptor implements RuleRepository {
     }
 
     @Override
+    public int deleteAll() {
+        return apiClient.deleteAllRules();
+    }
+
+    @Override
     public int count() {
         return apiClient.countAllRules();
     }

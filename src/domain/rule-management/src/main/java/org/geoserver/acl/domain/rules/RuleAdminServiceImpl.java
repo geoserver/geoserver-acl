@@ -155,6 +155,11 @@ public class RuleAdminServiceImpl implements RuleAdminService {
     }
 
     @Override
+    public int deleteAll() {
+        return ruleRepository.deleteAll();
+    }
+
+    @Override
     public Stream<Rule> getAll() {
         return ruleRepository.findAll();
     }

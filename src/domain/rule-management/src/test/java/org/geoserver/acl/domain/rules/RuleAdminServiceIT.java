@@ -188,6 +188,26 @@ public class RuleAdminServiceIT {
     }
 
     @Test
+    void testDeleteAll() {
+        ruleAdminService.insert(Rule.allow().withPriority(10).withLayer("L1"));
+        ruleAdminService.insert(
+                Rule.limit().withPriority(11).withLayer("L2").withRuleLimits(sampleLimits()));
+
+        Rule r3 = ruleAdminService.insert(Rule.allow().withPriority(12).withLayer("L2"));
+        ruleAdminService.setLayerDetails(r3.getId(), sampleDetails(0));
+        ruleAdminService.setAllowedStyles(r3.getId(), Set.of("style1", "style2", "style3"));
+
+        final int expected = 3;
+        assertThat(ruleAdminService.count()).isEqualTo(expected);
+
+        int ret = ruleAdminService.deleteAll();
+        assertThat(ret).isEqualTo(expected);
+        assertThat(ruleAdminService.deleteAll()).isZero();
+
+        assertThat(ruleAdminService.getAll()).isEmpty();
+    }
+
+    @Test
     void testDeleteRuleById() {
         Rule r1 = ruleAdminService.insert(Rule.allow().withPriority(10).withLayer("L1"));
         Rule r2 = ruleAdminService.insert(Rule.allow().withPriority(11).withLayer("L2"));

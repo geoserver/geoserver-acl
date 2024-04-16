@@ -78,4 +78,6 @@ public interface AdminRuleAdminService {
     int count(AdminRuleFilter filter);
 
     boolean exists(String id);
+
+    int deleteAll();
 }

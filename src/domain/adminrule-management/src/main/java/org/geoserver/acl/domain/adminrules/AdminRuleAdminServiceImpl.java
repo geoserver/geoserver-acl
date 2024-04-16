@@ -110,6 +110,11 @@ public class AdminRuleAdminServiceImpl implements AdminRuleAdminService {
     }
 
     @Override
+    public int deleteAll() {
+        return repository.deleteAll();
+    }
+
+    @Override
     public Stream<AdminRule> getAll() {
         return repository.findAll();
     }

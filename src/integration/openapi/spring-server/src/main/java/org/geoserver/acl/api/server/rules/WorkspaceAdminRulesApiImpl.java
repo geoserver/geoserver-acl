@@ -69,6 +69,12 @@ public class WorkspaceAdminRulesApiImpl implements WorkspaceAdminRulesApiDelegat
         return ResponseEntity.status(deleted ? OK : NOT_FOUND).build();
     }
 
+    @Override
+    @IsAdmin
+    public ResponseEntity<Integer> deleteAllAdminRules() {
+        return ResponseEntity.ok(service.deleteAll());
+    }
+
     public @Override ResponseEntity<Boolean> adminRuleExistsById(@NonNull String id) {
         return ResponseEntity.ok(service.exists(id));
     }

@@ -276,6 +276,14 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     }
 
     @Override
+    @TransactionRequired
+    public int deleteAll() {
+        int count = count();
+        jparepo.deleteAll();
+        return count;
+    }
+
+    @Override
     public boolean existsById(@NonNull String id) {
         return jparepo.existsById(decodeId(id));
     }

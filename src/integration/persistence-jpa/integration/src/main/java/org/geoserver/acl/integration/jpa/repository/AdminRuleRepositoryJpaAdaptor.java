@@ -276,6 +276,14 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
         return 1 == jparepo.deleteById(decodeId(id).longValue());
     }
 
+    @Override
+    @TransactionRequired
+    public int deleteAll() {
+        int count = count();
+        jparepo.deleteAll();
+        return count;
+    }
+
     private org.geoserver.acl.jpa.model.AdminRule getOrThrowIAE(@NonNull String ruleId) {
         org.geoserver.acl.jpa.model.AdminRule rule;
         try {

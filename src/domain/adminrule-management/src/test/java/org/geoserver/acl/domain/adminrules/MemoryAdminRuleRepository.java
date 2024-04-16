@@ -194,6 +194,13 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
     }
 
     @Override
+    public int deleteAll() {
+        int count = rules.size();
+        rules.clear();
+        return count;
+    }
+
+    @Override
     public Optional<AdminRule> findOneByPriority(long priority) {
         return rules.stream().filter(r -> r.getPriority() == priority).findFirst();
     }

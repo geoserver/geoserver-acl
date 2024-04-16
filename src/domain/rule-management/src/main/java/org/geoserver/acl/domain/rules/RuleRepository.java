@@ -26,6 +26,8 @@ public interface RuleRepository {
 
     boolean deleteById(String id);
 
+    int deleteAll();
+
     int count();
 
     /**

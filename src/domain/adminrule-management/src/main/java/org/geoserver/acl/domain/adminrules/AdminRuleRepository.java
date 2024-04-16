@@ -42,5 +42,7 @@ public interface AdminRuleRepository {
 
     boolean deleteById(String id);
 
+    int deleteAll();
+
     Optional<AdminRule> findOneByPriority(long priority);
 }
