@@ -70,6 +70,12 @@ public class DataRulesApiImpl implements DataRulesApiDelegate {
     }
 
     @Override
+    @IsAdmin
+    public ResponseEntity<Integer> deleteAllRules() {
+        return ResponseEntity.ok(service.deleteAll());
+    }
+
+    @Override
     public ResponseEntity<List<Rule>> getRules(Integer limit, String nextCursor) {
         return query(RuleQuery.of(limit, nextCursor));
     }

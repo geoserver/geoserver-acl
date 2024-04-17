@@ -55,6 +55,14 @@ paths:
              schema:
                type: string
                description: Error reason, including offending property names
+    delete:
+      operationId: deleteAllRules
+      description: Atomically deletes all data rules and return the number of rules removed
+      tags:
+        - DataRules
+      responses:
+        '200':
+          $ref: '#/components/responses/Count'
 
   /rules/query:
     post:
@@ -356,6 +364,15 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/AdminRule'
+    delete:
+      operationId: deleteAllAdminRules
+      description: Atomically deletes all admin rules and return the number of rules removed
+      tags:
+        - WorkspaceAdminRules
+      responses:
+        '200':
+          $ref: '#/components/responses/Count'
+
   /adminrules/query:
     post:
       parameters:
@@ -402,6 +419,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Count'
+
   /adminrules/query/one/priority/{priority}:
     get:
       operationId: findOneAdminRuleByPriority

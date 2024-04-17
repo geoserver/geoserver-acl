@@ -1362,6 +1362,9 @@ ul.nav-tabs {
                     <li data-group="DataRules" data-name="createRule" class="">
                       <a href="#api-DataRules-createRule">createRule</a>
                     </li>
+                    <li data-group="DataRules" data-name="deleteAllRules" class="">
+                      <a href="#api-DataRules-deleteAllRules">deleteAllRules</a>
+                    </li>
                     <li data-group="DataRules" data-name="deleteRuleById" class="">
                       <a href="#api-DataRules-deleteRuleById">deleteRuleById</a>
                     </li>
@@ -1416,6 +1419,9 @@ ul.nav-tabs {
                     </li>
                     <li data-group="WorkspaceAdminRules" data-name="deleteAdminRuleById" class="">
                       <a href="#api-WorkspaceAdminRules-deleteAdminRuleById">deleteAdminRuleById</a>
+                    </li>
+                    <li data-group="WorkspaceAdminRules" data-name="deleteAllAdminRules" class="">
+                      <a href="#api-WorkspaceAdminRules-deleteAllAdminRules">deleteAllAdminRules</a>
                     </li>
                     <li data-group="WorkspaceAdminRules" data-name="findAdminRules" class="">
                       <a href="#api-WorkspaceAdminRules-findAdminRules">findAdminRules</a>
@@ -4009,6 +4015,344 @@ Displacement option related to how to interpret the Rule&#39;s priority
                                               </tr>
                                       </table>
                                   </div>
+                            </div>
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-DataRules-deleteAllRules">
+                      <article id="api-DataRules-deleteAllRules-0" data-group="User" data-name="deleteAllRules" data-version="0">
+                        <div class="pull-left">
+                          <h1>deleteAllRules</h1>
+                          <p></p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Atomically deletes all data rules and return the number of rules removed</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/rules</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-DataRules-deleteAllRules-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-DataRules-deleteAllRules-0-java">Java</a></li>
+                          <li class=""><a href="#examples-DataRules-deleteAllRules-0-dart">Dart</a></li>
+                          <li class=""><a href="#examples-DataRules-deleteAllRules-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-DataRules-deleteAllRules-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-DataRules-deleteAllRules-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-DataRules-deleteAllRules-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-DataRules-deleteAllRules-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-DataRules-deleteAllRules-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-DataRules-deleteAllRules-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-DataRules-deleteAllRules-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-DataRules-deleteAllRules-0-python">Python</a></li>
+                          <li class=""><a href="#examples-DataRules-deleteAllRules-0-rust">Rust</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-DataRules-deleteAllRules-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE \
+ -H "Authorization: Basic [[basicHash]]" \
+ -H "Accept: application/json" \
+ "/api/rules"
+</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-DataRules-deleteAllRules-0-java">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
+import org.openapitools.client.auth.*;
+import org.openapitools.client.model.*;
+import org.openapitools.client.api.DataRulesApi;
+
+import java.io.File;
+import java.util.*;
+
+public class DataRulesApiExample {
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        // Configure HTTP basic authorization: basicAuth
+        HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
+        basicAuth.setUsername("YOUR USERNAME");
+        basicAuth.setPassword("YOUR PASSWORD");
+
+        // Create an instance of the API class
+        DataRulesApi apiInstance = new DataRulesApi();
+
+        try {
+            'Integer' result = apiInstance.deleteAllRules();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling DataRulesApi#deleteAllRules");
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-DataRules-deleteAllRules-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+
+try {
+    final result = await api_instance.deleteAllRules();
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->deleteAllRules: $e\n');
+}
+
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-DataRules-deleteAllRules-0-android">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.DataRulesApi;
+
+public class DataRulesApiExample {
+    public static void main(String[] args) {
+        DataRulesApi apiInstance = new DataRulesApi();
+
+        try {
+            'Integer' result = apiInstance.deleteAllRules();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling DataRulesApi#deleteAllRules");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-DataRules-deleteAllRules-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-DataRules-deleteAllRules-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure HTTP basic authorization (authentication scheme: basicAuth)
+[apiConfig setUsername:@"YOUR_USERNAME"];
+[apiConfig setPassword:@"YOUR_PASSWORD"];
+
+// Create an instance of the API class
+DataRulesApi *apiInstance = [[DataRulesApi alloc] init];
+
+[apiInstance deleteAllRulesWithCompletionHandler: 
+              ^('Integer' output, NSError* error) {
+    if (output) {
+        NSLog(@"%@", output);
+    }
+    if (error) {
+        NSLog(@"Error: %@", error);
+    }
+}];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-DataRules-deleteAllRules-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var GeoServerAcl = require('geo_server_acl');
+var defaultClient = GeoServerAcl.ApiClient.instance;
+
+// Configure HTTP basic authorization: basicAuth
+var basicAuth = defaultClient.authentications['basicAuth'];
+basicAuth.username = 'YOUR USERNAME';
+basicAuth.password = 'YOUR PASSWORD';
+
+// Create an instance of the API class
+var api = new GeoServerAcl.DataRulesApi()
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.deleteAllRules(callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-DataRules-deleteAllRules-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-DataRules-deleteAllRules-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using Org.OpenAPITools.Api;
+using Org.OpenAPITools.Client;
+using Org.OpenAPITools.Model;
+
+namespace Example
+{
+    public class deleteAllRulesExample
+    {
+        public void main()
+        {
+            // Configure HTTP basic authorization: basicAuth
+            Configuration.Default.Username = "YOUR_USERNAME";
+            Configuration.Default.Password = "YOUR_PASSWORD";
+
+            // Create an instance of the API class
+            var apiInstance = new DataRulesApi();
+
+            try {
+                'Integer' result = apiInstance.deleteAllRules();
+                Debug.WriteLine(result);
+            } catch (Exception e) {
+                Debug.Print("Exception when calling DataRulesApi.deleteAllRules: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-DataRules-deleteAllRules-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+// Configure HTTP basic authorization: basicAuth
+OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
+OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
+
+// Create an instance of the API class
+$api_instance = new OpenAPITools\Client\Api\DataRulesApi();
+
+try {
+    $result = $api_instance->deleteAllRules();
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling DataRulesApi->deleteAllRules: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-DataRules-deleteAllRules-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::OPenAPIClient::Configuration;
+use WWW::OPenAPIClient::DataRulesApi;
+# Configure HTTP basic authorization: basicAuth
+$WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
+$WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
+
+# Create an instance of the API class
+my $api_instance = WWW::OPenAPIClient::DataRulesApi->new();
+
+eval {
+    my $result = $api_instance->deleteAllRules();
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling DataRulesApi->deleteAllRules: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-DataRules-deleteAllRules-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import openapi_client
+from openapi_client.rest import ApiException
+from pprint import pprint
+# Configure HTTP basic authorization: basicAuth
+openapi_client.configuration.username = 'YOUR_USERNAME'
+openapi_client.configuration.password = 'YOUR_PASSWORD'
+
+# Create an instance of the API class
+api_instance = openapi_client.DataRulesApi()
+
+try:
+    api_response = api_instance.delete_all_rules()
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling DataRulesApi->deleteAllRules: %s\n" % e)</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-DataRules-deleteAllRules-0-rust">
+                              <pre class="prettyprint"><code class="language-rust">extern crate DataRulesApi;
+
+pub fn main() {
+
+    let mut context = DataRulesApi::Context::default();
+    let result = client.deleteAllRules(&context).wait();
+
+    println!("{:?}", result);
+}
+</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Scopes</h2>
+                          <table>
+                            
+                          </table>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3 id="examples-DataRules-deleteAllRules-title-200"></h3>
+                            <p id="examples-DataRules-deleteAllRules-description-200" class="marked"></p>
+                            <script>
+                              var responseDataRules200_description = `Number of rules matching the request`;
+                              var responseDataRules200_description_break = responseDataRules200_description.indexOf('\n');
+                              if (responseDataRules200_description_break == -1) {
+                                $("#examples-DataRules-deleteAllRules-title-200").text("Status: 200 - " + responseDataRules200_description);
+                              } else {
+                                $("#examples-DataRules-deleteAllRules-title-200").text("Status: 200 - " + responseDataRules200_description.substring(0, responseDataRules200_description_break));
+                                $("#examples-DataRules-deleteAllRules-description-200").html(responseDataRules200_description.substring(responseDataRules200_description_break));
+                              }
+                            </script>
+
+
+                            <ul id="responses-detail-DataRules-deleteAllRules-200" class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-DataRules-deleteAllRules-200-schema">Schema</a>
+                                </li>
+
+
+
+
+                            </ul>
+
+
+                            <div class="tab-content" id="responses-DataRules-deleteAllRules-200-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-DataRules-deleteAllRules-200-schema">
+                                  <div id="responses-DataRules-deleteAllRules-schema-200" class="exampleStyle">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = ;
+                                        var schema = findNode('schema',schemaWrapper).schema;
+                                        if (!schema) {
+                                          schema = schemaWrapper.schema;
+                                        }
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                          Object.keys(schema.properties).forEach( (item) => {
+                                            if (schema.properties[item].$ref != null) {
+                                              schema.properties[item] = defsParser.$refs.get(schema.properties[item].$ref);
+                                            }
+                                          });
+                                        } else if (schema.items != null && schema.items.$ref != null) {
+                                            schema.items = defsParser.$refs.get(schema.items.$ref);
+                                        } else {
+                                          schemaWrapper.definitions = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-DataRules-deleteAllRules-200-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-DataRules-deleteAllRules-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-DataRules-deleteAllRules-200-schema-data' type='hidden' value=''></input>
+                                </div>
                             </div>
                         </article>
                       </div>
@@ -11560,6 +11904,344 @@ The rule identifier
 
 
                             <div class="tab-content" id="responses-WorkspaceAdminRules-deleteAdminRuleById-404-wrapper" style='margin-bottom: 10px;'>
+                            </div>
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-WorkspaceAdminRules-deleteAllAdminRules">
+                      <article id="api-WorkspaceAdminRules-deleteAllAdminRules-0" data-group="User" data-name="deleteAllAdminRules" data-version="0">
+                        <div class="pull-left">
+                          <h1>deleteAllAdminRules</h1>
+                          <p></p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Atomically deletes all admin rules and return the number of rules removed</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/adminrules/query/count</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-WorkspaceAdminRules-deleteAllAdminRules-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-WorkspaceAdminRules-deleteAllAdminRules-0-java">Java</a></li>
+                          <li class=""><a href="#examples-WorkspaceAdminRules-deleteAllAdminRules-0-dart">Dart</a></li>
+                          <li class=""><a href="#examples-WorkspaceAdminRules-deleteAllAdminRules-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-WorkspaceAdminRules-deleteAllAdminRules-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-WorkspaceAdminRules-deleteAllAdminRules-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-WorkspaceAdminRules-deleteAllAdminRules-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-WorkspaceAdminRules-deleteAllAdminRules-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-WorkspaceAdminRules-deleteAllAdminRules-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-WorkspaceAdminRules-deleteAllAdminRules-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-WorkspaceAdminRules-deleteAllAdminRules-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-WorkspaceAdminRules-deleteAllAdminRules-0-python">Python</a></li>
+                          <li class=""><a href="#examples-WorkspaceAdminRules-deleteAllAdminRules-0-rust">Rust</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-WorkspaceAdminRules-deleteAllAdminRules-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE \
+ -H "Authorization: Basic [[basicHash]]" \
+ -H "Accept: application/json" \
+ "/api/adminrules/query/count"
+</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-WorkspaceAdminRules-deleteAllAdminRules-0-java">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
+import org.openapitools.client.auth.*;
+import org.openapitools.client.model.*;
+import org.openapitools.client.api.WorkspaceAdminRulesApi;
+
+import java.io.File;
+import java.util.*;
+
+public class WorkspaceAdminRulesApiExample {
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        // Configure HTTP basic authorization: basicAuth
+        HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
+        basicAuth.setUsername("YOUR USERNAME");
+        basicAuth.setPassword("YOUR PASSWORD");
+
+        // Create an instance of the API class
+        WorkspaceAdminRulesApi apiInstance = new WorkspaceAdminRulesApi();
+
+        try {
+            'Integer' result = apiInstance.deleteAllAdminRules();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling WorkspaceAdminRulesApi#deleteAllAdminRules");
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-WorkspaceAdminRules-deleteAllAdminRules-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+
+try {
+    final result = await api_instance.deleteAllAdminRules();
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->deleteAllAdminRules: $e\n');
+}
+
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-WorkspaceAdminRules-deleteAllAdminRules-0-android">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.WorkspaceAdminRulesApi;
+
+public class WorkspaceAdminRulesApiExample {
+    public static void main(String[] args) {
+        WorkspaceAdminRulesApi apiInstance = new WorkspaceAdminRulesApi();
+
+        try {
+            'Integer' result = apiInstance.deleteAllAdminRules();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling WorkspaceAdminRulesApi#deleteAllAdminRules");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-WorkspaceAdminRules-deleteAllAdminRules-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-WorkspaceAdminRules-deleteAllAdminRules-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure HTTP basic authorization (authentication scheme: basicAuth)
+[apiConfig setUsername:@"YOUR_USERNAME"];
+[apiConfig setPassword:@"YOUR_PASSWORD"];
+
+// Create an instance of the API class
+WorkspaceAdminRulesApi *apiInstance = [[WorkspaceAdminRulesApi alloc] init];
+
+[apiInstance deleteAllAdminRulesWithCompletionHandler: 
+              ^('Integer' output, NSError* error) {
+    if (output) {
+        NSLog(@"%@", output);
+    }
+    if (error) {
+        NSLog(@"Error: %@", error);
+    }
+}];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-WorkspaceAdminRules-deleteAllAdminRules-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var GeoServerAcl = require('geo_server_acl');
+var defaultClient = GeoServerAcl.ApiClient.instance;
+
+// Configure HTTP basic authorization: basicAuth
+var basicAuth = defaultClient.authentications['basicAuth'];
+basicAuth.username = 'YOUR USERNAME';
+basicAuth.password = 'YOUR PASSWORD';
+
+// Create an instance of the API class
+var api = new GeoServerAcl.WorkspaceAdminRulesApi()
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.deleteAllAdminRules(callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-WorkspaceAdminRules-deleteAllAdminRules-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-WorkspaceAdminRules-deleteAllAdminRules-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using Org.OpenAPITools.Api;
+using Org.OpenAPITools.Client;
+using Org.OpenAPITools.Model;
+
+namespace Example
+{
+    public class deleteAllAdminRulesExample
+    {
+        public void main()
+        {
+            // Configure HTTP basic authorization: basicAuth
+            Configuration.Default.Username = "YOUR_USERNAME";
+            Configuration.Default.Password = "YOUR_PASSWORD";
+
+            // Create an instance of the API class
+            var apiInstance = new WorkspaceAdminRulesApi();
+
+            try {
+                'Integer' result = apiInstance.deleteAllAdminRules();
+                Debug.WriteLine(result);
+            } catch (Exception e) {
+                Debug.Print("Exception when calling WorkspaceAdminRulesApi.deleteAllAdminRules: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-WorkspaceAdminRules-deleteAllAdminRules-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+// Configure HTTP basic authorization: basicAuth
+OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
+OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
+
+// Create an instance of the API class
+$api_instance = new OpenAPITools\Client\Api\WorkspaceAdminRulesApi();
+
+try {
+    $result = $api_instance->deleteAllAdminRules();
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling WorkspaceAdminRulesApi->deleteAllAdminRules: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-WorkspaceAdminRules-deleteAllAdminRules-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::OPenAPIClient::Configuration;
+use WWW::OPenAPIClient::WorkspaceAdminRulesApi;
+# Configure HTTP basic authorization: basicAuth
+$WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
+$WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
+
+# Create an instance of the API class
+my $api_instance = WWW::OPenAPIClient::WorkspaceAdminRulesApi->new();
+
+eval {
+    my $result = $api_instance->deleteAllAdminRules();
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling WorkspaceAdminRulesApi->deleteAllAdminRules: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-WorkspaceAdminRules-deleteAllAdminRules-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import openapi_client
+from openapi_client.rest import ApiException
+from pprint import pprint
+# Configure HTTP basic authorization: basicAuth
+openapi_client.configuration.username = 'YOUR_USERNAME'
+openapi_client.configuration.password = 'YOUR_PASSWORD'
+
+# Create an instance of the API class
+api_instance = openapi_client.WorkspaceAdminRulesApi()
+
+try:
+    api_response = api_instance.delete_all_admin_rules()
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling WorkspaceAdminRulesApi->deleteAllAdminRules: %s\n" % e)</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-WorkspaceAdminRules-deleteAllAdminRules-0-rust">
+                              <pre class="prettyprint"><code class="language-rust">extern crate WorkspaceAdminRulesApi;
+
+pub fn main() {
+
+    let mut context = WorkspaceAdminRulesApi::Context::default();
+    let result = client.deleteAllAdminRules(&context).wait();
+
+    println!("{:?}", result);
+}
+</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Scopes</h2>
+                          <table>
+                            
+                          </table>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3 id="examples-WorkspaceAdminRules-deleteAllAdminRules-title-200"></h3>
+                            <p id="examples-WorkspaceAdminRules-deleteAllAdminRules-description-200" class="marked"></p>
+                            <script>
+                              var responseWorkspaceAdminRules200_description = `Number of rules matching the request`;
+                              var responseWorkspaceAdminRules200_description_break = responseWorkspaceAdminRules200_description.indexOf('\n');
+                              if (responseWorkspaceAdminRules200_description_break == -1) {
+                                $("#examples-WorkspaceAdminRules-deleteAllAdminRules-title-200").text("Status: 200 - " + responseWorkspaceAdminRules200_description);
+                              } else {
+                                $("#examples-WorkspaceAdminRules-deleteAllAdminRules-title-200").text("Status: 200 - " + responseWorkspaceAdminRules200_description.substring(0, responseWorkspaceAdminRules200_description_break));
+                                $("#examples-WorkspaceAdminRules-deleteAllAdminRules-description-200").html(responseWorkspaceAdminRules200_description.substring(responseWorkspaceAdminRules200_description_break));
+                              }
+                            </script>
+
+
+                            <ul id="responses-detail-WorkspaceAdminRules-deleteAllAdminRules-200" class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-WorkspaceAdminRules-deleteAllAdminRules-200-schema">Schema</a>
+                                </li>
+
+
+
+
+                            </ul>
+
+
+                            <div class="tab-content" id="responses-WorkspaceAdminRules-deleteAllAdminRules-200-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-WorkspaceAdminRules-deleteAllAdminRules-200-schema">
+                                  <div id="responses-WorkspaceAdminRules-deleteAllAdminRules-schema-200" class="exampleStyle">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = ;
+                                        var schema = findNode('schema',schemaWrapper).schema;
+                                        if (!schema) {
+                                          schema = schemaWrapper.schema;
+                                        }
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                          Object.keys(schema.properties).forEach( (item) => {
+                                            if (schema.properties[item].$ref != null) {
+                                              schema.properties[item] = defsParser.$refs.get(schema.properties[item].$ref);
+                                            }
+                                          });
+                                        } else if (schema.items != null && schema.items.$ref != null) {
+                                            schema.items = defsParser.$refs.get(schema.items.$ref);
+                                        } else {
+                                          schemaWrapper.definitions = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-WorkspaceAdminRules-deleteAllAdminRules-200-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-WorkspaceAdminRules-deleteAllAdminRules-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-WorkspaceAdminRules-deleteAllAdminRules-200-schema-data' type='hidden' value=''></input>
+                                </div>
                             </div>
                         </article>
                       </div>

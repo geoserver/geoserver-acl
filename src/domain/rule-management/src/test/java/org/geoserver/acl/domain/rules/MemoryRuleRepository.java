@@ -129,6 +129,14 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
     }
 
     @Override
+    public int deleteAll() {
+        int count = rules.size();
+        layerDetails.clear();
+        rules.clear();
+        return count;
+    }
+
+    @Override
     public int count() {
         return rules.size();
     }

@@ -137,4 +137,6 @@ public interface RuleAdminService {
      *     RuleIdentifier#getLayer() layer} set
      */
     Set<String> getAllowedStyles(String ruleId);
+
+    int deleteAll();
 }

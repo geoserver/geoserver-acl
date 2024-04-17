@@ -130,6 +130,11 @@ public class AdminRuleRepositoryClientAdaptor implements AdminRuleRepository {
     }
 
     @Override
+    public int deleteAll() {
+        return apiClient.deleteAllAdminRules();
+    }
+
+    @Override
     public Optional<AdminRule> findOneByPriority(long priority) {
         org.geoserver.acl.api.model.AdminRule found;
         try {
