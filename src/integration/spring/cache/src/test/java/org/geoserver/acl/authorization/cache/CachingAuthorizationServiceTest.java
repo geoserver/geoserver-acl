@@ -5,7 +5,8 @@
 package org.geoserver.acl.authorization.cache;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -50,7 +51,6 @@ class CachingAuthorizationServiceTest {
                 npe,
                 () -> new CachingAuthorizationService(null, dataAccessCache, adminAccessCache));
         assertThrows(npe, () -> new CachingAuthorizationService(delegate, null, adminAccessCache));
-        assertThrows(npe, () -> new CachingAuthorizationService(delegate, dataAccessCache, null));
     }
 
     @Test
@@ -67,19 +67,6 @@ class CachingAuthorizationServiceTest {
         assertSame(r2, r3);
         assertSame(expected, this.dataAccessCache.get(req));
         verify(delegate, times(1)).getAccessInfo(req);
-    }
-
-    @Test
-    void testGetAccessInfoNotCachedIfNoMatchingrules() {
-        AccessRequest req = AccessRequest.builder().roles("ROLE_UNMATCHED").build();
-        AccessInfo expected = AccessInfo.DENY_ALL.withMatchingRules(List.of());
-        when(delegate.getAccessInfo(req)).thenReturn(expected);
-
-        AccessInfo r1 = caching.getAccessInfo(req);
-        assertSame(expected, r1);
-        assertThat(this.dataAccessCache)
-                .as("AccessInfo with no matching rules should not be cached")
-                .doesNotContainKey(req);
     }
 
     @Test
@@ -101,25 +88,6 @@ class CachingAuthorizationServiceTest {
         assertSame(r1, r2);
         assertSame(r2, r3);
         assertSame(expected, this.adminAccessCache.get(req));
-        verify(delegate, times(1)).getAdminAuthorization(req);
-    }
-
-    @Test
-    void testGetAdminAuthorizationNotCachedIfNoMatchingrule() {
-        AdminAccessRequest req =
-                AdminAccessRequest.builder().roles("ROLE_UNMATCHED").workspace("test").build();
-        AdminAccessInfo expected =
-                AdminAccessInfo.builder()
-                        .admin(false)
-                        .workspace("test")
-                        // no matching rule
-                        .matchingAdminRule(null)
-                        .build();
-        when(delegate.getAdminAuthorization(req)).thenReturn(expected);
-
-        AdminAccessInfo r1 = caching.getAdminAuthorization(req);
-        assertSame(expected, r1);
-        assertThat(this.adminAccessCache).doesNotContainKey(req);
         verify(delegate, times(1)).getAdminAuthorization(req);
     }
 

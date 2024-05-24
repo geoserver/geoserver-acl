@@ -5,7 +5,7 @@
 package org.geoserver.acl.integration.jpa.it;
 
 import org.geoserver.acl.authorization.AuthorizationService;
-import org.geoserver.acl.authorization.AuthorizationServiceImplTest;
+import org.geoserver.acl.authorization.AuthorizationServiceTest;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.geoserver.acl.integration.jpa.config.AuthorizationJPAPropertiesTestConfiguration;
@@ -45,7 +45,7 @@ import org.springframework.test.context.ActiveProfiles;
             JpaIntegrationTestSupport.class
         })
 @ActiveProfiles("test") // see config props in src/test/resource/application-test.yaml
-public class AuthorizationServiceImplJpaIT extends AuthorizationServiceImplTest {
+class AuthorizationServiceImplJpaIT extends AuthorizationServiceTest {
 
     private @Autowired JpaIntegrationTestSupport support;
 

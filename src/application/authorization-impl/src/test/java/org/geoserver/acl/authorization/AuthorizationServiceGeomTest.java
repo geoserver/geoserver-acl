@@ -20,14 +20,8 @@ import org.geolatte.geom.Geometry;
 import org.geolatte.geom.MultiPolygon;
 import org.geolatte.geom.codec.Wkt;
 import org.geolatte.geom.jts.JTS;
-import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
-import org.geoserver.acl.domain.adminrules.AdminRuleAdminServiceImpl;
-import org.geoserver.acl.domain.adminrules.MemoryAdminRuleRepository;
 import org.geoserver.acl.domain.rules.CatalogMode;
-import org.geoserver.acl.domain.rules.MemoryRuleRepository;
 import org.geoserver.acl.domain.rules.Rule;
-import org.geoserver.acl.domain.rules.RuleAdminService;
-import org.geoserver.acl.domain.rules.RuleAdminServiceImpl;
 import org.geoserver.acl.domain.rules.RuleLimits;
 import org.geoserver.acl.domain.rules.SpatialFilterType;
 import org.junit.jupiter.api.Test;
@@ -39,7 +33,7 @@ import java.util.List;
  *
  * <p>Concrete implementations must supply the required services in {@link ServiceTestBase}
  */
-public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
+public abstract class AuthorizationServiceGeomTest extends AuthorizationServiceTest {
     private static final String WKT_WGS84_1 =
             "SRID=4326;MultiPolygon (((-1.93327272727272859 5.5959090909090925, 2.22727272727272707 5.67609090909091041, 2.00454545454545441 4.07245454545454599, -1.92436363636363761 4.54463636363636425, -1.92436363636363761 4.54463636363636425, -1.93327272727272859 5.5959090909090925)))";
     private static final String WKT_WGS84_2 =
@@ -55,21 +49,6 @@ public class AuthorizationServiceImpl_GeomTest extends ServiceTestBase {
             "SRID=23032;MultiPolygon (((680588.67850254673976451 4850060.34823693986982107, 681482.71827003755606711 4850469.32878803834319115, 682633.56349697941914201 4849499.20374245755374432, 680588.67850254673976451 4850060.34823693986982107)))";
     private static final String WKT_3857 =
             "SRID=3857;MULTIPOLYGON(((0.0016139656066815888 -0.0006386457758059581,0.0019599705696027314 -0.0006386457758059581,0.0019599705696027314 -0.0008854090051601674,0.0016139656066815888 -0.0008854090051601674,0.0016139656066815888 -0.0006386457758059581)))";
-
-    @Override
-    protected RuleAdminService getRuleAdminService() {
-        return new RuleAdminServiceImpl(new MemoryRuleRepository());
-    }
-
-    @Override
-    protected AdminRuleAdminService getAdminRuleAdminService() {
-        return new AdminRuleAdminServiceImpl(new MemoryAdminRuleRepository());
-    }
-
-    @Override
-    protected AuthorizationService getAuthorizationService() {
-        return new AuthorizationServiceImpl(super.adminruleAdminService, super.ruleAdminService);
-    }
 
     /**
      * Test that the original SRID is present in the allowedArea wkt representation, when retrieving

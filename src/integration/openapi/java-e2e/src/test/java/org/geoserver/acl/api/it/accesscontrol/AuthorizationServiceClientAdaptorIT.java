@@ -9,7 +9,7 @@ import org.geoserver.acl.api.it.support.ClientContextSupport;
 import org.geoserver.acl.api.it.support.IntegrationTestsApplication;
 import org.geoserver.acl.api.it.support.ServerContextSupport;
 import org.geoserver.acl.authorization.AuthorizationService;
-import org.geoserver.acl.authorization.AuthorizationServiceImplTest;
+import org.geoserver.acl.authorization.AuthorizationServiceTest;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.junit.jupiter.api.AfterEach;
@@ -67,7 +67,7 @@ import org.springframework.test.annotation.DirtiesContext;
             "geoserver.acl.datasource.url=jdbc:h2:mem:geoserver-acl"
         },
         classes = {IntegrationTestsApplication.class})
-public class AuthorizationServiceClientAdaptorIT extends AuthorizationServiceImplTest {
+class AuthorizationServiceClientAdaptorIT extends AuthorizationServiceTest {
 
     private @Autowired ServerContextSupport serverContext;
     private @LocalServerPort int serverPort;
