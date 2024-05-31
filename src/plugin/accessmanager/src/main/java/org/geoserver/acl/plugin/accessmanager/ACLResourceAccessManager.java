@@ -39,6 +39,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.ExtensionPriority;
+import org.geoserver.security.AbstractResourceAccessManager;
 import org.geoserver.security.AccessLimits;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.CoverageAccessLimits;
@@ -85,7 +86,8 @@ import java.util.logging.Logger;
  * @author Andrea Aime - GeoSolutions - Originally as part of GeoFence's GeoServer extension
  * @author Emanuele Tajariol- GeoSolutions - Originally as part of GeoFence's GeoServer extension
  */
-public class ACLResourceAccessManager implements ResourceAccessManager, ExtensionPriority {
+public class ACLResourceAccessManager extends AbstractResourceAccessManager
+        implements ResourceAccessManager, ExtensionPriority {
 
     private static final Logger LOGGER = Logging.getLogger(ACLResourceAccessManager.class);
 
