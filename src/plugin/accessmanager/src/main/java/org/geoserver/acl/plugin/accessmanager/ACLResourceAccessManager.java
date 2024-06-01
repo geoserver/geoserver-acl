@@ -30,7 +30,6 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -690,7 +689,8 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
 
     @Override
     public Filter getSecurityFilter(Authentication user, Class<? extends CatalogInfo> clazz) {
-        return Predicates.acceptAll();
+        // resort to the in-process filter until we can provide a faster alternative
+        return super.getSecurityFilter(user, clazz);
     }
 
     @Override
