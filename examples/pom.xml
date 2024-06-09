@@ -19,4 +19,33 @@
   <modules>
     <module>java-client</module>
   </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-maven-and-java</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <dependencyConvergence>
+                  <excludedScopes>test</excludedScopes>
+                  <excludes>
+                    <exclude>io.swagger.core.v3:swagger-annotations</exclude>
+                    <exclude>org.springframework</exclude>
+                    <exclude>org.slf4j</exclude>
+                  </excludes>
+                </dependencyConvergence>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
