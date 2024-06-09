@@ -37,11 +37,12 @@ import java.util.Set;
 /**
  * {@link AuthorizationService} integration/conformance test
  *
- * <p>Concrete implementations must supply the required services in {@link ServiceTestBase}
+ * <p>Concrete implementations must supply the required services in {@link
+ * BaseAuthorizationServiceTest}
  *
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
  */
-public abstract class AuthorizationServiceTest extends ServiceTestBase {
+public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceTest {
 
     protected abstract RuleAdminService getRuleAdminService();
 

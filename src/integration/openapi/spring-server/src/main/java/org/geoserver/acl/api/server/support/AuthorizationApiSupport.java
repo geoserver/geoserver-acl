@@ -13,6 +13,8 @@ import org.geoserver.acl.api.model.AccessRequest;
 import org.geoserver.acl.api.model.AdminAccessInfo;
 import org.geoserver.acl.api.model.AdminAccessRequest;
 import org.geoserver.acl.api.model.Rule;
+import org.geoserver.acl.authorization.AccessSummary;
+import org.geoserver.acl.authorization.AccessSummaryRequest;
 import org.springframework.web.context.request.NativeWebRequest;
 
 public class AuthorizationApiSupport
@@ -57,5 +59,13 @@ public class AuthorizationApiSupport
 
     public org.geoserver.acl.authorization.AdminAccessInfo toModel(AdminAccessInfo access) {
         return mapper.toModel(access);
+    }
+
+    public AccessSummaryRequest toModel(org.geoserver.acl.api.model.AccessSummaryRequest request) {
+        return mapper.toModel(request);
+    }
+
+    public org.geoserver.acl.api.model.AccessSummary toApi(AccessSummary response) {
+        return mapper.toApi(response);
     }
 }

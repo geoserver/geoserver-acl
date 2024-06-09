@@ -20,10 +20,14 @@ import static org.geoserver.acl.domain.rules.LayerAttribute.AccessType.READWRITE
 import static org.geoserver.acl.domain.rules.SpatialFilterType.CLIP;
 import static org.geoserver.acl.domain.rules.SpatialFilterType.INTERSECT;
 
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.naturalOrder;
+
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.geoserver.acl.domain.adminrules.AdminGrantType;
 import org.geoserver.acl.domain.adminrules.AdminRule;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.adminrules.AdminRuleFilter;
@@ -48,6 +52,7 @@ import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Geometry;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +61,11 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <B>Note:</B> <TT>service</TT> and <TT>request</TT> params are usually set by the client, and by
@@ -122,6 +132,157 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                 .admin(adminRigths)
                 .matchingAdminRule(adminRuleId)
                 .build();
+    }
+
+    @Override
+    public AccessSummary getUserAccessSummary(AccessSummaryRequest request) {
+        String user = request.getUser();
+        Set<String> roles = request.getRoles();
+
+        Map<String, List<AdminRule>> wsAdminRules = getAdminRulesByWorkspace(user, roles);
+        Map<String, List<Rule>> wsRules = getRulesByWorkspace(user, roles);
+
+        Set<String> workspaces = union(wsAdminRules.keySet(), wsRules.keySet());
+
+        List<WorkspaceAccessSummary> summaries =
+                workspaces.stream()
+                        .map(ws -> conflateViewables(ws, wsAdminRules, wsRules))
+                        .toList();
+
+        return AccessSummary.of(summaries);
+    }
+
+    private Set<String> union(Set<String> s1, Set<String> s2) {
+        return Stream.concat(s1.stream(), s2.stream()).collect(Collectors.toSet());
+    }
+
+    private WorkspaceAccessSummary conflateViewables(
+            String workspace,
+            Map<String, List<AdminRule>> adminRulesByWorkspace,
+            Map<String, List<Rule>> rulesByWorkspace) {
+
+        var builder = WorkspaceAccessSummary.builder();
+        builder.workspace(workspace);
+        conflateAdminRules(builder, adminRulesByWorkspace.getOrDefault(workspace, List.of()));
+        conflateRules(builder, rulesByWorkspace.getOrDefault(workspace, List.of()));
+        return builder.build();
+    }
+
+    void conflateAdminRules(WorkspaceAccessSummary.Builder builder, List<AdminRule> rules) {
+
+        AdminRule rule =
+                rules.stream()
+                        .sorted(Comparator.comparingLong(AdminRule::getPriority))
+                        .findFirst()
+                        .orElse(null);
+        if (rule != null) {
+            AdminGrantType adminAccess = rule.getAccess();
+            builder.adminAccess(adminAccess);
+        }
+    }
+
+    void conflateRules(WorkspaceAccessSummary.Builder builder, List<Rule> rules) {
+
+        // LIMIT rules don't provide access level
+        Predicate<Rule> notLimitRule = r -> r.getIdentifier().getAccess() != GrantType.LIMIT;
+        // reverse priority sort so the most important ones are added the latest and the
+        // builder creates the allowed/forbidden sets correctly
+        Comparator<Rule> reversePriority = Comparator.comparing(Rule::getPriority).reversed();
+
+        // add deny rules first, and allow rules after, so allow rules prevail (i.e.
+        // their layer names get removed from the summary's "forbidden" list, since this
+        // is a summary of somehow visible layers, we give preference to allow rules
+        // regardless of the priority
+        assert GrantType.ALLOW.compareTo(GrantType.DENY) < 0;
+        Comparator<Rule> comparator =
+                Comparator.comparing(Rule::access).reversed().thenComparing(reversePriority);
+
+        rules.stream()
+                .filter(notLimitRule)
+                .sorted(comparator)
+                .forEach(
+                        r -> {
+                            GrantType access = r.getIdentifier().getAccess();
+                            String layer = r.getIdentifier().getLayer();
+                            if (null == layer) layer = WorkspaceAccessSummary.ANY;
+                            switch (access) {
+                                case ALLOW -> builder.addAllowed(layer);
+                                case DENY -> {
+                                    // only add forbidden layers if they're so for all services, to
+                                    // comply with the "somehow can see" motto of the summary
+                                    String service = r.getIdentifier().getService();
+                                    if (null == service) {
+                                        builder.addForbidden(layer);
+                                    }
+                                }
+                                default -> throw new IllegalArgumentException();
+                            }
+                        });
+    }
+
+    Map<String, List<AdminRule>> getAdminRulesByWorkspace(String user, Set<String> roles) {
+
+        // Filter is SpecialFilterType.ANY to return all rules
+        AdminRuleFilter filter = new AdminRuleFilter(SpecialFilterType.ANY);
+        filter.getUser().setHeuristically(user);
+        filter.getRole().setHeuristically(roles);
+
+        Function<AdminRule, String> workspaceMapper =
+                workspaceMapper(r -> r.getIdentifier().getWorkspace());
+        Comparator<AdminRule> workspaceComparator = workspaceComparator(workspaceMapper);
+        RuleQuery<AdminRuleFilter> query = RuleQuery.of(filter);
+        BinaryOperator<List<AdminRule>> mergeFunction = mergeFunction();
+        try (Stream<AdminRule> all = this.adminRuleService.getAll(query)) {
+            return all.sorted(workspaceComparator)
+                    .distinct()
+                    .collect(Collectors.toMap(workspaceMapper, List::of, mergeFunction));
+        }
+    }
+
+    Map<String, List<Rule>> getRulesByWorkspace(String user, Set<String> roles) {
+
+        // Filter is SpecialFilterType.ANY to return all rules
+        RuleFilter filter = new RuleFilter(SpecialFilterType.ANY);
+        filter.getUser().setHeuristically(user);
+        filter.getRole().setHeuristically(roles);
+        List<Rule> rules = getRulesByRoleIncludeDefault(filter);
+
+        Function<Rule, String> workspaceMapper =
+                workspaceMapper(r -> r.getIdentifier().getWorkspace());
+        Comparator<Rule> workspaceComparator = workspaceComparator(workspaceMapper);
+
+        Function<Rule, List<Rule>> valueMapper = List::of;
+        BinaryOperator<List<Rule>> mergeFunction = mergeFunction();
+        return rules.stream()
+                .sorted(workspaceComparator)
+                .distinct()
+                .sorted(Comparator.comparing(Rule::getPriority))
+                .collect(Collectors.toMap(workspaceMapper, valueMapper, mergeFunction));
+    }
+
+    private <R> Comparator<R> workspaceComparator(Function<R, String> workspaceMapper) {
+        return comparing(workspaceMapper, naturalOrder());
+    }
+
+    private <R> Function<R, String> workspaceMapper(Function<R, String> workspaceExtractor) {
+        return workspaceExtractor.andThen(ws -> null == ws ? WorkspaceAccessSummary.ANY : ws);
+    }
+
+    private <T> BinaryOperator<List<T>> mergeFunction() {
+        return (l1, l2) -> {
+            if (l1 instanceof ArrayList<T>) {
+                l1.addAll(l2);
+                return l1;
+            }
+            if (l2 instanceof ArrayList<T>) {
+                l2.addAll(l1);
+                return l2;
+            }
+            List<T> ret = new ArrayList<>();
+            ret.addAll(l1);
+            ret.addAll(l2);
+            return ret;
+        };
     }
 
     private AccessInfo enlargeAccessInfo(AccessInfo baseAccess, AccessInfo moreAccess) {
@@ -325,7 +486,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         accessInfo.catalogMode(cmode);
 
         if (area != null) {
-            // if we have a clip area we apply clip type since is more restrictive, otherwise we
+            // if we have a clip area we apply clip type since is more restrictive,
+            // otherwise we
             // keep the intersect
             org.geolatte.geom.Geometry<?> finalArea = org.geolatte.geom.jts.JTS.from(area);
             if (atLeastOneClip) {
@@ -431,6 +593,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
      * @return a Map having role names as keys, and the list of matching Rules as values. The NULL
      *     key holds the rules for the DEFAULT group.
      */
+    @SuppressWarnings("java:S125")
     protected Map<String, List<Rule>> getMatchingRulesByRole(AccessRequest request)
             throws IllegalArgumentException {
 
@@ -458,17 +621,25 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             List<Rule> found = ruleService.getAll(RuleQuery.of(filter)).toList();
             ret.put(null, found);
         } else {
-            for (String role : finalRoleFilter) {
-                List<Rule> found = getRulesByRole(filter, role);
-                ret.put(role, found);
+            // used to be: for(role: finalRoleFilter) getRulesByRole(filter, role);,
+            // conflated to a single query with all roles here
+            List<Rule> rules = getRulesByRoleIncludeDefault(filter);
+            finalRoleFilter.forEach(r -> ret.put(r, new ArrayList<>()));
+            for (Rule rule : rules) {
+                String rolename = rule.getIdentifier().getRolename();
+                boolean isdefault = null == rolename;
+                if (isdefault) {
+                    finalRoleFilter.forEach(role -> ret.get(role).add(rule));
+                } else {
+                    ret.get(rolename).add(rule);
+                }
             }
         }
         return ret;
     }
 
-    private List<Rule> getRulesByRole(RuleFilter filter, String role) {
+    private List<Rule> getRulesByRoleIncludeDefault(RuleFilter filter) {
         filter = filter.clone();
-        filter.setRole(role);
         filter.getRole().setIncludeDefault(true);
         return ruleService.getAll(RuleQuery.of(filter)).toList();
     }

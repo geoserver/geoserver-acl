@@ -44,6 +44,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class ACLResourceAccessManagerTest extends AclBaseTest {
 
@@ -181,6 +182,7 @@ public class ACLResourceAccessManagerTest extends AclBaseTest {
     @Test
     public void testWmsLimited() {
         Authentication user = getUser("wmsuser", "wmsuser", "ROLE_AUTHENTICATED");
+        SecurityContextHolder.getContext().setAuthentication(user);
 
         // check layer in the sf workspace with a wfs request
         Request request = new Request();

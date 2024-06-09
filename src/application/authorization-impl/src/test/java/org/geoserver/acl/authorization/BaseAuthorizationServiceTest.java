@@ -8,8 +8,10 @@ package org.geoserver.acl.authorization;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.geoserver.acl.domain.adminrules.AdminGrantType;
 import org.geoserver.acl.domain.adminrules.AdminRule;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
+import org.geoserver.acl.domain.adminrules.AdminRuleIdentifier;
 import org.geoserver.acl.domain.rules.GrantType;
 import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleAdminService;
@@ -24,7 +26,7 @@ import java.util.stream.Collectors;
 /**
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
  */
-public abstract class ServiceTestBase {
+public abstract class BaseAuthorizationServiceTest {
 
     protected RuleAdminService ruleAdminService;
     protected AdminRuleAdminService adminruleAdminService;
@@ -124,5 +126,22 @@ public abstract class ServiceTestBase {
 
     protected AdminRule insert(AdminRule adminRule) {
         return adminruleAdminService.insert(adminRule);
+    }
+
+    protected AdminRule insert(
+            AdminGrantType admin, int priority, String user, String role, String workspace) {
+        if ("*".equals(user)) user = null;
+        if ("*".equals(role)) role = null;
+        if ("*".equals(workspace)) workspace = null;
+        AdminRuleAdminService service = getAdminRuleAdminService();
+        AdminRuleIdentifier identifier =
+                AdminRuleIdentifier.builder()
+                        .username(user)
+                        .rolename(role)
+                        .workspace(workspace)
+                        .build();
+        AdminRule rule =
+                AdminRule.builder().priority(priority).access(admin).identifier(identifier).build();
+        return insert(rule);
     }
 }
