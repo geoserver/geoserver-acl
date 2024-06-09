@@ -173,9 +173,19 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <gs.version>2.25.0</gs.version>
-        <gt.version>31.0</gt.version>
+        <gs.version>2.25.1</gs.version>
+        <gt.version>31.1</gt.version>
       </properties>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <!-- downgrade the root dependencyConvergence maven profile settled versions where appropriate -->
+            <groupId>javax.measure</groupId>
+            <artifactId>unit-api</artifactId>
+            <version>2.1.2</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
     </profile>
     <profile>
       <id>gs_maintenance</id>
@@ -183,9 +193,19 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <gs.version>2.24.2</gs.version>
-        <gt.version>30.2</gt.version>
+        <gs.version>2.24.3</gs.version>
+        <gt.version>30.3</gt.version>
       </properties>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <!-- downgrade the root dependencyConvergence maven profile settled versions where appropriate -->
+            <groupId>javax.measure</groupId>
+            <artifactId>unit-api</artifactId>
+            <version>2.1.2</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
     </profile>
   </profiles>
 </project>
