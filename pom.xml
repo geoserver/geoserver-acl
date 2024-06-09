@@ -435,6 +435,9 @@
                 </requireMavenVersion>
                 <dependencyConvergence>
                   <excludedScopes>test</excludedScopes>
+                  <excludes>
+                    <exclude>io.swagger.core.v3:swagger-annotations</exclude>
+                  </excludes>
                 </dependencyConvergence>
               </rules>
             </configuration>
