@@ -433,6 +433,9 @@
                 <requireMavenVersion>
                   <version>[3.6.3,)</version>
                 </requireMavenVersion>
+                <dependencyConvergence>
+                  <excludedScopes>test</excludedScopes>
+                </dependencyConvergence>
               </rules>
             </configuration>
           </execution>

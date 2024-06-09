@@ -28,8 +28,10 @@
     <spring-cloud.version>2021.0.8</spring-cloud.version>
     <spring-boot.version>2.7.18</spring-boot.version>
     <spring-boot-3.version>3.2.4</spring-boot-3.version>
+    <!-- Default GeoServer version to build and test the plugin against-->
+    <gs.version>2.26-SNAPSHOT</gs.version>
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
-    <gt.version>31.0</gt.version>
+    <gt.version>32-SNAPSHOT</gt.version>
     <jts.version>1.19.0</jts.version>
     <lombok.version>1.18.32</lombok.version>
     <mapstruct.version>1.6.0.Beta1</mapstruct.version>
@@ -209,4 +211,22 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>dependencyConvergence</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>javax.measure</groupId>
+            <artifactId>unit-api</artifactId>
+            <version>2.2</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+    </profile>
+
+  </profiles>
 </project>

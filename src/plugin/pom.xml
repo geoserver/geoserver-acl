@@ -18,11 +18,6 @@
     <module>config</module>
     <module>plugin</module>
   </modules>
-  <properties>
-    <!-- Default GeoServer version to build and test the plugin against-->
-    <gs.version>2.26-SNAPSHOT</gs.version>
-    <gt.version>32-SNAPSHOT</gt.version>
-  </properties>
   <dependencyManagement>
     <dependencies>
       <dependency>
