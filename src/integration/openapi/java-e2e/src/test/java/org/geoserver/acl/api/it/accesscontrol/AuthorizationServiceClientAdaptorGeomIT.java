@@ -4,11 +4,12 @@
  */
 package org.geoserver.acl.api.it.accesscontrol;
 
+import org.geoserver.acl.api.client.integration.AuthorizationServiceClientAdaptor;
 import org.geoserver.acl.api.it.support.ClientContextSupport;
 import org.geoserver.acl.api.it.support.IntegrationTestsApplication;
 import org.geoserver.acl.api.it.support.ServerContextSupport;
 import org.geoserver.acl.authorization.AuthorizationService;
-import org.geoserver.acl.authorization.AuthorizationServiceImpl_GeomTest;
+import org.geoserver.acl.authorization.AuthorizationServiceGeomTest;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.junit.jupiter.api.AfterEach;
@@ -21,10 +22,10 @@ import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * {@link AuthorizationService} end to end integration test for {@link
- * AuthorizationService#getAccessInfo} calls involving geometry operations.
+ * AuthorizationServiceClientAdaptor} calls involving geometry operations.
  *
  * @see AuthorizationServiceImplApiIT
- * @see AuthorizationServiceImpl_GeomTest
+ * @see AuthorizationServiceImplGeomTest
  */
 @DirtiesContext
 @SpringBootTest(
@@ -35,7 +36,7 @@ import org.springframework.test.annotation.DirtiesContext;
             "geoserver.acl.datasource.url=jdbc:h2:mem:geoserver-acl"
         },
         classes = {IntegrationTestsApplication.class})
-public class AuthorizationServiceImpl_GeomApiIT extends AuthorizationServiceImpl_GeomTest {
+class AuthorizationServiceClientAdaptorGeomIT extends AuthorizationServiceGeomTest {
 
     private @Autowired ServerContextSupport serverContext;
     private @LocalServerPort int serverPort;
@@ -45,13 +46,7 @@ public class AuthorizationServiceImpl_GeomApiIT extends AuthorizationServiceImpl
     @Override
     @BeforeEach
     protected void setUp() throws Exception {
-        clientContext =
-                new ClientContextSupport()
-                        // logging breaks client exception handling, only enable if need to see the
-                        // request/response bodies
-                        .log(false)
-                        .serverPort(serverPort)
-                        .setUp();
+        clientContext = new ClientContextSupport().log(true).serverPort(serverPort).setUp();
         serverContext.setUp();
         super.setUp();
     }
@@ -73,6 +68,6 @@ public class AuthorizationServiceImpl_GeomApiIT extends AuthorizationServiceImpl
 
     @Override
     protected AuthorizationService getAuthorizationService() {
-        return clientContext.getInProcessAuthorizationService();
+        return clientContext.getAuthorizationServiceClientAdaptor();
     }
 }
