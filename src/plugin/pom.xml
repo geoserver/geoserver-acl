@@ -173,8 +173,8 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <gs.version>2.25.1</gs.version>
-        <gt.version>31.1</gt.version>
+        <gs.version>2.25.3</gs.version>
+        <gt.version>31.3</gt.version>
       </properties>
       <dependencyManagement>
         <dependencies>
@@ -193,8 +193,8 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <gs.version>2.24.3</gs.version>
-        <gt.version>30.3</gt.version>
+        <gs.version>2.24.4</gs.version>
+        <gt.version>30.4</gt.version>
       </properties>
       <dependencyManagement>
         <dependencies>
