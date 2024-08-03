@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.geoserver.acl.api.model.AccessInfo;
 import org.geoserver.acl.api.model.AccessRequest;
+import org.geoserver.acl.api.model.AccessSummary;
+import org.geoserver.acl.api.model.AccessSummaryRequest;
 import org.geoserver.acl.api.model.AdminAccessInfo;
 import org.geoserver.acl.api.model.AdminAccessRequest;
 import org.geoserver.acl.api.model.Rule;
@@ -63,6 +65,17 @@ public class AuthorizationApiImpl implements AuthorizationApiDelegate {
 
         support.setPreferredGeometryEncoding();
         List<Rule> apiResponse = modelResponse.stream().map(support::toApi).toList();
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @Override
+    public ResponseEntity<AccessSummary> getUserAccessSummary(AccessSummaryRequest request) {
+        org.geoserver.acl.authorization.AccessSummaryRequest modelRequest;
+        org.geoserver.acl.authorization.AccessSummary modelResponse;
+
+        modelRequest = support.toModel(request);
+        modelResponse = service.getUserAccessSummary(modelRequest);
+        AccessSummary apiResponse = support.toApi(modelResponse);
         return ResponseEntity.ok(apiResponse);
     }
 }

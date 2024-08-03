@@ -938,6 +938,36 @@ ul.nav-tabs {
   },
   "description" : "A request by a given authenticated user to access the resources matching the request properties"
 };
+    defs["AccessSummary"] = {
+  "type" : "object",
+  "properties" : {
+    "workspaces" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/WorkspaceAccessSummary"
+      }
+    }
+  }
+};
+    defs["AccessSummaryRequest"] = {
+  "required" : [ "roles", "user" ],
+  "type" : "object",
+  "properties" : {
+    "user" : {
+      "type" : "string",
+      "description" : "the authentication user name"
+    },
+    "roles" : {
+      "uniqueItems" : true,
+      "type" : "array",
+      "description" : "The roles the requesting user belongs to",
+      "nullable" : false,
+      "items" : {
+        "type" : "string"
+      }
+    }
+  }
+};
     defs["AddressRangeFilter"] = {
   "type" : "object",
   "properties" : {
@@ -1324,6 +1354,35 @@ ul.nav-tabs {
     }
   }
 };
+    defs["WorkspaceAccessSummary"] = {
+  "type" : "object",
+  "properties" : {
+    "workspace" : {
+      "type" : "string"
+    },
+    "adminAccess" : {
+      "$ref" : "#/components/schemas/AdminGrantType"
+    },
+    "allowed" : {
+      "uniqueItems" : true,
+      "type" : "array",
+      "description" : "The set of visible layer names in `workspace` the user from the\n`AccessSummaryRequest` can somehow see, even if only under specific circumstances like for a\ngiven OWS/request combination, resulting from `GrantType.ALLOW` rules.",
+      "nullable" : true,
+      "items" : {
+        "type" : "string"
+      }
+    },
+    "forbidden" : {
+      "uniqueItems" : true,
+      "type" : "array",
+      "description" : "The set of forbidden layer names in `workspace` the user from the\n`AccessSummaryRequest` definitely cannot see, resulting from `GrantType.DENY rules.\nComplements the `allowed` list as there may be rules allowing access all layers in\na workspace after a rules denying access to specific layers in the same workspace.",
+      "nullable" : true,
+      "items" : {
+        "type" : "string"
+      }
+    }
+  }
+};
 
     var errs = {};
   </script>
@@ -1351,6 +1410,9 @@ ul.nav-tabs {
                     </li>
                     <li data-group="Authorization" data-name="getMatchingRules" class="">
                       <a href="#api-Authorization-getMatchingRules">getMatchingRules</a>
+                    </li>
+                    <li data-group="Authorization" data-name="getUserAccessSummary" class="">
+                      <a href="#api-Authorization-getUserAccessSummary">getUserAccessSummary</a>
                     </li>
                   <li class="nav-header" data-group="DataRules"><a href="#api-DataRules">API Methods - DataRules</a></li>
                     <li data-group="DataRules" data-name="countAllRules" class="">
@@ -2717,6 +2779,412 @@ $(document).ready(function() {
                                               </tr>
                                       </table>
                                   </div>
+                            </div>
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Authorization-getUserAccessSummary">
+                      <article id="api-Authorization-getUserAccessSummary-0" data-group="User" data-name="getUserAccessSummary" data-version="0">
+                        <div class="pull-left">
+                          <h1>getUserAccessSummary</h1>
+                          <p></p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked"></p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/authorization/accesssummary</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Authorization-getUserAccessSummary-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Authorization-getUserAccessSummary-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Authorization-getUserAccessSummary-0-dart">Dart</a></li>
+                          <li class=""><a href="#examples-Authorization-getUserAccessSummary-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Authorization-getUserAccessSummary-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Authorization-getUserAccessSummary-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Authorization-getUserAccessSummary-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Authorization-getUserAccessSummary-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Authorization-getUserAccessSummary-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Authorization-getUserAccessSummary-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Authorization-getUserAccessSummary-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Authorization-getUserAccessSummary-0-python">Python</a></li>
+                          <li class=""><a href="#examples-Authorization-getUserAccessSummary-0-rust">Rust</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Authorization-getUserAccessSummary-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST \
+ -H "Authorization: Basic [[basicHash]]" \
+ -H "Accept: application/json,application/x-jackson-smile" \
+ -H "Content-Type: application/json,application/x-jackson-smile" \
+ "/api/authorization/accesssummary" \
+ -d '{
+  &quot;roles&quot; : [ &quot;roles&quot;, &quot;roles&quot; ],
+  &quot;user&quot; : &quot;user&quot;
+}' \
+ -d 'Custom MIME type example not yet supported: application/x-jackson-smile'
+</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Authorization-getUserAccessSummary-0-java">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
+import org.openapitools.client.auth.*;
+import org.openapitools.client.model.*;
+import org.openapitools.client.api.AuthorizationApi;
+
+import java.io.File;
+import java.util.*;
+
+public class AuthorizationApiExample {
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        // Configure HTTP basic authorization: basicAuth
+        HttpBasicAuth basicAuth = (HttpBasicAuth) defaultClient.getAuthentication("basicAuth");
+        basicAuth.setUsername("YOUR USERNAME");
+        basicAuth.setPassword("YOUR PASSWORD");
+
+        // Create an instance of the API class
+        AuthorizationApi apiInstance = new AuthorizationApi();
+        AccessSummaryRequest accessSummaryRequest = ; // AccessSummaryRequest | 
+
+        try {
+            AccessSummary result = apiInstance.getUserAccessSummary(accessSummaryRequest);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AuthorizationApi#getUserAccessSummary");
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Authorization-getUserAccessSummary-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final AccessSummaryRequest accessSummaryRequest = new AccessSummaryRequest(); // AccessSummaryRequest | 
+
+try {
+    final result = await api_instance.getUserAccessSummary(accessSummaryRequest);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getUserAccessSummary: $e\n');
+}
+
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Authorization-getUserAccessSummary-0-android">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.AuthorizationApi;
+
+public class AuthorizationApiExample {
+    public static void main(String[] args) {
+        AuthorizationApi apiInstance = new AuthorizationApi();
+        AccessSummaryRequest accessSummaryRequest = ; // AccessSummaryRequest | 
+
+        try {
+            AccessSummary result = apiInstance.getUserAccessSummary(accessSummaryRequest);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AuthorizationApi#getUserAccessSummary");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Authorization-getUserAccessSummary-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Authorization-getUserAccessSummary-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure HTTP basic authorization (authentication scheme: basicAuth)
+[apiConfig setUsername:@"YOUR_USERNAME"];
+[apiConfig setPassword:@"YOUR_PASSWORD"];
+
+// Create an instance of the API class
+AuthorizationApi *apiInstance = [[AuthorizationApi alloc] init];
+AccessSummaryRequest *accessSummaryRequest = ; // 
+
+[apiInstance getUserAccessSummaryWith:accessSummaryRequest
+              completionHandler: ^(AccessSummary output, NSError* error) {
+    if (output) {
+        NSLog(@"%@", output);
+    }
+    if (error) {
+        NSLog(@"Error: %@", error);
+    }
+}];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Authorization-getUserAccessSummary-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var GeoServerAcl = require('geo_server_acl');
+var defaultClient = GeoServerAcl.ApiClient.instance;
+
+// Configure HTTP basic authorization: basicAuth
+var basicAuth = defaultClient.authentications['basicAuth'];
+basicAuth.username = 'YOUR USERNAME';
+basicAuth.password = 'YOUR PASSWORD';
+
+// Create an instance of the API class
+var api = new GeoServerAcl.AuthorizationApi()
+var accessSummaryRequest = ; // {AccessSummaryRequest} 
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.getUserAccessSummary(accessSummaryRequest, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Authorization-getUserAccessSummary-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Authorization-getUserAccessSummary-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using Org.OpenAPITools.Api;
+using Org.OpenAPITools.Client;
+using Org.OpenAPITools.Model;
+
+namespace Example
+{
+    public class getUserAccessSummaryExample
+    {
+        public void main()
+        {
+            // Configure HTTP basic authorization: basicAuth
+            Configuration.Default.Username = "YOUR_USERNAME";
+            Configuration.Default.Password = "YOUR_PASSWORD";
+
+            // Create an instance of the API class
+            var apiInstance = new AuthorizationApi();
+            var accessSummaryRequest = new AccessSummaryRequest(); // AccessSummaryRequest | 
+
+            try {
+                AccessSummary result = apiInstance.getUserAccessSummary(accessSummaryRequest);
+                Debug.WriteLine(result);
+            } catch (Exception e) {
+                Debug.Print("Exception when calling AuthorizationApi.getUserAccessSummary: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Authorization-getUserAccessSummary-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+// Configure HTTP basic authorization: basicAuth
+OpenAPITools\Client\Configuration::getDefaultConfiguration()->setUsername('YOUR_USERNAME');
+OpenAPITools\Client\Configuration::getDefaultConfiguration()->setPassword('YOUR_PASSWORD');
+
+// Create an instance of the API class
+$api_instance = new OpenAPITools\Client\Api\AuthorizationApi();
+$accessSummaryRequest = ; // AccessSummaryRequest | 
+
+try {
+    $result = $api_instance->getUserAccessSummary($accessSummaryRequest);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling AuthorizationApi->getUserAccessSummary: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Authorization-getUserAccessSummary-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::OPenAPIClient::Configuration;
+use WWW::OPenAPIClient::AuthorizationApi;
+# Configure HTTP basic authorization: basicAuth
+$WWW::OPenAPIClient::Configuration::username = 'YOUR_USERNAME';
+$WWW::OPenAPIClient::Configuration::password = 'YOUR_PASSWORD';
+
+# Create an instance of the API class
+my $api_instance = WWW::OPenAPIClient::AuthorizationApi->new();
+my $accessSummaryRequest = WWW::OPenAPIClient::Object::AccessSummaryRequest->new(); # AccessSummaryRequest | 
+
+eval {
+    my $result = $api_instance->getUserAccessSummary(accessSummaryRequest => $accessSummaryRequest);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling AuthorizationApi->getUserAccessSummary: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Authorization-getUserAccessSummary-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import openapi_client
+from openapi_client.rest import ApiException
+from pprint import pprint
+# Configure HTTP basic authorization: basicAuth
+openapi_client.configuration.username = 'YOUR_USERNAME'
+openapi_client.configuration.password = 'YOUR_PASSWORD'
+
+# Create an instance of the API class
+api_instance = openapi_client.AuthorizationApi()
+accessSummaryRequest =  # AccessSummaryRequest | 
+
+try:
+    api_response = api_instance.get_user_access_summary(accessSummaryRequest)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling AuthorizationApi->getUserAccessSummary: %s\n" % e)</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Authorization-getUserAccessSummary-0-rust">
+                              <pre class="prettyprint"><code class="language-rust">extern crate AuthorizationApi;
+
+pub fn main() {
+    let accessSummaryRequest = ; // AccessSummaryRequest
+
+    let mut context = AuthorizationApi::Context::default();
+    let result = client.getUserAccessSummary(accessSummaryRequest, &context).wait();
+
+    println!("{:?}", result);
+}
+</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Scopes</h2>
+                          <table>
+                            
+                          </table>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">accessSummaryRequest <span style="color:red;">*</span></td>
+<td>
+<p class="marked"></p>
+<script>
+$(document).ready(function() {
+  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/AccessSummaryRequest"
+      }
+    },
+    "application/x-jackson-smile" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/AccessSummaryRequest"
+      }
+    }
+  },
+  "required" : true
+};
+
+  var schema = findNode('schema',schemaWrapper).schema;
+  if (!schema) {
+    schema = schemaWrapper.schema;
+  }
+  if (schema.$ref != null) {
+    schema = defsParser.$refs.get(schema.$ref);
+  } else {
+    schemaWrapper.definitions = Object.assign({}, defs);
+    $RefParser.dereference(schemaWrapper).catch(function(err) {
+      console.log(err);
+    });
+  }
+
+  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+  var result = $('#d2e199_getUserAccessSummary_accessSummaryRequest');
+  result.empty();
+  result.append(view.render());
+});
+</script>
+<div id="d2e199_getUserAccessSummary_accessSummaryRequest"></div>
+</td>
+</tr>
+
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3 id="examples-Authorization-getUserAccessSummary-title-200"></h3>
+                            <p id="examples-Authorization-getUserAccessSummary-description-200" class="marked"></p>
+                            <script>
+                              var responseAuthorization200_description = `The list of per-workspace access summary for a user`;
+                              var responseAuthorization200_description_break = responseAuthorization200_description.indexOf('\n');
+                              if (responseAuthorization200_description_break == -1) {
+                                $("#examples-Authorization-getUserAccessSummary-title-200").text("Status: 200 - " + responseAuthorization200_description);
+                              } else {
+                                $("#examples-Authorization-getUserAccessSummary-title-200").text("Status: 200 - " + responseAuthorization200_description.substring(0, responseAuthorization200_description_break));
+                                $("#examples-Authorization-getUserAccessSummary-description-200").html(responseAuthorization200_description.substring(responseAuthorization200_description_break));
+                              }
+                            </script>
+
+
+                            <ul id="responses-detail-Authorization-getUserAccessSummary-200" class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-Authorization-getUserAccessSummary-200-schema">Schema</a>
+                                </li>
+
+
+
+
+                            </ul>
+
+
+                            <div class="tab-content" id="responses-Authorization-getUserAccessSummary-200-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-Authorization-getUserAccessSummary-200-schema">
+                                  <div id="responses-Authorization-getUserAccessSummary-schema-200" class="exampleStyle">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = ;
+                                        var schema = findNode('schema',schemaWrapper).schema;
+                                        if (!schema) {
+                                          schema = schemaWrapper.schema;
+                                        }
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                          Object.keys(schema.properties).forEach( (item) => {
+                                            if (schema.properties[item].$ref != null) {
+                                              schema.properties[item] = defsParser.$refs.get(schema.properties[item].$ref);
+                                            }
+                                          });
+                                        } else if (schema.items != null && schema.items.$ref != null) {
+                                            schema.items = defsParser.$refs.get(schema.items.$ref);
+                                        } else {
+                                          schemaWrapper.definitions = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-Authorization-getUserAccessSummary-200-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-Authorization-getUserAccessSummary-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-Authorization-getUserAccessSummary-200-schema-data' type='hidden' value=''></input>
+                                </div>
                             </div>
                         </article>
                       </div>

@@ -1,7 +1,8 @@
-/* (c) 2023  Open Source Geospatial Foundation - all rights reserved
+/* (c) 2024  Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
+
 package org.geoserver.acl.authorization;
 
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
@@ -10,14 +11,17 @@ import org.geoserver.acl.domain.adminrules.MemoryAdminRuleRepository;
 import org.geoserver.acl.domain.rules.MemoryRuleRepository;
 import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.geoserver.acl.domain.rules.RuleAdminServiceImpl;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.TestMethodOrder;
 
 /**
- * {@link AuthorizationService} integration/conformance test working with geometries
+ * Integration/conformance test for {@link
+ * AuthorizationService#getUserAccessSummary(AccessSummaryRequest)}
  *
- * <p>Concrete implementations must supply the required services in {@link
- * BaseAuthorizationServiceTest}
+ * @since 2.3
  */
-class AuthorizationServiceImplGeomTest extends AuthorizationServiceGeomTest {
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+class AuthorizationServiceImplAccessSummaryTest extends AuthorizationServiceAccessSummaryTest {
 
     @Override
     protected RuleAdminService getRuleAdminService() {

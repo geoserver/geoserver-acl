@@ -12,6 +12,8 @@ import org.geoserver.acl.api.client.AuthorizationApi;
 import org.geoserver.acl.api.mapper.AuthorizationModelApiMapper;
 import org.geoserver.acl.api.mapper.RuleApiMapper;
 import org.geoserver.acl.authorization.AccessInfo;
+import org.geoserver.acl.authorization.AccessSummary;
+import org.geoserver.acl.authorization.AccessSummaryRequest;
 import org.geoserver.acl.authorization.AdminAccessInfo;
 import org.geoserver.acl.authorization.AuthorizationService;
 import org.geoserver.acl.domain.rules.Rule;
@@ -71,6 +73,22 @@ public class AuthorizationServiceClientAdaptor implements AuthorizationService {
             return apiResponse.stream().map(ruleMapper::toModel).toList();
         } catch (RuntimeException e) {
             log.error("Error getting matching rules for {}", request, e);
+            throw e;
+        }
+    }
+
+    @Override
+    public AccessSummary getUserAccessSummary(AccessSummaryRequest request) {
+
+        org.geoserver.acl.api.model.AccessSummaryRequest apiRequest;
+        org.geoserver.acl.api.model.AccessSummary apiResponse;
+
+        try {
+            apiRequest = mapper.toApi(request);
+            apiResponse = apiClient.getUserAccessSummary(apiRequest);
+            return mapper.toModel(apiResponse);
+        } catch (RuntimeException e) {
+            log.error("Error getting user access summary for {}", request, e);
             throw e;
         }
     }

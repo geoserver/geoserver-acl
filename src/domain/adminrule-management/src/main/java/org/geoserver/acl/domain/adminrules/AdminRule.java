@@ -49,6 +49,10 @@ public class AdminRule {
         return String.format("AdminRule[id: %s, %s]", id, toShortString());
     }
 
+    public boolean isAdmin() {
+        return access == AdminGrantType.ADMIN;
+    }
+
     public AdminRule withUsername(String username) {
         return withIdentifier(identifier.withUsername(username));
     }

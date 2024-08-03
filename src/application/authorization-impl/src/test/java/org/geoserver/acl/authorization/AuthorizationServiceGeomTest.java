@@ -31,9 +31,10 @@ import java.util.List;
 /**
  * {@link AuthorizationService} integration/conformance test working with geometries
  *
- * <p>Concrete implementations must supply the required services in {@link ServiceTestBase}
+ * <p>Concrete implementations must supply the required services in {@link
+ * BaseAuthorizationServiceTest}
  */
-public abstract class AuthorizationServiceGeomTest extends AuthorizationServiceTest {
+public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServiceTest {
     private static final String WKT_WGS84_1 =
             "SRID=4326;MultiPolygon (((-1.93327272727272859 5.5959090909090925, 2.22727272727272707 5.67609090909091041, 2.00454545454545441 4.07245454545454599, -1.92436363636363761 4.54463636363636425, -1.92436363636363761 4.54463636363636425, -1.93327272727272859 5.5959090909090925)))";
     private static final String WKT_WGS84_2 =

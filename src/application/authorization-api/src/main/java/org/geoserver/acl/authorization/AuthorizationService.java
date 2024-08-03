@@ -7,16 +7,21 @@
 
 package org.geoserver.acl.authorization;
 
+import org.geoserver.acl.domain.adminrules.AdminRule;
+import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.rules.Rule;
+import org.geoserver.acl.domain.rules.RuleAdminService;
 
 import java.util.List;
 
 /**
- * Operations on
+ * The {@code AuthorizationService} implements the business logic to grant or deny access to layers
+ * by processing the {@link Rule}s in the {@link RuleAdminService}, and to determine the admin
+ * access level to workspaces based on the {@link AdminRule}s in the {@link AdminRuleAdminService}.
  *
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence's
  *     AdminRuleService)
- * @author Gabriel Roldan adapt from RuleFilter to immutable parameters and return types
+ * @author Gabriel Roldan adapt from {@code RuleFilter} to immutable parameters and return types
  */
 public interface AuthorizationService {
 
@@ -37,7 +42,13 @@ public interface AuthorizationService {
     AdminAccessInfo getAdminAuthorization(AdminAccessRequest request);
 
     /**
-     * Return the unprocessed {@link Rule} list matching a given filter, sorted by priority.
+     * Returns a summary of workspace names and the layers a user denoted by the {@code request} can
+     * somehow see, and in the case of workspaces, whether it's an administrator of.
+     */
+    AccessSummary getUserAccessSummary(AccessSummaryRequest request);
+
+    /**
+     * Return the unprocessed {@link Rule} list matching a given request, sorted by priority.
      *
      * <p>Use {@link #getAccessInfo(AccessRequest)} and {@link
      * #getAdminAuthorization(AdminAccessRequest)} if you need the resulting coalesced access info.

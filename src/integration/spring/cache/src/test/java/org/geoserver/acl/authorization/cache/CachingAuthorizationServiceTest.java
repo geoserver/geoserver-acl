@@ -5,8 +5,7 @@
 package org.geoserver.acl.authorization.cache;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,6 +13,8 @@ import static org.mockito.Mockito.when;
 
 import org.geoserver.acl.authorization.AccessInfo;
 import org.geoserver.acl.authorization.AccessRequest;
+import org.geoserver.acl.authorization.AccessSummary;
+import org.geoserver.acl.authorization.AccessSummaryRequest;
 import org.geoserver.acl.authorization.AdminAccessInfo;
 import org.geoserver.acl.authorization.AdminAccessRequest;
 import org.geoserver.acl.authorization.AuthorizationService;
@@ -35,13 +36,17 @@ class CachingAuthorizationServiceTest {
     private AuthorizationService delegate;
     private ConcurrentMap<AccessRequest, AccessInfo> dataAccessCache;
     private ConcurrentMap<AdminAccessRequest, AdminAccessInfo> adminAccessCache;
+    private ConcurrentMap<AccessSummaryRequest, AccessSummary> viewablesCache;
 
     @BeforeEach
     void setUp() throws Exception {
         delegate = mock(AuthorizationService.class);
         dataAccessCache = new ConcurrentHashMap<>();
         adminAccessCache = new ConcurrentHashMap<>();
-        caching = new CachingAuthorizationService(delegate, dataAccessCache, adminAccessCache);
+        viewablesCache = new ConcurrentHashMap<>();
+        caching =
+                new CachingAuthorizationService(
+                        delegate, dataAccessCache, adminAccessCache, viewablesCache);
     }
 
     @Test
@@ -49,8 +54,24 @@ class CachingAuthorizationServiceTest {
         var npe = NullPointerException.class;
         assertThrows(
                 npe,
-                () -> new CachingAuthorizationService(null, dataAccessCache, adminAccessCache));
-        assertThrows(npe, () -> new CachingAuthorizationService(delegate, null, adminAccessCache));
+                () ->
+                        new CachingAuthorizationService(
+                                null, dataAccessCache, adminAccessCache, viewablesCache));
+        assertThrows(
+                npe,
+                () ->
+                        new CachingAuthorizationService(
+                                delegate, null, adminAccessCache, viewablesCache));
+        assertThrows(
+                npe,
+                () ->
+                        new CachingAuthorizationService(
+                                delegate, dataAccessCache, null, viewablesCache));
+        assertThrows(
+                npe,
+                () ->
+                        new CachingAuthorizationService(
+                                delegate, dataAccessCache, adminAccessCache, null));
     }
 
     @Test

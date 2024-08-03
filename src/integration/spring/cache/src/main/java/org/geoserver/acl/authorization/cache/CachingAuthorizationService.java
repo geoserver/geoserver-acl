@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.geoserver.acl.authorization.AccessInfo;
 import org.geoserver.acl.authorization.AccessRequest;
+import org.geoserver.acl.authorization.AccessSummary;
+import org.geoserver.acl.authorization.AccessSummaryRequest;
 import org.geoserver.acl.authorization.AdminAccessInfo;
 import org.geoserver.acl.authorization.AdminAccessRequest;
 import org.geoserver.acl.authorization.AuthorizationService;
@@ -33,26 +35,23 @@ public class CachingAuthorizationService extends ForwardingAuthorizationService 
 
     private final ConcurrentMap<AccessRequest, AccessInfo> ruleAccessCache;
     private final ConcurrentMap<AdminAccessRequest, AdminAccessInfo> adminRuleAccessCache;
+    private final ConcurrentMap<AccessSummaryRequest, AccessSummary> viewablesCache;
 
     public CachingAuthorizationService(
             @NonNull AuthorizationService delegate,
             @NonNull ConcurrentMap<AccessRequest, AccessInfo> dataAccessCache,
-            @NonNull ConcurrentMap<AdminAccessRequest, AdminAccessInfo> adminAccessCache) {
+            @NonNull ConcurrentMap<AdminAccessRequest, AdminAccessInfo> adminAccessCache,
+            @NonNull ConcurrentMap<AccessSummaryRequest, AccessSummary> viewablesCache) {
         super(delegate);
 
         this.ruleAccessCache = dataAccessCache;
         this.adminRuleAccessCache = adminAccessCache;
+        this.viewablesCache = viewablesCache;
     }
 
     @Override
     public AccessInfo getAccessInfo(@NonNull AccessRequest request) {
-        AccessInfo grant = ruleAccessCache.computeIfAbsent(request, this::load);
-        if (grant.getMatchingRules().isEmpty()) {
-            // do not cache results with no matching rules. It'll make it impossible to evict them
-            this.ruleAccessCache.remove(request);
-        }
-
-        return grant;
+        return ruleAccessCache.computeIfAbsent(request, this::load);
     }
 
     private AccessInfo load(AccessRequest request) {
@@ -61,16 +60,20 @@ public class CachingAuthorizationService extends ForwardingAuthorizationService 
 
     @Override
     public AdminAccessInfo getAdminAuthorization(@NonNull AdminAccessRequest request) {
-        AdminAccessInfo grant = adminRuleAccessCache.computeIfAbsent(request, this::load);
-        if (grant.getMatchingAdminRule() == null) {
-            // do not cache results with no matching rules. It'll make it impossible to evict them
-            this.adminRuleAccessCache.remove(request);
-        }
-        return grant;
+        return adminRuleAccessCache.computeIfAbsent(request, this::load);
     }
 
     private AdminAccessInfo load(AdminAccessRequest request) {
         return logLoaded(request, super.getAdminAuthorization(request));
+    }
+
+    @Override
+    public AccessSummary getUserAccessSummary(@NonNull AccessSummaryRequest request) {
+        return viewablesCache.computeIfAbsent(request, this::load);
+    }
+
+    private AccessSummary load(AccessSummaryRequest request) {
+        return logLoaded(request, super.getUserAccessSummary(request));
     }
 
     private <A> A logLoaded(Object request, A accessInfo) {
@@ -81,7 +84,15 @@ public class CachingAuthorizationService extends ForwardingAuthorizationService 
     @EventListener(RuleEvent.class)
     public void onRuleEvent(RuleEvent event) {
         int evictCount = evictAll(ruleAccessCache);
+        evictViewables();
         log.debug("evicted all {} authorizations upon event {}", evictCount, event);
+    }
+
+    @EventListener(AdminRuleEvent.class)
+    public void onAdminRuleEvent(AdminRuleEvent event) {
+        int evictCount = evictAll(adminRuleAccessCache);
+        evictViewables();
+        log.debug("evicted all {} admin authorizations upon event {}", evictCount, event);
     }
 
     private int evictAll(Map<?, ?> cache) {
@@ -90,9 +101,7 @@ public class CachingAuthorizationService extends ForwardingAuthorizationService 
         return size;
     }
 
-    @EventListener(AdminRuleEvent.class)
-    public void onAdminRuleEvent(AdminRuleEvent event) {
-        int evictCount = evictAll(adminRuleAccessCache);
-        log.debug("evicted all {} admin authorizations upon event {}", evictCount, event);
+    void evictViewables() {
+        evictAll(viewablesCache);
     }
 }

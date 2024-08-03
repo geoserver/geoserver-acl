@@ -41,6 +41,10 @@ public class Rule {
         return String.format("Rule[id: %s, %s]", id, toShortString());
     }
 
+    public GrantType access() {
+        return getIdentifier().getAccess();
+    }
+
     public String ipAddressRange() {
         return getIdentifier().getAddressRange();
     }
