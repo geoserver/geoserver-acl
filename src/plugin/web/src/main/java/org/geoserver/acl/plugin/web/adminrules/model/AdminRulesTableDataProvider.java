@@ -16,6 +16,7 @@ import org.geoserver.web.GeoServerApplication;
 import org.springframework.dao.DuplicateKeyException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class AdminRulesTableDataProvider extends RulesDataProvider<MutableAdminRule> {
@@ -42,7 +43,7 @@ public class AdminRulesTableDataProvider extends RulesDataProvider<MutableAdminR
 
     @Override
     protected List<MutableAdminRule> doReload() {
-        return adminService().getAll().map(MutableAdminRule::new).toList();
+        return adminService().getAll().map(MutableAdminRule::new).collect(Collectors.toList());
     }
 
     protected @Override void delete(MutableAdminRule rule) {

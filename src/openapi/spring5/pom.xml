@@ -21,6 +21,7 @@
     <module>java-client</module>
   </modules>
   <properties>
+    <java.version>11</java.version>
     <jakarta-annotation-version>1.3.5</jakarta-annotation-version>
   </properties>
   <dependencyManagement>

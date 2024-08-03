@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class MemoryPriorityRepository<R> {
@@ -72,7 +73,7 @@ public abstract class MemoryPriorityRepository<R> {
                                     long p = getPriority(r);
                                     return p >= min && p <= max;
                                 })
-                        .toList();
+                        .collect(Collectors.toList());
 
         rules.removeAll(matches);
         matches.forEach(

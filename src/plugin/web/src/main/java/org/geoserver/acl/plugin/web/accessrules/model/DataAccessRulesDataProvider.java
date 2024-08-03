@@ -16,6 +16,7 @@ import org.geoserver.web.GeoServerApplication;
 import org.springframework.dao.DuplicateKeyException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Niels Charlier - Originally as part of GeoFence's GeoServer extension
@@ -66,7 +67,7 @@ public class DataAccessRulesDataProvider extends RulesDataProvider<MutableRule> 
 
     @Override
     protected List<MutableRule> doReload() {
-        return adminService().getAll().map(MutableRule::new).toList();
+        return adminService().getAll().map(MutableRule::new).collect(Collectors.toList());
     }
 
     @Override

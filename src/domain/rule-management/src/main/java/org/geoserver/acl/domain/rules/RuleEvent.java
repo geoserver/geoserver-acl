@@ -4,6 +4,8 @@
  */
 package org.geoserver.acl.domain.rules;
 
+import static java.lang.String.format;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -48,6 +50,6 @@ public class RuleEvent {
 
     @Override
     public String toString() {
-        return "%s%s".formatted(eventType, ruleIds);
+        return format("%s%s", eventType, ruleIds);
     }
 }

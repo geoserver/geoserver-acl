@@ -61,7 +61,8 @@ public class CachingAuthorizationServiceConfiguration {
 
     @SuppressWarnings("unchecked")
     private <K, V> ConcurrentMap<K, V> getCache(CacheManager cacheManager, String cacheName) {
-        if (cacheManager instanceof CaffeineCacheManager ccf) {
+        if (cacheManager instanceof CaffeineCacheManager) {
+            CaffeineCacheManager ccf = (CaffeineCacheManager) cacheManager;
             org.springframework.cache.Cache cache = ccf.getCache(cacheName);
             if (cache != null) {
                 Cache<K, V> caffeineCache = (Cache<K, V>) cache.getNativeCache();

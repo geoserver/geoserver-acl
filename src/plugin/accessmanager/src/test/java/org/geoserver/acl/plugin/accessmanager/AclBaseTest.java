@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Creates the following rules, which the test cases expect as precondition:
@@ -152,7 +153,7 @@ public abstract class AclBaseTest extends GeoServerSystemTestSupport {
      * </ul>
      */
     private void createDefaultRules(RuleAdminService ruleAdminService) {
-        List<Rule> rules = ruleAdminService.getAll().toList();
+        List<Rule> rules = ruleAdminService.getAll().collect(Collectors.toList());
         rules.stream().map(Rule::getId).forEach(ruleAdminService::delete);
         ruleAdminService.insert(Rule.allow().withUsername("admin"));
         ruleAdminService.insert(Rule.allow().withService("WMS"));

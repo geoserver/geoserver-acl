@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public abstract class RulesDataProvider<R> extends GeoServerDataProvider<R> {
@@ -29,7 +30,7 @@ public abstract class RulesDataProvider<R> extends GeoServerDataProvider<R> {
 
     private @Setter SerializablePredicate<R> filter;
 
-    public RulesDataProvider(Class<R> modelClass) {
+    protected RulesDataProvider(Class<R> modelClass) {
         this.modelClass = modelClass;
         setSort("priority", SortOrder.ASCENDING);
     }
@@ -54,7 +55,7 @@ public abstract class RulesDataProvider<R> extends GeoServerDataProvider<R> {
         if (_rules.isEmpty()) reload();
         SerializablePredicate<R> predicate = filter;
         if (predicate == null) return _rules;
-        return _rules.stream().filter(predicate).toList();
+        return _rules.stream().filter(predicate).collect(Collectors.toList());
     }
 
     private final void reload() {
@@ -64,7 +65,6 @@ public abstract class RulesDataProvider<R> extends GeoServerDataProvider<R> {
     }
 
     public void remove(Collection<R> selected) {
-        // rules.removeAll(selected);
         if (selected.isEmpty()) return;
         for (R rule : selected) {
             delete(rule);

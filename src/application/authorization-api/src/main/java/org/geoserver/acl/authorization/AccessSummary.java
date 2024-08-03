@@ -4,6 +4,8 @@
  */
 package org.geoserver.acl.authorization;
 
+import static java.lang.String.format;
+
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
@@ -94,7 +96,7 @@ public class AccessSummary {
     @Override
     public String toString() {
         var values = new TreeMap<>(workspaceSummaries).values();
-        return "%s[%s]".formatted(getClass().getSimpleName(), values);
+        return format("%s[%s]", getClass().getSimpleName(), values);
     }
 
     public boolean hasAdminRightsToAnyWorkspace() {

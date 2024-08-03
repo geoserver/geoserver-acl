@@ -13,6 +13,9 @@
     <version>${revision}</version>
   </parent>
   <artifactId>gs-acl-api-model-mapper</artifactId>
+  <properties>
+    <java.version>11</java.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.acl.openapi.spring5</groupId>

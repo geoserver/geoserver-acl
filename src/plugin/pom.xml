@@ -18,6 +18,9 @@
     <module>config</module>
     <module>plugin</module>
   </modules>
+  <properties>
+    <java.version>11</java.version>
+  </properties>
   <dependencyManagement>
     <dependencies>
       <dependency>
