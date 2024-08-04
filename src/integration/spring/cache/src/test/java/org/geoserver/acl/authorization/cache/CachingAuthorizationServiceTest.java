@@ -5,7 +5,8 @@
 package org.geoserver.acl.authorization.cache;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class CachingAuthorizationServiceTest {
@@ -185,7 +187,7 @@ class CachingAuthorizationServiceTest {
     }
 
     private AccessInfo grant(AccessRequest req, Rule... matching) {
-        List<String> ids = Stream.of(matching).map(Rule::getId).toList();
+        List<String> ids = Stream.of(matching).map(Rule::getId).collect(Collectors.toList());
         AccessInfo grant = AccessInfo.ALLOW_ALL.withMatchingRules(ids);
         this.dataAccessCache.put(req, grant);
         return grant;

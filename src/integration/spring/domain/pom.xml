@@ -13,6 +13,9 @@
     <version>${revision}</version>
   </parent>
   <artifactId>gs-acl-domain-spring-integration</artifactId>
+  <properties>
+    <java.version>11</java.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>

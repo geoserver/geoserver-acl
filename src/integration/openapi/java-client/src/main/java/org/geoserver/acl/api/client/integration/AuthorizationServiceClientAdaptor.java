@@ -19,6 +19,7 @@ import org.geoserver.acl.authorization.AuthorizationService;
 import org.geoserver.acl.domain.rules.Rule;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -70,7 +71,7 @@ public class AuthorizationServiceClientAdaptor implements AuthorizationService {
         try {
             apiRequest = mapper.toApi(request);
             apiResponse = apiClient.getMatchingRules(apiRequest);
-            return apiResponse.stream().map(ruleMapper::toModel).toList();
+            return apiResponse.stream().map(ruleMapper::toModel).collect(Collectors.toList());
         } catch (RuntimeException e) {
             log.error("Error getting matching rules for {}", request, e);
             throw e;

@@ -17,6 +17,7 @@ import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Mapper(
         componentModel = "spring",
@@ -54,7 +55,7 @@ public interface AuthorizationModelApiMapper {
         List<WorkspaceAccessSummary> workspaces =
                 Optional.ofNullable(apiResponse.getWorkspaces()).orElse(List.of()).stream()
                         .map(this::workspaceAccessSummary)
-                        .toList();
+                        .collect(Collectors.toList());
         return AccessSummary.of(workspaces);
     }
 

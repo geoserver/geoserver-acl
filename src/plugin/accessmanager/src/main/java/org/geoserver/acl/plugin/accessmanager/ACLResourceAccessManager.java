@@ -348,10 +348,12 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
         AccessLimits limits;
         if (info instanceof LayerGroupInfo) {
             limits = buildLayerGroupAccessLimits(accessInfo);
-        } else if (info instanceof ResourceInfo ri) {
-            limits = buildResourceAccessLimits(ri, accessInfo, processingResult);
-        } else if (info instanceof LayerInfo li) {
-            limits = buildResourceAccessLimits(li.getResource(), accessInfo, processingResult);
+        } else if (info instanceof ResourceInfo) {
+            limits = buildResourceAccessLimits((ResourceInfo) info, accessInfo, processingResult);
+        } else if (info instanceof LayerInfo) {
+            limits =
+                    buildResourceAccessLimits(
+                            ((LayerInfo) info).getResource(), accessInfo, processingResult);
         } else {
             throw new IllegalArgumentException(
                     "Expected LayerInfo|LayerGroupInfo|ResourceInfo, got " + info);
@@ -416,8 +418,9 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
         AccessLimits accessLimits;
         if (info instanceof LayerGroupInfo)
             accessLimits = buildLayerGroupAccessLimits(AccessInfo.ALLOW_ALL);
-        else if (info instanceof ResourceInfo ri)
-            accessLimits = buildResourceAccessLimits(ri, AccessInfo.ALLOW_ALL, null);
+        else if (info instanceof ResourceInfo)
+            accessLimits =
+                    buildResourceAccessLimits((ResourceInfo) info, AccessInfo.ALLOW_ALL, null);
         else
             accessLimits =
                     buildResourceAccessLimits(
@@ -435,9 +438,10 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
 
     private Collection<LayerGroupSummary> getGroupSummary(Object resource) {
         Collection<LayerGroupSummary> summaries;
-        if (resource instanceof ResourceInfo ri) summaries = groupsCache.getContainerGroupsFor(ri);
-        else if (resource instanceof LayerInfo li)
-            summaries = groupsCache.getContainerGroupsFor(li.getResource());
+        if (resource instanceof ResourceInfo)
+            summaries = groupsCache.getContainerGroupsFor((ResourceInfo) resource);
+        else if (resource instanceof LayerInfo)
+            summaries = groupsCache.getContainerGroupsFor(((LayerInfo) resource).getResource());
         else summaries = groupsCache.getContainerGroupsFor((LayerGroupInfo) resource);
         return summaries == null ? List.of() : summaries;
     }

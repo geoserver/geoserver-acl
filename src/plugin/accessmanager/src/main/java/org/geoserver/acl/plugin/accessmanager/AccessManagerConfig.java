@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Configuration object for {@link ACLResourceAccessManager}.
@@ -128,7 +129,10 @@ public class AccessManagerConfig implements Serializable, Cloneable {
         if (acceptedRoles == null || acceptedRoles.isEmpty()) {
             this.roles = new ArrayList<>(List.of("*"));
         } else {
-            this.roles = acceptedRoles.stream().filter(StringUtils::hasText).toList();
+            this.roles =
+                    acceptedRoles.stream()
+                            .filter(StringUtils::hasText)
+                            .collect(Collectors.toList());
         }
     }
 

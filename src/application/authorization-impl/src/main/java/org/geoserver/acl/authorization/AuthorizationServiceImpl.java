@@ -20,6 +20,7 @@ import static org.geoserver.acl.domain.rules.LayerAttribute.AccessType.READWRITE
 import static org.geoserver.acl.domain.rules.SpatialFilterType.CLIP;
 import static org.geoserver.acl.domain.rules.SpatialFilterType.INTERSECT;
 
+import static java.lang.String.format;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 
@@ -97,7 +98,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                 .flatMap(List::stream)
                 .sorted((r1, r2) -> Long.compare(r1.getPriority(), r2.getPriority()))
                 .distinct()
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -116,7 +117,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
         if (null == ret) ret = AccessInfo.DENY_ALL;
 
-        List<String> matchingIds = flatten(groupedRules).stream().map(Rule::getId).toList();
+        List<String> matchingIds =
+                flatten(groupedRules).stream().map(Rule::getId).collect(Collectors.toList());
         ret = ret.withMatchingRules(matchingIds);
         log.debug("Request: {}, response: {}", request, ret);
         return ret;
@@ -147,7 +149,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         List<WorkspaceAccessSummary> summaries =
                 workspaces.stream()
                         .map(ws -> conflateViewables(ws, wsAdminRules, wsRules))
-                        .toList();
+                        .collect(Collectors.toList());
 
         return AccessSummary.of(summaries);
     }
@@ -206,16 +208,21 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                             String layer = r.getIdentifier().getLayer();
                             if (null == layer) layer = WorkspaceAccessSummary.ANY;
                             switch (access) {
-                                case ALLOW -> builder.addAllowed(layer);
-                                case DENY -> {
-                                    // only add forbidden layers if they're so for all services, to
-                                    // comply with the "somehow can see" motto of the summary
-                                    String service = r.getIdentifier().getService();
-                                    if (null == service) {
-                                        builder.addForbidden(layer);
+                                case ALLOW:
+                                    builder.addAllowed(layer);
+                                    break;
+                                case DENY:
+                                    {
+                                        // only add forbidden layers if they're so for all services,
+                                        // to comply with the "somehow can see" motto of the summary
+                                        String service = r.getIdentifier().getService();
+                                        if (null == service) {
+                                            builder.addForbidden(layer);
+                                        }
                                     }
-                                }
-                                default -> throw new IllegalArgumentException();
+                                    break;
+                                default:
+                                    throw new IllegalArgumentException();
                             }
                         });
     }
@@ -270,11 +277,11 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     private <T> BinaryOperator<List<T>> mergeFunction() {
         return (l1, l2) -> {
-            if (l1 instanceof ArrayList<T>) {
+            if (l1 instanceof ArrayList) {
                 l1.addAll(l2);
                 return l1;
             }
-            if (l2 instanceof ArrayList<T>) {
+            if (l2 instanceof ArrayList) {
                 l2.addAll(l1);
                 return l2;
             }
@@ -364,7 +371,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     private String unionCQL(String c1, String c2) {
         if (c1 == null || c2 == null) return null;
-        return "(%s) OR (%s)".formatted(c1, c2);
+        return format("(%s) OR (%s)", c1, c2);
     }
 
     private Geometry unionGeometry(Geometry g1, Geometry g2) {
@@ -525,7 +532,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                         .map(RuleLimits::getAllowedArea)
                         .filter(Objects::nonNull)
                         .map(this::toJTS)
-                        .toList();
+                        .collect(Collectors.toList());
         if (geoms.isEmpty()) return null;
         if (1 == geoms.size()) return geoms.get(0);
 
@@ -618,7 +625,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                 filter = filter.clone();
                 filter.getRole().setType(SpecialFilterType.DEFAULT);
             }
-            List<Rule> found = ruleService.getAll(RuleQuery.of(filter)).toList();
+            List<Rule> found =
+                    ruleService.getAll(RuleQuery.of(filter)).collect(Collectors.toList());
             ret.put(null, found);
         } else {
             // used to be: for(role: finalRoleFilter) getRulesByRole(filter, role);,
@@ -641,7 +649,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     private List<Rule> getRulesByRoleIncludeDefault(RuleFilter filter) {
         filter = filter.clone();
         filter.getRole().setIncludeDefault(true);
-        return ruleService.getAll(RuleQuery.of(filter)).toList();
+        return ruleService.getAll(RuleQuery.of(filter)).collect(Collectors.toList());
     }
 
     private boolean isAdminAuth(Optional<AdminRule> rule) {

@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * {@link ResourceAccessManager} to make GeoServer use the ACL service to assess data access rules
@@ -302,7 +303,9 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
         else groupStyles = groupInfo.styles();
 
         requestedStyles.addAll(
-                groupStyles.stream().map(s -> s != null ? s.prefixedName() : null).toList());
+                groupStyles.stream()
+                        .map(s -> s != null ? s.prefixedName() : null)
+                        .collect(Collectors.toList()));
     }
 
     private List<Object> parseLayersParameter(Request gsRequest, GetMapRequest getMap) {

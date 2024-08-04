@@ -72,7 +72,6 @@ public class AclIntegrationTestSupport extends ExternalResource {
     public @Override void before() {
         createdLayerGroups = new ArrayList<>();
 
-        @SuppressWarnings("PMD.CloseResource")
         GeoServerTestApplicationContext context = appContext.get();
         ruleService = context.getBean(RuleAdminService.class);
         adminRuleService = context.getBean(AdminRuleAdminService.class);

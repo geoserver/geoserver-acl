@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * {@link AuthorizationService} integration/conformance test
@@ -594,9 +595,12 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
     private void assertMatchingRules(AccessRequest request, Integer... expectedPriorities) {
         List<Rule> rules = authorizationService.getMatchingRules(request);
 
-        List<Long> pri = rules.stream().map(r -> r.getPriority()).sorted().toList();
+        List<Long> pri =
+                rules.stream().map(r -> r.getPriority()).sorted().collect(Collectors.toList());
         List<Long> exp =
-                Arrays.asList(expectedPriorities).stream().map(i -> i.longValue()).toList();
+                Arrays.asList(expectedPriorities).stream()
+                        .map(i -> i.longValue())
+                        .collect(Collectors.toList());
         assertEquals(exp, pri, "Bad rule set selected for filter " + request);
     }
 

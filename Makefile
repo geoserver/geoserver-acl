@@ -11,14 +11,17 @@ install:
 plugin:
 	./mvnw clean install -pl :gs-acl-client-plugin --also-make -ntp
 
+# plugin-test-* run with -Denforcer.skip for the CI build
+# to execute it with both Java 11 and 17, ensuring the plugin is compatible with
+# the minimum java version required by GeoServer
 plugin-test-gs-dev:
-	./mvnw -P gs_dev verify -pl :gs-acl-client-plugin -am -ntp
+	./mvnw -Denforcer.skip -P gs_dev verify -pl :gs-acl-client-plugin -am -ntp
 
 plugin-test-gs-stable:
-	./mvnw -P gs_stable verify -pl :gs-acl-client-plugin -am -ntp
+	./mvnw -Denforcer.skip -P gs_stable verify -pl :gs-acl-client-plugin -am -ntp
 
 plugin-test-gs-maintenance:
-	./mvnw -P gs_maintenance verify -pl :gs-acl-client-plugin -am -ntp
+	./mvnw -Denforcer.skip -P gs_maintenance verify -pl :gs-acl-client-plugin -am -ntp
 
 lint:
 	./mvnw sortpom:verify fmt:check -ntp

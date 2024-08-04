@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -229,7 +230,7 @@ public class DataAccessRuleEditModel extends AbstractRuleEditModel<MutableRule> 
             }
         }
         List<MutableLayerAttribute> mapped =
-                attributes.stream().map(MutableLayerAttribute::new).toList();
+                attributes.stream().map(MutableLayerAttribute::new).collect(Collectors.toList());
         ld.getAttributes().clear();
         ld.getAttributes().addAll(mapped);
     }

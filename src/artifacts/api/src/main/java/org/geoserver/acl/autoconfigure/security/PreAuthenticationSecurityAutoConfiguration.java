@@ -41,7 +41,7 @@ public class PreAuthenticationSecurityAutoConfiguration {
         String rolesHeader = config.getHeaders().getRolesHeader();
         if (!StringUtils.hasText(userHeader) || !StringUtils.hasText(rolesHeader)) {
             throw new IllegalStateException(
-                    """
+                            """
                     Both user and roles header names must be provided, got \
                     geoserver.acl.security.headers.userHeader: %s, \
                     geoserver.acl.security.headers.rolesHeader: %s

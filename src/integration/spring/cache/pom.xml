@@ -13,6 +13,9 @@
     <version>${revision}</version>
   </parent>
   <artifactId>gs-acl-cache</artifactId>
+  <properties>
+    <java.version>11</java.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.acl</groupId>
