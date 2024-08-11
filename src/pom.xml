@@ -27,6 +27,8 @@
   <properties>
     <spring-cloud.version>2021.0.8</spring-cloud.version>
     <spring-boot.version>2.7.18</spring-boot.version>
+    <spring.version>5.3.37</spring.version>
+    <spring.security.version>5.8.13</spring.security.version>
     <spring-boot-3.version>3.2.4</spring-boot-3.version>
     <lombok.version>1.18.32</lombok.version>
     <mapstruct.version>1.6.0.Beta1</mapstruct.version>
@@ -52,6 +54,20 @@
         <groupId>org.hsqldb</groupId>
         <artifactId>hsqldb</artifactId>
         <version>2.7.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-framework-bom</artifactId>
+        <version>${spring.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-bom</artifactId>
+        <version>${spring.security.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.springframework.cloud</groupId>
