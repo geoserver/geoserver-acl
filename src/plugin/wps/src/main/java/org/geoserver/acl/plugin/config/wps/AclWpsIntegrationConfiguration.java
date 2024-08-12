@@ -9,9 +9,12 @@ import org.geoserver.acl.plugin.wps.DefaultExecutionIdRetriever;
 import org.geoserver.acl.plugin.wps.WPSProcessListener;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
+// spring with no spring boot equivalent to @ConditionalOnClass(WPSResourceManager.class)
+@Conditional(value = WPSResourceManagerClassCondition.class)
 public class AclWpsIntegrationConfiguration {
 
     @Bean
