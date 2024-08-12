@@ -7,6 +7,11 @@ package org.geoserver.acl.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.TrustStrategy;
 import org.geoserver.acl.api.client.ApiClient;
 import org.geoserver.acl.api.client.AuthorizationApi;
 import org.geoserver.acl.api.client.DataRulesApi;
@@ -20,9 +25,15 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.net.ssl.SSLContext;
 
 public class AclClient {
 
@@ -93,11 +104,13 @@ public class AclClient {
 
     static RestTemplate createRestTemplate() {
 
-        // Use Apache HttpComponents HttpClient, otherwise
-        // SimpleClientHttpRequestFactory fails on
+        // Use Apache HttpComponents HttpClient, otherwise SimpleClientHttpRequestFactory fails on
         // PATCH requests
-        ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        // ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+
+        ClientHttpRequestFactory requestFactory = getClientHttpRequestFactoryForHttps();
         RestTemplate restTemplate = new RestTemplate(requestFactory);
+
         // This allows us to read the response more than once - Necessary for debugging
         restTemplate.setRequestFactory(
                 new BufferingClientHttpRequestFactory(restTemplate.getRequestFactory()));
@@ -109,7 +122,7 @@ public class AclClient {
 
         List<HttpMessageConverter<?>> messageConverters =
                 restTemplate.getMessageConverters().stream()
-                        .filter(m -> !(MappingJackson2HttpMessageConverter.class.isInstance(m)))
+                        .filter(m -> !(m instanceof MappingJackson2HttpMessageConverter))
                         .collect(Collectors.toCollection(ArrayList::new));
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -119,5 +132,26 @@ public class AclClient {
         restTemplate.setMessageConverters(messageConverters);
 
         return restTemplate;
+    }
+
+    static ClientHttpRequestFactory getClientHttpRequestFactoryForHttps() {
+
+        TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+        SSLContext sslContext;
+        try {
+            sslContext =
+                    org.apache.http.ssl.SSLContexts.custom()
+                            .loadTrustMaterial(null, acceptingTrustStrategy)
+                            .build();
+        } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
+            throw new IllegalStateException(e);
+        }
+        SSLConnectionSocketFactory csf =
+                new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
+        CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
+        HttpComponentsClientHttpRequestFactory requestFactory =
+                new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setHttpClient(httpClient);
+        return requestFactory;
     }
 }
