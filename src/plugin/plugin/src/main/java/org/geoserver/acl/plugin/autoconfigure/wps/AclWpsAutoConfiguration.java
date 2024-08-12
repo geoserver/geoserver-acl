@@ -6,13 +6,12 @@ package org.geoserver.acl.plugin.autoconfigure.wps;
 
 import org.geoserver.acl.plugin.autoconfigure.accessmanager.ConditionalOnAclEnabled;
 import org.geoserver.acl.plugin.config.wps.AclWpsIntegrationConfiguration;
-import org.geoserver.wps.resource.WPSResourceManager;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Import;
 
 @AutoConfiguration
 @ConditionalOnAclEnabled
-@ConditionalOnBean(WPSResourceManager.class)
+@ConditionalOnBean(name = "wpsResourceManager")
 @Import({AclWpsIntegrationConfiguration.class})
 public class AclWpsAutoConfiguration {}
