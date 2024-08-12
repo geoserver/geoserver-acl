@@ -43,8 +43,8 @@ services:
         condition: service_healthy
         required: true    
     ports:
-      - 8080:8080
-      - 8081:8081
+      - 8180:8080
+      - 8181:8081
       - 15005:15005
     deploy:
       resources:
@@ -57,9 +57,7 @@ services:
     user: 1000:1000
     environment:
       SPRING_PROFILES_ACTIVE: standalone
-      GEOSERVER_BASE_PATH: /geoserver/cloud
-    volumes:
-      - ./gateway-service.yml:/etc/geoserver/gateway-service.yml
+      TARGETS_ACL: http://acl:8080
     ports:
       - 9090:8080
     deploy:
