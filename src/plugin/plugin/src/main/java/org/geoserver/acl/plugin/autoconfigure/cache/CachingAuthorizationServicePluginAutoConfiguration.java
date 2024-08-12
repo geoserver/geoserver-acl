@@ -4,16 +4,14 @@
  */
 package org.geoserver.acl.plugin.autoconfigure.cache;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.geoserver.acl.authorization.cache.CachingAuthorizationServiceConfiguration;
 import org.geoserver.acl.plugin.autoconfigure.accessmanager.AclAccessManagerAutoConfiguration;
-import org.geoserver.acl.plugin.autoconfigure.accessmanager.ConditionalOnAclEnabled;
+import org.geoserver.acl.plugin.autoconfigure.conditionals.ConditionalOnAclEnabled;
+import org.geoserver.acl.plugin.config.cache.CachingAuthorizationServicePluginConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Import;
-
-import javax.annotation.PostConstruct;
 
 /**
  * @since 1.0
@@ -25,12 +23,6 @@ import javax.annotation.PostConstruct;
         name = "geoserver.acl.client.caching",
         havingValue = "true",
         matchIfMissing = true)
-@Import(CachingAuthorizationServiceConfiguration.class)
-@Slf4j(topic = "org.geoserver.acl.plugin.autoconfigure.cache")
-public class CachingAuthorizationServicePluginAutoConfiguration {
-
-    @PostConstruct
-    void logUsing() {
-        log.info("Caching ACL AuthorizationService enabled");
-    }
-}
+@EnableCaching
+@Import(CachingAuthorizationServicePluginConfiguration.class)
+public class CachingAuthorizationServicePluginAutoConfiguration {}

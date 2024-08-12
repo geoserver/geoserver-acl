@@ -4,7 +4,7 @@
  */
 package org.geoserver.acl.plugin.autoconfigure.webui;
 
-import org.geoserver.acl.plugin.autoconfigure.accessmanager.ConditionalOnAclEnabled;
+import org.geoserver.acl.plugin.autoconfigure.conditionals.ConditionalOnAclEnabled;
 import org.geoserver.acl.plugin.config.webui.ACLWebUIConfiguration;
 import org.geoserver.security.web.SecuritySettingsPage;
 import org.geoserver.web.GeoServerBasePage;

@@ -4,7 +4,7 @@
  */
 package org.geoserver.acl.plugin.autoconfigure.wps;
 
-import org.geoserver.acl.plugin.autoconfigure.accessmanager.ConditionalOnAclEnabled;
+import org.geoserver.acl.plugin.autoconfigure.conditionals.ConditionalOnAclEnabled;
 import org.geoserver.acl.plugin.config.wps.AclWpsIntegrationConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;

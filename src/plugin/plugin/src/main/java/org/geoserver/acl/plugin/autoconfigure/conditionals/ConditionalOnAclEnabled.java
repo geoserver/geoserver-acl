@@ -2,9 +2,12 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.acl.plugin.autoconfigure.accessmanager;
+package org.geoserver.acl.plugin.autoconfigure.conditionals;
 
+import org.geoserver.acl.plugin.config.condition.AclEnabledCondition;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Configuration;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -12,6 +15,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Spring Boot {@link AutoConfiguration @AutoConfiguration} conditional to enable/disable the plugin
+ *
+ * <p>For plain Spring (without spring boot auto configuration support), {@link
+ * AclEnabledCondition @Conditional(AclEnabledCondition.class)} is to be used on plain {@link
+ * Configuration @Configuration} classes
+ */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

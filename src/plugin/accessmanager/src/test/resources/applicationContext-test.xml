@@ -13,6 +13,8 @@
     directory.
   -->
 
+   <!-- load from AccessManagerSpringConfig -->
+	<context:component-scan base-package="org.geoserver.acl.plugin.config.accessmanager"/>
    
    <!-- load from AuthorizationServiceTestConfig -->
 	<context:component-scan base-package="org.geoserver.acl.plugin.test.config"/>

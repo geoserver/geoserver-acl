@@ -4,9 +4,10 @@
  */
 package org.geoserver.acl.plugin.autoconfigure.accessmanager;
 
-import org.geoserver.acl.plugin.config.accessmanager.AccessManagerSpringConfig;
-import org.geoserver.acl.plugin.config.configmanager.AclConfigurationManagerConfiguration;
-import org.geoserver.acl.plugin.config.domain.client.ApiClientAclDomainServicesConfiguration;
+import org.geoserver.acl.plugin.accessmanager.ACLResourceAccessManager;
+import org.geoserver.acl.plugin.autoconfigure.conditionals.ConditionalOnAclEnabled;
+import org.geoserver.acl.plugin.config.accessmanager.AclAccessManagerConfiguration;
+import org.geoserver.security.ResourceAccessManager;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Import;
 
@@ -18,12 +19,9 @@ import org.springframework.context.annotation.Import;
  * delegating resource access requests to the GeoServer ACL service.
  *
  * @since 1.0
+ * @see AclAccessManagerConfiguration
  */
 @AutoConfiguration
 @ConditionalOnAclEnabled
-@Import({ //
-    AclConfigurationManagerConfiguration.class, //
-    ApiClientAclDomainServicesConfiguration.class, //
-    AccessManagerSpringConfig.class
-})
+@Import(AclAccessManagerConfiguration.class)
 public class AclAccessManagerAutoConfiguration {}
