@@ -13,7 +13,6 @@
     directory.
   -->
 
-   
-   <!-- load from AclConfigurationManagerConfiguration -->
-	<context:component-scan base-package="org.geoserver.acl.plugin.config.configmanager"/>
+   <!-- load from AclPluginSpringConfiguration -->
+	<context:component-scan base-package="org.geoserver.acl.plugin.config.spring"/>
 </beans>

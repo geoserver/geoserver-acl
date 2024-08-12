@@ -95,6 +95,14 @@ public class CachingAuthorizationService extends ForwardingAuthorizationService 
         log.debug("evicted all {} admin authorizations upon event {}", evictCount, event);
     }
 
+    public void evictAll() {
+        int dataAuth = evictAll(ruleAccessCache);
+        int adminAuth = evictAll(adminRuleAccessCache);
+        int summaries = evictAll(viewablesCache);
+        int total = dataAuth + adminAuth + summaries;
+        log.info("evicted {} cached ACL authorizations", total);
+    }
+
     private int evictAll(Map<?, ?> cache) {
         int size = cache.size();
         cache.clear();
