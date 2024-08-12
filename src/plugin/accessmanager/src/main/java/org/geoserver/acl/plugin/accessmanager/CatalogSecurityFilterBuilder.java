@@ -8,13 +8,15 @@ package org.geoserver.acl.plugin.accessmanager;
 
 import static org.geoserver.acl.authorization.WorkspaceAccessSummary.ANY;
 import static org.geoserver.acl.authorization.WorkspaceAccessSummary.NO_WORKSPACE;
-import static org.geoserver.catalog.Predicates.*;
+import static org.geoserver.catalog.Predicates.acceptAll;
+import static org.geoserver.catalog.Predicates.acceptNone;
 import static org.geoserver.catalog.Predicates.and;
 import static org.geoserver.catalog.Predicates.equal;
 import static org.geoserver.catalog.Predicates.in;
 import static org.geoserver.catalog.Predicates.isInstanceOf;
 import static org.geoserver.catalog.Predicates.isNull;
 import static org.geoserver.catalog.Predicates.not;
+import static org.geoserver.catalog.Predicates.notEqual;
 import static org.geoserver.catalog.Predicates.or;
 import static org.geotools.api.filter.Filter.EXCLUDE;
 import static org.geotools.api.filter.Filter.INCLUDE;
@@ -35,7 +37,6 @@ import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -64,13 +65,13 @@ public class CatalogSecurityFilterBuilder {
             return EXCLUDE;
         }
         if (WorkspaceInfo.class.isAssignableFrom(clazz)) {
-            return workspaceNameFilter("name");
+            return workspaceNameFilter("name", false);
         }
         if (NamespaceInfo.class.isAssignableFrom(clazz)) {
-            return workspaceNameFilter("prefix");
+            return workspaceNameFilter("prefix", false);
         }
         if (StoreInfo.class.isAssignableFrom(clazz)) {
-            return workspaceNameFilter("workspace.name");
+            return workspaceNameFilter("workspace.name", false);
         }
         if (ResourceInfo.class.isAssignableFrom(clazz)) {
             return layerFilter("store.workspace.name", "name", ResourceInfo.class);
@@ -86,7 +87,7 @@ public class CatalogSecurityFilterBuilder {
     }
 
     private Filter styleFilter() {
-        return workspaceNameFilter("workspace.name");
+        return workspaceNameFilter("workspace.name", true);
     }
 
     private Filter publishedInfoFilter(Class<? extends PublishedInfo> clazz) {
@@ -98,9 +99,11 @@ public class CatalogSecurityFilterBuilder {
         }
         Filter layerInfoFilter = build(LayerInfo.class);
         Filter layerGroupInfoFilter = build(LayerGroupInfo.class);
-
-        Filter layerFilter = and(isInstanceOf(LayerInfo.class), layerInfoFilter);
-        Filter groupFilter = and(isInstanceOf(LayerGroupInfo.class), layerGroupInfoFilter);
+        if (INCLUDE.equals(layerInfoFilter) && INCLUDE.equals(layerGroupInfoFilter)) {
+            return INCLUDE;
+        }
+        Filter layerFilter = instanceOfAnd(LayerInfo.class, layerInfoFilter);
+        Filter groupFilter = instanceOfAnd(LayerGroupInfo.class, layerGroupInfoFilter);
 
         if (EXCLUDE.equals(layerInfoFilter)) {
             return groupFilter;
@@ -111,6 +114,11 @@ public class CatalogSecurityFilterBuilder {
         return or(layerFilter, groupFilter);
     }
 
+    private Filter instanceOfAnd(Class<?> typeOf, Filter andThen) {
+        if (EXCLUDE.equals(andThen)) return andThen;
+        return and(isInstanceOf(typeOf), andThen);
+    }
+
     private Filter layerFilter(
             String workspaceProperty, String nameProperty, Class<? extends CatalogInfo> type) {
         List<WorkspaceAccessSummary> summaries = viewables.getWorkspaces();
@@ -119,15 +127,21 @@ public class CatalogSecurityFilterBuilder {
         Set<String> hideAllWorkspaceNames = new TreeSet<>();
         for (WorkspaceAccessSummary wsSummary : summaries) {
             String workspace = wsSummary.getWorkspace();
-            if (isHideAll(wsSummary)) {
-                hideAllWorkspaceNames.add(workspace);
+            if (wsSummary.hideAll()) {
+                if (!ANY.equals(workspace)) {
+                    hideAllWorkspaceNames.add(workspace);
+                }
             } else {
                 boolean isNullWorkspace = NO_WORKSPACE.equals(workspace);
                 boolean supportsNullWorkspace = LayerGroupInfo.class.equals(type);
                 // ignore if workspace is null and type is LayerInfo or ResourceInfo
                 if (!isNullWorkspace || supportsNullWorkspace) {
                     Filter wsLayersFitler =
-                            filterLayersOnWorkspace(wsSummary, workspaceProperty, nameProperty);
+                            filterLayersOnWorkspace(
+                                    wsSummary,
+                                    workspaceProperty,
+                                    supportsNullWorkspace,
+                                    nameProperty);
 
                     if (EXCLUDE.equals(filter)) {
                         filter = wsLayersFitler;
@@ -159,19 +173,19 @@ public class CatalogSecurityFilterBuilder {
         return notEqualOrIn(workspaceProperty, hideAllWorkspaceNames, EXCLUDE);
     }
 
-    private boolean isHideAll(WorkspaceAccessSummary ws) {
-        return ws.getAllowed().isEmpty() && ws.getForbidden().contains(ANY);
-    }
-
     @NonNull
     private Filter filterLayersOnWorkspace(
-            WorkspaceAccessSummary vl, String workspaceProperty, String nameProperty) {
+            WorkspaceAccessSummary vl,
+            String workspaceProperty,
+            boolean includeNullWorkspace,
+            String nameProperty) {
 
         final String workspace = vl.getWorkspace();
         final Set<String> allowed = vl.getAllowed();
         final Set<String> forbidden = vl.getForbidden();
 
-        Filter workspaceFilter = workspaceNameFilter(workspaceProperty, Set.of(workspace));
+        Filter workspaceFilter =
+                workspaceNameFilter(workspaceProperty, includeNullWorkspace, Set.of(workspace));
         Filter filter;
         if (allowed.isEmpty() && forbidden.isEmpty()) {
             filter = workspaceFilter;
@@ -227,19 +241,26 @@ public class CatalogSecurityFilterBuilder {
         return viewables.visibleWorkspaces();
     }
 
-    private Filter workspaceNameFilter(String workspaceProperty) {
+    private Filter workspaceNameFilter(String workspaceProperty, boolean includeNullWorkspace) {
         Set<String> visibleWorkspaces = getVisibleWorkspaces();
-        return workspaceNameFilter(workspaceProperty, visibleWorkspaces);
+        if (includeNullWorkspace && viewables.workspace(NO_WORKSPACE) != null) {
+            visibleWorkspaces = new TreeSet<>(visibleWorkspaces);
+            visibleWorkspaces.add(NO_WORKSPACE);
+        }
+        return workspaceNameFilter(workspaceProperty, includeNullWorkspace, visibleWorkspaces);
     }
 
-    private Filter workspaceNameFilter(String workspaceProperty, Set<String> visibleWorkspaces) {
+    private Filter workspaceNameFilter(
+            String workspaceProperty, boolean includeNullWorkspace, Set<String> visibleWorkspaces) {
         if (visibleWorkspaces.contains(ANY)) {
             return acceptAll();
         }
-        Filter filter = acceptAll();
+        Filter filter = acceptNone();
         if (visibleWorkspaces.contains(NO_WORKSPACE)) {
-            filter = isNull(workspaceProperty);
-            visibleWorkspaces = new HashSet<>(visibleWorkspaces);
+            if (includeNullWorkspace) {
+                filter = isNull(workspaceProperty);
+            }
+            visibleWorkspaces = new TreeSet<>(visibleWorkspaces);
             visibleWorkspaces.remove(NO_WORKSPACE);
         }
         if (!visibleWorkspaces.isEmpty()) {
@@ -250,7 +271,7 @@ public class CatalogSecurityFilterBuilder {
             } else {
                 namesFilter = in(workspaceProperty, workspaces);
             }
-            if (INCLUDE.equals(filter)) {
+            if (EXCLUDE.equals(filter)) {
                 filter = namesFilter;
             } else {
                 filter = or(filter, namesFilter);
