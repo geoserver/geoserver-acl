@@ -8,12 +8,13 @@ package org.geoserver.acl.plugin.accessmanager;
 
 import static org.geoserver.acl.authorization.AccessSummary.of;
 import static org.geoserver.acl.plugin.accessmanager.CatalogSecurityFilterBuilder.buildSecurityFilter;
-import static org.geoserver.catalog.Predicates.*;
 import static org.geoserver.catalog.Predicates.and;
+import static org.geoserver.catalog.Predicates.equal;
 import static org.geoserver.catalog.Predicates.in;
 import static org.geoserver.catalog.Predicates.isInstanceOf;
 import static org.geoserver.catalog.Predicates.isNull;
 import static org.geoserver.catalog.Predicates.not;
+import static org.geoserver.catalog.Predicates.notEqual;
 import static org.geoserver.catalog.Predicates.or;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,8 +46,12 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class CatalogSecurityFilterBuilderTest {
+
+    private final WorkspaceAccessSummary ALLOW_ALL = workspace("*", "*");
+    private final WorkspaceAccessSummary HIDE_ALL = workspace("*", Set.of(), Set.of("*"));
 
     @Test
     public void unknownCatalogInfoArgument() {
@@ -61,17 +66,89 @@ public class CatalogSecurityFilterBuilderTest {
     @Test
     public void emptyAccessSummary() {
         AccessSummary accessSummary = AccessSummary.of(List.of());
-        Filter expected = Filter.EXCLUDE;
-        List.of(
+        assertForAllInterfaces(accessSummary, Filter.EXCLUDE);
+    }
+
+    @Test
+    public void hideAll() {
+        AccessSummary accessSummary = of(HIDE_ALL);
+        assertForAllInterfaces(accessSummary, Filter.EXCLUDE);
+    }
+
+    @Test
+    public void allowAll() {
+        AccessSummary accessSummary = of(ALLOW_ALL);
+        assertForAllInterfaces(accessSummary, Filter.INCLUDE);
+    }
+
+    @Test
+    public void manyWorkspacesAndAllowAll() {
+        AccessSummary accessSummary = of(workspace("ne", "l1"), workspace("cite", "*"), ALLOW_ALL);
+        assertForAllInterfaces(accessSummary, Filter.INCLUDE);
+    }
+
+    @Test
+    public void manyWorkspacesAndDenyAll() {
+        WorkspaceAccessSummary allRootLayerGroups =
+                workspace(WorkspaceAccessSummary.NO_WORKSPACE, "*");
+        AccessSummary summary =
+                of(
+                        workspace("ne", "l1"),
+                        workspace("cite", "*"),
+                        HIDE_ALL,
+                        workspace("topp", "states"),
+                        allRootLayerGroups);
+
+        List<String> conflatedVisibles = List.copyOf(summary.visibleWorkspaces());
+        // excludes the no workspace and all workspace markers
+        assertEquals(List.of("cite", "ne", "topp"), conflatedVisibles);
+
+        assertBuildFilter(WorkspaceInfo.class, summary, in("name", conflatedVisibles));
+        assertBuildFilter(NamespaceInfo.class, summary, in("prefix", conflatedVisibles));
+        assertBuildFilter(StoreInfo.class, summary, in("workspace.name", conflatedVisibles));
+        assertBuildFilter(
+                StyleInfo.class,
+                summary,
+                or(isNull("workspace.name"), in("workspace.name", conflatedVisibles)));
+
+        assertBuildFilter(
+                ResourceInfo.class,
+                summary,
+                or(
+                        equal("store.workspace.name", "cite"),
+                        and(equal("store.workspace.name", "ne"), equal("name", "l1")),
+                        and(equal("store.workspace.name", "topp"), equal("name", "states"))));
+
+        assertBuildFilter(
+                LayerInfo.class,
+                summary,
+                or(
+                        equal("resource.store.workspace.name", "cite"),
+                        and(equal("resource.store.workspace.name", "ne"), equal("name", "l1")),
+                        and(
+                                equal("resource.store.workspace.name", "topp"),
+                                equal("name", "states"))));
+    }
+
+    private void assertForAllInterfaces(AccessSummary accessSummary, Filter expected) {
+        Stream.of(
                         WorkspaceInfo.class,
                         NamespaceInfo.class,
                         StoreInfo.class,
                         ResourceInfo.class,
-                        PublishedInfo.class,
+                        StyleInfo.class,
                         LayerInfo.class,
                         LayerGroupInfo.class,
-                        StyleInfo.class)
-                .forEach(type -> assertEquals(expected, buildSecurityFilter(accessSummary, type)));
+                        PublishedInfo.class)
+                .forEach(type -> assertBuildFilter(type, accessSummary, expected));
+    }
+
+    private void assertBuildFilter(
+            Class<? extends CatalogInfo> type, AccessSummary accessSummary, Filter expected) {
+        assertEquals(
+                String.format("Mismatch for %s with %s", type.getSimpleName(), accessSummary),
+                expected,
+                buildSecurityFilter(accessSummary, type));
     }
 
     @Test
@@ -112,6 +189,24 @@ public class CatalogSecurityFilterBuilderTest {
         AccessSummary accessSummary = of(workspace("cite"), workspace("ne"), workspace("topp"));
         Filter filter = buildSecurityFilter(accessSummary, NamespaceInfo.class);
         Filter expected = in("prefix", List.of("cite", "ne", "topp"));
+        assertEquals(expected, filter);
+    }
+
+    @Test
+    public void namespaceInfoFilterManyAndHideAll() {
+        AccessSummary accessSummary =
+                of(HIDE_ALL, workspace("cite"), workspace("ne"), workspace("topp"));
+        Filter filter = buildSecurityFilter(accessSummary, NamespaceInfo.class);
+        Filter expected = in("prefix", List.of("cite", "ne", "topp"));
+        assertEquals(expected, filter);
+    }
+
+    @Test
+    public void namespaceInfoFilterManyAndAllowAll() {
+        AccessSummary accessSummary =
+                of(ALLOW_ALL, workspace("cite"), workspace("ne"), workspace("topp"));
+        Filter filter = buildSecurityFilter(accessSummary, NamespaceInfo.class);
+        Filter expected = Filter.INCLUDE;
         assertEquals(expected, filter);
     }
 
@@ -285,7 +380,7 @@ public class CatalogSecurityFilterBuilderTest {
         AccessSummary accessSummary =
                 of(
                         // allow all
-                        workspace("*", "*"),
+                        ALLOW_ALL,
                         // but hide all from cite
                         workspace("cite", Set.of(), Set.of("*")));
 
@@ -301,7 +396,7 @@ public class CatalogSecurityFilterBuilderTest {
                         // hide all from cite
                         workspace("cite", Set.of(), Set.of("*")),
                         // allow everything else
-                        workspace("*", "*"));
+                        ALLOW_ALL);
 
         actual = buildSecurityFilter(accessSummary, LayerInfo.class);
         assertEquals(expected, actual);
@@ -311,7 +406,7 @@ public class CatalogSecurityFilterBuilderTest {
     public void layerInfoFilterAllowAllButSomeWorkspaces() {
         AccessSummary accessSummary =
                 of(
-                        workspace("*", "*"), // allow all
+                        ALLOW_ALL, // allow all
                         // but hide all from cite and ne workspaces
                         workspace("cite", Set.of(), Set.of("*")),
                         workspace("ne", Set.of(), Set.of("*")));
@@ -342,6 +437,18 @@ public class CatalogSecurityFilterBuilderTest {
         Filter toppfilter = equal("resource.store.workspace.name", "topp");
 
         Filter expected = or(citefilter, nefilter, toppfilter);
+        Filter actual = buildSecurityFilter(accessSummary, LayerInfo.class);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void layerInfoFilterDenyAllButAWorkspace() {
+        AccessSummary accessSummary = of(HIDE_ALL, workspace("ne", "neLayer1", "neLayer2"));
+
+        List<String> nelayers = List.copyOf(accessSummary.workspace("ne").getAllowed());
+
+        Filter nefilter = and(equal("resource.store.workspace.name", "ne"), in("name", nelayers));
+        Filter expected = nefilter;
         Filter actual = buildSecurityFilter(accessSummary, LayerInfo.class);
         assertEquals(expected, actual);
     }
@@ -487,7 +594,7 @@ public class CatalogSecurityFilterBuilderTest {
     public void styleMultipleWorkspaceFilter() {
         AccessSummary accessSummary = of(workspace("ne", "world"), workspace("cite", "*"));
 
-        Filter expected = in("workspace.name", List.of("ne", "cite"));
+        Filter expected = in("workspace.name", List.of("cite", "ne"));
         Filter actual = buildSecurityFilter(accessSummary, StyleInfo.class);
         assertEquals(expected, actual);
     }
@@ -495,9 +602,8 @@ public class CatalogSecurityFilterBuilderTest {
     @Test
     public void styleHiddenWorkspaceFilter() {
 
-        Set<String> visible = Set.of("*");
-        Set<String> hidden = Set.of("hidden1", "hidden2");
-        AccessSummary accessSummary = of(workspace("cite", visible, hidden));
+        AccessSummary accessSummary =
+                of(workspace("cite", Set.of("*"), Set.of("hidden1", "hidden2")));
 
         Filter expected = equal("workspace.name", "cite");
         Filter actual = buildSecurityFilter(accessSummary, StyleInfo.class);
@@ -510,7 +616,7 @@ public class CatalogSecurityFilterBuilderTest {
         AccessSummary accessSummary =
                 of(workspace("ne", "world"), workspace("cite", "*"), workspace("", "rootlg"));
 
-        Filter expected = or(isNull("workspace.name"), in("workspace.name", List.of("ne", "cite")));
+        Filter expected = or(isNull("workspace.name"), in("workspace.name", List.of("cite", "ne")));
         Filter actual = buildSecurityFilter(accessSummary, StyleInfo.class);
         assertEquals(expected, actual);
     }

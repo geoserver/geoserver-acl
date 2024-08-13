@@ -26,6 +26,7 @@ import java.util.TreeSet;
 @Value
 @Builder(builderClassName = "Builder")
 public class WorkspaceAccessSummary implements Comparable<WorkspaceAccessSummary> {
+
     public static final String NO_WORKSPACE = "";
     public static final String ANY = "*";
 
@@ -58,10 +59,18 @@ public class WorkspaceAccessSummary implements Comparable<WorkspaceAccessSummary
      */
     @NonNull private Set<String> forbidden;
 
+    public boolean hideAll() {
+        return getAllowed().isEmpty() && getForbidden().contains(ANY);
+    }
+
+    public boolean visible() {
+        return !hideAll();
+    }
+
     @Override
     public String toString() {
         return format(
-                "[%s: admin: %s, allowed: %s, forbidden: %s]",
+                "workapce: %s: admin: %s, allowed: %s, forbidden: %s",
                 workspace, adminAccess, allowed, forbidden);
     }
 

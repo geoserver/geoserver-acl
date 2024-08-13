@@ -4,6 +4,9 @@
  */
 package org.geoserver.acl.authorization;
 
+import static org.geoserver.acl.authorization.WorkspaceAccessSummary.ANY;
+import static org.geoserver.acl.authorization.WorkspaceAccessSummary.NO_WORKSPACE;
+
 import static java.lang.String.format;
 
 import lombok.EqualsAndHashCode;
@@ -17,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -29,15 +33,15 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 public class AccessSummary {
 
-    private static final WorkspaceAccessSummary HIDDEN =
+    /** Immutable mapping of workspace name to summary */
+    private Map<String, WorkspaceAccessSummary> workspaceSummaries;
+
+    private static final WorkspaceAccessSummary HIDE_ALL =
             WorkspaceAccessSummary.builder()
                     .workspace("*")
                     .adminAccess(null)
                     .addForbidden("*")
                     .build();
-
-    /** Immutable mapping of workspace name to summary */
-    private Map<String, WorkspaceAccessSummary> workspaceSummaries;
 
     private AccessSummary(Map<String, WorkspaceAccessSummary> workspaceSummaries) {
         this.workspaceSummaries = workspaceSummaries;
@@ -62,13 +66,13 @@ public class AccessSummary {
     }
 
     public boolean hasAdminReadAccess(@NonNull String workspaceName) {
-        boolean user = workspaceSummaries.getOrDefault("*", HIDDEN).isUser();
-        return user ? user : workspaceSummaries.getOrDefault(workspaceName, HIDDEN).isUser();
+        boolean user = workspaceSummaries.getOrDefault(ANY, HIDE_ALL).isUser();
+        return user ? user : workspaceSummaries.getOrDefault(workspaceName, HIDE_ALL).isUser();
     }
 
     public boolean hasAdminWriteAccess(@NonNull String workspaceName) {
-        boolean admin = workspaceSummaries.getOrDefault("*", HIDDEN).isAdmin();
-        return admin ? admin : workspaceSummaries.getOrDefault(workspaceName, HIDDEN).isAdmin();
+        boolean admin = workspaceSummaries.getOrDefault(ANY, HIDE_ALL).isAdmin();
+        return admin ? admin : workspaceSummaries.getOrDefault(workspaceName, HIDE_ALL).isAdmin();
     }
 
     public boolean canSeeLayer(String workspaceName, @NonNull String layerName) {
@@ -79,12 +83,16 @@ public class AccessSummary {
 
     private WorkspaceAccessSummary summary(@NonNull String workspaceName) {
         var summary = workspaceSummaries.get(workspaceName);
-        if (null == summary) summary = workspaceSummaries.getOrDefault("*", HIDDEN);
+        if (null == summary) summary = workspaceSummaries.getOrDefault(ANY, HIDE_ALL);
         return summary;
     }
 
     public Set<String> visibleWorkspaces() {
-        return workspaceSummaries.keySet();
+        return workspaceSummaries.values().stream()
+                .filter(WorkspaceAccessSummary::visible)
+                .map(WorkspaceAccessSummary::getWorkspace)
+                .filter(name -> !NO_WORKSPACE.equals(name))
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     public Set<String> adminableWorkspaces() {
@@ -96,7 +104,7 @@ public class AccessSummary {
     @Override
     public String toString() {
         var values = new TreeMap<>(workspaceSummaries).values();
-        return format("%s[%s]", getClass().getSimpleName(), values);
+        return format("%s(%s)", getClass().getSimpleName(), values);
     }
 
     public boolean hasAdminRightsToAnyWorkspace() {
