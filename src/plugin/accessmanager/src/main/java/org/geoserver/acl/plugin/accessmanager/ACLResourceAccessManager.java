@@ -6,6 +6,7 @@
  */
 package org.geoserver.acl.plugin.accessmanager;
 
+import static org.geoserver.acl.authorization.AccessInfo.ALLOW_ALL;
 import static org.geoserver.acl.domain.rules.GrantType.ALLOW;
 import static org.geoserver.acl.domain.rules.GrantType.DENY;
 import static org.geoserver.acl.domain.rules.GrantType.LIMIT;
@@ -46,6 +47,7 @@ import org.geoserver.ows.Request;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.security.AbstractResourceAccessManager;
 import org.geoserver.security.AccessLimits;
+import org.geoserver.security.AdminRequest;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.CoverageAccessLimits;
 import org.geoserver.security.DataAccessLimits;
@@ -206,6 +208,10 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
     /** We expect the user not to be null and not to be admin */
     private boolean isWorkspaceAdmin(Authentication user, WorkspaceInfo workspace) {
         String workspaceName = workspace.getName();
+        return isWorkspaceAdmin(user, workspaceName);
+    }
+
+    private boolean isWorkspaceAdmin(Authentication user, String workspaceName) {
         AccessSummary accessSummary = getAccessSummary(user);
         return accessSummary.hasAdminWriteAccess(workspaceName);
     }
@@ -279,6 +285,10 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
         return user.getAuthorities().stream().map(GrantedAuthority::getAuthority);
     }
 
+    private boolean isAdminRequest() {
+        return null != AdminRequest.get();
+    }
+
     private AccessLimits getAccessLimits(
             Authentication user,
             CatalogInfo info,
@@ -291,73 +301,68 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
             return buildAdminAccessLimits(info);
         }
 
-        AccessRequest accessRequest = buildAccessRequest(workspace, layer, user);
-        AccessInfo accessInfo = getAccessInfo(accessRequest);
-
-        final Request req = Dispatcher.REQUEST.get();
-        final String service = req != null ? req.getService() : null;
-        final boolean isWms = "WMS".equalsIgnoreCase(service);
-        final boolean isWps = "WPS".equalsIgnoreCase(service);
-        final boolean layerGroupsRequested = CollectionUtils.isNotEmpty(containers);
-
+        AccessInfo accessInfo;
         ProcessingResult processingResult = null;
-        if (isWms && !layerGroupsRequested) {
-            // is direct access we need to retrieve eventually present groups.
-            Collection<LayerGroupSummary> summaries = getGroupSummary(info);
-            if (!summaries.isEmpty()) {
-                boolean allOpaque = allOpaque(summaries);
-                boolean noneSingle = noneSingle(summaries);
-                // all opaque we deny and don't perform any resolution of group limits.
-                if (allOpaque) {
-                    accessInfo = accessInfo.withGrant(DENY);
-                } else if (noneSingle) {
-                    // if a single group is present we don't apply any limit from containers.
-                    processingResult =
-                            getContainerResolverResult(
-                                    info, layer, workspace, user, null, summaries);
-                }
-            }
-        } else if (layerGroupsRequested) {
-            // layer is requested in context of a layer group, we need to process the
-            // containers limits.
-            processingResult =
-                    getContainerResolverResult(info, layer, workspace, user, containers, List.of());
-        }
 
-        if (isWps) {
-            if (layerGroupsRequested) {
-                log(
-                        WARNING,
-                        "Don't know how to deal with WPS requests for group data. Won't dive into single process limits.");
-            } else {
-                WPSAccessInfo resolvedAccessInfo =
-                        wpsHelper.resolveWPSAccess(accessRequest, accessInfo);
-                if (resolvedAccessInfo != null) {
-                    accessInfo = resolvedAccessInfo.getAccessInfo();
-                    processingResult = wpsProcessingResult(accessInfo, resolvedAccessInfo);
-                    log(
-                            FINE,
-                            "Got WPS access {0} for layer {1} and user {2}",
-                            accessInfo,
-                            layer,
-                            getUserNameFromAuth(user));
-                }
-            }
-        }
-
-        AccessLimits limits;
-        if (info instanceof LayerGroupInfo) {
-            limits = buildLayerGroupAccessLimits(accessInfo);
-        } else if (info instanceof ResourceInfo) {
-            limits = buildResourceAccessLimits((ResourceInfo) info, accessInfo, processingResult);
-        } else if (info instanceof LayerInfo) {
-            limits =
-                    buildResourceAccessLimits(
-                            ((LayerInfo) info).getResource(), accessInfo, processingResult);
+        if (isAdminRequest() && isWorkspaceAdmin(user, workspace)) {
+            accessInfo = ALLOW_ALL;
         } else {
-            throw new IllegalArgumentException(
-                    "Expected LayerInfo|LayerGroupInfo|ResourceInfo, got " + info);
+            AccessRequest accessRequest = buildAccessRequest(workspace, layer, user);
+            accessInfo = getAccessInfo(accessRequest);
+
+            final Request req = Dispatcher.REQUEST.get();
+            final String service = req != null ? req.getService() : null;
+            final boolean isWms = "WMS".equalsIgnoreCase(service);
+            final boolean isWps = "WPS".equalsIgnoreCase(service);
+            final boolean layerGroupsRequested = CollectionUtils.isNotEmpty(containers);
+
+            if (isWms && !layerGroupsRequested) {
+                // is direct access we need to retrieve eventually present groups.
+                Collection<LayerGroupSummary> summaries = getGroupSummary(info);
+                if (!summaries.isEmpty()) {
+                    boolean allOpaque = allOpaque(summaries);
+                    boolean noneSingle = noneSingle(summaries);
+                    // all opaque we deny and don't perform any resolution of group limits.
+                    if (allOpaque) {
+                        accessInfo = accessInfo.withGrant(DENY);
+                    } else if (noneSingle) {
+                        // if a single group is present we don't apply any limit from containers.
+                        processingResult =
+                                getContainerResolverResult(
+                                        info, layer, workspace, user, null, summaries);
+                    }
+                }
+            } else if (layerGroupsRequested) {
+                // layer is requested in context of a layer group, we need to process the
+                // containers limits.
+                processingResult =
+                        getContainerResolverResult(
+                                info, layer, workspace, user, containers, List.of());
+            }
+
+            if (isWps) {
+                if (layerGroupsRequested) {
+                    log(
+                            WARNING,
+                            "Don't know how to deal with WPS requests for group data. Won't dive into single process limits.");
+                } else {
+                    WPSAccessInfo resolvedAccessInfo =
+                            wpsHelper.resolveWPSAccess(accessRequest, accessInfo);
+                    if (resolvedAccessInfo != null) {
+                        accessInfo = resolvedAccessInfo.getAccessInfo();
+                        processingResult = wpsProcessingResult(accessInfo, resolvedAccessInfo);
+                        log(
+                                FINE,
+                                "Got WPS access {0} for layer {1} and user {2}",
+                                accessInfo,
+                                layer,
+                                getUserNameFromAuth(user));
+                    }
+                }
+            }
         }
+
+        AccessLimits limits = buildLayerLimits(info, accessInfo, processingResult);
 
         log(
                 FINE,
@@ -367,6 +372,22 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
                 getUserNameFromAuth(user));
 
         return limits;
+    }
+
+    private AccessLimits buildLayerLimits(
+            CatalogInfo info, AccessInfo accessInfo, ProcessingResult processingResult) {
+
+        if (info instanceof ResourceInfo) {
+            ResourceInfo resource = (ResourceInfo) info;
+            return buildResourceAccessLimits(resource, accessInfo, processingResult);
+        }
+        if (info instanceof LayerInfo) {
+            ResourceInfo resource = ((LayerInfo) info).getResource();
+            return buildLayerLimits(resource, accessInfo, processingResult);
+        }
+        if (info instanceof LayerGroupInfo) return buildLayerGroupAccessLimits(accessInfo);
+        throw new IllegalArgumentException(
+                "Expected LayerInfo|LayerGroupInfo|ResourceInfo, got " + info);
     }
 
     private ProcessingResult wpsProcessingResult(
