@@ -5,7 +5,7 @@ volumes:
 
 services:
   acldb:
-    image: postgis/postgis:15-3.3
+    image: imresamu/postgis:15-3.4 #image with arm/64 support
     environment:
       - POSTGRES_DB=acl
       - POSTGRES_USER=acl
