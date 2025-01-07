@@ -38,7 +38,7 @@
     <springdoc.version>1.8.0</springdoc.version>
     <caffeine.version>3.1.8</caffeine.version>
     <snakeyaml.version>2.2</snakeyaml.version>
-    <flyway.version>10.10.0</flyway.version>
+    <flyway.version>11.1.0</flyway.version>
     <h2.version>2.2.224</h2.version>
     <fork.javac>true</fork.javac>
     <javac.maxHeapSize>256M</javac.maxHeapSize>
