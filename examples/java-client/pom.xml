@@ -42,7 +42,7 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-json</artifactId>
-      <version>2.7.11</version>
+      <version>2.7.18</version>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <version>2.7.11</version>
+      <version>2.7.18</version>
       <scope>test</scope>
     </dependency>
     <dependency>

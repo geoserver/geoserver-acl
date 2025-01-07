@@ -9,12 +9,14 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTester;
 import org.geolatte.geom.Geometry;
@@ -63,9 +65,9 @@ public class GeometryWktTextAreaTest {
 
         form = tester.newFormTester("panel:form");
         form.setValue("wkt", "SRID=4326;POLYGON ((-180 -90,-180 90,180 90,180 -90,-180 -90))");
-        //		String message = assertThrows(ConversionException.class, form::submit).getMessage();
-        //		assertThat(message, containsString("Expected MultiPolygon, got Polygon"));
-        assertThrows(WicketRuntimeException.class, form::submit);
+        // WicketRuntimException for GeoServer 2.26.x or lower, ConversionException since 2.27.x
+        RuntimeException error = assertThrows(RuntimeException.class, form::submit);
+        assertTrue(error instanceof ConversionException || error instanceof WicketRuntimeException);
     }
 
     @Test
@@ -97,7 +99,9 @@ public class GeometryWktTextAreaTest {
         FormTester form = tester.newFormTester("panel:form");
 
         form.setValue("wkt", "MULTIPOLYGON(( NAH ))");
-        assertThrows(WicketRuntimeException.class, form::submit);
+        RuntimeException error = assertThrows(RuntimeException.class, form::submit);
+        // WicketRuntimException for GeoServer 2.26.x or lower, ConversionException since 2.27.x
+        assertTrue(error instanceof ConversionException || error instanceof WicketRuntimeException);
     }
 
     @Test

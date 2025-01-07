@@ -71,10 +71,11 @@
     <revision>2.4-SNAPSHOT</revision>
     <java.version>17</java.version>
     <!-- Default GeoServer version to build and test the plugin against-->
-    <gs.version>2.26-SNAPSHOT</gs.version>
+    <gs.version>2.27-SNAPSHOT</gs.version>
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
-    <gt.version>32-SNAPSHOT</gt.version>
-    <jts.version>1.19.0</jts.version>
+    <gt.version>33-SNAPSHOT</gt.version>
+    <wicket.version>9.19.0</wicket.version>
+    <jts.version>1.20.0</jts.version>
     <fmt.action>format</fmt.action>
     <fmt.skip>false</fmt.skip>
     <openapi-generator-maven-plugin.version>7.0.1</openapi-generator-maven-plugin.version>
@@ -579,7 +580,7 @@
           <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-core</artifactId>
-            <version>7.18.0</version>
+            <version>${wicket.version}</version>
           </dependency>
         </dependencies>
       </dependencyManagement>

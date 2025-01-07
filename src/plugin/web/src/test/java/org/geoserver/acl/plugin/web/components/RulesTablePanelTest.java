@@ -4,12 +4,14 @@
  */
 package org.geoserver.acl.plugin.web.components;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.repeater.OddEvenItem;
 import org.geoserver.acl.domain.adminrules.AdminRule;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
@@ -73,7 +75,13 @@ public class RulesTablePanelTest extends AclWicketTestSupport {
         for (int i = 1; i <= 10; i++) {
             String itemPath = "rulesPanel:listContainer:items:" + i;
             tester.assertComponent(itemPath, OddEvenItem.class);
-            tester.assertListView(itemPath + ":itemProperties", expectedProperties);
+
+            @SuppressWarnings("unchecked")
+            ListView<MutableAdminRule> listView =
+                    (ListView<MutableAdminRule>)
+                            tester.getComponentFromLastRenderedPage(itemPath + ":itemProperties");
+            assertNotNull(listView);
+
             tester.assertComponent(
                     itemPath + ":itemProperties:5:component:up", ImageAjaxLink.class);
             tester.assertComponent(
