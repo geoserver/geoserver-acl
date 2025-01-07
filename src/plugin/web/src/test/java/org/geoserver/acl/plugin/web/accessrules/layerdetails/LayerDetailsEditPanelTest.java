@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -42,7 +43,8 @@ public class LayerDetailsEditPanelTest extends AclWicketTestSupport {
     private AjaxRequestTarget mockTarget;
 
     @Before
-    public void beforeEach() throws Exception {
+    @Override
+    public void beforeEach() throws IOException {
         super.beforeEach();
         mockTarget = mock(AjaxRequestTarget.class);
         setUpTester(new MutableRule());

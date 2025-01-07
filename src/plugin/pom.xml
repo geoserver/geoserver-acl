@@ -166,8 +166,8 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <gs.version>2.26-SNAPSHOT</gs.version>
-        <gt.version>32-SNAPSHOT</gt.version>
+        <gs.version>2.27-SNAPSHOT</gs.version>
+        <gt.version>33-SNAPSHOT</gt.version>
       </properties>
     </profile>
     <profile>
@@ -176,19 +176,10 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <gs.version>2.25.3</gs.version>
-        <gt.version>31.3</gt.version>
+        <gs.version>2.26.2</gs.version>
+        <gt.version>32.2</gt.version>
+        <wicket.version>7.18.0</wicket.version>
       </properties>
-      <dependencyManagement>
-        <dependencies>
-          <dependency>
-            <!-- downgrade the root dependencyConvergence maven profile settled versions where appropriate -->
-            <groupId>javax.measure</groupId>
-            <artifactId>unit-api</artifactId>
-            <version>2.1.2</version>
-          </dependency>
-        </dependencies>
-      </dependencyManagement>
     </profile>
     <profile>
       <id>gs_maintenance</id>
@@ -196,8 +187,9 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <gs.version>2.24.4</gs.version>
-        <gt.version>30.4</gt.version>
+        <gs.version>2.25.5</gs.version>
+        <gt.version>31.5</gt.version>
+        <wicket.version>7.18.0</wicket.version>
       </properties>
       <dependencyManagement>
         <dependencies>

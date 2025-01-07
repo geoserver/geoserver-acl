@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class ACLServiceConfigPageTest extends AclWicketTestSupport {
@@ -29,7 +30,7 @@ public class ACLServiceConfigPageTest extends AclWicketTestSupport {
 
     @Before
     @Override
-    public void beforeEach() throws Exception {
+    public void beforeEach() throws IOException {
         super.beforeEach();
         configManager = GeoServerExtensions.bean(AclConfigurationManager.class);
         assertNotNull(configManager);
