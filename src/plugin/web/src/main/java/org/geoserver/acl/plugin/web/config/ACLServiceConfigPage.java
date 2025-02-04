@@ -9,8 +9,6 @@ package org.geoserver.acl.plugin.web.config;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.AbstractSubmitLink;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
@@ -41,34 +39,9 @@ public class ACLServiceConfigPage extends GeoServerSecuredPage {
         form.setOutputMarkupId(true);
         super.add(form);
 
-        // TODO: allow to configure the url, user, and pwd
+        // TODO: allow to configure the url, user, and pwd?
         form.add(serviceURLField());
         form.add(testConnectionLink());
-
-        //        form.add(allowRemoteAndInlineLayers());
-        //        form.add(grantWriteToWorkspacesToAuthenticatedUsers());
-        //        form.add(useRolesToFilter());
-
-        // form.add(new TextField<>("acceptedRoles", new PropertyModel<>(configModel,
-        // "acceptedRoles")));
-
-        //        form.add(submitButton());
-        //        form.add(cancelButton());
-    }
-
-    private CheckBox useRolesToFilter() {
-        return new CheckBox("useRolesToFilter", pageModel.getUseRolesToFilter());
-    }
-
-    private CheckBox grantWriteToWorkspacesToAuthenticatedUsers() {
-        return new CheckBox(
-                "grantWriteToWorkspacesToAuthenticatedUsers",
-                pageModel.getGrantWriteToWorkspacesToAuthenticatedUsers());
-    }
-
-    private CheckBox allowRemoteAndInlineLayers() {
-        return new CheckBox(
-                "allowRemoteAndInlineLayers", pageModel.getAllowRemoteAndInlineLayers());
     }
 
     private TextField<String> serviceURLField() {
@@ -76,7 +49,6 @@ public class ACLServiceConfigPage extends GeoServerSecuredPage {
         ExtPropertyModel<String> serviceUrl = pageModel.getServiceUrl().setReadOnly(isInternal);
         TextField<String> serviceURLField = new TextField<>("servicesUrl", serviceUrl);
         serviceURLField.setRequired(true);
-        //        serviceURLField.setEnabled(!isInternal);
         serviceURLField.setEnabled(false);
         return serviceURLField;
     }
@@ -85,12 +57,19 @@ public class ACLServiceConfigPage extends GeoServerSecuredPage {
         return new AjaxSubmitLink("test") {
             private static final long serialVersionUID = 1L;
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            // signature of wicket 7.x, remove when the minimum version is 2.27.x
+            @SuppressWarnings("unused")
+            protected void onSubmit(AjaxRequestTarget target, Form form) {
+                onSubmit(target);
+            }
+
+            // signature for wicket 9.x+, uncomment the Override annotation when the minimum version
+            // is 2.27.x
+            // @Override
+            protected void onSubmit(AjaxRequestTarget target) {
                 try {
-                    ((FormComponent<?>) form.get("servicesUrl")).processInput();
-                    // String servicesUrl = (String) ((FormComponent<?>)
-                    // form.get("servicesUrl")).getConvertedInput();
+                    FormComponent<?> url = (FormComponent<?>) super.getForm().get("servicesUrl");
+                    url.processInput();
                     pageModel.testConnection();
                     info(
                             new StringResourceModel(
@@ -105,34 +84,6 @@ public class ACLServiceConfigPage extends GeoServerSecuredPage {
                 if (getPage() instanceof GeoServerBasePage) {
                     ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
                 }
-            }
-        }.setDefaultFormProcessing(false);
-    }
-
-    private Button submitButton() {
-        return new Button("submit") {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void onSubmit() {
-                try {
-                    pageModel.applyAndSaveConfiguration();
-                    doReturn();
-                } catch (Exception e) {
-                    LOGGER.log(Level.WARNING, "Save error", e);
-                    error(e);
-                }
-            }
-        };
-    }
-
-    private Button cancelButton() {
-        return new Button("cancel") {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void onSubmit() {
-                doReturn();
             }
         }.setDefaultFormProcessing(false);
     }

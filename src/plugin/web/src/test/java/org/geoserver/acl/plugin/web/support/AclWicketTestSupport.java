@@ -20,6 +20,7 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.After;
 import org.junit.Before;
 
+import java.io.IOException;
 import java.util.List;
 
 public abstract class AclWicketTestSupport extends GeoServerWicketTestSupport {
@@ -31,7 +32,7 @@ public abstract class AclWicketTestSupport extends GeoServerWicketTestSupport {
     }
 
     @Before
-    public void beforeEach() throws Exception {
+    public void beforeEach() throws IOException {
         login();
     }
 
