@@ -74,7 +74,7 @@
     <gs.version>2.27-SNAPSHOT</gs.version>
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
     <gt.version>33-SNAPSHOT</gt.version>
-    <wicket.version>9.19.0</wicket.version>
+    <wicket.version>9.20.0</wicket.version>
     <jts.version>1.20.0</jts.version>
     <fmt.action>format</fmt.action>
     <fmt.skip>false</fmt.skip>
@@ -530,7 +530,7 @@
           <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>33.2.0-jre</version>
+            <version>33.4.0-jre</version>
           </dependency>
           <dependency>
             <groupId>com.google.code.findbugs</groupId>
@@ -560,7 +560,7 @@
           <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.5</version>
+            <version>2.6</version>
           </dependency>
           <dependency>
             <groupId>commons-logging</groupId>
@@ -570,7 +570,7 @@
           <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.16.1</version>
+            <version>2.18.0</version>
           </dependency>
           <dependency>
             <groupId>org.apache.commons</groupId>
