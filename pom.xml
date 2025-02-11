@@ -74,7 +74,7 @@
     <gs.version>2.27-SNAPSHOT</gs.version>
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
     <gt.version>33-SNAPSHOT</gt.version>
-    <wicket.version>9.19.0</wicket.version>
+    <wicket.version>9.20.0</wicket.version>
     <jts.version>1.20.0</jts.version>
     <fmt.action>format</fmt.action>
     <fmt.skip>false</fmt.skip>
