@@ -187,8 +187,8 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <gs.version>2.25.5</gs.version>
-        <gt.version>31.5</gt.version>
+        <gs.version>2.25.6</gs.version>
+        <gt.version>31.6</gt.version>
         <wicket.version>7.18.0</wicket.version>
       </properties>
       <dependencyManagement>
