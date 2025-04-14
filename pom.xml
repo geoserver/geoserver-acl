@@ -71,9 +71,9 @@
     <revision>2.3-SNAPSHOT</revision>
     <java.version>17</java.version>
     <!-- Default GeoServer version to build and test the plugin against-->
-    <gs.version>2.27-SNAPSHOT</gs.version>
+    <gs.version>2.27.0</gs.version>
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
-    <gt.version>33-SNAPSHOT</gt.version>
+    <gt.version>33.0</gt.version>
     <wicket.version>9.20.0</wicket.version>
     <jts.version>1.20.0</jts.version>
     <fmt.action>format</fmt.action>
