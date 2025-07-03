@@ -25,14 +25,14 @@
     <module>artifacts</module>
   </modules>
   <properties>
-    <spring-cloud.version>2021.0.8</spring-cloud.version>
+    <spring-cloud.version>2021.0.9</spring-cloud.version>
     <spring-boot.version>2.7.18</spring-boot.version>
-    <spring.version>5.3.37</spring.version>
-    <spring.security.version>5.8.13</spring.security.version>
+    <spring.version>5.3.39</spring.version>
+    <spring.security.version>5.8.16</spring.security.version>
     <spring-boot-3.version>3.2.4</spring-boot-3.version>
-    <lombok.version>1.18.32</lombok.version>
+    <lombok.version>1.18.38</lombok.version>
     <mapstruct.version>1.6.0.Beta1</mapstruct.version>
-    <testcontainers.version>1.19.7</testcontainers.version>
+    <testcontainers.version>1.21.3</testcontainers.version>
     <geolatte.version>1.9.1</geolatte.version>
     <querydsl.version>5.1.0</querydsl.version>
     <springdoc.version>1.8.0</springdoc.version>
