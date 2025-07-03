@@ -20,9 +20,6 @@ plugin-test-gs-dev:
 plugin-test-gs-stable:
 	./mvnw -Denforcer.skip -P gs_stable verify -pl :gs-acl-client-plugin -am -ntp
 
-plugin-test-gs-maintenance:
-	./mvnw -Denforcer.skip -P gs_maintenance verify -pl :gs-acl-client-plugin -am -ntp
-
 lint:
 	./mvnw sortpom:verify fmt:check -ntp
 
