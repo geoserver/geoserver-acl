@@ -6,14 +6,6 @@
  */
 package org.geoserver.acl.plugin.accessmanager.config;
 
-import org.geoserver.acl.authorization.AccessRequest;
-import org.geoserver.acl.authorization.AuthorizationService;
-import org.geoserver.acl.plugin.accessmanager.ACLResourceAccessManager;
-import org.geoserver.acl.plugin.accessmanager.AccessManagerConfig;
-import org.geoserver.acl.plugin.accessmanager.AccessManagerConfigProvider;
-import org.geoserver.platform.resource.Resource;
-import org.geotools.util.logging.Logging;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -21,6 +13,13 @@ import java.io.Writer;
 import java.net.URI;
 import java.util.Objects;
 import java.util.logging.Logger;
+import org.geoserver.acl.authorization.AccessRequest;
+import org.geoserver.acl.authorization.AuthorizationService;
+import org.geoserver.acl.plugin.accessmanager.ACLResourceAccessManager;
+import org.geoserver.acl.plugin.accessmanager.AccessManagerConfig;
+import org.geoserver.acl.plugin.accessmanager.AccessManagerConfigProvider;
+import org.geoserver.platform.resource.Resource;
+import org.geotools.util.logging.Logging;
 
 /**
  * @author ETj (etj at geo-solutions.it) - Originally as part of GeoFence's GeoServer extension
@@ -63,8 +62,7 @@ public class AclConfigurationManager implements AccessManagerConfigProvider {
     public void storeConfiguration() throws IOException {
         Resource configurationFile = configurer.getConfigFile();
 
-        try (BufferedWriter writer =
-                new BufferedWriter(new OutputStreamWriter(configurationFile.out()))) {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(configurationFile.out()))) {
             writer.write("### GeoServer ACL Module configuration file\n");
             writer.write("### \n");
             writer.write("### GeoServer will read this file at boot time.\n");
@@ -76,13 +74,11 @@ public class AclConfigurationManager implements AccessManagerConfigProvider {
     }
 
     /** Saves current configuration to disk. */
-    protected void saveConfiguration(Writer writer, AccessManagerConfig configuration)
-            throws IOException {
+    protected void saveConfiguration(Writer writer, AccessManagerConfig configuration) throws IOException {
 
         writer.write("### GeoSever ACL main configuration\n\n");
 
-        saveConfig(
-                writer, "allowRemoteAndInlineLayers", configuration.isAllowRemoteAndInlineLayers());
+        saveConfig(writer, "allowRemoteAndInlineLayers", configuration.isAllowRemoteAndInlineLayers());
         saveConfig(
                 writer,
                 "grantWriteToWorkspacesToAuthenticatedUsers",

@@ -12,6 +12,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AbstractAjaxBehavior;
@@ -29,10 +32,6 @@ import org.geoserver.acl.plugin.web.support.AclWicketTestSupport;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
 
 public class LayerDetailsEditPanelTest extends AclWicketTestSupport {
 
@@ -111,8 +110,7 @@ public class LayerDetailsEditPanelTest extends AclWicketTestSupport {
         assertTrue(
                 "panel visibility should be true when ALLOW and layer are set, to see the set details checkbox",
                 model.isShowPanel());
-        assertFalse(
-                "panel details visibility should be false by default", model.isShowLayerDetails());
+        assertFalse("panel details visibility should be false by default", model.isShowLayerDetails());
         // print(page, true, true);
         tester.assertVisible("form:panel");
 
@@ -126,7 +124,8 @@ public class LayerDetailsEditPanelTest extends AclWicketTestSupport {
 
         assertTrue(model.isShowPanel());
         assertTrue(
-                "setLayerDetails model not updated", model.getSetLayerDetailsModel().getObject());
+                "setLayerDetails model not updated",
+                model.getSetLayerDetailsModel().getObject());
         assertTrue(model.isShowLayerDetails());
         super.setFormComponentValue(panel, password);
         tester.assertVisible("form:panel:detailsContainer");
@@ -191,8 +190,7 @@ public class LayerDetailsEditPanelTest extends AclWicketTestSupport {
         assertEquals("prop2 = 2", updated.getCqlFilterWrite());
     }
 
-    private void executeAjaxBehavior(
-            String componentPath, Class<? extends AbstractAjaxBehavior> behaviorType) {
+    private void executeAjaxBehavior(String componentPath, Class<? extends AbstractAjaxBehavior> behaviorType) {
         Component component = tester.getComponentFromLastRenderedPage(componentPath);
         List<? extends Behavior> behaviors = component.getBehaviors();
         for (Behavior behavior : behaviors) {

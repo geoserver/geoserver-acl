@@ -42,8 +42,7 @@ public class AccessRulesACLPageTest extends AclWicketTestSupport {
         // check the rules model
         @SuppressWarnings("unchecked")
         GeoServerTablePanel<MutableAdminRule> rulesPanel =
-                (GeoServerTablePanel<MutableAdminRule>)
-                        tester.getComponentFromLastRenderedPage("rulesPanel");
+                (GeoServerTablePanel<MutableAdminRule>) tester.getComponentFromLastRenderedPage("rulesPanel");
         assertEquals(1, rulesPanel.getDataProvider().size());
     }
 }

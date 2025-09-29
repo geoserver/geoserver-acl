@@ -115,15 +115,11 @@ public class SubnetV4Utils {
         }
 
         private int low() {
-            return (isInclusiveHostCount()
-                    ? network()
-                    : broadcastLong() - networkLong() > 1 ? network() + 1 : 0);
+            return (isInclusiveHostCount() ? network() : broadcastLong() - networkLong() > 1 ? network() + 1 : 0);
         }
 
         private int high() {
-            return (isInclusiveHostCount()
-                    ? broadcast()
-                    : broadcastLong() - networkLong() > 1 ? broadcast() - 1 : 0);
+            return (isInclusiveHostCount() ? broadcast() : broadcastLong() - networkLong() > 1 ? broadcast() - 1 : 0);
         }
 
         /**
@@ -392,8 +388,7 @@ public class SubnetV4Utils {
             return value;
         }
 
-        throw new IllegalArgumentException(
-                "Value [" + value + "] not in range [" + begin + "," + end + "]");
+        throw new IllegalArgumentException("Value [" + value + "] not in range [" + begin + "," + end + "]");
     }
 
     /*

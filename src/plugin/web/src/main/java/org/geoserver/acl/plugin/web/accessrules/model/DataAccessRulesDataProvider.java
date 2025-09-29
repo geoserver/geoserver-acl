@@ -6,6 +6,8 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.model;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.geoserver.acl.domain.rules.RuleIdentifierConflictException;
@@ -14,9 +16,6 @@ import org.geoserver.acl.plugin.web.components.RulesTablePanel;
 import org.geoserver.acl.plugin.web.support.RuleBeanProperty;
 import org.geoserver.web.GeoServerApplication;
 import org.springframework.dao.DuplicateKeyException;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Niels Charlier - Originally as part of GeoFence's GeoServer extension
@@ -43,17 +42,7 @@ public class DataAccessRulesDataProvider extends RulesDataProvider<MutableRule> 
     @Override
     public List<Property<MutableRule>> getProperties() {
         return List.of(
-                PRIORITY,
-                ROLE,
-                USER,
-                SERVICE,
-                REQUEST,
-                SUBFIELD,
-                WORKSPACE,
-                LAYER,
-                ACCESS,
-                ADDRESS_RANGE,
-                BUTTONS);
+                PRIORITY, ROLE, USER, SERVICE, REQUEST, SUBFIELD, WORKSPACE, LAYER, ACCESS, ADDRESS_RANGE, BUTTONS);
     }
 
     private static RuleAdminService adminService() {

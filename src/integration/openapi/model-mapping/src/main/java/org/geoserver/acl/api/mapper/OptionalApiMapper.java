@@ -4,10 +4,9 @@
  */
 package org.geoserver.acl.api.mapper;
 
+import java.util.Optional;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
-
-import java.util.Optional;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 interface OptionalApiMapper {

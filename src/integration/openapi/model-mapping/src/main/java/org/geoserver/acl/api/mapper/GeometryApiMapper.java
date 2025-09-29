@@ -4,6 +4,7 @@
  */
 package org.geoserver.acl.api.mapper;
 
+import java.util.regex.Pattern;
 import org.geolatte.geom.ByteBuffer;
 import org.geolatte.geom.Geometry;
 import org.geolatte.geom.Position;
@@ -13,8 +14,6 @@ import org.geolatte.geom.crs.CrsRegistry;
 import org.geolatte.geom.crs.Geographic2DCoordinateReferenceSystem;
 import org.geoserver.acl.api.model.Geom;
 import org.mapstruct.Mapper;
-
-import java.util.regex.Pattern;
 
 @Mapper(componentModel = "spring")
 public interface GeometryApiMapper {
@@ -42,8 +41,7 @@ public interface GeometryApiMapper {
 
     default org.geolatte.geom.Geometry<? extends Position> apiToGeometry(Geom geom) {
         if (geom == null) return null;
-        Geometry<?> geometry =
-                geom.getWkb() != null ? wkbToGeometry(geom.getWkb()) : wktToGeometry(geom.getWkt());
+        Geometry<?> geometry = geom.getWkb() != null ? wkbToGeometry(geom.getWkb()) : wktToGeometry(geom.getWkt());
         if (null != geometry && -1 == geometry.getSRID()) {
             Geographic2DCoordinateReferenceSystem wgs84 =
                     CrsRegistry.getGeographicCoordinateReferenceSystemForEPSG(4326);

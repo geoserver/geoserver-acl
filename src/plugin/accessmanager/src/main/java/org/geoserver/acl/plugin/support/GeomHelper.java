@@ -6,6 +6,9 @@
  */
 package org.geoserver.acl.plugin.support;
 
+import java.util.function.BiFunction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -20,10 +23,6 @@ import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
-
-import java.util.function.BiFunction;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Class grouping methods to handle geometry union and intersection needed to merge limit together
@@ -73,8 +72,7 @@ public class GeomHelper {
      *     Otherwise the other geometry will be returned.
      * @return the result of intersection.
      */
-    public static Geometry reprojectAndUnion(
-            Geometry first, Geometry second, boolean lessRestrictive) {
+    public static Geometry reprojectAndUnion(Geometry first, Geometry second, boolean lessRestrictive) {
         BiFunction<Geometry, Geometry, Geometry> union = (g1, g2) -> g1.union(g2);
         if (lessRestrictive) return reprojectAndApplyOpFavourNull(first, second, union);
         else return reprojectAndApplyOperation(first, second, union);
@@ -89,8 +87,7 @@ public class GeomHelper {
      *     the other geometry will be returned.
      * @return the result of intersection.
      */
-    public static Geometry reprojectAndIntersect(
-            Geometry first, Geometry second, boolean favourNull) {
+    public static Geometry reprojectAndIntersect(Geometry first, Geometry second, boolean favourNull) {
         BiFunction<Geometry, Geometry, Geometry> intersection = (g1, g2) -> g1.intersection(g2);
         if (favourNull) return reprojectAndApplyOpFavourNull(first, second, intersection);
         else return reprojectAndApplyOperation(first, second, intersection);
@@ -140,11 +137,10 @@ public class GeomHelper {
                 second = JTS.transform(second, transformation);
                 second.setSRID(first.getSRID());
             } catch (FactoryException | TransformException e) {
-                throw new RuntimeException(
-                        "Unable to intersect allowed areas: error during transformation from "
-                                + second.getSRID()
-                                + " to "
-                                + first.getSRID());
+                throw new RuntimeException("Unable to intersect allowed areas: error during transformation from "
+                        + second.getSRID()
+                        + " to "
+                        + first.getSRID());
             }
         }
         Geometry result = operation.apply(first, second);
@@ -160,8 +156,7 @@ public class GeomHelper {
      *     reprojection is performed
      * @return the reprojected geometry, or {@code null} if {@code geometry == null}
      */
-    public static Geometry reprojectGeometry(
-            Geometry geometry, CoordinateReferenceSystem targetCRS) {
+    public static Geometry reprojectGeometry(Geometry geometry, CoordinateReferenceSystem targetCRS) {
         if (geometry == null) return null;
 
         try {

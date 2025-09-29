@@ -4,8 +4,9 @@
  */
 package org.geoserver.acl.plugin.web.config;
 
+import java.io.Serializable;
+import java.util.Objects;
 import lombok.Getter;
-
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -13,9 +14,6 @@ import org.geoserver.acl.plugin.accessmanager.AccessManagerConfig;
 import org.geoserver.acl.plugin.accessmanager.config.AclConfigurationManager;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.wicket.model.ExtPropertyModel;
-
-import java.io.Serializable;
-import java.util.Objects;
 
 public class ACLServiceConfigPageModel implements Serializable {
 
@@ -46,8 +44,7 @@ public class ACLServiceConfigPageModel implements Serializable {
 
     public AclConfigurationManager getConfigManager() {
         AclConfigurationManager manager = GeoServerExtensions.bean(AclConfigurationManager.class);
-        Objects.requireNonNull(
-                manager, AclConfigurationManager.class.getSimpleName() + " bean not found");
+        Objects.requireNonNull(manager, AclConfigurationManager.class.getSimpleName() + " bean not found");
         return manager;
     }
 

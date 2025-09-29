@@ -4,6 +4,8 @@
  */
 package org.geoserver.acl.integration.jpa.config;
 
+import java.util.function.Consumer;
+import javax.persistence.EntityManager;
 import org.geoserver.acl.domain.adminrules.AdminRuleEvent;
 import org.geoserver.acl.domain.adminrules.AdminRuleRepository;
 import org.geoserver.acl.domain.rules.RuleEvent;
@@ -22,10 +24,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import java.util.function.Consumer;
-
-import javax.persistence.EntityManager;
-
 @Configuration(proxyBeanMethods = false)
 @Import({AclDataSourceConfiguration.class, AuthorizationJPAConfiguration.class})
 @ComponentScan(basePackageClasses = {RuleJpaMapper.class, AdminRuleJpaMapper.class})
@@ -38,8 +36,7 @@ public class JPAIntegrationConfiguration {
             RuleJpaMapper modelMapper,
             ApplicationEventPublisher eventPublisher) {
 
-        RuleRepositoryJpaAdaptor adaptor =
-                new RuleRepositoryJpaAdaptor(em, jpaRuleRepository, modelMapper);
+        RuleRepositoryJpaAdaptor adaptor = new RuleRepositoryJpaAdaptor(em, jpaRuleRepository, modelMapper);
         Consumer<RuleEvent> publisher = eventPublisher::publishEvent;
         adaptor.setEventPublisher(publisher);
         return adaptor;
@@ -52,8 +49,7 @@ public class JPAIntegrationConfiguration {
             AdminRuleJpaMapper modelMapper,
             ApplicationEventPublisher eventPublisher) {
 
-        AdminRuleRepositoryJpaAdaptor adaptor =
-                new AdminRuleRepositoryJpaAdaptor(em, jpaAdminRuleRepo, modelMapper);
+        AdminRuleRepositoryJpaAdaptor adaptor = new AdminRuleRepositoryJpaAdaptor(em, jpaAdminRuleRepo, modelMapper);
         Consumer<AdminRuleEvent> publisher = eventPublisher::publishEvent;
         adaptor.setEventPublisher(publisher);
         return adaptor;

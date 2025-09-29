@@ -5,10 +5,20 @@
 package org.geoserver.acl.plugin.web.components;
 
 import com.google.common.collect.Streams;
-
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-
 import org.geoserver.acl.plugin.accessmanager.AccessManagerConfig;
 import org.geoserver.acl.plugin.accessmanager.AccessManagerConfigProvider;
 import org.geoserver.catalog.Catalog;
@@ -28,20 +38,6 @@ import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.sort.SortBy;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.Nullable;
 
 @Slf4j
 @SuppressWarnings("serial")
@@ -144,22 +140,20 @@ public abstract class AbstractRulesModel implements Serializable {
             // REVISIT: check if it's actually closed
             try (CloseableIterator<PublishedInfo> it =
                     rawCatalog.list(PublishedInfo.class, filter, 0, MAX_SUGGESTIONS, sortByName)) {
-                options =
-                        Streams.stream(it)
-                                .filter(PublishedInfo::isAdvertised)
-                                .filter(PublishedInfo::isEnabled)
-                                .limit(MAX_SUGGESTIONS)
-                                .collect(Collectors.toList())
-                                .stream();
+                options = Streams.stream(it)
+                        .filter(PublishedInfo::isAdvertised)
+                        .filter(PublishedInfo::isEnabled)
+                        .limit(MAX_SUGGESTIONS)
+                        .collect(Collectors.toList())
+                        .stream();
             }
         } else {
-            options =
-                    rawCatalog.getLayerGroupsByWorkspace(CatalogFacade.NO_WORKSPACE).stream()
-                            .filter(PublishedInfo::isAdvertised)
-                            .filter(PublishedInfo::isEnabled)
-                            .map(PublishedInfo.class::cast)
-                            .sorted((g1, g2) -> g1.getName().compareTo(g2.getName()))
-                            .limit(MAX_SUGGESTIONS);
+            options = rawCatalog.getLayerGroupsByWorkspace(CatalogFacade.NO_WORKSPACE).stream()
+                    .filter(PublishedInfo::isAdvertised)
+                    .filter(PublishedInfo::isEnabled)
+                    .map(PublishedInfo.class::cast)
+                    .sorted((g1, g2) -> g1.getName().compareTo(g2.getName()))
+                    .limit(MAX_SUGGESTIONS);
         }
 
         return options.iterator();
@@ -176,8 +170,7 @@ public abstract class AbstractRulesModel implements Serializable {
     }
 
     protected Pattern caseInsensitiveContains(@Nullable String input) {
-        return Pattern.compile(
-                ".*" + Pattern.quote(nonNull(input)) + ".*", Pattern.CASE_INSENSITIVE);
+        return Pattern.compile(".*" + Pattern.quote(nonNull(input)) + ".*", Pattern.CASE_INSENSITIVE);
     }
 
     protected Pattern startsWith(@NonNull String input) {
@@ -201,10 +194,8 @@ public abstract class AbstractRulesModel implements Serializable {
 
     protected Stream<String> getAvailableRoles() {
         try {
-            SortedSet<GeoServerRole> rolesForAccessControl =
-                    securityManager().getRolesForAccessControl();
-            return Stream.concat(
-                            Stream.of(GeoServerRole.ADMIN_ROLE), rolesForAccessControl.stream())
+            SortedSet<GeoServerRole> rolesForAccessControl = securityManager().getRolesForAccessControl();
+            return Stream.concat(Stream.of(GeoServerRole.ADMIN_ROLE), rolesForAccessControl.stream())
                     .map(GeoServerRole::getAuthority)
                     .sorted()
                     .distinct();
@@ -232,17 +223,14 @@ public abstract class AbstractRulesModel implements Serializable {
             }
 
             return securityManager.loadUserGroupServices().stream()
-                    .map(
-                            t -> {
-                                try {
-                                    return t.getUsers();
-                                } catch (IOException e) {
-                                    log.warn(
-                                            "Error getting users from group service " + t.getName(),
-                                            e);
-                                    return Set.<GeoServerUser>of();
-                                }
-                            })
+                    .map(t -> {
+                        try {
+                            return t.getUsers();
+                        } catch (IOException e) {
+                            log.warn("Error getting users from group service " + t.getName(), e);
+                            return Set.<GeoServerUser>of();
+                        }
+                    })
                     .flatMap(Set::stream)
                     .map(GeoServerUser::getUsername)
                     .sorted()
@@ -289,232 +277,224 @@ public abstract class AbstractRulesModel implements Serializable {
         return context.getBean(AccessManagerConfigProvider.class);
     }
 
-    protected static final Map<String, List<String>> KNOWN_SERVICES =
-            Map.of(
-                    "WMS",
-                    List.of(
-                            "GetCapabilities",
-                            "GetMap",
-                            "DescribeLayer",
-                            "GetFeatureInfo",
-                            "GetLegendGraphic",
-                            "GetStyles"),
-                    "WFS",
-                    List.of(
-                            "GetCapabilities",
-                            "GetFeature",
-                            "DescribeFeatureType",
-                            "LockFeature",
-                            "GetFeatureWithLock",
-                            "Transaction",
-                            // WFS 1.1 additional operations:
-                            "GetGMLObject",
-                            // WFS 2.0 additional operations:
-                            "GetPropertyValue",
-                            "GetFeatureWithLock",
-                            "CreateStoredQuery",
-                            "DropStoredQuery",
-                            "ListStoredQueries",
-                            "DescribeStoredQueries"),
-                    "WCS",
-                    List.of("GetCapabilities", "GetCoverage", "DescribeCoverage"),
-                    "WPS",
-                    List.of("GetCapabilities", "DescribeProcess", "Execute"));
-
-    protected static final List<String> KNOWN_WPS_PROCESSES =
+    protected static final Map<String, List<String>> KNOWN_SERVICES = Map.of(
+            "WMS",
+            List.of("GetCapabilities", "GetMap", "DescribeLayer", "GetFeatureInfo", "GetLegendGraphic", "GetStyles"),
+            "WFS",
             List.of(
-                    "JTS:area",
-                    "JTS:boundary",
-                    "JTS:buffer",
-                    "JTS:centroid",
-                    "JTS:contains",
-                    "JTS:convexHull",
-                    "JTS:crosses",
-                    "JTS:densify",
-                    "JTS:difference",
-                    "JTS:dimension",
-                    "JTS:disjoint",
-                    "JTS:distance",
-                    "JTS:endPoint",
-                    "JTS:envelope",
-                    "JTS:equalsExact",
-                    "JTS:equalsExactTolerance",
-                    "JTS:exteriorRing",
-                    "JTS:geometryType",
-                    "JTS:getGeometryN",
-                    "JTS:getX",
-                    "JTS:getY",
-                    "JTS:interiorPoint",
-                    "JTS:interiorRingN",
-                    "JTS:intersection",
-                    "JTS:intersects",
-                    "JTS:isClosed",
-                    "JTS:isEmpty",
-                    "JTS:isRing",
-                    "JTS:isSimple",
-                    "JTS:isValid",
-                    "JTS:isWithinDistance",
-                    "JTS:length",
-                    "JTS:numGeometries",
-                    "JTS:numInteriorRing",
-                    "JTS:numPoints",
-                    "JTS:overlaps",
-                    "JTS:pointN",
-                    "JTS:polygonize",
-                    "JTS:relate",
-                    "JTS:relatePattern",
-                    "JTS:reproject",
-                    "JTS:simplify",
-                    "JTS:splitPolygon",
-                    "JTS:startPoint",
-                    "JTS:symDifference",
-                    "JTS:touches",
-                    "JTS:union",
-                    "JTS:within",
-                    "centerLine:centerLine",
-                    "geo:area",
-                    "geo:boundary",
-                    "geo:buffer",
-                    "geo:centroid",
-                    "geo:contains",
-                    "geo:convexHull",
-                    "geo:crosses",
-                    "geo:densify",
-                    "geo:difference",
-                    "geo:dimension",
-                    "geo:disjoint",
-                    "geo:distance",
-                    "geo:endPoint",
-                    "geo:envelope",
-                    "geo:equalsExact",
-                    "geo:equalsExactTolerance",
-                    "geo:exteriorRing",
-                    "geo:geometryType",
-                    "geo:getGeometryN",
-                    "geo:getX",
-                    "geo:getY",
-                    "geo:interiorPoint",
-                    "geo:interiorRingN",
-                    "geo:intersection",
-                    "geo:intersects",
-                    "geo:isClosed",
-                    "geo:isEmpty",
-                    "geo:isRing",
-                    "geo:isSimple",
-                    "geo:isValid",
-                    "geo:isWithinDistance",
-                    "geo:length",
-                    "geo:numGeometries",
-                    "geo:numInteriorRing",
-                    "geo:numPoints",
-                    "geo:overlaps",
-                    "geo:pointN",
-                    "geo:polygonize",
-                    "geo:relate",
-                    "geo:relatePattern",
-                    "geo:reproject",
-                    "geo:simplify",
-                    "geo:splitPolygon",
-                    "geo:startPoint",
-                    "geo:symDifference",
-                    "geo:touches",
-                    "geo:union",
-                    "geo:within",
-                    "gs:AddCoverages",
-                    "gs:Aggregate",
-                    "gs:AreaGrid",
-                    "gs:BarnesSurface",
-                    "gs:Bounds",
-                    "gs:BufferFeatureCollection",
-                    "gs:Centroid",
-                    "gs:Clip",
-                    "gs:CollectGeometries",
-                    "gs:Contour",
-                    "gs:Count",
-                    "gs:CropCoverage",
-                    "gs:Feature",
-                    "gs:GeorectifyCoverage",
-                    "gs:GetFullCoverage",
-                    "gs:Grid",
-                    "gs:Heatmap",
-                    "gs:Import",
-                    "gs:InclusionFeatureCollection",
-                    "gs:IntersectionFeatureCollection",
-                    "gs:LRSGeocode",
-                    "gs:LRSMeasure",
-                    "gs:LRSSegment",
-                    "gs:MultiplyCoverages",
-                    "gs:Nearest",
-                    "gs:PagedUnique",
-                    "gs:PointBuffers",
-                    "gs:PointStacker",
-                    "gs:PolygonExtraction",
-                    "gs:Query",
-                    "gs:RangeLookup",
-                    "gs:RasterAsPointCollection",
-                    "gs:RasterZonalStatistics",
-                    "gs:RectangularClip",
-                    "gs:Reproject",
-                    "gs:ReprojectGeometry",
-                    "gs:ScaleCoverage",
-                    "gs:Simplify",
-                    "gs:Snap",
-                    "gs:StoreCoverage",
-                    "gs:StyleCoverage",
-                    "gs:Transform",
-                    "gs:UnionFeatureCollection",
-                    "gs:Unique",
-                    "gs:VectorZonalStatistics",
-                    "gt:VectorToRaster",
-                    "polygonlabelprocess:PolyLabeller",
-                    "ras:AddCoverages",
-                    "ras:Affine",
-                    "ras:AreaGrid",
-                    "ras:BandMerge",
-                    "ras:BandSelect",
-                    "ras:Contour",
-                    "ras:CoverageClassStats",
-                    "ras:CropCoverage",
-                    "ras:Jiffle",
-                    "ras:MultiplyCoverages",
-                    "ras:NormalizeCoverage",
-                    "ras:PolygonExtraction",
-                    "ras:RangeLookup",
-                    "ras:RasterAsPointCollection",
-                    "ras:RasterZonalStatistics",
-                    "ras:ScaleCoverage",
-                    "ras:StyleCoverage",
-                    "ras:TransparencyFill",
-                    "skeltonize:centerLine",
-                    "vec:Aggregate",
-                    "vec:BarnesSurface",
-                    "vec:Bounds",
-                    "vec:BufferFeatureCollection",
-                    "vec:Centroid",
-                    "vec:ClassifyByRange",
-                    "vec:Clip",
-                    "vec:CollectGeometries",
-                    "vec:Count",
-                    "vec:Feature",
-                    "vec:FeatureClassStats",
-                    "vec:Grid",
-                    "vec:Heatmap",
-                    "vec:InclusionFeatureCollection",
-                    "vec:IntersectionFeatureCollection",
-                    "vec:LRSGeocode",
-                    "vec:LRSMeasure",
-                    "vec:LRSSegment",
-                    "vec:Nearest",
-                    "vec:PointBuffers",
-                    "vec:PointStacker",
-                    "vec:Query",
-                    "vec:RectangularClip",
-                    "vec:Reproject",
-                    "vec:Simplify",
-                    "vec:Snap",
-                    "vec:Transform",
-                    "vec:UnionFeatureCollection",
-                    "vec:Unique",
-                    "vec:VectorToRaster",
-                    "vec:VectorZonalStatistics");
+                    "GetCapabilities",
+                    "GetFeature",
+                    "DescribeFeatureType",
+                    "LockFeature",
+                    "GetFeatureWithLock",
+                    "Transaction",
+                    // WFS 1.1 additional operations:
+                    "GetGMLObject",
+                    // WFS 2.0 additional operations:
+                    "GetPropertyValue",
+                    "GetFeatureWithLock",
+                    "CreateStoredQuery",
+                    "DropStoredQuery",
+                    "ListStoredQueries",
+                    "DescribeStoredQueries"),
+            "WCS",
+            List.of("GetCapabilities", "GetCoverage", "DescribeCoverage"),
+            "WPS",
+            List.of("GetCapabilities", "DescribeProcess", "Execute"));
+
+    protected static final List<String> KNOWN_WPS_PROCESSES = List.of(
+            "JTS:area",
+            "JTS:boundary",
+            "JTS:buffer",
+            "JTS:centroid",
+            "JTS:contains",
+            "JTS:convexHull",
+            "JTS:crosses",
+            "JTS:densify",
+            "JTS:difference",
+            "JTS:dimension",
+            "JTS:disjoint",
+            "JTS:distance",
+            "JTS:endPoint",
+            "JTS:envelope",
+            "JTS:equalsExact",
+            "JTS:equalsExactTolerance",
+            "JTS:exteriorRing",
+            "JTS:geometryType",
+            "JTS:getGeometryN",
+            "JTS:getX",
+            "JTS:getY",
+            "JTS:interiorPoint",
+            "JTS:interiorRingN",
+            "JTS:intersection",
+            "JTS:intersects",
+            "JTS:isClosed",
+            "JTS:isEmpty",
+            "JTS:isRing",
+            "JTS:isSimple",
+            "JTS:isValid",
+            "JTS:isWithinDistance",
+            "JTS:length",
+            "JTS:numGeometries",
+            "JTS:numInteriorRing",
+            "JTS:numPoints",
+            "JTS:overlaps",
+            "JTS:pointN",
+            "JTS:polygonize",
+            "JTS:relate",
+            "JTS:relatePattern",
+            "JTS:reproject",
+            "JTS:simplify",
+            "JTS:splitPolygon",
+            "JTS:startPoint",
+            "JTS:symDifference",
+            "JTS:touches",
+            "JTS:union",
+            "JTS:within",
+            "centerLine:centerLine",
+            "geo:area",
+            "geo:boundary",
+            "geo:buffer",
+            "geo:centroid",
+            "geo:contains",
+            "geo:convexHull",
+            "geo:crosses",
+            "geo:densify",
+            "geo:difference",
+            "geo:dimension",
+            "geo:disjoint",
+            "geo:distance",
+            "geo:endPoint",
+            "geo:envelope",
+            "geo:equalsExact",
+            "geo:equalsExactTolerance",
+            "geo:exteriorRing",
+            "geo:geometryType",
+            "geo:getGeometryN",
+            "geo:getX",
+            "geo:getY",
+            "geo:interiorPoint",
+            "geo:interiorRingN",
+            "geo:intersection",
+            "geo:intersects",
+            "geo:isClosed",
+            "geo:isEmpty",
+            "geo:isRing",
+            "geo:isSimple",
+            "geo:isValid",
+            "geo:isWithinDistance",
+            "geo:length",
+            "geo:numGeometries",
+            "geo:numInteriorRing",
+            "geo:numPoints",
+            "geo:overlaps",
+            "geo:pointN",
+            "geo:polygonize",
+            "geo:relate",
+            "geo:relatePattern",
+            "geo:reproject",
+            "geo:simplify",
+            "geo:splitPolygon",
+            "geo:startPoint",
+            "geo:symDifference",
+            "geo:touches",
+            "geo:union",
+            "geo:within",
+            "gs:AddCoverages",
+            "gs:Aggregate",
+            "gs:AreaGrid",
+            "gs:BarnesSurface",
+            "gs:Bounds",
+            "gs:BufferFeatureCollection",
+            "gs:Centroid",
+            "gs:Clip",
+            "gs:CollectGeometries",
+            "gs:Contour",
+            "gs:Count",
+            "gs:CropCoverage",
+            "gs:Feature",
+            "gs:GeorectifyCoverage",
+            "gs:GetFullCoverage",
+            "gs:Grid",
+            "gs:Heatmap",
+            "gs:Import",
+            "gs:InclusionFeatureCollection",
+            "gs:IntersectionFeatureCollection",
+            "gs:LRSGeocode",
+            "gs:LRSMeasure",
+            "gs:LRSSegment",
+            "gs:MultiplyCoverages",
+            "gs:Nearest",
+            "gs:PagedUnique",
+            "gs:PointBuffers",
+            "gs:PointStacker",
+            "gs:PolygonExtraction",
+            "gs:Query",
+            "gs:RangeLookup",
+            "gs:RasterAsPointCollection",
+            "gs:RasterZonalStatistics",
+            "gs:RectangularClip",
+            "gs:Reproject",
+            "gs:ReprojectGeometry",
+            "gs:ScaleCoverage",
+            "gs:Simplify",
+            "gs:Snap",
+            "gs:StoreCoverage",
+            "gs:StyleCoverage",
+            "gs:Transform",
+            "gs:UnionFeatureCollection",
+            "gs:Unique",
+            "gs:VectorZonalStatistics",
+            "gt:VectorToRaster",
+            "polygonlabelprocess:PolyLabeller",
+            "ras:AddCoverages",
+            "ras:Affine",
+            "ras:AreaGrid",
+            "ras:BandMerge",
+            "ras:BandSelect",
+            "ras:Contour",
+            "ras:CoverageClassStats",
+            "ras:CropCoverage",
+            "ras:Jiffle",
+            "ras:MultiplyCoverages",
+            "ras:NormalizeCoverage",
+            "ras:PolygonExtraction",
+            "ras:RangeLookup",
+            "ras:RasterAsPointCollection",
+            "ras:RasterZonalStatistics",
+            "ras:ScaleCoverage",
+            "ras:StyleCoverage",
+            "ras:TransparencyFill",
+            "skeltonize:centerLine",
+            "vec:Aggregate",
+            "vec:BarnesSurface",
+            "vec:Bounds",
+            "vec:BufferFeatureCollection",
+            "vec:Centroid",
+            "vec:ClassifyByRange",
+            "vec:Clip",
+            "vec:CollectGeometries",
+            "vec:Count",
+            "vec:Feature",
+            "vec:FeatureClassStats",
+            "vec:Grid",
+            "vec:Heatmap",
+            "vec:InclusionFeatureCollection",
+            "vec:IntersectionFeatureCollection",
+            "vec:LRSGeocode",
+            "vec:LRSMeasure",
+            "vec:LRSSegment",
+            "vec:Nearest",
+            "vec:PointBuffers",
+            "vec:PointStacker",
+            "vec:Query",
+            "vec:RectangularClip",
+            "vec:Reproject",
+            "vec:Simplify",
+            "vec:Snap",
+            "vec:Transform",
+            "vec:UnionFeatureCollection",
+            "vec:Unique",
+            "vec:VectorToRaster",
+            "vec:VectorZonalStatistics");
 }

@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import org.geoserver.acl.api.mapper.AdminRuleApiMapper;
 import org.geoserver.acl.api.mapper.EnumsApiMapper;
 import org.geoserver.acl.api.mapper.RuleApiMapper;
@@ -27,8 +26,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 class DataRulesApiConfigurationTest {
 
     private ApplicationContextRunner runner =
-            new ApplicationContextRunner()
-                    .withConfiguration(UserConfigurations.of(RulesApiConfiguration.class));
+            new ApplicationContextRunner().withConfiguration(UserConfigurations.of(RulesApiConfiguration.class));
 
     private ApplicationContextRunner withMockRepositories() {
         runner = withMock(NativeWebRequest.class);
@@ -43,44 +41,40 @@ class DataRulesApiConfigurationTest {
 
     @Test
     void testWithAvailableRepositories() {
-        withMockRepositories()
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasSingleBean(DataRulesApiController.class)
-                                    .hasSingleBean(DataRulesApiDelegate.class)
-                                    .hasSingleBean(RuleApiMapper.class)
-                                    .hasSingleBean(WorkspaceAdminRulesApiController.class)
-                                    .hasSingleBean(WorkspaceAdminRulesApiDelegate.class)
-                                    .hasSingleBean(AdminRuleApiMapper.class)
-                                    .hasSingleBean(JavaTimeModule.class)
-                                    .hasSingleBean(EnumsApiMapper.class);
-                        });
+        withMockRepositories().run(context -> {
+            assertThat(context)
+                    .hasSingleBean(DataRulesApiController.class)
+                    .hasSingleBean(DataRulesApiDelegate.class)
+                    .hasSingleBean(RuleApiMapper.class)
+                    .hasSingleBean(WorkspaceAdminRulesApiController.class)
+                    .hasSingleBean(WorkspaceAdminRulesApiDelegate.class)
+                    .hasSingleBean(AdminRuleApiMapper.class)
+                    .hasSingleBean(JavaTimeModule.class)
+                    .hasSingleBean(EnumsApiMapper.class);
+        });
     }
 
     @Test
     void testMissingRuleRepository() {
         runner = withMock(AdminRuleRepository.class);
-        runner.run(
-                context -> {
-                    assertThat(context)
-                            .hasFailed()
-                            .getFailure()
-                            .isInstanceOf(UnsatisfiedDependencyException.class)
-                            .hasMessageContaining("RuleRepository");
-                });
+        runner.run(context -> {
+            assertThat(context)
+                    .hasFailed()
+                    .getFailure()
+                    .isInstanceOf(UnsatisfiedDependencyException.class)
+                    .hasMessageContaining("RuleRepository");
+        });
     }
 
     @Test
     void testMissingAdminRuleRepository() {
         runner = withMock(RuleRepository.class);
-        runner.run(
-                context -> {
-                    assertThat(context)
-                            .hasFailed()
-                            .getFailure()
-                            .isInstanceOf(UnsatisfiedDependencyException.class)
-                            .hasMessageContaining("AdminRuleRepository");
-                });
+        runner.run(context -> {
+            assertThat(context)
+                    .hasFailed()
+                    .getFailure()
+                    .isInstanceOf(UnsatisfiedDependencyException.class)
+                    .hasMessageContaining("AdminRuleRepository");
+        });
     }
 }

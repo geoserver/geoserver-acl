@@ -4,15 +4,14 @@
  */
 package org.geoserver.acl.plugin.accessmanager;
 
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.acl.authorization.AdminAccessRequest;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
-
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 class AdminAccessRequestBuilder {
 

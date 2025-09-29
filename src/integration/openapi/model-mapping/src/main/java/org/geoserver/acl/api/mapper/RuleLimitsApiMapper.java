@@ -23,6 +23,5 @@ public interface RuleLimitsApiMapper {
 
     @Mapping(target = "catalogMode", defaultValue = "HIDE")
     @Mapping(target = "spatialFilterType", defaultValue = "INTERSECT")
-    org.geoserver.acl.domain.rules.RuleLimits toModel(
-            org.geoserver.acl.api.model.RuleLimits limits);
+    org.geoserver.acl.domain.rules.RuleLimits toModel(org.geoserver.acl.api.model.RuleLimits limits);
 }

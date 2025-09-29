@@ -5,7 +5,6 @@
 package org.geoserver.acl.plugin.web.accessrules.event;
 
 import lombok.Value;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.geoserver.acl.domain.rules.GrantType;
 

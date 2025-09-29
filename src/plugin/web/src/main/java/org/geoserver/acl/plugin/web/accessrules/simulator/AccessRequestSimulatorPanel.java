@@ -5,7 +5,8 @@
 package org.geoserver.acl.plugin.web.accessrules.simulator;
 
 import com.google.common.collect.Streams;
-
+import java.util.Iterator;
+import java.util.Set;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -35,9 +36,6 @@ import org.geoserver.acl.plugin.web.support.SerializablePredicate;
 import org.wicketstuff.select2.ChoiceProvider;
 import org.wicketstuff.select2.Response;
 import org.wicketstuff.select2.StringTextChoiceProvider;
-
-import java.util.Iterator;
-import java.util.Set;
 
 @SuppressWarnings("serial")
 public class AccessRequestSimulatorPanel extends Panel {
@@ -87,23 +85,21 @@ public class AccessRequestSimulatorPanel extends Panel {
     }
 
     private Component clearButton() {
-        AjaxLink<Object> link =
-                new AjaxLink<>("clearSimulator") {
-                    public @Override void onClick(AjaxRequestTarget target) {
-                        clear(target);
-                    }
-                };
+        AjaxLink<Object> link = new AjaxLink<>("clearSimulator") {
+            public @Override void onClick(AjaxRequestTarget target) {
+                clear(target);
+            }
+        };
         link.setOutputMarkupId(true);
         return link;
     }
 
     private Component closeButton() {
-        AjaxLink<Object> link =
-                new AjaxLink<>("closeSimulator") {
-                    public @Override void onClick(AjaxRequestTarget target) {
-                        close(target);
-                    }
-                };
+        AjaxLink<Object> link = new AjaxLink<>("closeSimulator") {
+            public @Override void onClick(AjaxRequestTarget target) {
+                close(target);
+            }
+        };
         link.setOutputMarkupId(true);
         return link;
     }
@@ -228,18 +224,16 @@ public class AccessRequestSimulatorPanel extends Panel {
 
     private FormComponent<String> userChoice() {
         IModel<String> model = model().bind("user");
-        AutoCompleteTextField<String> user =
-                autoCompleteChoice("userName", model, panelModel::getUserChoices);
-        user.add(
-                new OnChangeAjaxBehavior() {
-                    protected @Override void onUpdate(AjaxRequestTarget target) {
-                        Set<String> roleNames = panelModel.findUserRoles();
-                        if (!roleNames.isEmpty()) {
-                            roles.setModelObject(roleNames);
-                            target.add(roles);
-                        }
-                    }
-                });
+        AutoCompleteTextField<String> user = autoCompleteChoice("userName", model, panelModel::getUserChoices);
+        user.add(new OnChangeAjaxBehavior() {
+            protected @Override void onUpdate(AjaxRequestTarget target) {
+                Set<String> roleNames = panelModel.findUserRoles();
+                if (!roleNames.isEmpty()) {
+                    roles.setModelObject(roleNames);
+                    target.add(roles);
+                }
+            }
+        });
         return user;
     }
 
@@ -252,12 +246,11 @@ public class AccessRequestSimulatorPanel extends Panel {
         IModel<String> model = model().bind("service");
         AutoCompleteTextField<String> serviceChoice =
                 autoCompleteChoice("service", model, panelModel::getServiceChoices);
-        serviceChoice.add(
-                new OnChangeAjaxBehavior() {
-                    protected @Override void onUpdate(AjaxRequestTarget target) {
-                        onServiceChange(target);
-                    }
-                });
+        serviceChoice.add(new OnChangeAjaxBehavior() {
+            protected @Override void onUpdate(AjaxRequestTarget target) {
+                onServiceChange(target);
+            }
+        });
         return serviceChoice;
     }
 
@@ -313,16 +306,15 @@ public class AccessRequestSimulatorPanel extends Panel {
         AutoCompleteTextField<String> choice;
         choice = autoCompleteChoice("workspace", model, panelModel::getWorkspaceChoices);
 
-        choice.add(
-                new OnChangeAjaxBehavior() {
-                    protected @Override void onUpdate(AjaxRequestTarget target) {
-                        String workspaceName = choice.getConvertedInput();
-                        send(
-                                AccessRequestSimulatorPanel.this,
-                                Broadcast.BREADTH,
-                                new WorkspaceChangeEvent(workspaceName, target));
-                    }
-                });
+        choice.add(new OnChangeAjaxBehavior() {
+            protected @Override void onUpdate(AjaxRequestTarget target) {
+                String workspaceName = choice.getConvertedInput();
+                send(
+                        AccessRequestSimulatorPanel.this,
+                        Broadcast.BREADTH,
+                        new WorkspaceChangeEvent(workspaceName, target));
+            }
+        });
 
         return choice;
     }
@@ -337,26 +329,19 @@ public class AccessRequestSimulatorPanel extends Panel {
 
         final IModel<String> layerModel = model().bind("layer");
         PublishedInfoAutoCompleteTextField layerChoice =
-                new PublishedInfoAutoCompleteTextField(
-                        "layer", layerModel, panelModel::getLayerChoices);
+                new PublishedInfoAutoCompleteTextField("layer", layerModel, panelModel::getLayerChoices);
 
-        layerChoice.add(
-                new OnChangeAjaxBehavior() {
-                    protected @Override void onUpdate(AjaxRequestTarget target) {
-                        String layer = layerChoice.getConvertedInput();
-                        send(
-                                AccessRequestSimulatorPanel.this,
-                                Broadcast.BREADTH,
-                                new LayerChangeEvent(layer, target));
-                    }
-                });
+        layerChoice.add(new OnChangeAjaxBehavior() {
+            protected @Override void onUpdate(AjaxRequestTarget target) {
+                String layer = layerChoice.getConvertedInput();
+                send(AccessRequestSimulatorPanel.this, Broadcast.BREADTH, new LayerChangeEvent(layer, target));
+            }
+        });
         return layerChoice;
     }
 
     private AutoCompleteTextField<String> autoCompleteChoice(
-            String id,
-            IModel<String> model,
-            SerializableFunction<String, Iterator<String>> choiceResolver) {
+            String id, IModel<String> model, SerializableFunction<String, Iterator<String>> choiceResolver) {
 
         AutoCompleteTextField<String> field;
         field = new ModelUpdatingAutoCompleteTextField<>(id, model, choiceResolver);

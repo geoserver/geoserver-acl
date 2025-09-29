@@ -21,8 +21,7 @@ class FilterUtils {
      * <p>IP address filtering is not performed by DAO at the moment, so we'll have to filter out
      * such results by hand.
      */
-    public static boolean filterByAddress(
-            IPAddressRangeFilter addressFilter, String addressRangeCIDR) {
+    public static boolean filterByAddress(IPAddressRangeFilter addressFilter, String addressRangeCIDR) {
 
         final FilterType type = addressFilter.getType();
 

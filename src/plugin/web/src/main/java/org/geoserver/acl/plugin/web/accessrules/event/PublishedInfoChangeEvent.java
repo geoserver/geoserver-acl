@@ -4,12 +4,10 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.event;
 
+import java.util.Optional;
 import lombok.Value;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.geoserver.catalog.PublishedInfo;
-
-import java.util.Optional;
 
 @Value
 public class PublishedInfoChangeEvent {

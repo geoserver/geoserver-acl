@@ -4,14 +4,13 @@
  */
 package org.geoserver.acl.app;
 
+import java.util.Arrays;
+import java.util.List;
 import org.geoserver.acl.generateddl.GenerateDDL;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.Arrays;
-import java.util.List;
 
 @SpringBootApplication
 public class AccesControlListApplication {

@@ -19,10 +19,9 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 /** {@link AclWebUIAutoConfiguration} tests */
 class AclWebUIAutoConfigurationTest {
 
-    private ApplicationContextRunner runner =
-            new ApplicationContextRunner()
-                    .withBean("securityCategory", Category.class, () -> mock(Category.class))
-                    .withConfiguration(AutoConfigurations.of(AclWebUIAutoConfiguration.class));
+    private ApplicationContextRunner runner = new ApplicationContextRunner()
+            .withBean("securityCategory", Category.class, () -> mock(Category.class))
+            .withConfiguration(AutoConfigurations.of(AclWebUIAutoConfiguration.class));
 
     @Test
     void testWebUiDisabledByDefault() {
@@ -37,8 +36,7 @@ class AclWebUIAutoConfigurationTest {
 
     @Test
     void testConditionalOnAclEnabled() {
-        runner.withPropertyValues(
-                        "geoserver.acl.enabled=false", "geoserver.web-ui.acl.enabled=true")
+        runner.withPropertyValues("geoserver.acl.enabled=false", "geoserver.web-ui.acl.enabled=true")
                 .run(this::assertDisabled);
     }
 
@@ -49,8 +47,7 @@ class AclWebUIAutoConfigurationTest {
 
     @Test
     void testConditionalOnGeoServerBasePage() {
-        runner.withClassLoader(new FilteredClassLoader(GeoServerBasePage.class))
-                .run(this::assertDisabled);
+        runner.withClassLoader(new FilteredClassLoader(GeoServerBasePage.class)).run(this::assertDisabled);
     }
 
     @Test

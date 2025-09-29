@@ -6,14 +6,13 @@ package org.geoserver.acl.domain.rules;
 
 import static java.lang.String.format;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
-
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Data
 @AllArgsConstructor(access = AccessLevel.PROTECTED)

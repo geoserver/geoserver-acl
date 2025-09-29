@@ -20,8 +20,7 @@ import org.springframework.context.annotation.Import;
 public class ACLWebUIConfiguration {
 
     @Bean
-    MenuPageInfo<ACLServiceConfigPage> aclServiceConfigPageMenuInfo(
-            @Qualifier("securityCategory") Category category) {
+    MenuPageInfo<ACLServiceConfigPage> aclServiceConfigPageMenuInfo(@Qualifier("securityCategory") Category category) {
         MenuPageInfo<ACLServiceConfigPage> info = new MenuPageInfo<>();
         info.setId("aclServiceConfigPageMenuInfo");
         info.setTitleKey("ACLServiceConfigPage.page.title");
@@ -35,8 +34,7 @@ public class ACLWebUIConfiguration {
     }
 
     @Bean
-    MenuPageInfo<AccessRulesACLPage> accessRulesACLPageMenuInfo(
-            @Qualifier("securityCategory") Category category) {
+    MenuPageInfo<AccessRulesACLPage> accessRulesACLPageMenuInfo(@Qualifier("securityCategory") Category category) {
         MenuPageInfo<AccessRulesACLPage> info = new MenuPageInfo<>();
         info.setId("accessRulesACLPageMenuInfo");
         info.setTitleKey("AccessRulesACLPage.page.title");
@@ -50,8 +48,7 @@ public class ACLWebUIConfiguration {
     }
 
     @Bean
-    MenuPageInfo<AdminRulesACLPage> adminRulesAclPageMenuInfo(
-            @Qualifier("securityCategory") Category category) {
+    MenuPageInfo<AdminRulesACLPage> adminRulesAclPageMenuInfo(@Qualifier("securityCategory") Category category) {
         MenuPageInfo<AdminRulesACLPage> info = new MenuPageInfo<>();
         info.setId("adminRulesAclPageMenuInfo");
         info.setTitleKey("AdminRulesACLPage.title");

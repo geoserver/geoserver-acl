@@ -4,15 +4,13 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.model;
 
+import java.io.Serializable;
 import lombok.Data;
 import lombok.NonNull;
-
 import org.geolatte.geom.MultiPolygon;
 import org.geoserver.acl.domain.rules.CatalogMode;
 import org.geoserver.acl.domain.rules.RuleLimits;
 import org.geoserver.acl.domain.rules.SpatialFilterType;
-
-import java.io.Serializable;
 
 @Data
 @SuppressWarnings("serial")

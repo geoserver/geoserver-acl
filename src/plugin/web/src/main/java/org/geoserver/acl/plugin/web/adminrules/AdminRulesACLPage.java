@@ -40,14 +40,13 @@ public class AdminRulesACLPage extends GeoServerSecuredPage {
     }
 
     private AjaxLink<Object> removeLink() {
-        AjaxLink<Object> removeLink =
-                new AjaxLink<Object>("removeSelected") {
-                    public @Override void onClick(AjaxRequestTarget target) {
-                        dataProvider.remove(rulesPanel.getSelection());
-                        rulesPanel.clearSelection();
-                        target.add(rulesPanel);
-                    }
-                };
+        AjaxLink<Object> removeLink = new AjaxLink<Object>("removeSelected") {
+            public @Override void onClick(AjaxRequestTarget target) {
+                dataProvider.remove(rulesPanel.getSelection());
+                rulesPanel.clearSelection();
+                target.add(rulesPanel);
+            }
+        };
         removeLink.setOutputMarkupId(true);
         removeLink.setEnabled(false);
         return removeLink;
@@ -63,20 +62,17 @@ public class AdminRulesACLPage extends GeoServerSecuredPage {
 
     private RulesTablePanel<MutableAdminRule> rulesTablePanel() {
         RulesTablePanel<MutableAdminRule> panel = new RulesTablePanel<>("rulesPanel", dataProvider);
-        panel.setOnDrop(
-                (moved, target) -> {
-                    dataProvider.onDrop(moved, target);
-                    doReturn(AdminRulesACLPage.class);
-                });
-        panel.setOnSelectionUpdate(
-                target -> {
-                    removeLink.setEnabled(rulesPanel.getSelection().size() > 0);
-                    target.add(removeLink);
-                });
-        panel.setOnEdit(
-                rule -> {
-                    setResponsePage(new AdminRuleEditPage(new AdminRuleEditModel(rule)));
-                });
+        panel.setOnDrop((moved, target) -> {
+            dataProvider.onDrop(moved, target);
+            doReturn(AdminRulesACLPage.class);
+        });
+        panel.setOnSelectionUpdate(target -> {
+            removeLink.setEnabled(rulesPanel.getSelection().size() > 0);
+            target.add(removeLink);
+        });
+        panel.setOnEdit(rule -> {
+            setResponsePage(new AdminRuleEditPage(new AdminRuleEditModel(rule)));
+        });
         return panel;
     }
 }

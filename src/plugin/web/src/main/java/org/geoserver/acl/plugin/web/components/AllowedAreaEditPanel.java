@@ -29,10 +29,7 @@ public abstract class AllowedAreaEditPanel<T> extends FormComponentPanel<T> {
     protected Radio<SpatialFilterType> clip;
 
     public AllowedAreaEditPanel(
-            String id,
-            IModel<T> componentModel,
-            String areaProperty,
-            String spatialFilterTypeProperty) {
+            String id, IModel<T> componentModel, String areaProperty, String spatialFilterTypeProperty) {
         super(id);
         CompoundPropertyModel<T> model = CompoundPropertyModel.of(componentModel);
         setModel(model);

@@ -21,7 +21,8 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("dev")
 class AccesControlListApplicationTest extends AbstractAccesControlListApplicationTest {
 
-    @Autowired private SecurityConfigProperties securityConfig;
+    @Autowired
+    private SecurityConfigProperties securityConfig;
 
     @Test
     void rootRedirectsToSwaggerUI() {

@@ -15,11 +15,10 @@ class GeoToolsStaticContextInitializerTest {
     void testInitializer() {
         new ApplicationContextRunner()
                 .withInitializer(new GeoToolsStaticContextInitializer())
-                .run(
-                        context -> {
-                            assertThat(context).hasNotFailed();
-                            assertThat(System.getProperty("org.geotools.referencing.forceXY"))
-                                    .isEqualTo("true");
-                        });
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                    assertThat(System.getProperty("org.geotools.referencing.forceXY"))
+                            .isEqualTo("true");
+                });
     }
 }

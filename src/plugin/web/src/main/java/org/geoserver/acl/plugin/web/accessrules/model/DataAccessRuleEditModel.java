@@ -4,9 +4,17 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.model;
 
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.geoserver.acl.domain.rules.GrantType;
@@ -26,17 +34,6 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.Nullable;
-
 @Slf4j
 @SuppressWarnings("serial")
 public class DataAccessRuleEditModel extends AbstractRuleEditModel<MutableRule> {
@@ -45,8 +42,7 @@ public class DataAccessRuleEditModel extends AbstractRuleEditModel<MutableRule> 
      * @see #workSpaceNameChanged(String)
      * @see #layerNameChanged(String)
      */
-    private final PublishedInfoDetachableModel publishedInfoModel =
-            new PublishedInfoDetachableModel();
+    private final PublishedInfoDetachableModel publishedInfoModel = new PublishedInfoDetachableModel();
 
     public DataAccessRuleEditModel() {
         this(new MutableRule());
@@ -56,10 +52,7 @@ public class DataAccessRuleEditModel extends AbstractRuleEditModel<MutableRule> 
         super(rule);
         final String ruleID = rule.getId();
         if (null != ruleID && rule.canHaveLayerDetails()) {
-            adminService()
-                    .getLayerDetails(ruleID)
-                    .map(MutableLayerDetails::new)
-                    .ifPresent(rule::setLayerDetails);
+            adminService().getLayerDetails(ruleID).map(MutableLayerDetails::new).ifPresent(rule::setLayerDetails);
         }
         if (null != rule.getLayer()) {
             publishedInfoModel.setObject(rule.getWorkspace(), rule.getLayer());
@@ -109,9 +102,8 @@ public class DataAccessRuleEditModel extends AbstractRuleEditModel<MutableRule> 
     public Rule loadDomainRule() {
         MutableRule modelRule = getModelObject();
         RuleAdminService service = adminService();
-        Rule current =
-                service.get(modelRule.getId())
-                        .orElseThrow(() -> new IllegalStateException("The rule no longer exists"));
+        Rule current = service.get(modelRule.getId())
+                .orElseThrow(() -> new IllegalStateException("The rule no longer exists"));
         return current;
     }
 
@@ -126,8 +118,7 @@ public class DataAccessRuleEditModel extends AbstractRuleEditModel<MutableRule> 
     public Iterator<String> getStyleChoices(@Nullable String input) {
         Catalog catalog = rawCatalog();
         final Pattern test = caseInsensitiveContains(input);
-        Stream<StyleInfo> styles =
-                catalog.getStylesByWorkspace(CatalogFacade.NO_WORKSPACE).stream();
+        Stream<StyleInfo> styles = catalog.getStylesByWorkspace(CatalogFacade.NO_WORKSPACE).stream();
         String workspace = getSelectedWorkspace();
         if (StringUtils.hasText(workspace)) {
             List<StyleInfo> stylesByWorkspace = catalog.getStylesByWorkspace(workspace);
@@ -167,14 +158,12 @@ public class DataAccessRuleEditModel extends AbstractRuleEditModel<MutableRule> 
         return hasLayer;
     }
 
-    public Optional<PublishedInfoChangeEvent> workSpaceNameChanged(
-            String workspace, AjaxRequestTarget target) {
+    public Optional<PublishedInfoChangeEvent> workSpaceNameChanged(String workspace, AjaxRequestTarget target) {
         String layer = getModelObject().getLayer();
         return updatePublishedInfo(workspace, layer, target);
     }
 
-    public Optional<PublishedInfoChangeEvent> layerNameChanged(
-            String layer, AjaxRequestTarget target) {
+    public Optional<PublishedInfoChangeEvent> layerNameChanged(String layer, AjaxRequestTarget target) {
         String workspace = getSelectedWorkspace();
         return updatePublishedInfo(workspace, layer, target);
     }
@@ -190,8 +179,7 @@ public class DataAccessRuleEditModel extends AbstractRuleEditModel<MutableRule> 
         }
         PublishedInfo info = publishedInfoModel.setObject(workspace, layer);
         updateModelFor(info);
-        return Optional.of(
-                new PublishedInfoChangeEvent(workspace, layer, Optional.ofNullable(info), target));
+        return Optional.of(new PublishedInfoChangeEvent(workspace, layer, Optional.ofNullable(info), target));
     }
 
     private void updateModelFor(PublishedInfo info) {

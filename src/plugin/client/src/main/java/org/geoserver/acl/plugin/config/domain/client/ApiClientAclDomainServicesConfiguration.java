@@ -5,7 +5,6 @@
 package org.geoserver.acl.plugin.config.domain.client;
 
 import lombok.extern.slf4j.Slf4j;
-
 import org.geoserver.acl.api.client.AuthorizationApi;
 import org.geoserver.acl.api.client.DataRulesApi;
 import org.geoserver.acl.api.client.WorkspaceAdminRulesApi;
@@ -59,15 +58,10 @@ public class ApiClientAclDomainServicesConfiguration {
         String password = env.getProperty("geoserver.acl.client.password");
         boolean debug = env.getProperty("geoserver.acl.client.debug", Boolean.class, false);
         boolean caching = env.getProperty("geoserver.acl.client.caching", Boolean.class, true);
-        boolean startupCheck =
-                env.getProperty("geoserver.acl.client.startupCheck", Boolean.class, true);
+        boolean startupCheck = env.getProperty("geoserver.acl.client.startupCheck", Boolean.class, true);
         Integer initTimeout = env.getProperty("geoserver.acl.client.initTimeout", Integer.class);
 
-        log.info(
-                "GeoServer Acess Control List API: {}, user: {}, caching: {}",
-                basePath,
-                username,
-                caching);
+        log.info("GeoServer Acess Control List API: {}, user: {}, caching: {}", basePath, username, caching);
         ApiClientProperties configProps = new ApiClientProperties();
         configProps.setBasePath(basePath);
         configProps.setUsername(username);

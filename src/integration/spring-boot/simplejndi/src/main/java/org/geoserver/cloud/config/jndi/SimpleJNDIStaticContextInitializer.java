@@ -4,15 +4,13 @@
  */
 package org.geoserver.cloud.config.jndi;
 
+import javax.naming.NamingException;
+import javax.naming.spi.NamingManager;
 import lombok.extern.slf4j.Slf4j;
-
 import org.geoserver.cloud.jndi.SimpleNamingContextBuilder;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-
-import javax.naming.NamingException;
-import javax.naming.spi.NamingManager;
 
 /**
  * {@link ApplicationContextInitializer} setting {@link SimpleNamingContextBuilder} as the JNDI
@@ -44,14 +42,10 @@ public class SimpleJNDIStaticContextInitializer
         log.info("Initializing JNDI InitialContextFactoryBuilder");
         try {
             NamingManager.setInitialContextFactoryBuilder(new SimpleNamingContextBuilder());
-            log.info(
-                    "Registered JNDI implementation using "
-                            + SimpleNamingContextBuilder.class.getName());
+            log.info("Registered JNDI implementation using " + SimpleNamingContextBuilder.class.getName());
         } catch (NamingException e) {
             throw new ApplicationContextException(
-                    "Unexpected error installing JNDI "
-                            + SimpleNamingContextBuilder.class.getSimpleName(),
-                    e);
+                    "Unexpected error installing JNDI " + SimpleNamingContextBuilder.class.getSimpleName(), e);
         }
     }
 }

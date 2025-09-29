@@ -6,10 +6,13 @@ package org.geoserver.acl.api.server.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.Objects;
+import java.util.function.Function;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-
 import org.geoserver.acl.api.mapper.EnumsApiMapperImpl;
 import org.geoserver.acl.api.mapper.GeometryApiMapper;
 import org.geoserver.acl.api.mapper.RuleFilterApiMapper;
@@ -22,12 +25,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.NativeWebRequest;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.Objects;
-import java.util.function.Function;
 
 @RequiredArgsConstructor
 public abstract class ApiImplSupport<D, T> {
@@ -54,13 +51,11 @@ public abstract class ApiImplSupport<D, T> {
         return new EnumsApiMapperImpl().toRuleInsertPosition(position);
     }
 
-    public org.geoserver.acl.domain.adminrules.InsertPosition toAdminRulesModel(
-            InsertPosition position) {
+    public org.geoserver.acl.domain.adminrules.InsertPosition toAdminRulesModel(InsertPosition position) {
         return new EnumsApiMapperImpl().toAdminRuleInsertPosition(position);
     }
 
-    public org.geoserver.acl.domain.adminrules.AdminRuleFilter map(
-            AdminRuleFilter adminRuleFilter) {
+    public org.geoserver.acl.domain.adminrules.AdminRuleFilter map(AdminRuleFilter adminRuleFilter) {
         return filterMapper.map(adminRuleFilter);
     }
 
@@ -74,8 +69,7 @@ public abstract class ApiImplSupport<D, T> {
             RequestBodyBufferingServletRequest bufferedRequest =
                     nativeRequest.getNativeRequest(RequestBodyBufferingServletRequest.class);
             Objects.requireNonNull(
-                    bufferedRequest,
-                    "Servlet Filter not set up, expected RequestBodyBufferingServletRequest");
+                    bufferedRequest, "Servlet Filter not set up, expected RequestBodyBufferingServletRequest");
             BufferedReader reader = bufferedRequest.getReader();
 
             D current = toApi.apply(orig);

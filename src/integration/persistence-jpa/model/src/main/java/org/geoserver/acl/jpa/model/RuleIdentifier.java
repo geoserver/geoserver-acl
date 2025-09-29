@@ -5,12 +5,7 @@
 
 package org.geoserver.acl.jpa.model;
 
-import lombok.Data;
-import lombok.NonNull;
-import lombok.experimental.Accessors;
-
 import java.io.Serializable;
-
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
@@ -18,6 +13,9 @@ import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.experimental.Accessors;
 
 /**
  * Uniquely identifies a {@link Rule}, all properties are mandatory in order for the {@link Rule}'s

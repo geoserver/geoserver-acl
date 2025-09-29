@@ -6,11 +6,10 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.model;
 
-import org.apache.wicket.model.IModel;
-import org.geoserver.web.wicket.GeoServerDataProvider;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.wicket.model.IModel;
+import org.geoserver.web.wicket.GeoServerDataProvider;
 
 @SuppressWarnings("serial")
 public class LayerAttributeDataProvider extends GeoServerDataProvider<MutableLayerAttribute> {

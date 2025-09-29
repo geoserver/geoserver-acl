@@ -5,7 +5,7 @@
 package org.geoserver.acl.plugin.web.components;
 
 import com.google.common.collect.Iterators;
-
+import java.util.Iterator;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -25,29 +25,18 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
-import java.util.Iterator;
-
 @SuppressWarnings("serial")
 public class PublishedInfoAutoCompleteTextField extends ModelUpdatingAutoCompleteTextField<String> {
 
     public PublishedInfoAutoCompleteTextField(
-            String id,
-            IModel<String> model,
-            SerializableFunction<String, Iterator<PublishedInfo>> choiceResolver) {
-        super(
-                id,
-                model,
-                adapt(choiceResolver),
-                LayerAutoCompleteRenderer.INSTANCE,
-                defaultSettings());
+            String id, IModel<String> model, SerializableFunction<String, Iterator<PublishedInfo>> choiceResolver) {
+        super(id, model, adapt(choiceResolver), LayerAutoCompleteRenderer.INSTANCE, defaultSettings());
     }
 
     @Override
     public void renderHead(IHeaderResponse response) {
-        response.render(
-                CssHeaderItem.forReference(
-                        new PackageResourceReference(
-                                getClass(), "PublishedInfoAutoCompleteTextField.css")));
+        response.render(CssHeaderItem.forReference(
+                new PackageResourceReference(getClass(), "PublishedInfoAutoCompleteTextField.css")));
     }
 
     private static SerializableFunction<String, Iterator<String>> adapt(
@@ -55,18 +44,15 @@ public class PublishedInfoAutoCompleteTextField extends ModelUpdatingAutoComplet
 
         return input -> {
             Iterator<PublishedInfo> infos = choiceResolver.apply(input);
-            return Iterators.transform(
-                    infos,
-                    info -> {
-                        String cssType = getCssClass(info);
-                        String name = info.getName();
-                        return name + "#" + cssType;
-                    });
+            return Iterators.transform(infos, info -> {
+                String cssType = getCssClass(info);
+                String name = info.getName();
+                return name + "#" + cssType;
+            });
         };
     }
 
-    private static class LayerAutoCompleteRenderer
-            extends AbstractAutoCompleteTextRenderer<String> {
+    private static class LayerAutoCompleteRenderer extends AbstractAutoCompleteTextRenderer<String> {
 
         static final LayerAutoCompleteRenderer INSTANCE = new LayerAutoCompleteRenderer();
 
@@ -75,9 +61,7 @@ public class PublishedInfoAutoCompleteTextField extends ModelUpdatingAutoComplet
         }
 
         protected @Override void renderChoice(
-                final String object,
-                final org.apache.wicket.request.Response response,
-                final String criteria) {
+                final String object, final org.apache.wicket.request.Response response, final String criteria) {
             String textValue = getTextValue(object);
             String type = getClassName(object);
             textValue = Strings.escapeMarkup(textValue).toString();
@@ -131,11 +115,9 @@ public class PublishedInfoAutoCompleteTextField extends ModelUpdatingAutoComplet
         Class<?> geom = gd.getType().getBinding();
         if (Point.class.isAssignableFrom(geom) || MultiPoint.class.isAssignableFrom(geom)) {
             return "point";
-        } else if (LineString.class.isAssignableFrom(geom)
-                || MultiLineString.class.isAssignableFrom(geom)) {
+        } else if (LineString.class.isAssignableFrom(geom) || MultiLineString.class.isAssignableFrom(geom)) {
             return "line";
-        } else if (Polygon.class.isAssignableFrom(geom)
-                || MultiPolygon.class.isAssignableFrom(geom)) {
+        } else if (Polygon.class.isAssignableFrom(geom) || MultiPolygon.class.isAssignableFrom(geom)) {
             return "polygon";
         } else {
             return "geometry";

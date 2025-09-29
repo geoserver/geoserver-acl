@@ -4,10 +4,11 @@
  */
 package org.geoserver.acl.api.client.integration;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.geoserver.acl.api.client.AuthorizationApi;
 import org.geoserver.acl.api.mapper.AuthorizationModelApiMapper;
 import org.geoserver.acl.api.mapper.RuleApiMapper;
@@ -18,21 +19,16 @@ import org.geoserver.acl.authorization.AdminAccessInfo;
 import org.geoserver.acl.authorization.AuthorizationService;
 import org.geoserver.acl.domain.rules.Rule;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @RequiredArgsConstructor
 @Slf4j
 public class AuthorizationServiceClientAdaptor implements AuthorizationService {
 
     private final @NonNull AuthorizationApi apiClient;
-    private final @NonNull AuthorizationModelApiMapper mapper =
-            Mappers.authorizationModelApiMapper();
+    private final @NonNull AuthorizationModelApiMapper mapper = Mappers.authorizationModelApiMapper();
     private final @NonNull RuleApiMapper ruleMapper = Mappers.ruleApiMapper();
 
     @Override
-    public AccessInfo getAccessInfo(
-            @NonNull org.geoserver.acl.authorization.AccessRequest request) {
+    public AccessInfo getAccessInfo(@NonNull org.geoserver.acl.authorization.AccessRequest request) {
         org.geoserver.acl.api.model.AccessRequest apiRequest;
         org.geoserver.acl.api.model.AccessInfo apiResponse;
 
@@ -47,8 +43,7 @@ public class AuthorizationServiceClientAdaptor implements AuthorizationService {
     }
 
     @Override
-    public AdminAccessInfo getAdminAuthorization(
-            @NonNull org.geoserver.acl.authorization.AdminAccessRequest request) {
+    public AdminAccessInfo getAdminAuthorization(@NonNull org.geoserver.acl.authorization.AdminAccessRequest request) {
         org.geoserver.acl.api.model.AdminAccessRequest apiRequest;
         org.geoserver.acl.api.model.AdminAccessInfo apiResponse;
 
@@ -63,8 +58,7 @@ public class AuthorizationServiceClientAdaptor implements AuthorizationService {
     }
 
     @Override
-    public List<Rule> getMatchingRules(
-            @NonNull org.geoserver.acl.authorization.AccessRequest request) {
+    public List<Rule> getMatchingRules(@NonNull org.geoserver.acl.authorization.AccessRequest request) {
         org.geoserver.acl.api.model.AccessRequest apiRequest;
         List<org.geoserver.acl.api.model.Rule> apiResponse;
 

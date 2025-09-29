@@ -20,68 +20,55 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 /** {@link AclAccessManagerAutoConfiguration} tests */
 class AclAccessManagerAutoConfigurationTest {
 
-    private ApplicationContextRunner runner =
-            new ApplicationContextRunner()
-                    .withBean("rawCatalog", Catalog.class, CatalogImpl::new)
-                    .withBean(
-                            "layerGroupContainmentCache",
-                            LayerGroupContainmentCache.class,
-                            () -> mock(LayerGroupContainmentCache.class))
-                    .withConfiguration(
-                            AutoConfigurations.of(AclAccessManagerAutoConfiguration.class));
+    private ApplicationContextRunner runner = new ApplicationContextRunner()
+            .withBean("rawCatalog", Catalog.class, CatalogImpl::new)
+            .withBean(
+                    "layerGroupContainmentCache",
+                    LayerGroupContainmentCache.class,
+                    () -> mock(LayerGroupContainmentCache.class))
+            .withConfiguration(AutoConfigurations.of(AclAccessManagerAutoConfiguration.class));
 
     @Test
     void testEnabledByDefaultWhenServiceUrlIsProvided() {
         runner.withPropertyValues(
-                        "geoserver.acl.client.startupCheck=false",
-                        "geoserver.acl.client.basePath=http://acl.test:9000")
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasNotFailed()
-                                    .hasSingleBean(ACLResourceAccessManager.class)
-                                    .hasSingleBean(ACLDispatcherCallback.class)
-                                    .hasSingleBean(WPSHelper.class);
-                        });
+                        "geoserver.acl.client.startupCheck=false", "geoserver.acl.client.basePath=http://acl.test:9000")
+                .run(context -> {
+                    assertThat(context)
+                            .hasNotFailed()
+                            .hasSingleBean(ACLResourceAccessManager.class)
+                            .hasSingleBean(ACLDispatcherCallback.class)
+                            .hasSingleBean(WPSHelper.class);
+                });
     }
 
     @Test
     void testConditionalOnAclEnabled() {
-        runner.withPropertyValues(
-                        "geoserver.acl.enabled=false",
-                        "geoserver.acl.client.basePath=http://acl.test:9000")
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasNotFailed()
-                                    .doesNotHaveBean(ACLResourceAccessManager.class)
-                                    .doesNotHaveBean(ACLDispatcherCallback.class)
-                                    .doesNotHaveBean(WPSHelper.class);
-                        });
+        runner.withPropertyValues("geoserver.acl.enabled=false", "geoserver.acl.client.basePath=http://acl.test:9000")
+                .run(context -> {
+                    assertThat(context)
+                            .hasNotFailed()
+                            .doesNotHaveBean(ACLResourceAccessManager.class)
+                            .doesNotHaveBean(ACLDispatcherCallback.class)
+                            .doesNotHaveBean(WPSHelper.class);
+                });
 
         runner.withPropertyValues(
                         "geoserver.acl.enabled=true",
                         "geoserver.acl.client.startupCheck=false",
                         "geoserver.acl.client.basePath=http://acl.test:9000")
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasNotFailed()
-                                    .hasSingleBean(ACLResourceAccessManager.class)
-                                    .hasSingleBean(ACLDispatcherCallback.class)
-                                    .hasSingleBean(WPSHelper.class);
-                        });
+                .run(context -> {
+                    assertThat(context)
+                            .hasNotFailed()
+                            .hasSingleBean(ACLResourceAccessManager.class)
+                            .hasSingleBean(ACLDispatcherCallback.class)
+                            .hasSingleBean(WPSHelper.class);
+                });
     }
 
     @Test
     void testFailsIfEnabledAndServiceUrlNotProvided() {
-        runner.withPropertyValues("geoserver.acl.client.basePath=")
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasFailed()
-                                    .getFailure()
-                                    .hasMessageContaining("geoserver.acl.client.basePath");
-                        });
+        runner.withPropertyValues("geoserver.acl.client.basePath=").run(context -> {
+            assertThat(context).hasFailed().getFailure().hasMessageContaining("geoserver.acl.client.basePath");
+        });
     }
 }

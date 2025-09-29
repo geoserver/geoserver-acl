@@ -4,6 +4,7 @@
  */
 package org.geoserver.acl.integration.jpa.mapper;
 
+import java.util.Optional;
 import org.geoserver.acl.domain.rules.LayerDetails;
 import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleIdentifier;
@@ -12,8 +13,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
-
-import java.util.Optional;
 
 @Mapper(
         componentModel = "spring",
@@ -64,14 +63,11 @@ public interface RuleJpaMapper {
         return value == null ? null : value.map(this::toEntity).orElse(null);
     }
 
-    org.geoserver.acl.jpa.model.LayerDetails toEntity(
-            org.geoserver.acl.domain.rules.LayerDetails value);
+    org.geoserver.acl.jpa.model.LayerDetails toEntity(org.geoserver.acl.domain.rules.LayerDetails value);
 
-    org.geoserver.acl.domain.rules.LayerDetails toModel(
-            org.geoserver.acl.jpa.model.LayerDetails value);
+    org.geoserver.acl.domain.rules.LayerDetails toModel(org.geoserver.acl.jpa.model.LayerDetails value);
 
-    org.geoserver.acl.jpa.model.RuleLimits toEntity(
-            org.geoserver.acl.domain.rules.RuleLimits value);
+    org.geoserver.acl.jpa.model.RuleLimits toEntity(org.geoserver.acl.domain.rules.RuleLimits value);
 
     org.geoserver.acl.domain.rules.RuleLimits toModel(org.geoserver.acl.jpa.model.RuleLimits value);
 

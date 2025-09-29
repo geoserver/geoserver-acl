@@ -14,6 +14,9 @@ import static org.geoserver.acl.domain.rules.GrantType.ALLOW;
 import static org.geoserver.acl.domain.rules.GrantType.DENY;
 import static org.geoserver.acl.domain.rules.GrantType.LIMIT;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.geoserver.acl.authorization.WorkspaceAccessSummary.Builder;
 import org.geoserver.acl.domain.adminrules.AdminRule;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
@@ -25,10 +28,6 @@ import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.geoserver.acl.domain.rules.RuleAdminServiceImpl;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * {@link AuthorizationService} integration/conformance test
@@ -77,20 +76,12 @@ public class AuthorizationServiceImplTest extends AuthorizationServiceTest {
 
         AdminRule ws3UserRule = insert(USER, 3, "user1", "*", "ws3");
         adminRules = service.getAdminRulesByWorkspace(user, roles);
-        assertThat(adminRules)
-                .isEqualTo(Map.of("ws1", list(r1), "ws2", list(r2), "ws3", list(ws3UserRule)));
+        assertThat(adminRules).isEqualTo(Map.of("ws1", list(r1), "ws2", list(r2), "ws3", list(ws3UserRule)));
 
         AdminRule ws3RoleRule = insert(ADMIN, 4, "*", "ROLE_2", "ws3");
         adminRules = service.getAdminRulesByWorkspace(user, roles);
         assertThat(adminRules)
-                .isEqualTo(
-                        Map.of(
-                                "ws1",
-                                list(r1),
-                                "ws2",
-                                list(r2),
-                                "ws3",
-                                list(ws3UserRule, ws3RoleRule)));
+                .isEqualTo(Map.of("ws1", list(r1), "ws2", list(r2), "ws3", list(ws3UserRule, ws3RoleRule)));
     }
 
     @Test
@@ -102,12 +93,11 @@ public class AuthorizationServiceImplTest extends AuthorizationServiceTest {
         AdminRule r3 = insert(USER, 3, "user1", "*", "ws3");
         AdminRule r4 = insert(ADMIN, 4, "*", "ROLE_2", "ws3");
 
-        AdminAccessRequest ws3AdminReq =
-                AdminAccessRequest.builder()
-                        .user("user1")
-                        .roles("ROLE_1", "ROLE_2")
-                        .workspace("ws3")
-                        .build();
+        AdminAccessRequest ws3AdminReq = AdminAccessRequest.builder()
+                .user("user1")
+                .roles("ROLE_1", "ROLE_2")
+                .workspace("ws3")
+                .build();
         // verify r3 takes over r4
         AdminAccessInfo ws3Auth = service.getAdminAuthorization(ws3AdminReq);
         assertThat(ws3Auth.isAdmin()).isFalse();
@@ -143,10 +133,9 @@ public class AuthorizationServiceImplTest extends AuthorizationServiceTest {
 
         actual = service.getRulesByWorkspace(user, roles);
         assertThat(actual)
-                .isEqualTo(
-                        Map.of(
-                                "ws1", list(r1, r3),
-                                "ws2", list(r2, r4)));
+                .isEqualTo(Map.of(
+                        "ws1", list(r1, r3),
+                        "ws2", list(r2, r4)));
     }
 
     @Test
@@ -198,13 +187,7 @@ public class AuthorizationServiceImplTest extends AuthorizationServiceTest {
         return List.of(items);
     }
 
-    protected Rule insert(
-            GrantType access,
-            long priority,
-            String user,
-            String role,
-            String workspace,
-            String layer) {
+    protected Rule insert(GrantType access, long priority, String user, String role, String workspace, String layer) {
 
         if ("*".equals(user)) user = null;
         if ("*".equals(role)) role = null;

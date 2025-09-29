@@ -21,65 +21,51 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 class AclWpsAutoConfigurationTest {
 
     private ApplicationContextRunner runner =
-            new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(AclWpsAutoConfiguration.class));
+            new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(AclWpsAutoConfiguration.class));
 
     @Test
     void testEnabledWhenAllConditionsMatch() {
-        runner.withBean(
-                        "wpsResourceManager",
-                        WPSResourceManager.class,
-                        () -> mock(WPSResourceManager.class))
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasNotFailed()
-                                    .hasSingleBean(ChainStatusHolder.class)
-                                    .hasSingleBean(DefaultExecutionIdRetriever.class)
-                                    .hasSingleBean(WPSProcessListener.class);
-                        });
+        runner.withBean("wpsResourceManager", WPSResourceManager.class, () -> mock(WPSResourceManager.class))
+                .run(context -> {
+                    assertThat(context)
+                            .hasNotFailed()
+                            .hasSingleBean(ChainStatusHolder.class)
+                            .hasSingleBean(DefaultExecutionIdRetriever.class)
+                            .hasSingleBean(WPSProcessListener.class);
+                });
     }
 
     @Test
     void testConditionalOnAclEnabled() {
-        runner.withBean(
-                        "wpsResourceManager",
-                        WPSResourceManager.class,
-                        () -> mock(WPSResourceManager.class))
+        runner.withBean("wpsResourceManager", WPSResourceManager.class, () -> mock(WPSResourceManager.class))
                 .withPropertyValues("geoserver.acl.enabled=false")
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasNotFailed()
-                                    .doesNotHaveBean(ChainStatusHolder.class)
-                                    .doesNotHaveBean(DefaultExecutionIdRetriever.class)
-                                    .doesNotHaveBean(WPSProcessListener.class);
-                        });
-        runner.withPropertyValues("geoserver.acl.enabled=true")
-                .withBean(
-                        "wpsResourceManager",
-                        WPSResourceManager.class,
-                        () -> mock(WPSResourceManager.class))
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasNotFailed()
-                                    .hasSingleBean(ChainStatusHolder.class)
-                                    .hasSingleBean(DefaultExecutionIdRetriever.class)
-                                    .hasSingleBean(WPSProcessListener.class);
-                        });
-    }
-
-    @Test
-    void testConditionalOnWPSResourceManager() {
-        runner.run(
-                context -> {
+                .run(context -> {
                     assertThat(context)
                             .hasNotFailed()
                             .doesNotHaveBean(ChainStatusHolder.class)
                             .doesNotHaveBean(DefaultExecutionIdRetriever.class)
                             .doesNotHaveBean(WPSProcessListener.class);
                 });
+        runner.withPropertyValues("geoserver.acl.enabled=true")
+                .withBean("wpsResourceManager", WPSResourceManager.class, () -> mock(WPSResourceManager.class))
+                .run(context -> {
+                    assertThat(context)
+                            .hasNotFailed()
+                            .hasSingleBean(ChainStatusHolder.class)
+                            .hasSingleBean(DefaultExecutionIdRetriever.class)
+                            .hasSingleBean(WPSProcessListener.class);
+                });
+    }
+
+    @Test
+    void testConditionalOnWPSResourceManager() {
+        runner.run(context -> {
+            assertThat(context)
+                    .hasNotFailed()
+                    .doesNotHaveBean(ChainStatusHolder.class)
+                    .doesNotHaveBean(DefaultExecutionIdRetriever.class)
+                    .doesNotHaveBean(WPSProcessListener.class);
+        });
     }
 
     @Test
@@ -94,14 +80,13 @@ class AclWpsAutoConfigurationTest {
                     // AclWpsIntegrationConfiguration
                     .withBean("wpsResourceManager", Object.class, () -> new Object())
                     .withClassLoader(classLoader)
-                    .run(
-                            context -> {
-                                assertThat(context)
-                                        .hasNotFailed()
-                                        .doesNotHaveBean(ChainStatusHolder.class)
-                                        .doesNotHaveBean(DefaultExecutionIdRetriever.class)
-                                        .doesNotHaveBean(WPSProcessListener.class);
-                            });
+                    .run(context -> {
+                        assertThat(context)
+                                .hasNotFailed()
+                                .doesNotHaveBean(ChainStatusHolder.class)
+                                .doesNotHaveBean(DefaultExecutionIdRetriever.class)
+                                .doesNotHaveBean(WPSProcessListener.class);
+                    });
         } finally {
             WPSResourceManagerClassCondition.classLoader(null);
         }

@@ -4,9 +4,9 @@
  */
 package org.geoserver.acl.api.server.authorization;
 
+import java.util.List;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-
 import org.geoserver.acl.api.model.AccessInfo;
 import org.geoserver.acl.api.model.AccessRequest;
 import org.geoserver.acl.api.model.AccessSummary;
@@ -19,8 +19,6 @@ import org.geoserver.acl.api.server.support.AuthorizationApiSupport;
 import org.geoserver.acl.api.server.support.IsAuthenticated;
 import org.geoserver.acl.authorization.AuthorizationService;
 import org.springframework.http.ResponseEntity;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @IsAuthenticated

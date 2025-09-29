@@ -4,13 +4,11 @@
  */
 package org.geoserver.acl.plugin.web.adminrules.model;
 
+import java.io.Serializable;
 import lombok.Data;
-
 import org.geoserver.acl.domain.adminrules.AdminGrantType;
 import org.geoserver.acl.domain.adminrules.AdminRule;
 import org.geoserver.acl.domain.adminrules.AdminRuleIdentifier;
-
-import java.io.Serializable;
 
 /**
  * @author ETj (etj at geo-solutions.it) - Originally as part of GeoFence
@@ -77,13 +75,12 @@ public class MutableAdminRule implements Serializable, Cloneable {
                 .extId(getExtId())
                 .name(getName())
                 .description(getDescription())
-                .identifier(
-                        AdminRuleIdentifier.builder()
-                                .username(getUserName())
-                                .rolename(getRoleName())
-                                .addressRange(getAddressRange())
-                                .workspace(getWorkspace())
-                                .build())
+                .identifier(AdminRuleIdentifier.builder()
+                        .username(getUserName())
+                        .rolename(getRoleName())
+                        .addressRange(getAddressRange())
+                        .workspace(getWorkspace())
+                        .build())
                 .build();
     }
 

@@ -7,15 +7,6 @@
 
 package org.geoserver.acl.jpa.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
-import lombok.experimental.Accessors;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -29,6 +20,13 @@ import javax.persistence.Index;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.experimental.Accessors;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * An AdminRule expresses if a given combination of request access is allowed or not.
@@ -69,9 +67,7 @@ public class AdminRule extends Auditable implements Cloneable {
     private static final long serialVersionUID = 422357467611162461L;
 
     @Id
-    @GeneratedValue(
-            generator = "acl_adminrules_sequence_generator",
-            strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(generator = "acl_adminrules_sequence_generator", strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(
             name = "acl_adminrules_sequence_generator",
             sequenceName = "acl_adminrule_sequence",
@@ -92,7 +88,8 @@ public class AdminRule extends Auditable implements Cloneable {
 
     private long priority;
 
-    @Embedded private AdminRuleIdentifier identifier = new AdminRuleIdentifier();
+    @Embedded
+    private AdminRuleIdentifier identifier = new AdminRuleIdentifier();
 
     @NonNull
     @Enumerated(EnumType.STRING)

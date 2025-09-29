@@ -4,6 +4,7 @@
  */
 package org.geoserver.acl.jpa.it;
 
+import javax.transaction.Transactional;
 import org.geoserver.acl.jpa.config.AclDataSourceConfiguration;
 import org.geoserver.acl.jpa.config.AuthorizationJPAConfiguration;
 import org.geoserver.acl.jpa.config.AuthorizationJPAPropertiesTestConfiguration;
@@ -16,8 +17,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-
-import javax.transaction.Transactional;
 
 @Testcontainers(disabledWithoutDocker = true)
 @Transactional

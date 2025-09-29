@@ -5,7 +5,6 @@
 package org.geoserver.acl.plugin.web.adminrules.model;
 
 import lombok.NonNull;
-
 import org.geoserver.acl.domain.adminrules.AdminRule;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.plugin.web.components.AbstractRuleEditModel;
@@ -51,9 +50,8 @@ public class AdminRuleEditModel extends AbstractRuleEditModel<MutableAdminRule> 
     public AdminRule loadDomainRule() {
         MutableAdminRule modelRule = getModel().getObject();
         AdminRuleAdminService service = adminService();
-        AdminRule current =
-                service.get(modelRule.getId())
-                        .orElseThrow(() -> new IllegalStateException("The rule no longer exists"));
+        AdminRule current = service.get(modelRule.getId())
+                .orElseThrow(() -> new IllegalStateException("The rule no longer exists"));
         return current;
     }
 

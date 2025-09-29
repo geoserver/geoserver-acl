@@ -11,6 +11,9 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.repeater.OddEvenItem;
 import org.geoserver.acl.domain.adminrules.AdminRule;
@@ -21,10 +24,6 @@ import org.geoserver.acl.plugin.web.support.AclWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.junit.Test;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @SuppressWarnings("unused")
 public class RulesTablePanelTest extends AclWicketTestSupport {
@@ -78,16 +77,12 @@ public class RulesTablePanelTest extends AclWicketTestSupport {
 
             @SuppressWarnings("unchecked")
             ListView<MutableAdminRule> listView =
-                    (ListView<MutableAdminRule>)
-                            tester.getComponentFromLastRenderedPage(itemPath + ":itemProperties");
+                    (ListView<MutableAdminRule>) tester.getComponentFromLastRenderedPage(itemPath + ":itemProperties");
             assertNotNull(listView);
 
-            tester.assertComponent(
-                    itemPath + ":itemProperties:5:component:up", ImageAjaxLink.class);
-            tester.assertComponent(
-                    itemPath + ":itemProperties:5:component:down", ImageAjaxLink.class);
-            tester.assertComponent(
-                    itemPath + ":itemProperties:5:component:edit", ImageAjaxLink.class);
+            tester.assertComponent(itemPath + ":itemProperties:5:component:up", ImageAjaxLink.class);
+            tester.assertComponent(itemPath + ":itemProperties:5:component:down", ImageAjaxLink.class);
+            tester.assertComponent(itemPath + ":itemProperties:5:component:edit", ImageAjaxLink.class);
         }
     }
 

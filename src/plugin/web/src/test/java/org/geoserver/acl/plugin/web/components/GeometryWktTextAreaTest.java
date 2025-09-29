@@ -42,8 +42,7 @@ public class GeometryWktTextAreaTest {
         tester.startComponentInPage(new FormPage("panel", textArea));
         FormTester form = tester.newFormTester("panel:form");
 
-        form.setValue(
-                "wkt", "SRID=4326;MULTIPOLYGON(((-180 -90,-180 90,180 90,180 -90,-180 -90)))");
+        form.setValue("wkt", "SRID=4326;MULTIPOLYGON(((-180 -90,-180 90,180 90,180 -90,-180 -90)))");
         form.submit();
         Object value = form.getForm().get("wkt").getDefaultModelObject();
         assertThat(value, instanceOf(MultiPolygon.class));
@@ -52,13 +51,11 @@ public class GeometryWktTextAreaTest {
     @Test
     public void testMultiPolygon() {
         IModel<MultiPolygon> model = Model.of();
-        GeometryWktTextArea<MultiPolygon> textArea =
-                new GeometryWktTextArea<>("wkt", MultiPolygon.class, model);
+        GeometryWktTextArea<MultiPolygon> textArea = new GeometryWktTextArea<>("wkt", MultiPolygon.class, model);
         tester.startComponentInPage(new FormPage("panel", textArea));
         FormTester form = tester.newFormTester("panel:form");
 
-        form.setValue(
-                "wkt", "SRID=4326;MULTIPOLYGON(((-180 -90,-180 90,180 90,180 -90,-180 -90)))");
+        form.setValue("wkt", "SRID=4326;MULTIPOLYGON(((-180 -90,-180 90,180 90,180 -90,-180 -90)))");
         form.submit();
         Object value = form.getForm().get("wkt").getDefaultModelObject();
         assertThat(value, instanceOf(MultiPolygon.class));
@@ -75,8 +72,7 @@ public class GeometryWktTextAreaTest {
         tester.startComponentInPage(new FormPage("panel", GeometryWktTextArea.of("wkt")));
         FormTester form = tester.newFormTester("panel:form");
 
-        form.setValue(
-                "wkt", "SRID=4326;MULTIPOLYGON(((-180 -90,-180 90,180 90,180 -90,-180 -90)))");
+        form.setValue("wkt", "SRID=4326;MULTIPOLYGON(((-180 -90,-180 90,180 90,180 -90,-180 -90)))");
         form.submit();
         Object value = form.getForm().get("wkt").getDefaultModelObject();
         assertThat(value, instanceOf(MultiPolygon.class));

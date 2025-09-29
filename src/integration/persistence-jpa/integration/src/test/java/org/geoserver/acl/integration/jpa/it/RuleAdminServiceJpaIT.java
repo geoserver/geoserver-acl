@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.geoserver.acl.domain.rules.RuleEvent.created;
 import static org.geoserver.acl.domain.rules.RuleEvent.updated;
 
+import java.util.List;
 import org.geoserver.acl.config.domain.RuleAdminServiceConfiguration;
 import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleAdminService;
@@ -21,8 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.util.List;
 
 @SpringBootTest(
         classes = {

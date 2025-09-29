@@ -7,19 +7,17 @@
 
 package org.geoserver.acl.authorization;
 
+import java.util.List;
+import java.util.Set;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.With;
-
 import org.geolatte.geom.Geometry;
 import org.geoserver.acl.domain.rules.CatalogMode;
 import org.geoserver.acl.domain.rules.GrantType;
 import org.geoserver.acl.domain.rules.LayerAttribute;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
@@ -30,13 +28,16 @@ import java.util.Set;
 public class AccessInfo {
 
     /** Default "allow everything" AccessInfo */
-    public static final AccessInfo ALLOW_ALL = AccessInfo.builder().grant(GrantType.ALLOW).build();
+    public static final AccessInfo ALLOW_ALL =
+            AccessInfo.builder().grant(GrantType.ALLOW).build();
 
     /** Default "deny everything" AccessInfo */
-    public static final AccessInfo DENY_ALL = AccessInfo.builder().grant(GrantType.DENY).build();
+    public static final AccessInfo DENY_ALL =
+            AccessInfo.builder().grant(GrantType.DENY).build();
 
     /** The resulting grant: allow or deny. */
-    @Default private GrantType grant = GrantType.DENY;
+    @Default
+    private GrantType grant = GrantType.DENY;
 
     private Geometry<?> area;
 
@@ -54,7 +55,9 @@ public class AccessInfo {
 
     private Set<String> allowedStyles;
 
-    @Default @NonNull private List<String> matchingRules = List.of();
+    @Default
+    @NonNull
+    private List<String> matchingRules = List.of();
 
     @Override
     public String toString() {

@@ -40,7 +40,8 @@ public class AdminRule {
 
     private long priority;
 
-    @NonNull @Default
+    @NonNull
+    @Default
     private AdminRuleIdentifier identifier = AdminRuleIdentifier.builder().build();
 
     private AdminGrantType access;

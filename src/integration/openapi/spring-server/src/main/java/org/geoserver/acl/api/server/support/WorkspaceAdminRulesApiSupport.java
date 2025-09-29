@@ -5,7 +5,6 @@
 package org.geoserver.acl.api.server.support;
 
 import lombok.NonNull;
-
 import org.geoserver.acl.api.mapper.AdminRuleApiMapper;
 import org.geoserver.acl.api.model.AdminRule;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -13,8 +12,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 public class WorkspaceAdminRulesApiSupport
         extends ApiImplSupport<AdminRule, org.geoserver.acl.domain.adminrules.AdminRule> {
 
-    public WorkspaceAdminRulesApiSupport(
-            @NonNull NativeWebRequest nativeRequest, AdminRuleApiMapper mapper) {
+    public WorkspaceAdminRulesApiSupport(@NonNull NativeWebRequest nativeRequest, AdminRuleApiMapper mapper) {
         super(nativeRequest, mapper::toApi, mapper::toModel);
     }
 }

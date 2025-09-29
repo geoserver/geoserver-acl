@@ -5,7 +5,6 @@
 package org.geoserver.acl.api.client.integration;
 
 import lombok.experimental.UtilityClass;
-
 import org.geoserver.acl.api.mapper.AdminRuleApiMapper;
 import org.geoserver.acl.api.mapper.AdminRuleApiMapperImpl;
 import org.geoserver.acl.api.mapper.AuthorizationModelApiMapper;
@@ -40,8 +39,7 @@ class Mappers {
     }
 
     public AdminRuleApiMapper adminRuleApiMapper() {
-        if (null == adminRuleApiMapper)
-            adminRuleApiMapper = new AdminRuleApiMapperImpl(enumsApiMapper());
+        if (null == adminRuleApiMapper) adminRuleApiMapper = new AdminRuleApiMapperImpl(enumsApiMapper());
         return adminRuleApiMapper;
     }
 
@@ -51,8 +49,7 @@ class Mappers {
     }
 
     public RuleApiMapper ruleApiMapper() {
-        if (null == ruleApiMapper)
-            ruleApiMapper = new RuleApiMapperImpl(enumsApiMapper(), ruleLimitsApiMapper());
+        if (null == ruleApiMapper) ruleApiMapper = new RuleApiMapperImpl(enumsApiMapper(), ruleLimitsApiMapper());
         return ruleApiMapper;
     }
 
@@ -70,11 +67,8 @@ class Mappers {
 
     public LayerDetailsApiMapper layerDetailsApiMapper() {
         if (null == layerDetailsApiMapper)
-            layerDetailsApiMapper =
-                    new LayerDetailsApiMapperImpl(
-                            geometryMapper(),
-                            new LayerAttributeApiMapperImpl(enumsApiMapper()),
-                            enumsApiMapper());
+            layerDetailsApiMapper = new LayerDetailsApiMapperImpl(
+                    geometryMapper(), new LayerAttributeApiMapperImpl(enumsApiMapper()), enumsApiMapper());
         return layerDetailsApiMapper;
     }
 

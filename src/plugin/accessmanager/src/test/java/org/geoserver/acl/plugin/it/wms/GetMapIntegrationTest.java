@@ -19,6 +19,13 @@ import static org.geoserver.catalog.LayerGroupInfo.Mode.SINGLE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.List;
+import java.util.Set;
+import javax.imageio.ImageIO;
 import org.geoserver.acl.domain.rules.CatalogMode;
 import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleLimits;
@@ -32,15 +39,6 @@ import org.geotools.image.test.ImageAssert;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.List;
-import java.util.Set;
-
-import javax.imageio.ImageIO;
 
 @SuppressWarnings("unused")
 public class GetMapIntegrationTest extends AclWMSTestSupport {
@@ -60,9 +58,7 @@ public class GetMapIntegrationTest extends AclWMSTestSupport {
      */
     @Test
     public void testLimitRuleWithAllowedAreaLayerGroup() throws Exception {
-        Rule limit =
-                support.addRule(
-                        LIMIT, null, "ROLE_ANONYMOUS", "WMS", null, null, "lakes_and_places", 1);
+        Rule limit = support.addRule(LIMIT, null, "ROLE_ANONYMOUS", "WMS", null, null, "lakes_and_places", 1);
         RuleLimits limits = support.addRuleLimits(limit, HIDE, areWKT, 4326);
 
         Rule allow = support.addRule(ALLOW, null, null, null, null, null, null, 999);
@@ -83,8 +79,7 @@ public class GetMapIntegrationTest extends AclWMSTestSupport {
      */
     @Test
     public void testLimitAndAllowRuleEnlargementLayerGroup() throws Exception {
-        Rule limit =
-                support.addRule(LIMIT, null, "ROLE_ONE", "WMS", null, null, "lakes_and_places", 1);
+        Rule limit = support.addRule(LIMIT, null, "ROLE_ONE", "WMS", null, null, "lakes_and_places", 1);
         RuleLimits limits = support.addRuleLimits(limit, HIDE, areWKT, 4326);
 
         Rule allow = support.addRule(ALLOW, null, null, null, null, null, null, 999);
@@ -199,9 +194,7 @@ public class GetMapIntegrationTest extends AclWMSTestSupport {
         for (PublishedInfo pi : group.layers()) {
             String url = getMapRequest(pi.prefixedName());
             MockHttpServletResponse resp = getAsServletResponse(url);
-            assertTrue(
-                    resp.getContentAsString()
-                            .contains("Could not find layer " + pi.prefixedName()));
+            assertTrue(resp.getContentAsString().contains("Could not find layer " + pi.prefixedName()));
         }
     }
 
@@ -212,9 +205,7 @@ public class GetMapIntegrationTest extends AclWMSTestSupport {
     @Test
     public void testDirectAccessLayerWithNamedTreeContainer() throws Exception {
         Rule allow = support.addRule(ALLOW, null, null, null, null, null, null, 2);
-        Rule limit =
-                support.addRule(
-                        LIMIT, null, "ROLE_ANONYMOUS", "WMS", null, null, "lakes_and_places", 1);
+        Rule limit = support.addRule(LIMIT, null, "ROLE_ANONYMOUS", "WMS", null, null, "lakes_and_places", 1);
         support.addRuleLimits(limit, HIDE, areWKT, 4326);
 
         // check the group works without workspace qualification;
@@ -240,26 +231,21 @@ public class GetMapIntegrationTest extends AclWMSTestSupport {
     @Test
     public void testClipAndIntersectSpatialFilters() throws Exception {
         Rule allow = support.addRule(ALLOW, null, null, null, null, null, null, 999);
-        Rule limit =
-                support.addRule(
-                        LIMIT, null, "ROLE_ANONYMOUS", "WMS", null, "cite", "BasicPolygons", 20);
+        Rule limit = support.addRule(LIMIT, null, "ROLE_ANONYMOUS", "WMS", null, "cite", "BasicPolygons", 20);
 
         String clipWKT =
                 "MultiPolygon (((-2.01345454545454672 5.93445454545454698, -2.00454545454545574 4.30409090909090963, -0.2049090909090916 4.31300000000000061, 1.00672727272727203 5.57809090909091054, 0.97999999999999998 5.98790909090909285, -2.01345454545454672 5.93445454545454698)))";
         support.addRuleLimits(limit, HIDE, clipWKT, 4326, CLIP);
 
-        Rule r3 =
-                support.addRule(
-                        LIMIT, null, "ROLE_ANONYMOUS2", "WMS", null, "cite", "BasicPolygons", 21);
+        Rule r3 = support.addRule(LIMIT, null, "ROLE_ANONYMOUS2", "WMS", null, "cite", "BasicPolygons", 21);
 
         String intersectsWKT =
                 "MultiPolygon (((-2.41436363636363804 1.47100000000000009, 1.77290909090909077 1.23936363636363645, 1.47890909090909028 -0.40881818181818197, -2.83309090909091044 -0.18609090909090931, -2.41436363636363804 1.47100000000000009)))";
         support.addRuleLimits(r3, HIDE, intersectsWKT, 4326, INTERSECT);
 
         login("anonymousUser", "", "ROLE_ANONYMOUS", "ROLE_ANONYMOUS2");
-        String url =
-                "wms?request=getmap&service=wms&layers=cite:BasicPolygons"
-                        + "&width=100&height=100&format=image/png&srs=epsg:4326&bbox=-2.0,-1.0,2.0,6.0";
+        String url = "wms?request=getmap&service=wms&layers=cite:BasicPolygons"
+                + "&width=100&height=100&format=image/png&srs=epsg:4326&bbox=-2.0,-1.0,2.0,6.0";
 
         BufferedImage image = getAsImage(url, "image/png");
         BufferedImage expectedImage = loadExpectedImage("clip_and_intersects.png");
@@ -273,15 +259,12 @@ public class GetMapIntegrationTest extends AclWMSTestSupport {
     @Test
     public void testDirectAccessLayerWithNonGlobalNamedTreeContainer() throws Exception {
         Rule allow = support.addRule(ALLOW, null, null, null, null, null, null, 2);
-        Rule limit =
-                support.addRule(
-                        LIMIT, null, "ROLE_ANONYMOUS", "WMS", null, null, "lakes_and_places", 1);
+        Rule limit = support.addRule(LIMIT, null, "ROLE_ANONYMOUS", "WMS", null, null, "lakes_and_places", 1);
         support.addRuleLimits(limit, CatalogMode.HIDE, areWKT, 4326);
 
         // check the group works without workspace qualification;
         WorkspaceInfo ws = getCatalog().getWorkspaceByName(MockData.CITE_PREFIX);
-        LayerGroupInfo group =
-                createLakesPlacesLayerGroup(getCatalog(), "lakes_and_places", ws, NAMED, null);
+        LayerGroupInfo group = createLakesPlacesLayerGroup(getCatalog(), "lakes_and_places", ws, NAMED, null);
 
         login("anonymousUser", "", "ROLE_ANONYMOUS");
         String url = getMapRequest("cite:NamedPlaces");

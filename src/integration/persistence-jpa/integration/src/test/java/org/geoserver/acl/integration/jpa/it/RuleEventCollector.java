@@ -4,14 +4,12 @@
  */
 package org.geoserver.acl.integration.jpa.it;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
-
 import org.geoserver.acl.domain.adminrules.AdminRuleEvent;
 import org.geoserver.acl.domain.rules.RuleEvent;
 import org.springframework.context.event.EventListener;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class RuleEventCollector {
 

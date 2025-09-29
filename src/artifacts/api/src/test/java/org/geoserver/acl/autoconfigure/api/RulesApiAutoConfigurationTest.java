@@ -19,23 +19,21 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 class RulesApiAutoConfigurationTest {
 
-    private ApplicationContextRunner runner =
-            new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(RulesApiAutoConfiguration.class))
-                    // expected dependencies:
-                    .withBean(RuleRepository.class, () -> mock(RuleRepository.class))
-                    .withBean(AdminRuleRepository.class, () -> mock(AdminRuleRepository.class))
-                    .withBean(NativeWebRequest.class, () -> mock(NativeWebRequest.class));
+    private ApplicationContextRunner runner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(RulesApiAutoConfiguration.class))
+            // expected dependencies:
+            .withBean(RuleRepository.class, () -> mock(RuleRepository.class))
+            .withBean(AdminRuleRepository.class, () -> mock(AdminRuleRepository.class))
+            .withBean(NativeWebRequest.class, () -> mock(NativeWebRequest.class));
 
     @Test
     void testConfiguration() {
-        runner.run(
-                context -> {
-                    assertThat(context)
-                            .hasNotFailed()
-                            .hasSingleBean(DataRulesApiController.class)
-                            .hasSingleBean(WorkspaceAdminRulesApiController.class)
-                            .hasSingleBean(AuthorizationApiController.class);
-                });
+        runner.run(context -> {
+            assertThat(context)
+                    .hasNotFailed()
+                    .hasSingleBean(DataRulesApiController.class)
+                    .hasSingleBean(WorkspaceAdminRulesApiController.class)
+                    .hasSingleBean(AuthorizationApiController.class);
+        });
     }
 }

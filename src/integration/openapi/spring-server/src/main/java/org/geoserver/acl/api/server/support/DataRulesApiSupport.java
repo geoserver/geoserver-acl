@@ -5,7 +5,6 @@
 package org.geoserver.acl.api.server.support;
 
 import lombok.NonNull;
-
 import org.geoserver.acl.api.mapper.LayerDetailsApiMapper;
 import org.geoserver.acl.api.mapper.RuleApiMapper;
 import org.geoserver.acl.api.mapper.RuleLimitsApiMapper;

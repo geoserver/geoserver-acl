@@ -5,7 +5,6 @@
 package org.geoserver.acl.api.server.support;
 
 import lombok.NonNull;
-
 import org.geoserver.acl.api.mapper.AuthorizationModelApiMapper;
 import org.geoserver.acl.api.mapper.RuleApiMapper;
 import org.geoserver.acl.api.model.AccessInfo;
@@ -17,8 +16,7 @@ import org.geoserver.acl.authorization.AccessSummary;
 import org.geoserver.acl.authorization.AccessSummaryRequest;
 import org.springframework.web.context.request.NativeWebRequest;
 
-public class AuthorizationApiSupport
-        extends ApiImplSupport<AccessInfo, org.geoserver.acl.authorization.AccessInfo> {
+public class AuthorizationApiSupport extends ApiImplSupport<AccessInfo, org.geoserver.acl.authorization.AccessInfo> {
 
     private final RuleApiMapper rulesMapper;
     private final AuthorizationModelApiMapper mapper;

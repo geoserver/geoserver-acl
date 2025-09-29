@@ -7,17 +7,15 @@
 
 package org.geoserver.acl.domain.rules;
 
+import java.util.Set;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-
 import org.geoserver.acl.domain.filter.Filter;
 import org.geoserver.acl.domain.filter.predicate.FilterType;
 import org.geoserver.acl.domain.filter.predicate.IPAddressRangeFilter;
 import org.geoserver.acl.domain.filter.predicate.InSetPredicate;
 import org.geoserver.acl.domain.filter.predicate.SpecialFilterType;
 import org.geoserver.acl.domain.filter.predicate.TextFilter;
-
-import java.util.Set;
 
 /**
  * A Filter for selecting {@link Rule}s.

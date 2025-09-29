@@ -10,6 +10,12 @@ package org.geoserver.acl.plugin.it.support;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Supplier;
 import org.geolatte.geom.jts.JTS;
 import org.geoserver.acl.domain.adminrules.AdminGrantType;
 import org.geoserver.acl.domain.adminrules.AdminRule;
@@ -42,13 +48,6 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Supplier;
 
 public class AclIntegrationTestSupport extends ExternalResource {
 
@@ -96,23 +95,17 @@ public class AclIntegrationTestSupport extends ExternalResource {
     }
 
     public AdminRule addAdminRule(
-            long priority,
-            String username,
-            String rolename,
-            String workspace,
-            AdminGrantType access) {
+            long priority, String username, String rolename, String workspace, AdminGrantType access) {
 
-        AdminRule rule =
-                AdminRule.builder()
-                        .priority(priority)
-                        .access(access)
-                        .identifier(
-                                AdminRuleIdentifier.builder()
-                                        .username(username)
-                                        .rolename(rolename)
-                                        .workspace(workspace)
-                                        .build())
-                        .build();
+        AdminRule rule = AdminRule.builder()
+                .priority(priority)
+                .access(access)
+                .identifier(AdminRuleIdentifier.builder()
+                        .username(username)
+                        .rolename(rolename)
+                        .workspace(workspace)
+                        .build())
+                .build();
 
         rule = adminRuleService.insert(rule);
         return rule;
@@ -128,8 +121,7 @@ public class AclIntegrationTestSupport extends ExternalResource {
             String layer,
             long priority) {
 
-        return addRule(
-                access, username, roleName, service, request, null, workspace, layer, priority);
+        return addRule(access, username, roleName, service, request, null, workspace, layer, priority);
     }
 
     public Rule addRule(
@@ -143,17 +135,16 @@ public class AclIntegrationTestSupport extends ExternalResource {
             String layer,
             long priority) {
 
-        RuleIdentifier idf =
-                RuleIdentifier.builder()
-                        .access(access)
-                        .username(username)
-                        .rolename(roleName)
-                        .service(service)
-                        .request(request)
-                        .subfield(subfield)
-                        .workspace(workspace)
-                        .layer(layer)
-                        .build();
+        RuleIdentifier idf = RuleIdentifier.builder()
+                .access(access)
+                .username(username)
+                .rolename(roleName)
+                .service(service)
+                .request(request)
+                .subfield(subfield)
+                .workspace(workspace)
+                .layer(layer)
+                .build();
         Rule rule = Rule.builder().priority(priority).identifier(idf).build();
 
         return ruleService.insert(rule);
@@ -164,29 +155,20 @@ public class AclIntegrationTestSupport extends ExternalResource {
         return addRuleLimits(rule.getId(), mode, allowedArea, srid, null);
     }
 
-    public RuleLimits addRuleLimits(
-            String ruleId, CatalogMode mode, String allowedArea, Integer srid)
+    public RuleLimits addRuleLimits(String ruleId, CatalogMode mode, String allowedArea, Integer srid)
             throws ParseException {
         return addRuleLimits(ruleId, mode, allowedArea, srid, null);
     }
 
     public RuleLimits addRuleLimits(
-            Rule rule,
-            CatalogMode mode,
-            String allowedArea,
-            Integer srid,
-            SpatialFilterType spatialFilterType)
+            Rule rule, CatalogMode mode, String allowedArea, Integer srid, SpatialFilterType spatialFilterType)
             throws org.locationtech.jts.io.ParseException {
 
         return addRuleLimits(rule.getId(), mode, allowedArea, srid, spatialFilterType);
     }
 
     public RuleLimits addRuleLimits(
-            String ruleId,
-            CatalogMode mode,
-            String allowedArea,
-            Integer srid,
-            SpatialFilterType spatialFilterType)
+            String ruleId, CatalogMode mode, String allowedArea, Integer srid, SpatialFilterType spatialFilterType)
             throws org.locationtech.jts.io.ParseException {
 
         MultiPolygon allowedAreaGeom = (MultiPolygon) new WKTReader().read(allowedArea);
@@ -194,12 +176,11 @@ public class AclIntegrationTestSupport extends ExternalResource {
         if (spatialFilterType == null) spatialFilterType = SpatialFilterType.INTERSECT;
 
         org.geolatte.geom.MultiPolygon<?> area = JTS.from(allowedAreaGeom);
-        RuleLimits limits =
-                RuleLimits.builder()
-                        .allowedArea(area)
-                        .spatialFilterType(spatialFilterType)
-                        .catalogMode(mode)
-                        .build();
+        RuleLimits limits = RuleLimits.builder()
+                .allowedArea(area)
+                .spatialFilterType(spatialFilterType)
+                .catalogMode(mode)
+                .build();
         ruleService.setLimits(ruleId, limits);
         return limits;
     }
@@ -212,8 +193,7 @@ public class AclIntegrationTestSupport extends ExternalResource {
             String cqlRead,
             String cqlWrite,
             LayerType layerType) {
-        return addLayerDetails(
-                rule.getId(), allowedStyles, attributes, mode, cqlRead, cqlWrite, layerType);
+        return addLayerDetails(rule.getId(), allowedStyles, attributes, mode, cqlRead, cqlWrite, layerType);
     }
 
     public LayerDetails addLayerDetails(
@@ -224,15 +204,14 @@ public class AclIntegrationTestSupport extends ExternalResource {
             String cqlRead,
             String cqlWrite,
             LayerType layerType) {
-        LayerDetails details =
-                LayerDetails.builder()
-                        .type(layerType)
-                        .attributes(attributes)
-                        .allowedStyles(allowedStyles)
-                        .catalogMode(mode)
-                        .cqlFilterRead(cqlRead)
-                        .cqlFilterWrite(cqlWrite)
-                        .build();
+        LayerDetails details = LayerDetails.builder()
+                .type(layerType)
+                .attributes(attributes)
+                .allowedStyles(allowedStyles)
+                .catalogMode(mode)
+                .cqlFilterRead(cqlRead)
+                .cqlFilterWrite(cqlWrite)
+                .build();
 
         ruleService.setLayerDetails(ruleId, details);
         return details;
@@ -254,8 +233,7 @@ public class AclIntegrationTestSupport extends ExternalResource {
     }
 
     public LayerGroupInfo createLayerGroup(
-            String name, LayerGroupInfo.Mode mode, LayerInfo rootLayer, LayerInfo... layers)
-            throws Exception {
+            String name, LayerGroupInfo.Mode mode, LayerInfo rootLayer, LayerInfo... layers) throws Exception {
 
         return createLayerGroup(name, mode, rootLayer, Arrays.asList(layers), null);
     }
@@ -285,17 +263,10 @@ public class AclIntegrationTestSupport extends ExternalResource {
         cb.calculateLayerGroupBounds(group);
         if (groupCRS != null) {
             ReferencedEnvelope re = group.getBounds();
-            MathTransform transform =
-                    CRS.findMathTransform(
-                            group.getBounds().getCoordinateReferenceSystem(), groupCRS);
+            MathTransform transform = CRS.findMathTransform(group.getBounds().getCoordinateReferenceSystem(), groupCRS);
             Envelope bbox = org.geotools.geometry.jts.JTS.transform(re, transform);
             ReferencedEnvelope newRe =
-                    new ReferencedEnvelope(
-                            bbox.getMinX(),
-                            bbox.getMaxX(),
-                            bbox.getMinY(),
-                            bbox.getMaxY(),
-                            groupCRS);
+                    new ReferencedEnvelope(bbox.getMinX(), bbox.getMaxX(), bbox.getMinY(), bbox.getMaxY(), groupCRS);
             group.setBounds(newRe);
         }
         catalog.add(group);

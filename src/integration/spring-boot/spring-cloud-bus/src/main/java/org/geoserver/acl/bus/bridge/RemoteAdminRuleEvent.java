@@ -4,17 +4,15 @@
  */
 package org.geoserver.acl.bus.bridge;
 
+import java.util.Set;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
-
 import org.geoserver.acl.domain.adminrules.AdminRuleEvent;
 import org.geoserver.acl.domain.adminrules.AdminRuleEvent.EventType;
 import org.springframework.cloud.bus.event.Destination;
 import org.springframework.cloud.bus.event.RemoteApplicationEvent;
 import org.springframework.core.style.ToStringCreator;
-
-import java.util.Set;
 
 /**
  * @since 2.0
@@ -23,15 +21,17 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 public class RemoteAdminRuleEvent extends RemoteApplicationEvent {
 
-    @Getter private EventType eventType;
-    @Getter private Set<String> ruleIds;
+    @Getter
+    private EventType eventType;
+
+    @Getter
+    private Set<String> ruleIds;
 
     protected RemoteAdminRuleEvent() {
         // for serialization libraries like Jackson
     }
 
-    RemoteAdminRuleEvent(
-            Object source, String originService, Destination destination, AdminRuleEvent local) {
+    RemoteAdminRuleEvent(Object source, String originService, Destination destination, AdminRuleEvent local) {
         super(source, originService, destination);
         this.eventType = local.getEventType();
         this.ruleIds = local.getRuleIds();

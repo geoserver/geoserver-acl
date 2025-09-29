@@ -6,8 +6,10 @@ package org.geoserver.acl.autoconfigure.bus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-
 import org.awaitility.Awaitility;
 import org.geoserver.acl.bus.bridge.RemoteAdminRuleEvent;
 import org.geoserver.acl.bus.bridge.RemoteRuleEvent;
@@ -25,10 +27,6 @@ import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @see {@literal src/test/resources/application-it.yml}
  */
@@ -37,8 +35,7 @@ import java.util.List;
 class AclSpringCloudBusAutoConfigurationIT {
 
     @Container
-    private static final RabbitMQContainer rabbitMQContainer =
-            new RabbitMQContainer("rabbitmq:3.11-management");
+    private static final RabbitMQContainer rabbitMQContainer = new RabbitMQContainer("rabbitmq:3.11-management");
 
     @Configuration
     @EnableAutoConfiguration
@@ -112,12 +109,10 @@ class AclSpringCloudBusAutoConfigurationIT {
         List<RemoteRuleEvent> app2Captured = app2CapturedEvents.remoteRuleEvents;
         List<RuleEvent> app2Local = app2CapturedEvents.ruleEvents;
 
-        Awaitility.await()
-                .atMost(Duration.ofSeconds(2))
-                .untilAsserted(() -> assertThat(app2Captured).singleElement());
-        Awaitility.await()
-                .atMost(Duration.ofSeconds(1))
-                .untilAsserted(() -> assertThat(app2Local).isNotEmpty());
+        Awaitility.await().atMost(Duration.ofSeconds(2)).untilAsserted(() -> assertThat(app2Captured)
+                .singleElement());
+        Awaitility.await().atMost(Duration.ofSeconds(1)).untilAsserted(() -> assertThat(app2Local)
+                .isNotEmpty());
 
         RemoteRuleEvent capturedConverted = app2Captured.get(0);
         assertThat(capturedConverted.toLocal()).isEqualTo(ruleEvent);
@@ -136,12 +131,10 @@ class AclSpringCloudBusAutoConfigurationIT {
         List<RemoteAdminRuleEvent> app2Captured = app2CapturedEvents.remoteAdminRuleEvents;
         List<AdminRuleEvent> app2Local = app2CapturedEvents.adminRuleEvents;
 
-        Awaitility.await()
-                .atMost(Duration.ofSeconds(2))
-                .untilAsserted(() -> assertThat(app2Captured).singleElement());
-        Awaitility.await()
-                .atMost(Duration.ofSeconds(1))
-                .untilAsserted(() -> assertThat(app2Local).isNotEmpty());
+        Awaitility.await().atMost(Duration.ofSeconds(2)).untilAsserted(() -> assertThat(app2Captured)
+                .singleElement());
+        Awaitility.await().atMost(Duration.ofSeconds(1)).untilAsserted(() -> assertThat(app2Local)
+                .isNotEmpty());
 
         RemoteAdminRuleEvent capturedConverted = app2Captured.get(0);
         assertThat(capturedConverted.toLocal()).isEqualTo(adminEvent);
@@ -155,18 +148,13 @@ class AclSpringCloudBusAutoConfigurationIT {
         String host = rabbitMQContainer.getHost();
         Integer amqpPort = rabbitMQContainer.getAmqpPort();
         log.info("#".repeat(100));
-        log.info(
-                "Initializing application context {}, rabbit host: {}, port: {}",
-                appName,
-                host,
-                amqpPort);
-        SpringApplicationBuilder remoteAppBuilder =
-                new SpringApplicationBuilder(EventCapture.class)
-                        .profiles("it") // also load config from application-it.yml
-                        .properties(
-                                "spring.rabbitmq.host=" + host,
-                                "spring.rabbitmq.port=" + amqpPort,
-                                "spring.cloud.bus.id=" + appName);
+        log.info("Initializing application context {}, rabbit host: {}, port: {}", appName, host, amqpPort);
+        SpringApplicationBuilder remoteAppBuilder = new SpringApplicationBuilder(EventCapture.class)
+                .profiles("it") // also load config from application-it.yml
+                .properties(
+                        "spring.rabbitmq.host=" + host,
+                        "spring.rabbitmq.port=" + amqpPort,
+                        "spring.cloud.bus.id=" + appName);
         return remoteAppBuilder.run();
     }
 }

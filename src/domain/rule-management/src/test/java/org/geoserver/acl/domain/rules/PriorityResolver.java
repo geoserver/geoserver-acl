@@ -4,9 +4,8 @@
  */
 package org.geoserver.acl.domain.rules;
 
-import lombok.NonNull;
-
 import java.util.Optional;
+import lombok.NonNull;
 
 public class PriorityResolver<T> {
 
@@ -28,23 +27,20 @@ public class PriorityResolver<T> {
     public long resolveFinalPriority(long priority, Position position) {
         long finalPriority;
         switch (position) {
-            case FIXED:
-                {
-                    finalPriority = resolveFixedPriority(priority);
-                    break;
-                }
-            case FROM_START:
-                {
-                    long positionFromStart = priority;
-                    finalPriority = resolvePriorityFromStart(positionFromStart);
-                    break;
-                }
-            case FROM_END:
-                {
-                    long positionFromEnd = priority;
-                    finalPriority = resolvePriorityFromEnd(positionFromEnd);
-                    break;
-                }
+            case FIXED: {
+                finalPriority = resolveFixedPriority(priority);
+                break;
+            }
+            case FROM_START: {
+                long positionFromStart = priority;
+                finalPriority = resolvePriorityFromStart(positionFromStart);
+                break;
+            }
+            case FROM_END: {
+                long positionFromEnd = priority;
+                finalPriority = resolvePriorityFromEnd(positionFromEnd);
+                break;
+            }
             default:
                 throw new IllegalStateException("Unknown InsertPosition " + position);
         }
@@ -56,11 +52,9 @@ public class PriorityResolver<T> {
         if (priorityUnset) {
             return repo.maxPriority().orElse(0L) + 1;
         }
-        repo.findOneByPriority(requestedPriority)
-                .ifPresent(
-                        r -> {
-                            repo.shift(requestedPriority, 1);
-                        });
+        repo.findOneByPriority(requestedPriority).ifPresent(r -> {
+            repo.shift(requestedPriority, 1);
+        });
         return requestedPriority;
     }
 

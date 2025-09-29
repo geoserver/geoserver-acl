@@ -4,11 +4,6 @@
  */
 package org.geoserver.acl.domain.rules;
 
-import lombok.NonNull;
-
-import org.geoserver.acl.domain.filter.RuleQuery;
-import org.geoserver.acl.domain.rules.PriorityResolver.Position;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,6 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
+import lombok.NonNull;
+import org.geoserver.acl.domain.filter.RuleQuery;
+import org.geoserver.acl.domain.rules.PriorityResolver.Position;
 
 /**
  * Reference {@link RuleRepository} implementation, only for tests
@@ -55,8 +53,7 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
         checkNoDups(rule);
         rule = rule.withId(String.valueOf(idseq.incrementAndGet()));
 
-        long finalPriority =
-                priorityResolver.resolveFinalPriority(rule.getPriority(), map(position));
+        long finalPriority = priorityResolver.resolveFinalPriority(rule.getPriority(), map(position));
         rule = rule.withPriority(finalPriority);
         rules.add(rule);
         return rule;
@@ -81,14 +78,12 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
         checkNoDups(rule);
         final Rule current = getOrThrow(rule.getId());
 
-        final long finalPriority =
-                priorityResolver.resolvePriorityUpdate(current.getPriority(), rule.getPriority());
+        final long finalPriority = priorityResolver.resolvePriorityUpdate(current.getPriority(), rule.getPriority());
 
         if (current.getPriority() != finalPriority) {
             rule = rule.withPriority(finalPriority);
             Optional<Rule> positionOccupied =
-                    findOneByPriority(finalPriority)
-                            .filter(r -> !r.getId().equals(current.getId()));
+                    findOneByPriority(finalPriority).filter(r -> !r.getId().equals(current.getId()));
             if (positionOccupied.isPresent()) {
                 Rule other = positionOccupied.get();
                 rules.remove(current);
@@ -108,18 +103,14 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
      */
     private void checkNoDups(Rule rule) {
         rules.stream()
-                .filter(
-                        r ->
-                                r.getIdentifier().getAccess() != GrantType.LIMIT
-                                        && !r.getId().equals(rule.getId())
-                                        && r.getIdentifier().equals(rule.getIdentifier()))
+                .filter(r -> r.getIdentifier().getAccess() != GrantType.LIMIT
+                        && !r.getId().equals(rule.getId())
+                        && r.getIdentifier().equals(rule.getIdentifier()))
                 .findFirst()
-                .ifPresent(
-                        duplicate -> {
-                            throw new RuleIdentifierConflictException(
-                                    "A Rule with the same identifier already exists: "
-                                            + rule.toShortString());
-                        });
+                .ifPresent(duplicate -> {
+                    throw new RuleIdentifierConflictException(
+                            "A Rule with the same identifier already exists: " + rule.toShortString());
+                });
     }
 
     @Override
@@ -159,14 +150,12 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
         String nextId = query.getNextId();
         if (nextId != null) {
             final AtomicBoolean nextIdFound = new AtomicBoolean();
-            matches =
-                    matches.peek(
-                                    r -> {
-                                        if (r.getId().equals(nextId)) {
-                                            nextIdFound.set(true);
-                                        }
-                                    })
-                            .filter(r -> nextIdFound.get());
+            matches = matches.peek(r -> {
+                        if (r.getId().equals(nextId)) {
+                            nextIdFound.set(true);
+                        }
+                    })
+                    .filter(r -> nextIdFound.get());
         }
         Integer limit = query.getLimit();
         if (limit != null) {
@@ -197,8 +186,7 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Invalid id");
         }
-        return findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Rule " + id + " does not exist"));
+        return findById(id).orElseThrow(() -> new IllegalArgumentException("Rule " + id + " does not exist"));
     }
 
     @Override
@@ -208,12 +196,8 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
             throw new IllegalArgumentException("Rule has no layer, can't set allowed styles");
         }
 
-        LayerDetails ld =
-                findLayerDetailsByRuleId(ruleId)
-                        .orElseThrow(
-                                () ->
-                                        new IllegalArgumentException(
-                                                "Rule has no details associated"));
+        LayerDetails ld = findLayerDetailsByRuleId(ruleId)
+                .orElseThrow(() -> new IllegalArgumentException("Rule has no details associated"));
 
         ld = ld.toBuilder().allowedStyles(styles == null ? Set.of() : styles).build();
         setLayerDetails(ruleId, ld);

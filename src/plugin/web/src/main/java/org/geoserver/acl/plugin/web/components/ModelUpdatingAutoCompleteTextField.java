@@ -4,6 +4,7 @@
  */
 package org.geoserver.acl.plugin.web.components;
 
+import java.util.Iterator;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
@@ -12,8 +13,6 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.IAutoCompleteR
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.StringAutoCompleteRenderer;
 import org.apache.wicket.model.IModel;
 import org.geoserver.acl.plugin.web.support.SerializableFunction;
-
-import java.util.Iterator;
 
 /**
  * {@link AutoCompleteTextField} that dynamically updates the model value by calling {@code
@@ -56,13 +55,12 @@ public class ModelUpdatingAutoCompleteTextField<T> extends AutoCompleteTextField
             AutoCompleteSettings settings) {
         super(id, model, null /* type */, renderer, settings);
         this.choiceResolver = choiceResolver;
-        add(
-                new OnChangeAjaxBehavior() {
-                    protected @Override void onUpdate(AjaxRequestTarget target) {
-                        T convertedInput = getConvertedInput();
-                        getModel().setObject(convertedInput);
-                    }
-                });
+        add(new OnChangeAjaxBehavior() {
+            protected @Override void onUpdate(AjaxRequestTarget target) {
+                T convertedInput = getConvertedInput();
+                getModel().setObject(convertedInput);
+            }
+        });
     }
 
     @Override

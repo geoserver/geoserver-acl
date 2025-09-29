@@ -5,11 +5,9 @@
 package org.geoserver.acl.jpa.config;
 
 import com.zaxxer.hikari.HikariConfig;
-
-import lombok.Data;
-
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Data;
 
 @Data
 public class AclJpaProperties {

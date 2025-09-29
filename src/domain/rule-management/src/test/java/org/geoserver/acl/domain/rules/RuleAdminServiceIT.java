@@ -12,6 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.geolatte.geom.MultiPolygon;
 import org.geolatte.geom.codec.Wkt;
@@ -22,13 +28,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class RuleAdminServiceIT {
 
@@ -60,11 +59,8 @@ public class RuleAdminServiceIT {
         assertThat(created.withId(null)).isEqualTo(insert);
 
         RuleIdentifierConflictException expected =
-                assertThrows(
-                        RuleIdentifierConflictException.class,
-                        () -> ruleAdminService.insert(insert));
-        assertThat(expected.getMessage())
-                .contains("A Rule with the same identifier already exists");
+                assertThrows(RuleIdentifierConflictException.class, () -> ruleAdminService.insert(insert));
+        assertThat(expected.getMessage()).contains("A Rule with the same identifier already exists");
     }
 
     @Test
@@ -107,8 +103,7 @@ public class RuleAdminServiceIT {
 
     @Test
     void testCreateRule_insertPosition_FromStart(TestInfo testInfo) {
-        Rule r1 =
-                ruleAdminService.insert(Rule.allow().withPriority(10).withLayer("L1"), FROM_START);
+        Rule r1 = ruleAdminService.insert(Rule.allow().withPriority(10).withLayer("L1"), FROM_START);
         assertThat(r1.getPriority())
                 .as("With an empty repo, should have assigned priority 1")
                 .isEqualTo(1);
@@ -131,8 +126,7 @@ public class RuleAdminServiceIT {
                 .as("r2 shoud have NOT been displaced")
                 .isEqualTo(1);
 
-        Rule r4 =
-                ruleAdminService.insert(Rule.limit().withPriority(20).withLayer("L4"), FROM_START);
+        Rule r4 = ruleAdminService.insert(Rule.limit().withPriority(20).withLayer("L4"), FROM_START);
         assertThat(r4.getPriority())
                 .as("r4 should have been assigned 1 + max(priority)")
                 .isEqualTo(4);
@@ -177,22 +171,19 @@ public class RuleAdminServiceIT {
                 .isEqualTo(1);
 
         assertThat(ruleAdminService.getAll())
-                .as(
-                        "Underflow priority index should result in priority 1 and displaced alll others")
-                .isEqualTo(
-                        List.of(
-                                r5.withPriority(1),
-                                r1.withPriority(2),
-                                r4.withPriority(3),
-                                r3.withPriority(4),
-                                r2.withPriority(5)));
+                .as("Underflow priority index should result in priority 1 and displaced alll others")
+                .isEqualTo(List.of(
+                        r5.withPriority(1),
+                        r1.withPriority(2),
+                        r4.withPriority(3),
+                        r3.withPriority(4),
+                        r2.withPriority(5)));
     }
 
     @Test
     void testDeleteAll() {
         ruleAdminService.insert(Rule.allow().withPriority(10).withLayer("L1"));
-        ruleAdminService.insert(
-                Rule.limit().withPriority(11).withLayer("L2").withRuleLimits(sampleLimits()));
+        ruleAdminService.insert(Rule.limit().withPriority(11).withLayer("L2").withRuleLimits(sampleLimits()));
 
         Rule r3 = ruleAdminService.insert(Rule.allow().withPriority(12).withLayer("L2"));
         ruleAdminService.setLayerDetails(r3.getId(), sampleDetails(0));
@@ -265,12 +256,10 @@ public class RuleAdminServiceIT {
         assertThat(ruleAdminService.getAll()).isNotNull().isEmpty();
 
         final List<Rule> all = new ArrayList<>();
-        IntStream.range(0, 250)
-                .forEach(
-                        i -> {
-                            all.add(addOneForLayer(i));
-                            assertThat(ruleAdminService.getAll()).isEqualTo(all);
-                        });
+        IntStream.range(0, 250).forEach(i -> {
+            all.add(addOneForLayer(i));
+            assertThat(ruleAdminService.getAll()).isEqualTo(all);
+        });
 
         final int pageSize = 25;
         final int maxPages = all.size() / pageSize;
@@ -304,9 +293,8 @@ public class RuleAdminServiceIT {
 
         RuleLimits limits = sampleLimits();
 
-        Rule r1 =
-                ruleAdminService.insert(
-                        Rule.limit().withRuleLimits(limits).withWorkspace("ws").withLayer("l1"));
+        Rule r1 = ruleAdminService.insert(
+                Rule.limit().withRuleLimits(limits).withWorkspace("ws").withLayer("l1"));
         Rule r2 = ruleAdminService.insert(Rule.allow().withWorkspace("ws").withLayer("l1"));
         Rule r3 = ruleAdminService.insert(Rule.deny());
 
@@ -322,35 +310,36 @@ public class RuleAdminServiceIT {
         assertThat(ruleAdminService.getRuleByPriority(1)).isEmpty();
 
         RuleLimits limits = sampleLimits();
-        Rule r1 =
-                ruleAdminService.insert(
-                        Rule.limit()
-                                .withPriority(1_000)
-                                .withRuleLimits(limits)
-                                .withWorkspace("ws")
-                                .withLayer("l1"));
+        Rule r1 = ruleAdminService.insert(Rule.limit()
+                .withPriority(1_000)
+                .withRuleLimits(limits)
+                .withWorkspace("ws")
+                .withLayer("l1"));
 
-        Rule r2 =
-                ruleAdminService.insert(
-                        Rule.allow().withPriority(1_000_1).withWorkspace("ws").withLayer("l1"));
+        Rule r2 = ruleAdminService.insert(
+                Rule.allow().withPriority(1_000_1).withWorkspace("ws").withLayer("l1"));
 
         Rule r3 = ruleAdminService.insert(Rule.deny().withPriority(1_000_000));
 
         assertThat(ruleAdminService.getRuleByPriority(1_000)).isPresent().get().isEqualTo(r1);
-        assertThat(ruleAdminService.getRuleByPriority(1_000_1)).isPresent().get().isEqualTo(r2);
-        assertThat(ruleAdminService.getRuleByPriority(1_000_000)).isPresent().get().isEqualTo(r3);
+        assertThat(ruleAdminService.getRuleByPriority(1_000_1))
+                .isPresent()
+                .get()
+                .isEqualTo(r2);
+        assertThat(ruleAdminService.getRuleByPriority(1_000_000))
+                .isPresent()
+                .get()
+                .isEqualTo(r3);
 
         assertThat(ruleAdminService.getRuleByPriority(1)).isEmpty();
     }
 
     @Test
     void testCountAllRules() {
-        IntStream.range(0, 10)
-                .forEach(
-                        i -> {
-                            assertThat(ruleAdminService.count()).isEqualTo(i);
-                            addOneForLayer(i);
-                        });
+        IntStream.range(0, 10).forEach(i -> {
+            assertThat(ruleAdminService.count()).isEqualTo(i);
+            addOneForLayer(i);
+        });
     }
 
     private Rule addOneForLayer(int i) {
@@ -376,10 +365,7 @@ public class RuleAdminServiceIT {
         final Class<IllegalArgumentException> expectedType = IllegalArgumentException.class;
         IllegalArgumentException ex;
 
-        ex =
-                assertThrows(
-                        expectedType,
-                        () -> ruleAdminService.setAllowedStyles("blahblahblah", styles));
+        ex = assertThrows(expectedType, () -> ruleAdminService.setAllowedStyles("blahblahblah", styles));
         assertThat(ex.getMessage()).contains("Invalid id");
 
         final String id = r2.getId();
@@ -389,10 +375,7 @@ public class RuleAdminServiceIT {
         assertThat(ex.getMessage()).contains("Rule " + id + " does not exist");
 
         Rule ruleWithNoLayer = ruleAdminService.insert(Rule.deny());
-        ex =
-                assertThrows(
-                        expectedType,
-                        () -> ruleAdminService.setAllowedStyles(ruleWithNoLayer.getId(), styles));
+        ex = assertThrows(expectedType, () -> ruleAdminService.setAllowedStyles(ruleWithNoLayer.getId(), styles));
         assertThat(ex.getMessage()).contains("Rule has no layer, can't set allowed styles");
     }
 
@@ -407,16 +390,15 @@ public class RuleAdminServiceIT {
         assertThat(ruleAdminService.getAllowedStyles(r2.getId())).isEmpty();
 
         final Set<String> styles = Set.of("style1", "style2");
-        String reason =
-                assertThrows(
-                                IllegalArgumentException.class,
-                                () -> ruleAdminService.setAllowedStyles(r1Id, styles))
-                        .getMessage();
+        String reason = assertThrows(
+                        IllegalArgumentException.class, () -> ruleAdminService.setAllowedStyles(r1Id, styles))
+                .getMessage();
         assertThat(reason).contains("Rule has no details associated");
 
         r1 = ruleAdminService.update(r1.withAccess(GrantType.ALLOW));
         ruleAdminService.setLayerDetails(
-                r1Id, LayerDetails.builder().spatialFilterType(SpatialFilterType.CLIP).build());
+                r1Id,
+                LayerDetails.builder().spatialFilterType(SpatialFilterType.CLIP).build());
 
         ruleAdminService.setAllowedStyles(r1Id, styles);
 
@@ -438,22 +420,13 @@ public class RuleAdminServiceIT {
         final Class<IllegalArgumentException> expectedType = IllegalArgumentException.class;
 
         IllegalArgumentException ex;
-        ex =
-                assertThrows(
-                        expectedType,
-                        () -> ruleAdminService.setLayerDetails("blahblahblah", details1));
+        ex = assertThrows(expectedType, () -> ruleAdminService.setLayerDetails("blahblahblah", details1));
         assertThat(ex.getMessage()).contains("Invalid id");
 
-        ex =
-                assertThrows(
-                        expectedType,
-                        () -> ruleAdminService.setLayerDetails(limit.getId(), details1));
+        ex = assertThrows(expectedType, () -> ruleAdminService.setLayerDetails(limit.getId(), details1));
         assertThat(ex.getMessage()).contains("Rule is not of ALLOW type");
 
-        ex =
-                assertThrows(
-                        expectedType,
-                        () -> ruleAdminService.setLayerDetails(deny.getId(), details1));
+        ex = assertThrows(expectedType, () -> ruleAdminService.setLayerDetails(deny.getId(), details1));
         assertThat(ex.getMessage()).contains("Rule is not of ALLOW type");
 
         final String id = deny.getId();
@@ -464,10 +437,7 @@ public class RuleAdminServiceIT {
 
         Rule allowWithNoLayer =
                 ruleAdminService.insert(Rule.allow().withWorkspace("ws").withLayer(null));
-        ex =
-                assertThrows(
-                        expectedType,
-                        () -> ruleAdminService.setLayerDetails(allowWithNoLayer.getId(), details1));
+        ex = assertThrows(expectedType, () -> ruleAdminService.setLayerDetails(allowWithNoLayer.getId(), details1));
         assertThat(ex.getMessage()).contains("Rule does not refer to a fixed layer");
     }
 
@@ -516,9 +486,8 @@ public class RuleAdminServiceIT {
 
         final Rule deleted = r2;
         assertTrue(ruleAdminService.delete(deleted.getId()));
-        String msg =
-                assertThrows(IllegalArgumentException.class, () -> ruleAdminService.update(deleted))
-                        .getMessage();
+        String msg = assertThrows(IllegalArgumentException.class, () -> ruleAdminService.update(deleted))
+                .getMessage();
         assertThat(msg).contains("Rule " + deleted.getId() + " does not exist");
     }
 
@@ -532,8 +501,7 @@ public class RuleAdminServiceIT {
         // this is allowed
         Rule allowToLimit = allow.withAccess(GrantType.LIMIT);
         assertThat(ruleAdminService.update(allowToLimit)).isEqualTo(allowToLimit);
-        assertThat(ruleAdminService.getAll())
-                .isEqualTo(List.of(limit1, limit2, allowToLimit, deny));
+        assertThat(ruleAdminService.getAll()).isEqualTo(List.of(limit1, limit2, allowToLimit, deny));
         // revert
         ruleAdminService.update(allowToLimit.withAccess(GrantType.ALLOW));
 
@@ -543,21 +511,15 @@ public class RuleAdminServiceIT {
         // this is not, there's another deny with the same exact coordinates
         Rule allowToDeny = allow.withAccess(GrantType.DENY);
         String ex;
-        ex =
-                assertThrows(
-                                RuleIdentifierConflictException.class,
-                                () -> ruleAdminService.update(allowToDeny))
-                        .getMessage();
+        ex = assertThrows(RuleIdentifierConflictException.class, () -> ruleAdminService.update(allowToDeny))
+                .getMessage();
         assertThat(ex).contains("A Rule with the same identifier already exists");
         assertThat(ruleAdminService.getAll()).as("Nothing should have changed").isEqualTo(expected);
 
         // same thing the other way around
         Rule denyToAllow = deny.withAccess(GrantType.ALLOW);
-        ex =
-                assertThrows(
-                                RuleIdentifierConflictException.class,
-                                () -> ruleAdminService.update(denyToAllow))
-                        .getMessage();
+        ex = assertThrows(RuleIdentifierConflictException.class, () -> ruleAdminService.update(denyToAllow))
+                .getMessage();
         assertThat(ex).contains("A Rule with the same identifier already exists");
         assertThat(ruleAdminService.getAll()).as("Nothing should have changed").isEqualTo(expected);
     }
@@ -578,9 +540,7 @@ public class RuleAdminServiceIT {
         r2 = r2.withPriority(1);
         assertThat(ruleAdminService.update(r2)).isEqualTo(r2);
 
-        assertGet(r1)
-                .as("r1 should have been displaced to priority 2")
-                .isEqualTo(r1.withPriority(2));
+        assertGet(r1).as("r1 should have been displaced to priority 2").isEqualTo(r1.withPriority(2));
 
         assertGet(r3).as("r3 should have kept priority 3").isEqualTo(r3);
 
@@ -595,9 +555,7 @@ public class RuleAdminServiceIT {
 
         assertGet(r2).as("r2 should have been displaced to priority 2").isEqualTo(r2);
 
-        assertGet(r1)
-                .as("r1 should have been displaced to priority 3")
-                .isEqualTo(r1.withPriority(3));
+        assertGet(r1).as("r1 should have been displaced to priority 3").isEqualTo(r1.withPriority(3));
 
         assertGet(r4).as("r4 should have kept priority 4").isEqualTo(r4);
 
@@ -615,9 +573,7 @@ public class RuleAdminServiceIT {
 
         assertGet(r1).as("r1 should have been displaced to priority 4").isEqualTo(r1);
 
-        assertGet(r4)
-                .as("r4 should have been displaced to priority 5")
-                .isEqualTo(r4.withPriority(5));
+        assertGet(r4).as("r4 should have been displaced to priority 5").isEqualTo(r4.withPriority(5));
     }
 
     @Test
@@ -636,23 +592,14 @@ public class RuleAdminServiceIT {
 
         // expected failure if setting limits to a non-limit rule
         IllegalArgumentException ex;
-        ex =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> ruleAdminService.setLimits(allow.getId(), limits));
+        ex = assertThrows(IllegalArgumentException.class, () -> ruleAdminService.setLimits(allow.getId(), limits));
         assertThat(ex.getMessage()).contains("Rule is not of LIMIT type");
 
-        ex =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> ruleAdminService.setLimits(deny.getId(), limits));
+        ex = assertThrows(IllegalArgumentException.class, () -> ruleAdminService.setLimits(deny.getId(), limits));
         assertThat(ex.getMessage()).contains("Rule is not of LIMIT type");
 
         ruleAdminService.delete(deny.getId());
-        ex =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> ruleAdminService.setLimits(deny.getId(), limits));
+        ex = assertThrows(IllegalArgumentException.class, () -> ruleAdminService.setLimits(deny.getId(), limits));
         assertThat(ex.getMessage()).contains("Rule " + deny.getId() + " does not exist");
 
         ruleAdminService.setLimits(limit.getId(), limits);
@@ -683,9 +630,8 @@ public class RuleAdminServiceIT {
 
         assertThat(ruleAdminService.shift(22, 1)).isEqualTo(-1);
 
-        String msg =
-                assertThrows(IllegalArgumentException.class, () -> ruleAdminService.shift(1, -1))
-                        .getMessage();
+        String msg = assertThrows(IllegalArgumentException.class, () -> ruleAdminService.shift(1, -1))
+                .getMessage();
         assertThat(msg).contains("Positive offset required");
     }
 
@@ -712,17 +658,15 @@ public class RuleAdminServiceIT {
         Rule deleted = addOneForLayer(6);
         ruleAdminService.delete(deleted.getId());
 
-        String reason =
-                assertThrows(
-                                IllegalArgumentException.class,
-                                () -> ruleAdminService.swapPriority(deleted.getId(), r1.getId()))
-                        .getMessage();
+        String reason = assertThrows(
+                        IllegalArgumentException.class,
+                        () -> ruleAdminService.swapPriority(deleted.getId(), r1.getId()))
+                .getMessage();
         assertThat(reason).contains("Rule " + deleted.getId() + " does not exist");
-        reason =
-                assertThrows(
-                                IllegalArgumentException.class,
-                                () -> ruleAdminService.swapPriority(r1.getId(), deleted.getId()))
-                        .getMessage();
+        reason = assertThrows(
+                        IllegalArgumentException.class,
+                        () -> ruleAdminService.swapPriority(r1.getId(), deleted.getId()))
+                .getMessage();
         assertThat(reason).contains("Rule " + deleted.getId() + " does not exist");
 
         final List<Integer> expectedPriorities = List.of(1, 2, 3, 4, 5);
@@ -748,19 +692,17 @@ public class RuleAdminServiceIT {
     }
 
     private RuleLimits sampleLimits() {
-        RuleLimits limits =
-                RuleLimits.builder()
-                        .allowedArea(world())
-                        .catalogMode(CatalogMode.CHALLENGE)
-                        .spatialFilterType(SpatialFilterType.CLIP)
-                        .build();
+        RuleLimits limits = RuleLimits.builder()
+                .allowedArea(world())
+                .catalogMode(CatalogMode.CHALLENGE)
+                .spatialFilterType(SpatialFilterType.CLIP)
+                .build();
         return limits;
     }
 
     private MultiPolygon<?> world() {
         return (MultiPolygon<?>)
-                Wkt.fromWkt(
-                        "SRID=4326;MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))");
+                Wkt.fromWkt("SRID=4326;MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))");
     }
 
     private LayerDetails sampleDetails(int i) {
@@ -778,8 +720,10 @@ public class RuleAdminServiceIT {
     }
 
     private Set<LayerAttribute> sampleAttributes() {
-        LayerAttribute att1 =
-                LayerAttribute.builder().name("intAtt").access(AccessType.READONLY).build();
+        LayerAttribute att1 = LayerAttribute.builder()
+                .name("intAtt")
+                .access(AccessType.READONLY)
+                .build();
         LayerAttribute att2 = att1.withName("stringAtt");
         return Set.of(att1, att2);
     }

@@ -4,6 +4,9 @@
  */
 package org.geoserver.acl.jpa.repository;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import org.geoserver.acl.jpa.model.AdminRule;
 import org.geoserver.acl.jpa.model.AdminRuleIdentifier;
 import org.springframework.data.domain.Sort;
@@ -14,16 +17,10 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 @Repository
 @TransactionSupported
 public interface JpaAdminRuleRepository
-        extends JpaRepository<AdminRule, Long>,
-                QuerydslPredicateExecutor<AdminRule>,
-                PriorityRepository<AdminRule> {
+        extends JpaRepository<AdminRule, Long>, QuerydslPredicateExecutor<AdminRule>, PriorityRepository<AdminRule> {
 
     Sort naturalOrder = Sort.by("priority");
 
@@ -49,10 +46,8 @@ public interface JpaAdminRuleRepository
     @Override
     @TransactionRequired
     @Modifying(flushAutomatically = true, clearAutomatically = true)
-    @Query(
-            "UPDATE AdminRule SET priority = priority + :offset WHERE priority BETWEEN :min AND :max")
-    void shiftPrioritiesBetween(
-            @Param("min") long min, @Param("max") long max, @Param("offset") long offset);
+    @Query("UPDATE AdminRule SET priority = priority + :offset WHERE priority BETWEEN :min AND :max")
+    void shiftPrioritiesBetween(@Param("min") long min, @Param("max") long max, @Param("offset") long offset);
 
     @Override
     @TransactionRequired

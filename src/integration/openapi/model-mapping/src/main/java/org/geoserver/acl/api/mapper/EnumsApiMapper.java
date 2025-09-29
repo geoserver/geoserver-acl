@@ -34,23 +34,18 @@ public interface EnumsApiMapper {
 
     org.geoserver.acl.api.model.SpatialFilterType map(SpatialFilterType value);
 
-    org.geoserver.acl.api.model.InsertPosition map(
-            org.geoserver.acl.domain.rules.InsertPosition pos);
+    org.geoserver.acl.api.model.InsertPosition map(org.geoserver.acl.domain.rules.InsertPosition pos);
 
-    org.geoserver.acl.domain.rules.InsertPosition toRuleInsertPosition(
-            org.geoserver.acl.api.model.InsertPosition pos);
+    org.geoserver.acl.domain.rules.InsertPosition toRuleInsertPosition(org.geoserver.acl.api.model.InsertPosition pos);
 
-    org.geoserver.acl.api.model.InsertPosition map(
-            org.geoserver.acl.domain.adminrules.InsertPosition pos);
+    org.geoserver.acl.api.model.InsertPosition map(org.geoserver.acl.domain.adminrules.InsertPosition pos);
 
     org.geoserver.acl.domain.adminrules.InsertPosition toAdminRuleInsertPosition(
             org.geoserver.acl.api.model.InsertPosition pos);
 
-    org.geoserver.acl.api.model.LayerAttribute.AccessEnum accessType(
-            LayerAttribute.AccessType value);
+    org.geoserver.acl.api.model.LayerAttribute.AccessEnum accessType(LayerAttribute.AccessType value);
 
-    LayerAttribute.AccessType accessType(
-            org.geoserver.acl.api.model.LayerAttribute.AccessEnum value);
+    LayerAttribute.AccessType accessType(org.geoserver.acl.api.model.LayerAttribute.AccessEnum value);
 
     GrantType grantType(org.geoserver.acl.api.model.GrantType value);
 

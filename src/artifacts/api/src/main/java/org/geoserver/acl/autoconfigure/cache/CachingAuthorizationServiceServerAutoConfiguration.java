@@ -4,24 +4,19 @@
  */
 package org.geoserver.acl.autoconfigure.cache;
 
+import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-
 import org.geoserver.acl.authorization.cache.CachingAuthorizationServiceConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Import;
-
-import javax.annotation.PostConstruct;
 
 /**
  * @since 2.2
  * @see CachingAuthorizationServiceConfiguration
  */
 @AutoConfiguration
-@ConditionalOnProperty(
-        name = "geoserver.acl.caching.enabled",
-        havingValue = "true",
-        matchIfMissing = true)
+@ConditionalOnProperty(name = "geoserver.acl.caching.enabled", havingValue = "true", matchIfMissing = true)
 @Import(CachingAuthorizationServiceConfiguration.class)
 @Slf4j(topic = "org.geoserver.acl.autoconfigure.cache")
 public class CachingAuthorizationServiceServerAutoConfiguration {

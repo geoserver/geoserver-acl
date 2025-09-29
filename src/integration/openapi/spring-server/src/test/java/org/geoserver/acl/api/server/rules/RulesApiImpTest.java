@@ -20,6 +20,10 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Supplier;
 import org.geoserver.acl.api.server.config.RulesApiConfiguration;
 import org.geoserver.acl.api.server.support.DataRulesApiSupport;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
@@ -36,11 +40,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Supplier;
 
 @SpringBootTest(classes = RulesApiConfiguration.class, properties = "spring.main.banner-mode=off")
 class RulesApiImpTest {
@@ -62,30 +61,25 @@ class RulesApiImpTest {
         verifyNoMoreInteractions(rules);
         clearInvocations(rules);
 
-        when(rules.insert(any(), any()))
-                .thenThrow(new RuleIdentifierConflictException("Duplicate identifier"));
+        when(rules.insert(any(), any())).thenThrow(new RuleIdentifierConflictException("Duplicate identifier"));
 
         assertError(create(Rule.deny(), InsertPosition.FROM_END), CONFLICT, "Duplicate identifier");
         verify(rules, times(1)).insert(Rule.deny(), InsertPosition.FROM_END);
     }
 
-    private Supplier<ResponseEntity<org.geoserver.acl.api.model.Rule>> create(
-            Rule modelRule, InsertPosition modelPos) {
+    private Supplier<ResponseEntity<org.geoserver.acl.api.model.Rule>> create(Rule modelRule, InsertPosition modelPos) {
         return () -> api.createRule(support.toApi(modelRule), support.toApi(modelPos));
     }
 
     private void assertResponse(
-            Supplier<ResponseEntity<org.geoserver.acl.api.model.Rule>> call,
-            HttpStatus status,
-            Rule expected) {
+            Supplier<ResponseEntity<org.geoserver.acl.api.model.Rule>> call, HttpStatus status, Rule expected) {
 
         ResponseEntity<org.geoserver.acl.api.model.Rule> responseEntity = call.get();
         assertThat(responseEntity.getStatusCode()).isEqualTo(status);
         assertThat(responseEntity.getBody()).isEqualTo(support.toApi(expected));
     }
 
-    private <T> void assertError(
-            Supplier<ResponseEntity<T>> call, HttpStatus status, String reason) {
+    private <T> void assertError(Supplier<ResponseEntity<T>> call, HttpStatus status, String reason) {
 
         ResponseEntity<T> responseEntity = call.get();
         assertThat(responseEntity.getStatusCode()).isEqualTo(status);
@@ -113,8 +107,7 @@ class RulesApiImpTest {
     }
 
     private List<Rule> assertList(
-            Supplier<ResponseEntity<List<org.geoserver.acl.api.model.Rule>>> call,
-            HttpStatus status) {
+            Supplier<ResponseEntity<List<org.geoserver.acl.api.model.Rule>>> call, HttpStatus status) {
         ResponseEntity<List<org.geoserver.acl.api.model.Rule>> response = call.get();
         assertThat(response.getStatusCode()).isEqualTo(status);
         assertThat(response.getBody()).isNotNull();
@@ -178,9 +171,7 @@ class RulesApiImpTest {
 
     @Test
     void testSetRuleAllowedStyles() {
-        doThrow(new IllegalArgumentException("message1"))
-                .when(rules)
-                .setAllowedStyles("id1", Set.of());
+        doThrow(new IllegalArgumentException("message1")).when(rules).setAllowedStyles("id1", Set.of());
         assertError(() -> api.setRuleAllowedStyles("id1", Set.of()), BAD_REQUEST, "message1");
         clearInvocations(rules);
 

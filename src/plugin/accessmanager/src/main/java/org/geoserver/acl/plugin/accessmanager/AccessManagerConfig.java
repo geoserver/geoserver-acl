@@ -6,16 +6,15 @@
  */
 package org.geoserver.acl.plugin.accessmanager;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.geoserver.acl.authorization.AccessRequest;
 import org.geoserver.acl.authorization.AdminAccessRequest;
 import org.geoserver.acl.authorization.AuthorizationService;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.StringUtils;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Configuration object for {@link ACLResourceAccessManager}.
@@ -77,10 +76,8 @@ public class AccessManagerConfig implements Serializable, Cloneable {
      * Whether to allow write access to resources to authenticated users, if false only admins
      * (users with {@literal ROLE_ADMINISTRATOR}) have write access.
      */
-    public void setGrantWriteToWorkspacesToAuthenticatedUsers(
-            boolean grantWriteToWorkspacesToAuthenticatedUsers) {
-        this.grantWriteToWorkspacesToAuthenticatedUsers =
-                grantWriteToWorkspacesToAuthenticatedUsers;
+    public void setGrantWriteToWorkspacesToAuthenticatedUsers(boolean grantWriteToWorkspacesToAuthenticatedUsers) {
+        this.grantWriteToWorkspacesToAuthenticatedUsers = grantWriteToWorkspacesToAuthenticatedUsers;
     }
 
     /**
@@ -129,10 +126,7 @@ public class AccessManagerConfig implements Serializable, Cloneable {
         if (acceptedRoles == null || acceptedRoles.isEmpty()) {
             this.roles = new ArrayList<>(List.of("*"));
         } else {
-            this.roles =
-                    acceptedRoles.stream()
-                            .filter(StringUtils::hasText)
-                            .collect(Collectors.toList());
+            this.roles = acceptedRoles.stream().filter(StringUtils::hasText).collect(Collectors.toList());
         }
     }
 

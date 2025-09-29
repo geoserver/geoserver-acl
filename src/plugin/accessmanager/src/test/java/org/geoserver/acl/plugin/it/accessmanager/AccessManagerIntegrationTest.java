@@ -23,6 +23,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleLimits;
 import org.geoserver.acl.plugin.accessmanager.ACLResourceAccessManager;
@@ -59,9 +61,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @SuppressWarnings("unused")
 public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
 
@@ -95,8 +94,7 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
 
     @Before
     public void setUp() {
-        support =
-                new AclIntegrationTestSupport(() -> GeoServerSystemTestSupport.applicationContext);
+        support = new AclIntegrationTestSupport(() -> GeoServerSystemTestSupport.applicationContext);
         support.before();
         accessManager = applicationContext.getBean(ACLResourceAccessManager.class);
         // reset default config
@@ -132,9 +130,7 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         LayerGroupInfo group1 = support.createLayerGroup("group21", NAMED, null, places, forests);
         LayerGroupInfo group2 = support.createLayerGroup("group22", NAMED, null, places, forests);
         // limit rule for anonymousUser on LayerGroup group1
-        Rule r1 =
-                support.addRule(
-                        LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group21", 0);
+        Rule r1 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group21", 0);
 
         // limit rule for anonymousUser on LayerGroup group2
         support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group22", 1);
@@ -164,16 +160,12 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         LayerGroupInfo group1 = support.createLayerGroup("group1", NAMED, null, bridges, buildings);
         LayerGroupInfo group2 = support.createLayerGroup("group2", NAMED, null, bridges, buildings);
         // limit rule for anonymousUser on LayerGroup group1
-        Rule r1 =
-                support.addRule(
-                        LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group1", 2);
+        Rule r1 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group1", 2);
         // add allowed Area
         RuleLimits limits1 = support.addRuleLimits(r1, HIDE, AREA_WKT_INTERSECT_1, 4326);
 
         // limit rule for anonymousUser on LayerGroup group2
-        Rule r2 =
-                support.addRule(
-                        LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group2", 3);
+        Rule r2 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group2", 3);
 
         // add allowed Area to layer groups rules
         RuleLimits limits2 = support.addRuleLimits(r2, HIDE, AREA_WKT_INTERSECT_2, 4326);
@@ -188,11 +180,9 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         MultiPolygon allowedArea2 = toJts(limits2);
         MultiPolygon intersectionArea = intersect(allowedArea1, allowedArea2);
         Intersects intersects = (Intersects) vl.getReadFilter();
-        MultiPolygon readFilterArea =
-                intersects.getExpression2().evaluate(null, MultiPolygon.class);
+        MultiPolygon readFilterArea = intersects.getExpression2().evaluate(null, MultiPolygon.class);
         Intersects intersects2 = (Intersects) vl.getWriteFilter();
-        MultiPolygon writeFilterArea =
-                intersects2.getExpression2().evaluate(null, MultiPolygon.class);
+        MultiPolygon writeFilterArea = intersects2.getExpression2().evaluate(null, MultiPolygon.class);
         intersectionArea.normalize();
         // normalize geometries to avoids assertion failures for
         // a different internal order of the polygons
@@ -213,23 +203,15 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         LayerGroupInfo group1 = support.createLayerGroup("group31", NAMED, null, lakes, fifteen);
         LayerGroupInfo group2 = support.createLayerGroup("group32", NAMED, null, lakes, fifteen);
         // limit rule for anonymousUser on LayerGroup group1
-        Rule r1 =
-                support.addRule(
-                        LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group31", 4);
+        Rule r1 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group31", 4);
 
         // limit rule for anonymousUser on LayerGroup group2
-        Rule r2 =
-                support.addRule(
-                        LIMIT, "anonymousUser", "ROLE_ANONYMOUS2", "WMS", null, null, "group32", 5);
+        Rule r2 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS2", "WMS", null, null, "group32", 5);
 
-        Rule r3 =
-                support.addRule(
-                        LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group32", 4);
+        Rule r3 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group32", 4);
 
         // limit rule for anonymousUser on LayerGroup group2
-        Rule r4 =
-                support.addRule(
-                        LIMIT, "anonymousUser", "ROLE_ANONYMOUS2", "WMS", null, null, "group31", 5);
+        Rule r4 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS2", "WMS", null, null, "group31", 5);
 
         // add allowed Area to layer groups rules
         RuleLimits limits1 = support.addRuleLimits(r1, HIDE, AREA_WKT_1, 4326);
@@ -252,12 +234,10 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, lakes);
         assertThat(vl.getReadFilter(), instanceOf(Intersects.class));
         Intersects readFilter = (Intersects) vl.getReadFilter();
-        MultiPolygon readFilterArea =
-                readFilter.getExpression2().evaluate(null, MultiPolygon.class);
+        MultiPolygon readFilterArea = readFilter.getExpression2().evaluate(null, MultiPolygon.class);
         readFilterArea.normalize();
         Intersects writeFilter = (Intersects) vl.getWriteFilter();
-        MultiPolygon writeFilterArea =
-                writeFilter.getExpression2().evaluate(null, MultiPolygon.class);
+        MultiPolygon writeFilterArea = writeFilter.getExpression2().evaluate(null, MultiPolygon.class);
         writeFilterArea.normalize();
         assertTrue(unionedArea.equalsExact(readFilterArea, 10.0E-15));
         assertTrue(unionedArea.equalsExact(writeFilterArea, 10.0E-15));
@@ -270,12 +250,9 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         Catalog catalog = getRawCatalog();
         LayerInfo basicPolygons = catalog.getLayerByName(getLayerId(MockData.BASIC_POLYGONS));
         LayerInfo fifteen = catalog.getLayerByName(getLayerId(MockData.FIFTEEN));
-        LayerGroupInfo group1 =
-                support.createLayerGroup("group41", NAMED, null, basicPolygons, fifteen);
+        LayerGroupInfo group1 = support.createLayerGroup("group41", NAMED, null, basicPolygons, fifteen);
         // limit rule for anonymousUser on LayerGroup group1
-        Rule r1 =
-                support.addRule(
-                        LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group41", 7);
+        Rule r1 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group41", 7);
 
         // add allowed Area to layer groups rules
         RuleLimits limits1 = support.addRuleLimits(r1, HIDE, AREA_WKT_1, 3857);
@@ -283,16 +260,14 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         support.setDispatcherRequest("WMS", "GetMap");
 
         Authentication user = getUser("anonymousUser", "", "ROLE_ANONYMOUS");
-        VectorAccessLimits vl =
-                (VectorAccessLimits) accessManager.getAccessLimits(user, basicPolygons);
+        VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, basicPolygons);
         Intersects intersects = (Intersects) vl.getReadFilter();
         MultiPolygon allowedArea = intersects.getExpression2().evaluate(null, MultiPolygon.class);
         allowedArea.normalize();
 
         MultiPolygon geom = toJts(limits1);
-        MathTransform mt =
-                CRS.findMathTransform(
-                        CRS.decode("EPSG:3857"), basicPolygons.getResource().getCRS(), true);
+        MathTransform mt = CRS.findMathTransform(
+                CRS.decode("EPSG:3857"), basicPolygons.getResource().getCRS(), true);
         MultiPolygon reproj = (MultiPolygon) JTS.transform(geom, mt);
         reproj.normalize();
         assertTrue(allowedArea.equalsExact(reproj, 10.0E-15));
@@ -307,39 +282,24 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         Catalog catalog = getRawCatalog();
         LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
         LayerInfo namedPlaces = catalog.getLayerByName(getLayerId(MockData.NAMED_PLACES));
-        LayerGroupInfo group1 =
-                support.createLayerGroup("group51", NAMED, null, lakes, namedPlaces);
-        LayerGroupInfo group2 =
-                support.createLayerGroup("group52", NAMED, null, lakes, namedPlaces);
+        LayerGroupInfo group1 = support.createLayerGroup("group51", NAMED, null, lakes, namedPlaces);
+        LayerGroupInfo group2 = support.createLayerGroup("group52", NAMED, null, lakes, namedPlaces);
         // limit rule for anonymousUser on LayerGroup group1
-        Rule r1 =
-                support.addRule(
-                        LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group51", 8);
+        Rule r1 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group51", 8);
 
         // limit rule for anonymousUser on LayerGroup group1
-        Rule r2 =
-                support.addRule(
-                        LIMIT, "anonymousUser", "ROLE_ANONYMOUS2", "WMS", null, null, "group52", 9);
+        Rule r2 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS2", "WMS", null, null, "group52", 9);
 
         // limit rule for anonymousUser on LayerGroup group1
-        Rule r3 =
-                support.addRule(
-                        LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group52", 8);
+        Rule r3 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group52", 8);
 
         // limit rule for anonymousUser on LayerGroup group1
-        Rule r4 =
-                support.addRule(
-                        LIMIT, "anonymousUser", "ROLE_ANONYMOUS2", "WMS", null, null, "group51", 9);
+        Rule r4 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS2", "WMS", null, null, "group51", 9);
 
         // add allowed Area to layer groups rules
         RuleLimits limits1 = support.addRuleLimits(r1, HIDE, AREA_WKT_1, 4326);
-        RuleLimits limits2 =
-                support.addRuleLimits(
-                        r2,
-                        HIDE,
-                        reprojectWkt(
-                                AREA_WKT_2, CRS.decode("EPSG:4326"), CRS.decode("EPSG:3857"), 3857),
-                        3857);
+        RuleLimits limits2 = support.addRuleLimits(
+                r2, HIDE, reprojectWkt(AREA_WKT_2, CRS.decode("EPSG:4326"), CRS.decode("EPSG:3857"), 3857), 3857);
         RuleLimits limits3 = support.addRuleLimits(r3, HIDE, AREA_WKT_3, 4326);
         RuleLimits limits4 = support.addRuleLimits(r4, HIDE, AREA_WKT_4, 4326);
 
@@ -373,37 +333,15 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         LayerInfo ponds = catalog.getLayerByName(getLayerId(MockData.PONDS));
         LayerGroupInfo group1 = support.createLayerGroup("group61", NAMED, null, droutes, ponds);
         // limit rule for anonymousUser on LayerGroup group1
-        Rule r1 =
-                support.addRule(
-                        LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group61", 10);
+        Rule r1 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group61", 10);
 
-        Rule r2 =
-                support.addRule(
-                        LIMIT,
-                        "anonymousUser",
-                        "ROLE_ANONYMOUS2",
-                        "WMS",
-                        null,
-                        null,
-                        "group61",
-                        11);
+        Rule r2 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS2", "WMS", null, null, "group61", 11);
 
         LayerGroupInfo group2 = support.createLayerGroup("group62", NAMED, null, droutes, ponds);
         // limit rule for anonymousUser on LayerGroup group1
-        Rule r3 =
-                support.addRule(
-                        LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group62", 12);
+        Rule r3 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, "group62", 12);
 
-        Rule r4 =
-                support.addRule(
-                        LIMIT,
-                        "anonymousUser",
-                        "ROLE_ANONYMOUS2",
-                        "WMS",
-                        null,
-                        null,
-                        "group62",
-                        13);
+        Rule r4 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS2", "WMS", null, null, "group62", 13);
 
         String areaWKT1 =
                 "MultiPolygon (((-97.48185823120911664 0.02172899055096349, -97.4667765271758384 0.02148629646307176, -97.46795532703131926 0.01663241470523705, -97.48165020770520073 0.01607768536148451, -97.48185823120911664 0.02172899055096349)))";
@@ -538,28 +476,10 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         LayerGroupInfo group1 = support.createLayerGroup("group21", SINGLE, null, places, forests);
         LayerGroupInfo group2 = support.createLayerGroup("group22", NAMED, null, places, forests);
         // limit rule for anonymousUser on LayerGroup group1
-        Rule limit1 =
-                support.addRule(
-                        LIMIT,
-                        "anonymousUser",
-                        "ROLE_ANONYMOUS",
-                        "WMS",
-                        null,
-                        null,
-                        group1.getName(),
-                        0);
+        Rule limit1 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, group1.getName(), 0);
 
         // limit rule for anonymousUser on LayerGroup group2
-        Rule limit2 =
-                support.addRule(
-                        LIMIT,
-                        "anonymousUser",
-                        "ROLE_ANONYMOUS",
-                        "WMS",
-                        null,
-                        null,
-                        group2.getName(),
-                        1);
+        Rule limit2 = support.addRule(LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, group2.getName(), 1);
 
         // add allowed Area only to the first layer group
         support.addRuleLimits(limit1.getId(), HIDE, AREA_WKT_1, 4326);
@@ -604,12 +524,10 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         unionedArea.normalize();
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, lakes);
         Intersects intersects = (Intersects) vl.getReadFilter();
-        MultiPolygon readFilterArea =
-                intersects.getExpression2().evaluate(null, MultiPolygon.class);
+        MultiPolygon readFilterArea = intersects.getExpression2().evaluate(null, MultiPolygon.class);
         readFilterArea.normalize();
         Intersects intersects2 = (Intersects) vl.getWriteFilter();
-        MultiPolygon writeFilterArea =
-                intersects2.getExpression2().evaluate(null, MultiPolygon.class);
+        MultiPolygon writeFilterArea = intersects2.getExpression2().evaluate(null, MultiPolygon.class);
         writeFilterArea.normalize();
         assertTrue(unionedArea.equalsExact(readFilterArea, 10.0E-15));
         assertTrue(unionedArea.equalsExact(writeFilterArea, 10.0E-15));
@@ -638,8 +556,7 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         // Merge the allowed areas
         MultiPolygon allowedArea1 = toJts(limits1);
         MultiPolygon allowedArea2 = toJts(limits2);
-        MultiPolygon intersectedArea =
-                Converters.convert(allowedArea1.intersection(allowedArea2), MultiPolygon.class);
+        MultiPolygon intersectedArea = Converters.convert(allowedArea1.intersection(allowedArea2), MultiPolygon.class);
         intersectedArea.normalize();
         // mock a WMS request to check contained layers direct access
         support.setDispatcherRequest("WMS", "GetMap");
@@ -647,12 +564,10 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         Authentication user = getUser("anonymousUser", "", "ROLE_ANONYMOUS");
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, lakes);
         Intersects intersects = (Intersects) vl.getReadFilter();
-        MultiPolygon readFilterArea =
-                intersects.getExpression2().evaluate(null, MultiPolygon.class);
+        MultiPolygon readFilterArea = intersects.getExpression2().evaluate(null, MultiPolygon.class);
         readFilterArea.normalize();
         Intersects intersects2 = (Intersects) vl.getWriteFilter();
-        MultiPolygon writeFilterArea =
-                intersects2.getExpression2().evaluate(null, MultiPolygon.class);
+        MultiPolygon writeFilterArea = intersects2.getExpression2().evaluate(null, MultiPolygon.class);
         writeFilterArea.normalize();
         assertTrue(intersectedArea.equalsExact(readFilterArea, 10.0E-15));
         assertTrue(intersectedArea.equalsExact(writeFilterArea, 10.0E-15));
@@ -678,8 +593,7 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         support.setDispatcherRequest("WMS", "GetMap");
 
         Authentication user = getUser("anonymousUser", "", "ROLE_ANONYMOUS");
-        VectorAccessLimits vl =
-                (VectorAccessLimits) accessManager.getAccessLimits(user, lakes, List.of(group1));
+        VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, lakes, List.of(group1));
         assertEquals(Filter.EXCLUDE, vl.getReadFilter());
         assertEquals(Filter.EXCLUDE, vl.getWriteFilter());
     }
@@ -715,8 +629,7 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         Authentication user = getUser("aUser", "", "ROLE_ONE", "ROLE_TWO");
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, lakes);
         Intersects intersects = (Intersects) vl.getReadFilter();
-        MultiPolygon readFilterArea =
-                intersects.getExpression2().evaluate(null, MultiPolygon.class);
+        MultiPolygon readFilterArea = intersects.getExpression2().evaluate(null, MultiPolygon.class);
         readFilterArea.normalize();
         assertTrue(allowedArea1.equalsExact(readFilterArea, 10.0E-15));
     }
@@ -745,19 +658,16 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
 
         // Merge the allowed areas
         MultiPolygon intersectedArea =
-                Converters.convert(
-                        org.geolatte.geom.jts.JTS.to(limits2.getAllowedArea()), MultiPolygon.class);
+                Converters.convert(org.geolatte.geom.jts.JTS.to(limits2.getAllowedArea()), MultiPolygon.class);
         intersectedArea.normalize();
 
         // mock a WMS request to check contained layers direct access
         support.setDispatcherRequest("WMS", "GetMap");
 
         Authentication user = getUser("aUser", "", "ROLE_ONE", "ROLE_TWO");
-        VectorAccessLimits vl =
-                (VectorAccessLimits) accessManager.getAccessLimits(user, lakes, List.of(group1));
+        VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, lakes, List.of(group1));
         Intersects intersects = (Intersects) vl.getReadFilter();
-        MultiPolygon readFilterArea =
-                intersects.getExpression2().evaluate(null, MultiPolygon.class);
+        MultiPolygon readFilterArea = intersects.getExpression2().evaluate(null, MultiPolygon.class);
         readFilterArea.normalize();
         assertTrue(intersectedArea.equalsExact(readFilterArea, 10.0E-15));
     }
@@ -787,12 +697,10 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         Authentication user = getUser("user1", "", "ROLE1");
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, lakes);
         Intersects intersects = (Intersects) vl.getReadFilter();
-        MultiPolygon readFilterArea =
-                intersects.getExpression2().evaluate(null, MultiPolygon.class);
+        MultiPolygon readFilterArea = intersects.getExpression2().evaluate(null, MultiPolygon.class);
         readFilterArea.normalize();
         Intersects intersects2 = (Intersects) vl.getWriteFilter();
-        MultiPolygon writeFilterArea =
-                intersects2.getExpression2().evaluate(null, MultiPolygon.class);
+        MultiPolygon writeFilterArea = intersects2.getExpression2().evaluate(null, MultiPolygon.class);
         writeFilterArea.normalize();
         assertTrue(intersectedArea.equalsExact(readFilterArea, 10.0E-15));
         assertTrue(intersectedArea.equalsExact(writeFilterArea, 10.0E-15));
@@ -803,8 +711,7 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
         Catalog catalog = getRawCatalog();
         LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
         LayerInfo fifteen = catalog.getLayerByName(getLayerId(MockData.FIFTEEN));
-        LayerGroupInfo group1 =
-                support.createLayerGroup("groupTree31", NAMED, null, lakes, fifteen);
+        LayerGroupInfo group1 = support.createLayerGroup("groupTree31", NAMED, null, lakes, fifteen);
         // limit rule for anonymousUser on LayerGroup group1
         Rule r1 = support.addRule(LIMIT, null, "ROLE_ANONYMOUS", "WMS", null, "cite", "Lakes", 3);
 
@@ -843,10 +750,7 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     private String reprojectWkt(
-            String srcWKT,
-            CoordinateReferenceSystem srcCRS,
-            CoordinateReferenceSystem targetCRS,
-            int targetSRID)
+            String srcWKT, CoordinateReferenceSystem srcCRS, CoordinateReferenceSystem targetCRS, int targetSRID)
             throws Exception {
 
         Geometry geometry = new WKTReader().read(srcWKT);
@@ -862,10 +766,7 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     private Geometry reproject(
-            Geometry geometry,
-            CoordinateReferenceSystem srcCRS,
-            CoordinateReferenceSystem targetCRS,
-            int targetSRID)
+            Geometry geometry, CoordinateReferenceSystem srcCRS, CoordinateReferenceSystem targetCRS, int targetSRID)
             throws FactoryException, TransformException {
         MathTransform mt = CRS.findMathTransform(srcCRS, targetCRS, true);
         Geometry transformed = JTS.transform(geometry, mt);

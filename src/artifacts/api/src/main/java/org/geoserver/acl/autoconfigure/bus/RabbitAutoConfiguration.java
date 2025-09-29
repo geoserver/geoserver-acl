@@ -4,13 +4,11 @@
  */
 package org.geoserver.acl.autoconfigure.bus;
 
+import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Import;
-
-import javax.annotation.PostConstruct;
 
 /**
  * {@link org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration} is disabled in

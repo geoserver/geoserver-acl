@@ -10,8 +10,10 @@ import static org.geoserver.acl.domain.adminrules.AdminGrantType.*;
 import static org.geoserver.acl.domain.rules.GrantType.ALLOW;
 import static org.geoserver.acl.domain.rules.GrantType.DENY;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import lombok.NonNull;
-
 import org.geoserver.acl.domain.adminrules.AdminGrantType;
 import org.geoserver.acl.domain.rules.GrantType;
 import org.geoserver.acl.domain.rules.Rule;
@@ -20,10 +22,6 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Integration/comformance test for {@link
@@ -35,7 +33,10 @@ import java.util.Set;
 public abstract class AuthorizationServiceAccessSummaryTest extends BaseAuthorizationServiceTest {
 
     AccessSummaryRequest req(@NonNull String user, @NonNull String... roles) {
-        return AccessSummaryRequest.builder().user(user).roles(Set.copyOf(List.of(roles))).build();
+        return AccessSummaryRequest.builder()
+                .user(user)
+                .roles(Set.copyOf(List.of(roles)))
+                .build();
     }
 
     @Test
@@ -62,8 +63,7 @@ public abstract class AuthorizationServiceAccessSummaryTest extends BaseAuthoriz
 
     @Test
     @Order(20)
-    @DisplayName(
-            "given a single matching rule on role with no layer, all layers in the workspace are visible")
+    @DisplayName("given a single matching rule on role with no layer, all layers in the workspace are visible")
     void singleWorkspaceRuleAllowAllLayers() {
         var req = req("user1", "ROLE_1");
         insert(1, "*", "ROLE_1", "w1", "*", ALLOW);
@@ -80,8 +80,7 @@ public abstract class AuthorizationServiceAccessSummaryTest extends BaseAuthoriz
         insert(2, "*", "ROLE_2", "w2", "allowed1", ALLOW);
         insert(3, "user1", null, "w3", "L3", ALLOW);
         var viewables = authorizationService.getUserAccessSummary(req);
-        var expected =
-                summary(workspace("w1", "*"), workspace("w2", "allowed1"), workspace("w3", "L3"));
+        var expected = summary(workspace("w1", "*"), workspace("w2", "allowed1"), workspace("w3", "L3"));
         assertThat(viewables).isEqualTo(expected);
     }
 
@@ -97,7 +96,8 @@ public abstract class AuthorizationServiceAccessSummaryTest extends BaseAuthoriz
                 AccessRequest.builder().user("user1").roles("ROLE_1", "ROLE_2").workspace("w1");
 
         // preflight
-        var accessInfo = service.getAccessInfo(accessRequestBuilder.layer("visible").build());
+        var accessInfo =
+                service.getAccessInfo(accessRequestBuilder.layer("visible").build());
         assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
 
         accessInfo = service.getAccessInfo(accessRequestBuilder.layer("hidden1").build());
@@ -176,23 +176,17 @@ public abstract class AuthorizationServiceAccessSummaryTest extends BaseAuthoriz
         // make it an admin, still can't see w1:hiddenlayer
         insert(ADMIN, 1, "*", "ROLE_1", "w1");
 
-        expected =
-                summary(
-                        workspace("*", "*"),
-                        workspace(ADMIN, "w1", Set.of("*"), Set.of("hiddenlayer")));
+        expected = summary(workspace("*", "*"), workspace(ADMIN, "w1", Set.of("*"), Set.of("hiddenlayer")));
         viewables = authorizationService.getUserAccessSummary(req);
         assertThat(viewables).isEqualTo(expected);
     }
 
-    protected WorkspaceAccessSummary workspace(
-            @NonNull String workspace, @NonNull String allowedLayer) {
+    protected WorkspaceAccessSummary workspace(@NonNull String workspace, @NonNull String allowedLayer) {
         return workspace(workspace, Set.of(allowedLayer), Set.of());
     }
 
     protected WorkspaceAccessSummary workspace(
-            @NonNull String workspace,
-            @NonNull String allowedLayer,
-            @NonNull String forbiddenLayer) {
+            @NonNull String workspace, @NonNull String allowedLayer, @NonNull String forbiddenLayer) {
         return workspace(workspace, Set.of(allowedLayer), Set.of(forbiddenLayer));
     }
 
@@ -206,9 +200,7 @@ public abstract class AuthorizationServiceAccessSummaryTest extends BaseAuthoriz
     }
 
     protected WorkspaceAccessSummary workspace(
-            @NonNull String workspace,
-            @NonNull Set<String> allowedLayers,
-            @NonNull Set<String> forbiddenLayers) {
+            @NonNull String workspace, @NonNull Set<String> allowedLayers, @NonNull Set<String> forbiddenLayers) {
         return workspace(null, workspace, allowedLayers, forbiddenLayers);
     }
 
@@ -225,13 +217,7 @@ public abstract class AuthorizationServiceAccessSummaryTest extends BaseAuthoriz
                 .build();
     }
 
-    protected Rule insert(
-            int priority,
-            String user,
-            String role,
-            String workspace,
-            String layer,
-            GrantType access) {
+    protected Rule insert(int priority, String user, String role, String workspace, String layer, GrantType access) {
         if ("*".equals(user)) user = null;
         if ("*".equals(role)) role = null;
         if ("*".equals(workspace)) workspace = null;

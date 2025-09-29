@@ -4,9 +4,9 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.model;
 
+import java.io.Serializable;
 import lombok.Data;
 import lombok.NonNull;
-
 import org.geoserver.acl.domain.rules.CatalogMode;
 import org.geoserver.acl.domain.rules.GrantType;
 import org.geoserver.acl.domain.rules.LayerDetails;
@@ -14,8 +14,6 @@ import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.Rule.Builder;
 import org.geoserver.acl.domain.rules.RuleIdentifier;
 import org.geoserver.acl.domain.rules.RuleLimits;
-
-import java.io.Serializable;
 
 @Data
 @SuppressWarnings("serial")
@@ -153,15 +151,14 @@ public class MutableRule implements Serializable, Cloneable {
         idb.workspace(getWorkspace());
         idb.layer(getLayer());
 
-        Rule rule =
-                builder.identifier(idb.build())
-                        .id(getId())
-                        .priority(getPriority())
-                        .extId(getExtId())
-                        .name(getName())
-                        .description(getDescription())
-                        .ruleLimits(ruleLimits())
-                        .build();
+        Rule rule = builder.identifier(idb.build())
+                .id(getId())
+                .priority(getPriority())
+                .extId(getExtId())
+                .name(getName())
+                .description(getDescription())
+                .ruleLimits(ruleLimits())
+                .build();
         return rule;
     }
 

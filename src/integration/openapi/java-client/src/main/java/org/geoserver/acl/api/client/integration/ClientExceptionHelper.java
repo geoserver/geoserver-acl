@@ -4,11 +4,9 @@
  */
 package org.geoserver.acl.api.client.integration;
 
-import lombok.experimental.UtilityClass;
-
-import org.springframework.web.client.HttpClientErrorException;
-
 import java.util.Optional;
+import lombok.experimental.UtilityClass;
+import org.springframework.web.client.HttpClientErrorException;
 
 @UtilityClass
 class ClientExceptionHelper {

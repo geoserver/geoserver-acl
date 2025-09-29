@@ -17,5 +17,8 @@ import lombok.experimental.Delegate;
 @RequiredArgsConstructor
 public abstract class ForwardingAuthorizationService implements AuthorizationService {
 
-    @NonNull @Delegate @Getter private final AuthorizationService delegate;
+    @NonNull
+    @Delegate
+    @Getter
+    private final AuthorizationService delegate;
 }

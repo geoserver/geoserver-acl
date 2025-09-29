@@ -63,8 +63,7 @@ public class AdminRuleEditPageTest extends AclWicketTestSupport {
     @Test
     public void testEditRule() {
         final AdminRule userRule = adminService().insert(AdminRule.user().withPriority(10));
-        adminService()
-                .insert(AdminRule.admin().withPriority(11).withRolename("ROLE_ADMINISTRATOR"));
+        adminService().insert(AdminRule.admin().withPriority(11).withRolename("ROLE_ADMINISTRATOR"));
 
         AdminRuleEditModel pageModel = new AdminRuleEditModel(new MutableAdminRule(userRule));
 
@@ -101,16 +100,14 @@ public class AdminRuleEditPageTest extends AclWicketTestSupport {
     public void testSerializable() {
 
         final AdminRule userRule = adminService().insert(AdminRule.user().withPriority(10));
-        adminService()
-                .insert(AdminRule.admin().withPriority(11).withRolename("ROLE_ADMINISTRATOR"));
+        adminService().insert(AdminRule.admin().withPriority(11).withRolename("ROLE_ADMINISTRATOR"));
 
         AdminRuleEditModel pageModel = new AdminRuleEditModel(new MutableAdminRule(userRule));
 
         AdminRuleEditPage page = tester.startPage(new AdminRuleEditPage(pageModel));
 
         byte[] serialized = SerializationUtils.serialize(page);
-        AdminRuleEditPage deserialized =
-                (AdminRuleEditPage) SerializationUtils.deserialize(serialized);
+        AdminRuleEditPage deserialized = (AdminRuleEditPage) SerializationUtils.deserialize(serialized);
         assertNotNull(deserialized);
     }
 }

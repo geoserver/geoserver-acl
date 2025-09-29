@@ -6,11 +6,10 @@
  */
 package org.geoserver.acl.plugin.wps;
 
+import java.util.logging.Logger;
 import org.geoserver.acl.plugin.accessmanager.wps.ChainStatusHolder;
 import org.geoserver.wps.ChainedProcessListener;
 import org.geotools.util.logging.Logging;
-
-import java.util.logging.Logger;
 
 /**
  * @author etj (Emanuele Tajariol @ GeoSolutions) Originally as part of GeoFence's GeoServer
@@ -29,13 +28,12 @@ public class WPSProcessListener implements ChainedProcessListener {
     @Override
     public void started(String executionId, String processName, boolean chained) {
         statusHolder.stackProcess(executionId, processName);
-        LOGGER.warning(
-                "ExecId:"
-                        + executionId
-                        + " Current process stack is "
-                        + statusHolder.stackToString(executionId)
-                        + " --- +"
-                        + processName);
+        LOGGER.warning("ExecId:"
+                + executionId
+                + " Current process stack is "
+                + statusHolder.stackToString(executionId)
+                + " --- +"
+                + processName);
     }
 
     @Override
@@ -43,38 +41,35 @@ public class WPSProcessListener implements ChainedProcessListener {
         // LOGGER.warning("*** RETURNED XID:" + executionId + " PROCESS:" +
         // processName);
         statusHolder.unstackProcess(executionId, processName);
-        LOGGER.warning(
-                "ExecId:"
-                        + executionId
-                        + " Current process stack is "
-                        + statusHolder.stackToString(executionId)
-                        + " --- -"
-                        + processName);
+        LOGGER.warning("ExecId:"
+                + executionId
+                + " Current process stack is "
+                + statusHolder.stackToString(executionId)
+                + " --- -"
+                + processName);
     }
 
     @Override
     public void dismissed(String executionId, String processName) {
         // LOGGER.warning("*** FAILED XID:" + executionId + " PROCESS:" + processName);
         statusHolder.unstackProcess(executionId, processName);
-        LOGGER.warning(
-                "ExecId:"
-                        + executionId
-                        + " Current process stack is "
-                        + statusHolder.stackToString(executionId)
-                        + " --- !"
-                        + processName);
+        LOGGER.warning("ExecId:"
+                + executionId
+                + " Current process stack is "
+                + statusHolder.stackToString(executionId)
+                + " --- !"
+                + processName);
     }
 
     @Override
     public void failed(String executionId, String processName, Exception e) {
         // LOGGER.warning("*** FAILED XID:" + executionId + " PROCESS:" + processName);
         statusHolder.unstackProcess(executionId, processName);
-        LOGGER.warning(
-                "ExecId:"
-                        + executionId
-                        + " Current process stack is "
-                        + statusHolder.stackToString(executionId)
-                        + " --- !"
-                        + processName);
+        LOGGER.warning("ExecId:"
+                + executionId
+                + " Current process stack is "
+                + statusHolder.stackToString(executionId)
+                + " --- !"
+                + processName);
     }
 }

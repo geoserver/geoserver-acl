@@ -10,9 +10,11 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-
 import org.geoserver.acl.api.model.InsertPosition;
 import org.geoserver.acl.api.model.LayerDetails;
 import org.geoserver.acl.api.model.Rule;
@@ -28,10 +30,6 @@ import org.geoserver.acl.domain.rules.RuleIdentifierConflictException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @IsAuthenticated
@@ -89,8 +87,7 @@ public class DataRulesApiImpl implements DataRulesApiDelegate {
         return query(RuleQuery.of(filter, limit, nextCursor));
     }
 
-    private ResponseEntity<List<Rule>> query(
-            RuleQuery<org.geoserver.acl.domain.rules.RuleFilter> query) {
+    private ResponseEntity<List<Rule>> query(RuleQuery<org.geoserver.acl.domain.rules.RuleFilter> query) {
         List<org.geoserver.acl.domain.rules.Rule> list;
 
         // handle cursor-based pagination.
@@ -170,7 +167,8 @@ public class DataRulesApiImpl implements DataRulesApiDelegate {
     public ResponseEntity<LayerDetails> getLayerDetailsByRuleId(@NonNull String id) {
         try {
             support.setPreferredGeometryEncoding();
-            LayerDetails details = service.getLayerDetails(id).map(support::toApi).orElse(null);
+            LayerDetails details =
+                    service.getLayerDetails(id).map(support::toApi).orElse(null);
             return ResponseEntity.status(details == null ? NO_CONTENT : OK).body(details);
         } catch (IllegalArgumentException e) {
             return support.error(BAD_REQUEST, e.getMessage());

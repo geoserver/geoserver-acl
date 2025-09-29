@@ -6,13 +6,12 @@
  */
 package org.geoserver.acl.plugin.accessmanager.wps;
 
-import org.geotools.util.logging.Logging;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 
 /**
  * @author etj (Emanuele Tajariol @ GeoSolutions) - Originally as part of GeoFence's GeoServer
@@ -28,13 +27,10 @@ public class ChainStatusHolder {
     public ChainStatusHolder() {}
 
     public void stackProcess(String execId, String procName) {
-        LinkedList<String> chain =
-                chains.computeIfAbsent(
-                        execId,
-                        id -> {
-                            LOGGER.fine("Creating chain for " + execId);
-                            return new LinkedList<>();
-                        });
+        LinkedList<String> chain = chains.computeIfAbsent(execId, id -> {
+            LOGGER.fine("Creating chain for " + execId);
+            return new LinkedList<>();
+        });
         chain.add(procName);
     }
 
@@ -50,13 +46,12 @@ public class ChainStatusHolder {
         synchronized (chain) {
             String last = chain.pollLast();
             if (!procName.equals(last)) {
-                LOGGER.severe(
-                        "Returning from ["
-                                + procName
-                                + "], but last called process was ["
-                                + last
-                                + "] for execution ID "
-                                + execId);
+                LOGGER.severe("Returning from ["
+                        + procName
+                        + "], but last called process was ["
+                        + last
+                        + "] for execution ID "
+                        + execId);
                 return false;
             }
             if (chain.isEmpty()) {

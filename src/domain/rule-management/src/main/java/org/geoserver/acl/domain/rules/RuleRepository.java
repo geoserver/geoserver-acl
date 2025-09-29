@@ -4,11 +4,10 @@
  */
 package org.geoserver.acl.domain.rules;
 
-import org.geoserver.acl.domain.filter.RuleQuery;
-
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
+import org.geoserver.acl.domain.filter.RuleQuery;
 
 public interface RuleRepository {
 

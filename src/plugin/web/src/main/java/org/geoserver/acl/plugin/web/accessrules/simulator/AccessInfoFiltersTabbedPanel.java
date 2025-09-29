@@ -4,6 +4,10 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.simulator;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -24,11 +28,6 @@ import org.geoserver.acl.domain.rules.LayerAttribute.AccessType;
 import org.geoserver.acl.plugin.web.components.GeometryWktTextArea;
 import org.geoserver.acl.plugin.web.support.SerializableFunction;
 import org.geoserver.acl.plugin.web.support.SerializablePredicate;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class AccessInfoFiltersTabbedPanel extends Panel {
@@ -72,12 +71,10 @@ public class AccessInfoFiltersTabbedPanel extends Panel {
         clipareaTab.setEnabled(notEmpty(access.getClipArea()));
         cqlreadTab.setEnabled(notEmpty(access.getCqlFilterRead()));
         cqlwriteTab.setEnabled(notEmpty(access.getCqlFilterWrite()));
-        stylesTab.setEnabled(
-                notEmpty(access.getDefaultStyle()) || notEmpty(access.getAllowedStyles()));
+        stylesTab.setEnabled(notEmpty(access.getDefaultStyle()) || notEmpty(access.getAllowedStyles()));
         attributesTab.setEnabled(notEmpty(access.getAttributes()));
 
-        selectFirstEnabled(
-                wktareaTab, clipareaTab, cqlreadTab, cqlwriteTab, stylesTab, attributesTab);
+        selectFirstEnabled(wktareaTab, clipareaTab, cqlreadTab, cqlwriteTab, stylesTab, attributesTab);
     }
 
     @SafeVarargs
@@ -109,8 +106,7 @@ public class AccessInfoFiltersTabbedPanel extends Panel {
         cqlwriteTab = new Radio<>("cqlwriteTab", Model.of("cqlw"), filtertabset);
         stylesTab = new Radio<>("stylesTab", Model.of("styles"), filtertabset);
         attributesTab = new Radio<>("attributesTab", Model.of("attributes"), filtertabset);
-        filtertabset.add(
-                wktareaTab, clipareaTab, cqlreadTab, cqlwriteTab, stylesTab, attributesTab);
+        filtertabset.add(wktareaTab, clipareaTab, cqlreadTab, cqlwriteTab, stylesTab, attributesTab);
 
         WebMarkupContainer container = new WebMarkupContainer("tabs");
         container.setOutputMarkupPlaceholderTag(true);
@@ -120,8 +116,7 @@ public class AccessInfoFiltersTabbedPanel extends Panel {
 
     @SuppressWarnings("rawtypes")
     private GeometryWktTextArea<Geometry> intersectArea() {
-        GeometryWktTextArea<Geometry> area =
-                new GeometryWktTextArea<>("area", Geometry.class, model().bind("area"));
+        GeometryWktTextArea<Geometry> area = new GeometryWktTextArea<>("area", Geometry.class, model().bind("area"));
         area.setEnabled(false);
         return area;
     }
@@ -165,15 +160,12 @@ public class AccessInfoFiltersTabbedPanel extends Panel {
         private SerializableFunction<T, String> converter;
         private SerializablePredicate<T> filter;
 
-        public static CollectionLabel<String> ofStrings(
-                String id, IModel<? extends Collection<String>> model) {
+        public static CollectionLabel<String> ofStrings(String id, IModel<? extends Collection<String>> model) {
             return new CollectionLabel<>(id, model, v -> v);
         }
 
         public CollectionLabel(
-                String id,
-                IModel<? extends Collection<T>> model,
-                SerializableFunction<T, String> converter) {
+                String id, IModel<? extends Collection<T>> model, SerializableFunction<T, String> converter) {
             this(id, model, converter, c -> true);
         }
 
@@ -190,8 +182,7 @@ public class AccessInfoFiltersTabbedPanel extends Panel {
         protected @Override IConverter<?> createConverter(Class<?> type) {
             if (!Collection.class.isAssignableFrom(type)) return null;
             return new IConverter<Collection<T>>() {
-                public @Override Collection<T> convertToObject(String value, Locale locale)
-                        throws ConversionException {
+                public @Override Collection<T> convertToObject(String value, Locale locale) throws ConversionException {
                     throw new UnsupportedOperationException();
                 }
 

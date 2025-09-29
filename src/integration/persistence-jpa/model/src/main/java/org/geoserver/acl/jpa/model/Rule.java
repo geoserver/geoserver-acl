@@ -7,15 +7,7 @@
 
 package org.geoserver.acl.jpa.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -26,6 +18,11 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -66,10 +63,7 @@ public class Rule extends Auditable implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(generator = "acl_rules_sequence_generator", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(
-            name = "acl_rules_sequence_generator",
-            sequenceName = "acl_rule_sequence",
-            allocationSize = 1)
+    @SequenceGenerator(name = "acl_rules_sequence_generator", sequenceName = "acl_rule_sequence", allocationSize = 1)
     private Long id;
 
     /**
@@ -88,11 +82,14 @@ public class Rule extends Auditable implements Serializable, Cloneable {
     @Column(nullable = false)
     private long priority;
 
-    @Embedded private RuleIdentifier identifier = new RuleIdentifier();
+    @Embedded
+    private RuleIdentifier identifier = new RuleIdentifier();
 
-    @Embedded private LayerDetails layerDetails;
+    @Embedded
+    private LayerDetails layerDetails;
 
-    @Embedded private RuleLimits ruleLimits;
+    @Embedded
+    private RuleLimits ruleLimits;
 
     public @Override Rule clone() {
         Rule clone;

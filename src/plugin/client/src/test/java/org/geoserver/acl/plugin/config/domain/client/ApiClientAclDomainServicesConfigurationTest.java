@@ -16,19 +16,17 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 class ApiClientAclDomainServicesConfigurationTest {
 
     ApplicationContextRunner runner =
-            new ApplicationContextRunner()
-                    .withUserConfiguration(ApiClientAclDomainServicesConfiguration.class);
+            new ApplicationContextRunner().withUserConfiguration(ApiClientAclDomainServicesConfiguration.class);
 
     @Test
     void testMissingConfig() {
-        runner.run(
-                context -> {
-                    assertThat(context)
-                            .hasFailed()
-                            .getFailure()
-                            .hasMessageContaining(
-                                    "Authorization service target URL not provided through config property geoserver.acl.client.basePath");
-                });
+        runner.run(context -> {
+            assertThat(context)
+                    .hasFailed()
+                    .getFailure()
+                    .hasMessageContaining(
+                            "Authorization service target URL not provided through config property geoserver.acl.client.basePath");
+        });
     }
 
     @Test
@@ -38,15 +36,13 @@ class ApiClientAclDomainServicesConfigurationTest {
                         "geoserver.acl.client.username=testme",
                         "geoserver.acl.client.password=s3cr3t",
                         "geoserver.acl.client.startupCheck=false")
-                .run(
-                        context -> {
-                            assertThat(context).hasNotFailed();
-                            assertThat(context).hasSingleBean(RuleAdminService.class);
-                            assertThat(context).hasSingleBean(AdminRuleAdminService.class);
-                            assertThat(context).hasSingleBean(AuthorizationService.class);
-                            assertThat(context)
-                                    .hasSingleBean(AuthorizationServiceClientAdaptor.class);
-                        });
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                    assertThat(context).hasSingleBean(RuleAdminService.class);
+                    assertThat(context).hasSingleBean(AdminRuleAdminService.class);
+                    assertThat(context).hasSingleBean(AuthorizationService.class);
+                    assertThat(context).hasSingleBean(AuthorizationServiceClientAdaptor.class);
+                });
     }
 
     @Test
@@ -57,13 +53,11 @@ class ApiClientAclDomainServicesConfigurationTest {
                         "geoserver.acl.client.password=s3cr3t",
                         "geoserver.acl.client.startupCheck=true",
                         "geoserver.acl.client.initTimeout=2")
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasFailed()
-                                    .getFailure()
-                                    .hasMessageContaining(
-                                            "Unable to connect to ACL after 2 seconds");
-                        });
+                .run(context -> {
+                    assertThat(context)
+                            .hasFailed()
+                            .getFailure()
+                            .hasMessageContaining("Unable to connect to ACL after 2 seconds");
+                });
     }
 }

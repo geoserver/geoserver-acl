@@ -7,9 +7,10 @@
 package org.geoserver.acl.plugin.web.accessrules.layerdetails;
 
 import com.google.common.collect.Streams;
-
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.event.IEvent;
@@ -50,10 +51,6 @@ import org.geotools.filter.text.ecql.ECQL;
 import org.wicketstuff.select2.ChoiceProvider;
 import org.wicketstuff.select2.Response;
 import org.wicketstuff.select2.StringTextChoiceProvider;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Form panel for a {@link MutableLayerDetails}.
@@ -198,13 +195,12 @@ public class LayerDetailsEditPanel extends FormComponentPanel<MutableLayerDetail
     private FormComponent<Boolean> setLayerDetailsCheck() {
         CheckBox check = new CheckBox("setLayerDetails", editModel.getSetLayerDetailsModel());
         check.setOutputMarkupId(true);
-        check.add(
-                new OnChangeAjaxBehavior() {
-                    protected @Override void onUpdate(AjaxRequestTarget target) {
-                        // model updated, then...
-                        handleVisibility(target);
-                    }
-                });
+        check.add(new OnChangeAjaxBehavior() {
+            protected @Override void onUpdate(AjaxRequestTarget target) {
+                // model updated, then...
+                handleVisibility(target);
+            }
+        });
         return check;
     }
 
@@ -216,20 +212,18 @@ public class LayerDetailsEditPanel extends FormComponentPanel<MutableLayerDetail
     }
 
     private WebMarkupContainer stylesContainer() {
-        WebMarkupContainer container =
-                new WebMarkupContainer("styles") {
-                    public @Override void onEvent(IEvent<?> event) {
-                        if (event.getPayload() instanceof PublishedInfoChangeEvent) {
-                            PublishedInfoChangeEvent e =
-                                    (PublishedInfoChangeEvent) event.getPayload();
-                            boolean visible = editModel.canHaveStyles();
-                            if (visible != stylesContainer.isVisible()) {
-                                stylesContainer.setVisible(visible);
-                                e.getTarget().add(stylesContainer);
-                            }
-                        }
+        WebMarkupContainer container = new WebMarkupContainer("styles") {
+            public @Override void onEvent(IEvent<?> event) {
+                if (event.getPayload() instanceof PublishedInfoChangeEvent) {
+                    PublishedInfoChangeEvent e = (PublishedInfoChangeEvent) event.getPayload();
+                    boolean visible = editModel.canHaveStyles();
+                    if (visible != stylesContainer.isVisible()) {
+                        stylesContainer.setVisible(visible);
+                        e.getTarget().add(stylesContainer);
                     }
-                };
+                }
+            }
+        };
         container.setOutputMarkupPlaceholderTag(true);
         container.add(defaultStyle = defaultStyle());
         container.add(allowedStyles = allowedStyles());
@@ -243,14 +237,13 @@ public class LayerDetailsEditPanel extends FormComponentPanel<MutableLayerDetail
     Radio<String> cqlwriteTab;
 
     private WebMarkupContainer filtersContainer() {
-        WebMarkupContainer container =
-                new WebMarkupContainer("filterTabs") {
-                    public @Override void onEvent(IEvent<?> event) {
-                        if (event.getPayload() instanceof PublishedInfoChangeEvent) {
-                            updateFilterTabs((PublishedInfoChangeEvent) event.getPayload());
-                        }
-                    }
-                };
+        WebMarkupContainer container = new WebMarkupContainer("filterTabs") {
+            public @Override void onEvent(IEvent<?> event) {
+                if (event.getPayload() instanceof PublishedInfoChangeEvent) {
+                    updateFilterTabs((PublishedInfoChangeEvent) event.getPayload());
+                }
+            }
+        };
         container.setOutputMarkupPlaceholderTag(true);
 
         filtertabset = new RadioGroup<>("filtertabset", Model.of("area"));
@@ -290,9 +283,7 @@ public class LayerDetailsEditPanel extends FormComponentPanel<MutableLayerDetail
     }
 
     private AutoCompleteTextField<String> autoCompleteChoice(
-            String id,
-            IModel<String> model,
-            SerializableFunction<String, Iterator<String>> choiceResolver) {
+            String id, IModel<String> model, SerializableFunction<String, Iterator<String>> choiceResolver) {
 
         AutoCompleteTextField<String> field;
         field = new ModelUpdatingAutoCompleteTextField<>(id, model, choiceResolver);

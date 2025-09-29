@@ -57,9 +57,7 @@ public class IPAddressRangeFilter extends RulePredicate<String> implements Seria
                 return type.toString();
 
             case NAMEVALUE:
-                return (ipAddress == null
-                                ? "(null)"
-                                : ipAddress.isEmpty() ? "(empty)" : '"' + ipAddress + '"')
+                return (ipAddress == null ? "(null)" : ipAddress.isEmpty() ? "(empty)" : '"' + ipAddress + '"')
                         + (includeDefault ? "+" : "");
 
             case IDVALUE:

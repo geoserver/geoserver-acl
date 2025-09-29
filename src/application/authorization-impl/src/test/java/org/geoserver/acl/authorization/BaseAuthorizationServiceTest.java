@@ -8,6 +8,10 @@ package org.geoserver.acl.authorization;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.geoserver.acl.domain.adminrules.AdminGrantType;
 import org.geoserver.acl.domain.adminrules.AdminRule;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
@@ -17,11 +21,6 @@ import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.geoserver.acl.domain.rules.RuleIdentifier;
 import org.junit.jupiter.api.BeforeEach;
-
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
@@ -49,11 +48,10 @@ public abstract class BaseAuthorizationServiceTest {
         validateNotAny(name);
         Set<String> roleNames = Set.of();
         if (null != roles) {
-            roleNames =
-                    Arrays.stream(roles)
-                            .filter(Objects::nonNull)
-                            .map(this::validateNotAny)
-                            .collect(Collectors.toSet());
+            roleNames = Arrays.stream(roles)
+                    .filter(Objects::nonNull)
+                    .map(this::validateNotAny)
+                    .collect(Collectors.toSet());
         }
 
         return AccessRequest.builder().user(name).roles(roleNames).build();
@@ -79,17 +77,7 @@ public abstract class BaseAuthorizationServiceTest {
             GrantType access) {
 
         Rule rule =
-                rule(
-                        priority,
-                        username,
-                        rolename,
-                        addressRange,
-                        service,
-                        request,
-                        subfield,
-                        workspace,
-                        layer,
-                        access);
+                rule(priority, username, rolename, addressRange, service, request, subfield, workspace, layer, access);
         return insert(rule);
     }
 
@@ -109,18 +97,17 @@ public abstract class BaseAuthorizationServiceTest {
             String layer,
             GrantType access) {
 
-        RuleIdentifier identifier =
-                RuleIdentifier.builder()
-                        .username(username)
-                        .rolename(rolename)
-                        .addressRange(addressRange)
-                        .service(service)
-                        .request(request)
-                        .subfield(subfield)
-                        .workspace(workspace)
-                        .layer(layer)
-                        .access(access)
-                        .build();
+        RuleIdentifier identifier = RuleIdentifier.builder()
+                .username(username)
+                .rolename(rolename)
+                .addressRange(addressRange)
+                .service(service)
+                .request(request)
+                .subfield(subfield)
+                .workspace(workspace)
+                .layer(layer)
+                .access(access)
+                .build();
         return Rule.builder().priority(priority).identifier(identifier).build();
     }
 
@@ -128,20 +115,21 @@ public abstract class BaseAuthorizationServiceTest {
         return adminruleAdminService.insert(adminRule);
     }
 
-    protected AdminRule insert(
-            AdminGrantType admin, int priority, String user, String role, String workspace) {
+    protected AdminRule insert(AdminGrantType admin, int priority, String user, String role, String workspace) {
         if ("*".equals(user)) user = null;
         if ("*".equals(role)) role = null;
         if ("*".equals(workspace)) workspace = null;
         AdminRuleAdminService service = getAdminRuleAdminService();
-        AdminRuleIdentifier identifier =
-                AdminRuleIdentifier.builder()
-                        .username(user)
-                        .rolename(role)
-                        .workspace(workspace)
-                        .build();
-        AdminRule rule =
-                AdminRule.builder().priority(priority).access(admin).identifier(identifier).build();
+        AdminRuleIdentifier identifier = AdminRuleIdentifier.builder()
+                .username(user)
+                .rolename(role)
+                .workspace(workspace)
+                .build();
+        AdminRule rule = AdminRule.builder()
+                .priority(priority)
+                .access(admin)
+                .identifier(identifier)
+                .build();
         return insert(rule);
     }
 }

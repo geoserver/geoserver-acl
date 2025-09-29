@@ -6,6 +6,7 @@
  */
 package org.geoserver.acl.plugin.it.wms;
 
+import java.util.List;
 import org.geoserver.acl.plugin.accessmanager.ACLResourceAccessManager;
 import org.geoserver.acl.plugin.it.support.AclIntegrationTestSupport;
 import org.geoserver.catalog.Catalog;
@@ -14,8 +15,6 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.After;
 import org.junit.Before;
-
-import java.util.List;
 
 public class AclWMSTestSupport extends WMSTestSupport {
 
@@ -30,8 +29,7 @@ public class AclWMSTestSupport extends WMSTestSupport {
 
     @Before
     public void beforeEeach() {
-        support =
-                new AclIntegrationTestSupport(() -> GeoServerSystemTestSupport.applicationContext);
+        support = new AclIntegrationTestSupport(() -> GeoServerSystemTestSupport.applicationContext);
         support.before();
         accessManager = applicationContext.getBean(ACLResourceAccessManager.class);
         // reset default config
@@ -47,8 +45,7 @@ public class AclWMSTestSupport extends WMSTestSupport {
         return support.getRawCatalog();
     }
 
-    protected LayerGroupInfo addLakesPlacesLayerGroup(LayerGroupInfo.Mode mode, String name)
-            throws Exception {
+    protected LayerGroupInfo addLakesPlacesLayerGroup(LayerGroupInfo.Mode mode, String name) throws Exception {
 
         Catalog catalog = support.getRawCatalog();
         LayerGroupInfo group = super.createLakesPlacesLayerGroup(catalog, name, mode, null);

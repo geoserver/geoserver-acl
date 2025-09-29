@@ -6,9 +6,11 @@ package org.geoserver.acl.authorization.cache;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentMap;
 import lombok.extern.slf4j.Slf4j;
-
 import org.geoserver.acl.authorization.AccessInfo;
 import org.geoserver.acl.authorization.AccessRequest;
 import org.geoserver.acl.authorization.AccessSummary;
@@ -24,11 +26,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.PropertyResolver;
-
-import java.time.Duration;
-import java.time.format.DateTimeParseException;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * @since 2.0
@@ -59,8 +56,7 @@ public class CachingAuthorizationServiceConfiguration {
      * Defaults to 30 seconds otherwise.
      */
     @Bean
-    Duration aclAuthCacheTTL(
-            Optional<CacheManager> cacheManager, PropertyResolver propertyResolver) {
+    Duration aclAuthCacheTTL(Optional<CacheManager> cacheManager, PropertyResolver propertyResolver) {
 
         Duration expireAfterWrite = DEFAULT_CACHE_TTL;
 
@@ -75,19 +71,17 @@ public class CachingAuthorizationServiceConfiguration {
                 try {
                     expireAfterWrite = Duration.parse(ttl);
                 } catch (DateTimeParseException e) {
-                    String msg =
-                            String.format(
-                                    "Error parsing geoserver.acl.client.cache.ttl='%s', "
-                                            + "expected a duration string (e.g. PT10S for 10 seconds)",
-                                    ttl);
+                    String msg = String.format(
+                            "Error parsing geoserver.acl.client.cache.ttl='%s', "
+                                    + "expected a duration string (e.g. PT10S for 10 seconds)",
+                            ttl);
                     throw new BeanInitializationException(msg);
                 }
                 if (expireAfterWrite.isNegative()) {
-                    String msg =
-                            String.format(
-                                    "Got Negative duration from geoserver.acl.client.cache.ttl='%s', "
-                                            + "expected a positive duration string (e.g. PT10S for 10 seconds)",
-                                    ttl);
+                    String msg = String.format(
+                            "Got Negative duration from geoserver.acl.client.cache.ttl='%s', "
+                                    + "expected a positive duration string (e.g. PT10S for 10 seconds)",
+                            ttl);
                     throw new BeanInitializationException(msg);
                 }
             }
@@ -103,8 +97,7 @@ public class CachingAuthorizationServiceConfiguration {
             ConcurrentMap<AdminAccessRequest, AdminAccessInfo> adminAuthorizationCache,
             ConcurrentMap<AccessSummaryRequest, AccessSummary> viewablesCache) {
 
-        return new CachingAuthorizationService(
-                delegate, authorizationCache, adminAuthorizationCache, viewablesCache);
+        return new CachingAuthorizationService(delegate, authorizationCache, adminAuthorizationCache, viewablesCache);
     }
 
     @Bean
@@ -126,21 +119,16 @@ public class CachingAuthorizationServiceConfiguration {
     }
 
     @SuppressWarnings("unchecked")
-    private <K, V> ConcurrentMap<K, V> getCache(
-            Optional<CacheManager> cacheManager, Duration ttl, String cacheName) {
+    private <K, V> ConcurrentMap<K, V> getCache(Optional<CacheManager> cacheManager, Duration ttl, String cacheName) {
 
-        return (ConcurrentMap<K, V>)
-                caffeineCacheManager(cacheManager)
-                        .map(ccm -> getCache(ccm, cacheName))
-                        .orElseGet(() -> newCache(ttl))
-                        .asMap();
+        return (ConcurrentMap<K, V>) caffeineCacheManager(cacheManager)
+                .map(ccm -> getCache(ccm, cacheName))
+                .orElseGet(() -> newCache(ttl))
+                .asMap();
     }
 
-    private Optional<CaffeineCacheManager> caffeineCacheManager(
-            Optional<CacheManager> cacheManager) {
-        return cacheManager
-                .filter(CaffeineCacheManager.class::isInstance)
-                .map(CaffeineCacheManager.class::cast);
+    private Optional<CaffeineCacheManager> caffeineCacheManager(Optional<CacheManager> cacheManager) {
+        return cacheManager.filter(CaffeineCacheManager.class::isInstance).map(CaffeineCacheManager.class::cast);
     }
 
     @SuppressWarnings("unchecked")

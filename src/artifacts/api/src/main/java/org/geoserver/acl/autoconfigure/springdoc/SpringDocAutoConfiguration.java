@@ -4,10 +4,10 @@
  */
 package org.geoserver.acl.autoconfigure.springdoc;
 
+import java.net.URI;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springdoc.core.SpringDocConfigProperties;
 import org.springdoc.core.SwaggerUiConfigParameters;
 import org.springdoc.core.SwaggerUiConfigProperties;
@@ -20,8 +20,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
 
 /** {@link AutoConfiguration} redirect the home page to the swagger-ui */
 @AutoConfiguration
@@ -87,11 +85,7 @@ public class SpringDocAutoConfiguration {
                 SwaggerUiConfigParameters swaggerUiConfigParameters,
                 SpringWebProvider springWebProvider,
                 String contextPath) {
-            super(
-                    swaggerUiConfig,
-                    springDocConfigProperties,
-                    swaggerUiConfigParameters,
-                    springWebProvider);
+            super(swaggerUiConfig, springDocConfigProperties, swaggerUiConfigParameters, springWebProvider);
             this.servletContextPath = contextPath;
         }
 
@@ -99,8 +93,7 @@ public class SpringDocAutoConfiguration {
         protected String buildUrl(String contextPath, final String docsUrl) {
             String realContextPath = contextPath;
 
-            if (!realContextPath.endsWith(this.servletContextPath))
-                realContextPath += this.servletContextPath;
+            if (!realContextPath.endsWith(this.servletContextPath)) realContextPath += this.servletContextPath;
             var url = super.buildUrl(realContextPath, docsUrl);
             log.debug("buildUrl({}, {}): {}", contextPath, docsUrl, url);
             return url;

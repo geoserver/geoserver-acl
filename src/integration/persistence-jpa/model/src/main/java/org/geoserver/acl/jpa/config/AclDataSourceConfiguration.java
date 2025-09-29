@@ -6,15 +6,13 @@ package org.geoserver.acl.jpa.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-
+import javax.sql.DataSource;
 import org.geoserver.acl.jpa.config.AclJpaProperties.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.util.StringUtils;
-
-import javax.sql.DataSource;
 
 @Configuration
 public class AclDataSourceConfiguration {

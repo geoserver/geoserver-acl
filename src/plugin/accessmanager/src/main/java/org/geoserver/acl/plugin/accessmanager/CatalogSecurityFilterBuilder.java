@@ -21,6 +21,10 @@ import static org.geoserver.catalog.Predicates.or;
 import static org.geotools.api.filter.Filter.EXCLUDE;
 import static org.geotools.api.filter.Filter.INCLUDE;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import org.geoserver.acl.authorization.AccessSummary;
 import org.geoserver.acl.authorization.WorkspaceAccessSummary;
 import org.geoserver.catalog.CatalogInfo;
@@ -37,11 +41,6 @@ import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-
 /**
  * @author Gabriel Roldan - Camptocamp
  */
@@ -53,8 +52,7 @@ public class CatalogSecurityFilterBuilder {
         this.viewables = Objects.requireNonNull(viewables);
     }
 
-    public static Filter buildSecurityFilter(
-            AccessSummary viewables, Class<? extends CatalogInfo> infoType) {
+    public static Filter buildSecurityFilter(AccessSummary viewables, Class<? extends CatalogInfo> infoType) {
         return new CatalogSecurityFilterBuilder(viewables).build(infoType);
     }
 
@@ -82,8 +80,7 @@ public class CatalogSecurityFilterBuilder {
         if (StyleInfo.class.isAssignableFrom(clazz)) {
             return styleFilter();
         }
-        throw new UnsupportedOperationException(
-                "Unknown CatalogInfo type: " + clazz.getCanonicalName());
+        throw new UnsupportedOperationException("Unknown CatalogInfo type: " + clazz.getCanonicalName());
     }
 
     private Filter styleFilter() {
@@ -119,8 +116,7 @@ public class CatalogSecurityFilterBuilder {
         return and(isInstanceOf(typeOf), andThen);
     }
 
-    private Filter layerFilter(
-            String workspaceProperty, String nameProperty, Class<? extends CatalogInfo> type) {
+    private Filter layerFilter(String workspaceProperty, String nameProperty, Class<? extends CatalogInfo> type) {
         List<WorkspaceAccessSummary> summaries = viewables.getWorkspaces();
 
         Filter filter = acceptNone();
@@ -137,11 +133,7 @@ public class CatalogSecurityFilterBuilder {
                 // ignore if workspace is null and type is LayerInfo or ResourceInfo
                 if (!isNullWorkspace || supportsNullWorkspace) {
                     Filter wsLayersFitler =
-                            filterLayersOnWorkspace(
-                                    wsSummary,
-                                    workspaceProperty,
-                                    supportsNullWorkspace,
-                                    nameProperty);
+                            filterLayersOnWorkspace(wsSummary, workspaceProperty, supportsNullWorkspace, nameProperty);
 
                     if (EXCLUDE.equals(filter)) {
                         filter = wsLayersFitler;
@@ -167,25 +159,20 @@ public class CatalogSecurityFilterBuilder {
         return and(hiddenWorkspaces, filter);
     }
 
-    private Filter denyWorkspacesFilter(
-            String workspaceProperty, Set<String> hideAllWorkspaceNames) {
+    private Filter denyWorkspacesFilter(String workspaceProperty, Set<String> hideAllWorkspaceNames) {
         Assert.isTrue(!hideAllWorkspaceNames.isEmpty(), "hidden workspace names can't be empty");
         return notEqualOrIn(workspaceProperty, hideAllWorkspaceNames, EXCLUDE);
     }
 
     @NonNull
     private Filter filterLayersOnWorkspace(
-            WorkspaceAccessSummary vl,
-            String workspaceProperty,
-            boolean includeNullWorkspace,
-            String nameProperty) {
+            WorkspaceAccessSummary vl, String workspaceProperty, boolean includeNullWorkspace, String nameProperty) {
 
         final String workspace = vl.getWorkspace();
         final Set<String> allowed = vl.getAllowed();
         final Set<String> forbidden = vl.getForbidden();
 
-        Filter workspaceFilter =
-                workspaceNameFilter(workspaceProperty, includeNullWorkspace, Set.of(workspace));
+        Filter workspaceFilter = workspaceNameFilter(workspaceProperty, includeNullWorkspace, Set.of(workspace));
         Filter filter;
         if (allowed.isEmpty() && forbidden.isEmpty()) {
             filter = workspaceFilter;

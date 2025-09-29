@@ -4,6 +4,8 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.layerdetails;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -29,9 +31,6 @@ import org.geoserver.acl.plugin.web.accessrules.model.MutableLayerAttribute;
 import org.geoserver.acl.plugin.web.accessrules.model.MutableLayerDetails;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Editor panel for {@link MutableLayerDetails#getAttributes()}
@@ -59,12 +58,11 @@ class LayerAttributesEditPanel extends FormComponentPanel<List<MutableLayerAttri
     private FormComponent<Boolean> layerAttributesCheck() {
         IModel<Boolean> setAttributesModel = panelModel.getSetAttributesModel();
         CheckBox check = new CheckBox("layerAttributesCheck", setAttributesModel);
-        check.add(
-                new OnChangeAjaxBehavior() {
-                    protected @Override void onUpdate(AjaxRequestTarget target) {
-                        onLayerAttributesCheckChanged(target);
-                    }
-                });
+        check.add(new OnChangeAjaxBehavior() {
+            protected @Override void onUpdate(AjaxRequestTarget target) {
+                onLayerAttributesCheckChanged(target);
+            }
+        });
         return check;
     }
 
@@ -135,9 +133,7 @@ class LayerAttributesEditPanel extends FormComponentPanel<List<MutableLayerAttri
         @Override
         @SuppressWarnings("unchecked")
         protected Component getComponentForProperty(
-                String id,
-                IModel<MutableLayerAttribute> itemModel,
-                Property<MutableLayerAttribute> property) {
+                String id, IModel<MutableLayerAttribute> itemModel, Property<MutableLayerAttribute> property) {
 
             if (LayerAttributeDataProvider.ACCESS == property) {
                 IModel<AccessType> model = (IModel<AccessType>) property.getModel(itemModel);
@@ -156,8 +152,7 @@ class LayerAttributesEditPanel extends FormComponentPanel<List<MutableLayerAttri
         }
 
         @Override
-        public void onComponentTagBody(
-                final MarkupStream markupStream, final ComponentTag openTag) {
+        public void onComponentTagBody(final MarkupStream markupStream, final ComponentTag openTag) {
             replaceComponentTagBody(markupStream, openTag, getDisplayValue());
         }
 

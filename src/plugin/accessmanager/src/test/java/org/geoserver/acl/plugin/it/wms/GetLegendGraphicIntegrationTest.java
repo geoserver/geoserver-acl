@@ -12,6 +12,8 @@ import static org.geoserver.acl.domain.rules.LayerDetails.LayerType.VECTOR;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+import java.util.Set;
 import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -21,9 +23,6 @@ import org.geoserver.data.test.MockData;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import java.util.List;
-import java.util.Set;
 
 @SuppressWarnings("unused")
 public class GetLegendGraphicIntegrationTest extends AclWMSTestSupport {
@@ -42,12 +41,11 @@ public class GetLegendGraphicIntegrationTest extends AclWMSTestSupport {
         getRawCatalog().save(group);
 
         login("anonymousUser", "", "ROLE_ANONYMOUS");
-        String url =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + group.getName()
-                        + "&style="
-                        + "&format=image/png&width=20&height=20";
+        String url = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + group.getName()
+                + "&style="
+                + "&format=image/png&width=20&height=20";
         MockHttpServletResponse response = getAsServletResponse(url);
         MediaType actual = MediaType.parseMediaType(response.getContentType());
         assertTrue(MediaType.IMAGE_PNG.isCompatibleWith(actual));
@@ -72,9 +70,7 @@ public class GetLegendGraphicIntegrationTest extends AclWMSTestSupport {
 
             addLayerGroupStyle(group, disallowedStyleName, List.of(forest), List.of(polygonStyle));
 
-            Rule r1 =
-                    support.addRule(
-                            ALLOW, null, "ROLE_ANONYMOUS", "WMS", null, "cite", "Forests", 1);
+            Rule r1 = support.addRule(ALLOW, null, "ROLE_ANONYMOUS", "WMS", null, "cite", "Forests", 1);
             Rule r2 = support.addRule(ALLOW, null, null, null, null, null, null, 2);
 
             final Set<String> allowedStyles = Set.of("Lakes", "NamedPlaces");
@@ -83,11 +79,10 @@ public class GetLegendGraphicIntegrationTest extends AclWMSTestSupport {
 
         login("anonymousUser", "", "ROLE_ANONYMOUS");
 
-        final String urlFormat =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer="
-                        + group.getName()
-                        + "&style=%s"
-                        + "&format=image/png&width=20&height=20";
+        final String urlFormat = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer="
+                + group.getName()
+                + "&style=%s"
+                + "&format=image/png&width=20&height=20";
 
         String url = String.format(urlFormat, ""); // default style
         MockHttpServletResponse response = getAsServletResponse(url);
@@ -95,13 +90,12 @@ public class GetLegendGraphicIntegrationTest extends AclWMSTestSupport {
         MediaType actual = MediaType.parseMediaType(response.getContentType());
         assertTrue(MediaType.IMAGE_PNG.isCompatibleWith(actual));
 
-        url =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + group.getName()
-                        + "&style="
-                        + disallowedStyleName
-                        + "&format=image/png&width=20&height=20";
+        url = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + group.getName()
+                + "&style="
+                + disallowedStyleName
+                + "&format=image/png&width=20&height=20";
         response = getAsServletResponse(url);
         // should fail the forests_style contains the not allowed polygon style
         MediaType expected = MediaType.parseMediaType("application/vnd.ogc.se_xml");

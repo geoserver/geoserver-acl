@@ -6,6 +6,13 @@
  */
 package org.geoserver.acl.plugin.accessmanager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -24,14 +31,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Creates the following rules, which the test cases expect as precondition:
@@ -86,26 +85,14 @@ public abstract class AclBaseTest extends GeoServerSystemTestSupport {
 
         testData.setUp();
 
-        addUser(
-                "area",
-                "area",
-                Collections.singletonList("USERS"),
-                Collections.singletonList("ROLE_AUTHENTICATED"));
-        addUser(
-                "cite",
-                "cite",
-                Collections.singletonList("USERS"),
-                Collections.singletonList("ROLE_AUTHENTICATED"));
+        addUser("area", "area", Collections.singletonList("USERS"), Collections.singletonList("ROLE_AUTHENTICATED"));
+        addUser("cite", "cite", Collections.singletonList("USERS"), Collections.singletonList("ROLE_AUTHENTICATED"));
         addUser(
                 "wms_user",
                 "wms_user",
                 Collections.singletonList("USERS"),
                 Collections.singletonList("ROLE_AUTHENTICATED"));
-        addUser(
-                "sf",
-                "sf",
-                Collections.singletonList("USERS"),
-                Arrays.asList("ROLE_AUTHENTICATED", "ROLE_SF_ADMIN"));
+        addUser("sf", "sf", Collections.singletonList("USERS"), Arrays.asList("ROLE_AUTHENTICATED", "ROLE_SF_ADMIN"));
 
         catalog = getCatalog();
 

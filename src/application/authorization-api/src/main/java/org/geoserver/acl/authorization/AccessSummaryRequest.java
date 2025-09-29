@@ -4,11 +4,10 @@
  */
 package org.geoserver.acl.authorization;
 
+import java.util.Set;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-
-import java.util.Set;
 
 /**
  * Request object for {@link AuthorizationService#getUserAccessSummary}
@@ -29,7 +28,8 @@ public class AccessSummaryRequest {
     private final String user;
 
     /** The authentication role names on behalf of which the request is performed. */
-    @NonNull private final Set<String> roles;
+    @NonNull
+    private final Set<String> roles;
 
     public static class Builder {
         // Ignore squid:S1068, private field required for the lombok-generated build() method

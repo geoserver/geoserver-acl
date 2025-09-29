@@ -6,6 +6,7 @@ package org.geoserver.acl.app;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import org.geoserver.acl.api.model.GrantType;
 import org.geoserver.acl.api.model.Rule;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,8 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-
-import java.util.List;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 abstract class AbstractAccesControlListApplicationTest {
@@ -42,7 +41,8 @@ abstract class AbstractAccesControlListApplicationTest {
         registry.add("geoserver.acl.security.internal.users.testuser.password", () -> "changeme");
     }
 
-    @Autowired TestRestTemplate baseClient;
+    @Autowired
+    TestRestTemplate baseClient;
 
     // client to be used, may have login credentials
     TestRestTemplate client;
@@ -68,9 +68,8 @@ abstract class AbstractAccesControlListApplicationTest {
     @Test
     void createAllowRule() {
         loginAsAdmin();
-        var response =
-                createRule(
-                        """
+        var response = createRule(
+                """
                         {
                           "priority": 0,
                           "access": "ALLOW"
@@ -84,9 +83,8 @@ abstract class AbstractAccesControlListApplicationTest {
     @Test
     void createDenyRule() {
         loginAsAdmin();
-        var response =
-                createRule(
-                        """
+        var response = createRule(
+                """
                         {
                           "priority": 0,
                           "access": "DENY"

@@ -4,6 +4,8 @@
  */
 package org.geoserver.acl.plugin.web.support;
 
+import java.io.IOException;
+import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.IMarkupResourceStreamProvider;
@@ -19,9 +21,6 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.After;
 import org.junit.Before;
-
-import java.io.IOException;
-import java.util.List;
 
 public abstract class AclWicketTestSupport extends GeoServerWicketTestSupport {
 
@@ -75,16 +74,14 @@ public abstract class AclWicketTestSupport extends GeoServerWicketTestSupport {
         }
 
         @Override
-        public IResourceStream getMarkupResourceStream(
-                MarkupContainer container, Class<?> containerClass) {
-            return new StringResourceStream(
-                    "<html><body>"
-                            + "<form wicket:id='"
-                            + form.getId()
-                            + "'><span wicket:id='"
-                            + c.getId()
-                            + "'/></form>"
-                            + "</body></html>");
+        public IResourceStream getMarkupResourceStream(MarkupContainer container, Class<?> containerClass) {
+            return new StringResourceStream("<html><body>"
+                    + "<form wicket:id='"
+                    + form.getId()
+                    + "'><span wicket:id='"
+                    + c.getId()
+                    + "'/></form>"
+                    + "</body></html>");
         }
     }
 }

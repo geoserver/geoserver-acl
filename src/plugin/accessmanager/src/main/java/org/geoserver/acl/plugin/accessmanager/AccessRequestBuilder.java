@@ -8,6 +8,12 @@ package org.geoserver.acl.plugin.accessmanager;
 
 import static java.util.logging.Level.WARNING;
 
+import java.net.InetAddress;
+import java.util.Optional;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 import org.geoserver.acl.authorization.AccessRequest;
 import org.geoserver.acl.domain.rules.RuleFilter;
 import org.geoserver.ows.Dispatcher;
@@ -17,14 +23,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import java.net.InetAddress;
-import java.util.Optional;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
 
 /** Builder class for a {@link RuleFilter}. */
 class AccessRequestBuilder {
@@ -135,8 +133,7 @@ class AccessRequestBuilder {
     }
 
     private Optional<Request> resolveOwsRequest() {
-        return Optional.ofNullable(this.owsRequest)
-                .or(() -> Optional.ofNullable(Dispatcher.REQUEST.get()));
+        return Optional.ofNullable(this.owsRequest).or(() -> Optional.ofNullable(Dispatcher.REQUEST.get()));
     }
 
     private String resolveSourceAddress() {
@@ -161,10 +158,7 @@ class AccessRequestBuilder {
         } else {
             reqSource = "Spring Request";
             RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-            request =
-                    requestAttributes == null
-                            ? null
-                            : ((ServletRequestAttributes) requestAttributes).getRequest();
+            request = requestAttributes == null ? null : ((ServletRequestAttributes) requestAttributes).getRequest();
         }
         try {
             String sourceAddress = getSourceAddress(request);
@@ -174,9 +168,8 @@ class AccessRequestBuilder {
             return sourceAddress;
         } catch (RuntimeException ex) {
             LOGGER.log(
-                    WARNING,
-                    "Error retrieving source address with {0}: {1}",
-                    new Object[] {reqSource, ex.getMessage()});
+                    WARNING, "Error retrieving source address with {0}: {1}", new Object[] {reqSource, ex.getMessage()
+                    });
             return null;
         }
     }

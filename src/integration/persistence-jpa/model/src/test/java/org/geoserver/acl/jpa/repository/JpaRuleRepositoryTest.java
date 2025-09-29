@@ -13,7 +13,14 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.querydsl.core.types.Predicate;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import org.geolatte.geom.MultiPolygon;
 import org.geolatte.geom.codec.Wkt;
 import org.geolatte.geom.crs.CoordinateReferenceSystems;
@@ -39,16 +46,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
-
 @Transactional
 @SpringBootTest(
         classes = {
@@ -59,8 +56,7 @@ import javax.transaction.Transactional;
 @ActiveProfiles("test")
 public class JpaRuleRepositoryTest {
 
-    private static final String WORLD =
-            "MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))";
+    private static final String WORLD = "MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))";
 
     private @Autowired JpaRuleRepository repo;
 
@@ -117,18 +113,17 @@ public class JpaRuleRepositoryTest {
 
     @Test
     void testSave_Identifier() {
-        RuleIdentifier expected =
-                entity.getIdentifier()
-                        .setAccess(GrantType.DENY)
-                        .setAddressRange(new IPAddressRange(1000L, 2000L, 32))
-                        .setLayer("layer")
-                        .setRequest("GetCapabilities")
-                        .setRolename("ROLE_USER")
-                        .setService("WCS")
-                        .setSubfield("subfield")
-                        .setUsername("user")
-                        .setWorkspace("workspace")
-                        .clone();
+        RuleIdentifier expected = entity.getIdentifier()
+                .setAccess(GrantType.DENY)
+                .setAddressRange(new IPAddressRange(1000L, 2000L, 32))
+                .setLayer("layer")
+                .setRequest("GetCapabilities")
+                .setRolename("ROLE_USER")
+                .setService("WCS")
+                .setSubfield("subfield")
+                .setUsername("user")
+                .setWorkspace("workspace")
+                .clone();
 
         Rule saved = repo.saveAndFlush(entity);
         em.detach(saved);
@@ -142,11 +137,10 @@ public class JpaRuleRepositoryTest {
         Rule rule = repo.saveAndFlush(entity);
         assertNull(rule.getRuleLimits());
 
-        rule.setRuleLimits(
-                new RuleLimits()
-                        .setAllowedArea(geom(WORLD))
-                        .setCatalogMode(CatalogMode.MIXED)
-                        .setSpatialFilterType(SpatialFilterType.CLIP));
+        rule.setRuleLimits(new RuleLimits()
+                .setAllowedArea(geom(WORLD))
+                .setCatalogMode(CatalogMode.MIXED)
+                .setSpatialFilterType(SpatialFilterType.CLIP));
 
         RuleLimits expected = rule.getRuleLimits().clone();
 
@@ -163,18 +157,17 @@ public class JpaRuleRepositoryTest {
         final MultiPolygon<?> area = geom(WORLD);
 
         Set<LayerAttribute> attributes = Set.of(latt("att1"), latt("att2"));
-        final LayerDetails details =
-                new LayerDetails()
-                        .setAllowedStyles(Set.of("s1", "s2"))
-                        .setArea(area)
-                        .setAttributes(attributes)
-                        .setCatalogMode(CatalogMode.CHALLENGE)
-                        .setCqlFilterRead("a=b")
-                        .setCqlFilterWrite("foo=bar")
-                        .setDefaultStyle("defstyle")
-                        .setSpatialFilterType(SpatialFilterType.CLIP)
-                        .setType(LayerType.LAYERGROUP)
-                        .clone();
+        final LayerDetails details = new LayerDetails()
+                .setAllowedStyles(Set.of("s1", "s2"))
+                .setArea(area)
+                .setAttributes(attributes)
+                .setCatalogMode(CatalogMode.CHALLENGE)
+                .setCqlFilterRead("a=b")
+                .setCqlFilterWrite("foo=bar")
+                .setDefaultStyle("defstyle")
+                .setSpatialFilterType(SpatialFilterType.CLIP)
+                .setType(LayerType.LAYERGROUP)
+                .clone();
 
         LayerDetails expected = details.clone();
 
@@ -190,9 +183,7 @@ public class JpaRuleRepositoryTest {
     @Test
     void testLayerDetails_unset_allowedStyles() {
         entity.setLayerDetails(
-                new LayerDetails()
-                        .setAllowedStyles(Set.of("s1", "s2"))
-                        .setCatalogMode(CatalogMode.CHALLENGE));
+                new LayerDetails().setAllowedStyles(Set.of("s1", "s2")).setCatalogMode(CatalogMode.CHALLENGE));
         entity = repo.saveAndFlush(entity);
         final long ruleId = entity.getId();
         em.detach(entity);
@@ -211,9 +202,7 @@ public class JpaRuleRepositoryTest {
     @Test
     void testLayerDetails_update_allowedStyles() {
         entity.setLayerDetails(
-                new LayerDetails()
-                        .setAllowedStyles(Set.of("s1", "s2"))
-                        .setCatalogMode(CatalogMode.CHALLENGE));
+                new LayerDetails().setAllowedStyles(Set.of("s1", "s2")).setCatalogMode(CatalogMode.CHALLENGE));
         entity = repo.saveAndFlush(entity);
         final long ruleId = entity.getId();
         em.detach(entity);
@@ -231,8 +220,7 @@ public class JpaRuleRepositoryTest {
 
         rule = repo.findById(ruleId).orElseThrow();
 
-        assertThat(rule.getLayerDetails().getAllowedStyles())
-                .isEqualTo(Set.of("newstyle1", "s1", "newstyle2"));
+        assertThat(rule.getLayerDetails().getAllowedStyles()).isEqualTo(Set.of("newstyle1", "s1", "newstyle2"));
     }
 
     /** {@link JpaRuleRepository#findAllNaturalOrder()} */
@@ -251,13 +239,10 @@ public class JpaRuleRepositoryTest {
         QRule qRule = QRule.rule;
         Predicate predicate = qRule.priority.gt(2L).and(qRule.identifier.layer.eq("*"));
 
-        List<Rule> expected =
-                all.stream()
-                        .filter(
-                                r ->
-                                        r.getPriority() > 2L
-                                                && "*".equals(r.getIdentifier().getLayer()))
-                        .toList();
+        List<Rule> expected = all.stream()
+                .filter(r ->
+                        r.getPriority() > 2L && "*".equals(r.getIdentifier().getLayer()))
+                .toList();
 
         Iterable<Rule> res = repo.findAll(predicate, Sort.by("priority"));
         List<Rule> actual = new ArrayList<>();
@@ -273,13 +258,12 @@ public class JpaRuleRepositoryTest {
 
         int affectedCount = repo.shiftPriority(1, 10);
         assertThat(affectedCount).isEqualTo(initial.size());
-        initial.forEach(
-                prev -> {
-                    Rule curr = repo.getReferenceById(prev.getId());
-                    long actual = curr.getPriority();
-                    long expected = 10 + prev.getPriority();
-                    assertThat(actual).isEqualTo(expected);
-                });
+        initial.forEach(prev -> {
+            Rule curr = repo.getReferenceById(prev.getId());
+            long actual = curr.getPriority();
+            long expected = 10 + prev.getPriority();
+            assertThat(actual).isEqualTo(expected);
+        });
     }
 
     @Test
@@ -293,20 +277,18 @@ public class JpaRuleRepositoryTest {
         Set<Long> actual = repo.streamIdsByShiftPriority(1).collect(Collectors.toSet());
         assertThat(actual).isEqualTo(expected);
 
-        expected =
-                initial.stream()
-                        .filter(r -> r.getPriority() >= 5)
-                        .map(Rule::getId)
-                        .collect(Collectors.toSet());
+        expected = initial.stream()
+                .filter(r -> r.getPriority() >= 5)
+                .map(Rule::getId)
+                .collect(Collectors.toSet());
         actual = repo.streamIdsByShiftPriority(5).collect(Collectors.toSet());
 
         assertThat(actual).isEqualTo(expected);
 
-        expected =
-                initial.stream()
-                        .filter(r -> r.getPriority() >= 10)
-                        .map(Rule::getId)
-                        .collect(Collectors.toSet());
+        expected = initial.stream()
+                .filter(r -> r.getPriority() >= 10)
+                .map(Rule::getId)
+                .collect(Collectors.toSet());
         actual = repo.streamIdsByShiftPriority(10).collect(Collectors.toSet());
         assertThat(actual).isEqualTo(expected);
 
@@ -323,29 +305,26 @@ public class JpaRuleRepositoryTest {
 
         // shift priorities 5 to 11 by 10
         repo.shiftPrioritiesBetween(5, 11, 10);
-        initial.forEach(
-                prev -> {
-                    Rule curr = repo.getReferenceById(prev.getId());
-                    long actual = curr.getPriority();
-                    long expected =
-                            prev.getPriority() < 5 ? prev.getPriority() : 10 + prev.getPriority();
-                    assertThat(actual).isEqualTo(expected);
-                });
+        initial.forEach(prev -> {
+            Rule curr = repo.getReferenceById(prev.getId());
+            long actual = curr.getPriority();
+            long expected = prev.getPriority() < 5 ? prev.getPriority() : 10 + prev.getPriority();
+            assertThat(actual).isEqualTo(expected);
+        });
 
         // shift priorities 1 to 4 by 3
         repo.shiftPrioritiesBetween(1, 4, 3);
-        initial.forEach(
-                prev -> {
-                    Rule curr = repo.getReferenceById(prev.getId());
-                    long actual = curr.getPriority();
-                    long expected;
-                    if (prev.getPriority() < 5) {
-                        expected = prev.getPriority() + 3;
-                    } else {
-                        expected = prev.getPriority() + 10;
-                    }
-                    assertThat(actual).isEqualTo(expected);
-                });
+        initial.forEach(prev -> {
+            Rule curr = repo.getReferenceById(prev.getId());
+            long actual = curr.getPriority();
+            long expected;
+            if (prev.getPriority() < 5) {
+                expected = prev.getPriority() + 3;
+            } else {
+                expected = prev.getPriority() + 10;
+            }
+            assertThat(actual).isEqualTo(expected);
+        });
     }
 
     @Test
@@ -355,19 +334,17 @@ public class JpaRuleRepositoryTest {
         assertThat(initial.get(0).getPriority()).isEqualTo(1);
         assertThat(initial.size()).isEqualTo(11);
 
-        Set<Long> expected =
-                initial.stream()
-                        .filter(r -> r.getPriority() >= 5)
-                        .map(Rule::getId)
-                        .collect(Collectors.toSet());
+        Set<Long> expected = initial.stream()
+                .filter(r -> r.getPriority() >= 5)
+                .map(Rule::getId)
+                .collect(Collectors.toSet());
         Set<Long> actual = repo.streamIdsByShiftPriorityBetween(5, 11).collect(Collectors.toSet());
         assertThat(actual).isEqualTo(expected);
 
-        expected =
-                initial.stream()
-                        .filter(r -> r.getPriority() >= 1 && r.getPriority() < 5)
-                        .map(Rule::getId)
-                        .collect(Collectors.toSet());
+        expected = initial.stream()
+                .filter(r -> r.getPriority() >= 1 && r.getPriority() < 5)
+                .map(Rule::getId)
+                .collect(Collectors.toSet());
         actual = repo.streamIdsByShiftPriorityBetween(1, 4).collect(Collectors.toSet());
         assertThat(actual).isEqualTo(expected);
     }
@@ -420,11 +397,13 @@ public class JpaRuleRepositoryTest {
     }
 
     private LayerAttribute latt(String name) {
-        return new LayerAttribute().setAccess(AccessType.NONE).setDataType("Integer").setName(name);
+        return new LayerAttribute()
+                .setAccess(AccessType.NONE)
+                .setDataType("Integer")
+                .setName(name);
     }
 
     private org.geolatte.geom.MultiPolygon<?> geom(String wkt) {
-        return (org.geolatte.geom.MultiPolygon<?>)
-                Wkt.fromWkt(wkt, CoordinateReferenceSystems.WGS84);
+        return (org.geolatte.geom.MultiPolygon<?>) Wkt.fromWkt(wkt, CoordinateReferenceSystems.WGS84);
     }
 }

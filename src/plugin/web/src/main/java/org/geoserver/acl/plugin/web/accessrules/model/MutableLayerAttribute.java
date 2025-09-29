@@ -6,13 +6,11 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.model;
 
+import java.io.Serializable;
 import lombok.Data;
-
 import org.geoserver.acl.domain.rules.LayerAttribute;
 import org.geoserver.acl.domain.rules.LayerAttribute.AccessType;
 import org.geoserver.catalog.AttributeTypeInfo;
-
-import java.io.Serializable;
 
 @Data
 @SuppressWarnings("serial")
@@ -43,6 +41,10 @@ public class MutableLayerAttribute implements Serializable {
     }
 
     LayerAttribute toLayerAttribute() {
-        return LayerAttribute.builder().name(name).dataType(dataType).access(access).build();
+        return LayerAttribute.builder()
+                .name(name)
+                .dataType(dataType)
+                .access(access)
+                .build();
     }
 }

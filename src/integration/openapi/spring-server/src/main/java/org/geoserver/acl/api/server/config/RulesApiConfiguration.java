@@ -48,8 +48,7 @@ public class RulesApiConfiguration {
     }
 
     @Bean
-    WorkspaceAdminRulesApiController adminRulesApiController(
-            WorkspaceAdminRulesApiDelegate delegate) {
+    WorkspaceAdminRulesApiController adminRulesApiController(WorkspaceAdminRulesApiDelegate delegate) {
         return new WorkspaceAdminRulesApiController(delegate);
     }
 
@@ -75,8 +74,7 @@ public class RulesApiConfiguration {
     }
 
     @Bean
-    WorkspaceAdminRulesApiSupport adminRulesApiImplSupport(
-            NativeWebRequest nativeReq, AdminRuleApiMapper mapper) {
+    WorkspaceAdminRulesApiSupport adminRulesApiImplSupport(NativeWebRequest nativeReq, AdminRuleApiMapper mapper) {
 
         return new WorkspaceAdminRulesApiSupport(nativeReq, mapper);
     }

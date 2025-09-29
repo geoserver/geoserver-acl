@@ -7,16 +7,14 @@
 
 package org.geoserver.acl.jpa.model;
 
-import lombok.Data;
-import lombok.SneakyThrows;
-import lombok.experimental.Accessors;
-
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import lombok.Data;
+import lombok.SneakyThrows;
+import lombok.experimental.Accessors;
 
 /**
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)

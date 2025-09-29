@@ -6,10 +6,9 @@ package org.geoserver.acl.domain.filter;
 
 import static java.util.Optional.ofNullable;
 
+import java.util.Optional;
 import lombok.Data;
 import lombok.experimental.Accessors;
-
-import java.util.Optional;
 
 @Data
 @Accessors(chain = true)

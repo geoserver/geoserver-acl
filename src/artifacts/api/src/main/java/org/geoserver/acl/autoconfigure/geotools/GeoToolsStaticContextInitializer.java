@@ -15,8 +15,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  *
  * @since 1.0
  */
-public class GeoToolsStaticContextInitializer
-        implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+public class GeoToolsStaticContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {

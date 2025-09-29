@@ -6,11 +6,6 @@
  */
 package org.geoserver.acl.plugin.accessmanager;
 
-import org.apache.commons.lang.StringUtils;
-import org.geotools.util.logging.Logging;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +13,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.commons.lang.StringUtils;
+import org.geotools.util.logging.Logging;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 
 class AccessRequestUserResolver {
 
@@ -84,8 +83,7 @@ class AccessRequestUserResolver {
         if (config.isUseRolesToFilter()) {
             final List<String> acceptedRoles = config.getAcceptedRoles();
             if (acceptedRoles.isEmpty()) {
-                LOGGER.warning(
-                        "Role filtering requested, but no roles provided. Will only use user authorizations");
+                LOGGER.warning("Role filtering requested, but no roles provided. Will only use user authorizations");
             } else {
                 roles = getFilteredRoles();
                 LOGGER.log(Level.FINEST, "Setting role for filter: {0}", new Object[] {roles});
@@ -96,11 +94,10 @@ class AccessRequestUserResolver {
 
     public Set<String> getFilteredRoles() {
         final boolean getAllRoles = config.getAcceptedRoles().contains("*");
-        Set<String> excluded =
-                config.getAcceptedRoles().stream()
-                        .filter(r -> r.startsWith("-"))
-                        .map(r -> r.substring(1))
-                        .collect(Collectors.toSet());
+        Set<String> excluded = config.getAcceptedRoles().stream()
+                .filter(r -> r.startsWith("-"))
+                .map(r -> r.substring(1))
+                .collect(Collectors.toSet());
 
         return getFilteredRoles(getAllRoles, excluded);
     }
