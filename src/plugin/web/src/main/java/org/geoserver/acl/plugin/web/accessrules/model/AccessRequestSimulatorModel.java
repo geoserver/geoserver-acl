@@ -4,9 +4,13 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.model;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -17,12 +21,6 @@ import org.geoserver.acl.plugin.web.components.AbstractRulesModel;
 import org.geoserver.acl.plugin.web.support.SerializablePredicate;
 import org.geoserver.web.GeoServerApplication;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 @Slf4j
 @SuppressWarnings("serial")
 public class AccessRequestSimulatorModel extends AbstractRulesModel {
@@ -30,12 +28,11 @@ public class AccessRequestSimulatorModel extends AbstractRulesModel {
     private final @Getter CompoundPropertyModel<MutableAccessRequest> model =
             new CompoundPropertyModel<>(new MutableAccessRequest());
 
-    private final @Getter IModel<AccessInfo> accessInfoModel =
-            new LoadableDetachableModel<>() {
-                protected @Override AccessInfo load() {
-                    return getAccessInfo();
-                }
-            };
+    private final @Getter IModel<AccessInfo> accessInfoModel = new LoadableDetachableModel<>() {
+        protected @Override AccessInfo load() {
+            return getAccessInfo();
+        }
+    };
 
     @Override
     protected String getSelectedRoleName() {
@@ -90,9 +87,7 @@ public class AccessRequestSimulatorModel extends AbstractRulesModel {
     }
 
     private AuthorizationService authorizationService() {
-        return GeoServerApplication.get()
-                .getApplicationContext()
-                .getBean(AuthorizationService.class);
+        return GeoServerApplication.get().getApplicationContext().getBean(AuthorizationService.class);
     }
 
     public SerializablePredicate<MutableRule> getMatchingRulesFilter() {

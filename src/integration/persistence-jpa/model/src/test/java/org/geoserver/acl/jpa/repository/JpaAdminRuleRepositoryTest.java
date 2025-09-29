@@ -10,7 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.querydsl.core.types.Predicate;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.IntStream;
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import org.geoserver.acl.jpa.config.AclDataSourceConfiguration;
 import org.geoserver.acl.jpa.config.AuthorizationJPAConfiguration;
 import org.geoserver.acl.jpa.config.AuthorizationJPAPropertiesTestConfiguration;
@@ -26,15 +32,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.IntStream;
-
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 
 @Transactional
 @SpringBootTest(
@@ -112,13 +109,12 @@ public class JpaAdminRuleRepositoryTest {
 
     @Test
     void testSave_Identifier() {
-        AdminRuleIdentifier expected =
-                entity.getIdentifier()
-                        .setAddressRange(new IPAddressRange(1000L, 2000L, 32))
-                        .setRolename("ROLE_USER")
-                        .setUsername("user")
-                        .setWorkspace("workspace")
-                        .clone();
+        AdminRuleIdentifier expected = entity.getIdentifier()
+                .setAddressRange(new IPAddressRange(1000L, 2000L, 32))
+                .setRolename("ROLE_USER")
+                .setUsername("user")
+                .setWorkspace("workspace")
+                .clone();
 
         AdminRule saved = repo.saveAndFlush(entity);
         em.detach(saved);
@@ -141,13 +137,10 @@ public class JpaAdminRuleRepositoryTest {
         QAdminRule qadm = QAdminRule.adminRule;
         Predicate predicate = qadm.priority.gt(2L).and(qadm.identifier.workspace.eq("*"));
 
-        List<AdminRule> expected =
-                all.stream()
-                        .filter(
-                                r ->
-                                        r.getPriority() > 2L
-                                                && "*".equals(r.getIdentifier().getWorkspace()))
-                        .toList();
+        List<AdminRule> expected = all.stream()
+                .filter(r ->
+                        r.getPriority() > 2L && "*".equals(r.getIdentifier().getWorkspace()))
+                .toList();
 
         Iterable<AdminRule> res = repo.findAll(predicate, Sort.by("priority"));
         List<AdminRule> actual = new ArrayList<>();

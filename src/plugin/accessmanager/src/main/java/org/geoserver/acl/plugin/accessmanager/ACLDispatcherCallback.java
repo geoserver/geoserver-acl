@@ -6,6 +6,15 @@
  */
 package org.geoserver.acl.plugin.accessmanager;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geoserver.acl.authorization.AccessInfo;
 import org.geoserver.acl.authorization.AccessRequest;
 import org.geoserver.acl.authorization.AuthorizationService;
@@ -33,16 +42,6 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * {@link ResourceAccessManager} to make GeoServer use the ACL service to assess data access rules
@@ -88,8 +87,7 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
 
         if ((request != null)
                 && "WMS".equalsIgnoreCase(service)
-                && ("GetMap".equalsIgnoreCase(request)
-                        || "GetFeatureInfo".equalsIgnoreCase(request))) {
+                && ("GetMap".equalsIgnoreCase(request) || "GetFeatureInfo".equalsIgnoreCase(request))) {
             // extract the getmap part
             Object ro = operation.getParameters()[0];
             GetMapRequest getMap;
@@ -112,11 +110,7 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
     }
 
     void overrideGetLegendGraphicRequest(
-            Request gsRequest,
-            Operation operation,
-            String service,
-            String request,
-            Authentication user) {
+            Request gsRequest, Operation operation, String service, String request, Authentication user) {
         // get the layer
         String layerName = (String) gsRequest.getKvp().get("LAYER");
         String reqStyle = (String) gsRequest.getKvp().get("STYLE");
@@ -142,14 +136,13 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
             ResourceInfo resource = layer.getResource();
 
             // get the rule, it contains default and allowed styles
-            AccessRequest ruleFilter =
-                    new AccessRequestBuilder(configProvider.get())
-                            .user(user)
-                            .service(service)
-                            .request(request)
-                            .workspace(resource.getStore().getWorkspace().getName())
-                            .layer(resource.getName())
-                            .build();
+            AccessRequest ruleFilter = new AccessRequestBuilder(configProvider.get())
+                    .user(user)
+                    .service(service)
+                    .request(request)
+                    .workspace(resource.getStore().getWorkspace().getName())
+                    .layer(resource.getName())
+                    .build();
 
             LOGGER.log(Level.FINEST, "Getting access limits for getLegendGraphic: {0}", ruleFilter);
             AccessInfo grant = aclService.getAccessInfo(ruleFilter);
@@ -161,17 +154,14 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
                     try {
                         StyleInfo si = catalog.getStyleByName(grant.getDefaultStyle());
                         if (si == null) {
-                            throw new ServiceException(
-                                    "Could not find default style suggested "
-                                            + "by GeoRepository: "
-                                            + grant.getDefaultStyle());
+                            throw new ServiceException("Could not find default style suggested "
+                                    + "by GeoRepository: "
+                                    + grant.getDefaultStyle());
                         }
                         getLegend.setStyle(si.getStyle());
                     } catch (IOException e) {
                         throw new ServiceException(
-                                "Unable to load the style suggested by GeoRepository: "
-                                        + grant.getDefaultStyle(),
-                                e);
+                                "Unable to load the style suggested by GeoRepository: " + grant.getDefaultStyle(), e);
                     }
                 }
             } else {
@@ -181,11 +171,7 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
     }
 
     void overrideGetMapRequest(
-            Request gsRequest,
-            String service,
-            String request,
-            Authentication user,
-            GetMapRequest getMap) {
+            Request gsRequest, String service, String request, Authentication user, GetMapRequest getMap) {
 
         if (gsRequest.getKvp().get("layers") == null
                 && gsRequest.getKvp().get("sld") == null
@@ -203,8 +189,7 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
         for (int i = 0; i < layers.size(); i++) {
             MapLayerInfo layer = layers.get(i);
             ResourceInfo info = null;
-            if (layer.getType() == MapLayerInfo.TYPE_VECTOR
-                    || layer.getType() == MapLayerInfo.TYPE_RASTER) {
+            if (layer.getType() == MapLayerInfo.TYPE_VECTOR || layer.getType() == MapLayerInfo.TYPE_RASTER) {
                 info = layer.getResource();
             } else if (!configProvider.get().isAllowRemoteAndInlineLayers()) {
                 throw new ServiceException("Remote layers are not allowed");
@@ -213,16 +198,16 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
             // get the rule, it contains default and allowed styles
             AccessRequest ruleFilter;
             {
-                String workspace = info == null ? null : info.getStore().getWorkspace().getName();
+                String workspace =
+                        info == null ? null : info.getStore().getWorkspace().getName();
                 String layerName = info == null ? null : info.getName();
-                ruleFilter =
-                        new AccessRequestBuilder(configProvider.get())
-                                .user(user)
-                                .service(service)
-                                .request(request)
-                                .workspace(workspace)
-                                .layer(layerName)
-                                .build();
+                ruleFilter = new AccessRequestBuilder(configProvider.get())
+                        .user(user)
+                        .service(service)
+                        .request(request)
+                        .workspace(workspace)
+                        .layer(layerName)
+                        .build();
             }
             LOGGER.log(Level.FINEST, "Getting access limits for getMap {0}:", ruleFilter);
 
@@ -239,16 +224,14 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
                     StyleInfo si = catalog.getStyleByName(rule.getDefaultStyle());
                     if (si == null) {
                         throw new ServiceException(
-                                "Could not find default style suggested by ACL: "
-                                        + rule.getDefaultStyle());
+                                "Could not find default style suggested by ACL: " + rule.getDefaultStyle());
                     }
 
                     Style style = si.getStyle();
                     getMap.getStyles().set(i, style);
                 } catch (IOException e) {
                     throw new ServiceException(
-                            "Unable to load the style suggested by ACL: " + rule.getDefaultStyle(),
-                            e);
+                            "Unable to load the style suggested by ACL: " + rule.getDefaultStyle(), e);
                 }
             }
         }
@@ -265,8 +248,7 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
         }
 
         if ((!allowedStyles.isEmpty()) && !allowedStyles.contains(styleName)) {
-            throw new ServiceException(
-                    "The '" + styleName + "' style is not available on this layer");
+            throw new ServiceException("The '" + styleName + "' style is not available on this layer");
         }
     }
 
@@ -296,16 +278,14 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
         return requestedStyles;
     }
 
-    private void addGroupStyles(
-            LayerGroupInfo groupInfo, List<String> requestedStyles, String styleName) {
+    private void addGroupStyles(LayerGroupInfo groupInfo, List<String> requestedStyles, String styleName) {
         List<StyleInfo> groupStyles;
         if (styleName != null && !"".equals(styleName)) groupStyles = groupInfo.styles(styleName);
         else groupStyles = groupInfo.styles();
 
-        requestedStyles.addAll(
-                groupStyles.stream()
-                        .map(s -> s != null ? s.prefixedName() : null)
-                        .collect(Collectors.toList()));
+        requestedStyles.addAll(groupStyles.stream()
+                .map(s -> s != null ? s.prefixedName() : null)
+                .collect(Collectors.toList()));
     }
 
     private List<Object> parseLayersParameter(Request gsRequest, GetMapRequest getMap) {
@@ -341,8 +321,7 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
         }
 
         @Override
-        public List<Object> parseLayers(
-                List<String> requestedLayerNames, URL remoteOwsUrl, String remoteOwsType) {
+        public List<Object> parseLayers(List<String> requestedLayerNames, URL remoteOwsUrl, String remoteOwsType) {
             try {
                 return super.parseLayers(requestedLayerNames, remoteOwsUrl, remoteOwsType);
             } catch (Exception exception) {

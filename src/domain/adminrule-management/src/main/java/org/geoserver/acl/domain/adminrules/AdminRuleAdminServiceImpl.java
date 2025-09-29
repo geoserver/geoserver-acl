@@ -7,15 +7,13 @@
 
 package org.geoserver.acl.domain.adminrules;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
-import org.geoserver.acl.domain.filter.RuleQuery;
-
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.geoserver.acl.domain.filter.RuleQuery;
 
 /**
  * Operations on {@link AdminRule AdminRule}s.
@@ -28,10 +26,9 @@ public class AdminRuleAdminServiceImpl implements AdminRuleAdminService {
     private final @NonNull AdminRuleRepository repository;
 
     @Setter
-    private @NonNull Consumer<AdminRuleEvent> eventPublisher =
-            r -> {
-                // no-op
-            };
+    private @NonNull Consumer<AdminRuleEvent> eventPublisher = r -> {
+        // no-op
+    };
 
     // =========================================================================
     // Basic operations

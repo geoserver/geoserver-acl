@@ -26,8 +26,7 @@ class LayerTypeFormComponent extends FormComponentPanel<LayerType> {
     private RadioGroup<LayerType> group;
     private Radio<LayerType> unknown, vector, raster, layergroup;
 
-    public LayerTypeFormComponent(
-            String id, IModel<LayerType> model, IModel<PublishedInfo> layerModel) {
+    public LayerTypeFormComponent(String id, IModel<LayerType> model, IModel<PublishedInfo> layerModel) {
         super(id, model);
         setOutputMarkupPlaceholderTag(true);
 

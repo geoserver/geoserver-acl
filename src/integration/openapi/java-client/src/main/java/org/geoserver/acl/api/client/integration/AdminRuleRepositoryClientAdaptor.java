@@ -6,9 +6,11 @@ package org.geoserver.acl.api.client.integration;
 
 import static org.geoserver.acl.api.client.integration.ClientExceptionHelper.reason;
 
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-
 import org.geoserver.acl.api.client.WorkspaceAdminRulesApi;
 import org.geoserver.acl.api.mapper.AdminRuleApiMapper;
 import org.geoserver.acl.api.mapper.EnumsApiMapper;
@@ -20,10 +22,6 @@ import org.geoserver.acl.domain.adminrules.AdminRuleRepository;
 import org.geoserver.acl.domain.adminrules.InsertPosition;
 import org.geoserver.acl.domain.filter.RuleQuery;
 import org.springframework.web.client.HttpClientErrorException;
-
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class AdminRuleRepositoryClientAdaptor implements AdminRuleRepository {
@@ -38,8 +36,7 @@ public class AdminRuleRepositoryClientAdaptor implements AdminRuleRepository {
         if (null != rule.getId()) throw new IllegalArgumentException("AdminRule must have no id");
 
         try {
-            org.geoserver.acl.api.model.AdminRule result =
-                    apiClient.createAdminRule(map(rule), map(position));
+            org.geoserver.acl.api.model.AdminRule result = apiClient.createAdminRule(map(rule), map(position));
             return mapper.toModel(result);
         } catch (HttpClientErrorException.Conflict c) {
             throw new AdminRuleIdentifierConflictException(reason(c), c);

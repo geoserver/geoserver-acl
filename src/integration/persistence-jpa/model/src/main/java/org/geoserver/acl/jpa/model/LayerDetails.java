@@ -9,18 +9,10 @@ package org.geoserver.acl.jpa.model;
 
 import static java.util.Objects.isNull;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
-
-import org.geolatte.geom.MultiPolygon;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
@@ -31,6 +23,11 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.UniqueConstraint;
+import lombok.Data;
+import lombok.experimental.Accessors;
+import org.geolatte.geom.MultiPolygon;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 /**
  * @since 1.0
@@ -76,10 +73,7 @@ public class LayerDetails implements Serializable, Cloneable {
     @ElementCollection(fetch = FetchType.LAZY)
     @JoinTable(
             name = "acl_layer_styles",
-            joinColumns =
-                    @JoinColumn(
-                            name = "details_id",
-                            foreignKey = @ForeignKey(name = "fk_styles_layer")))
+            joinColumns = @JoinColumn(name = "details_id", foreignKey = @ForeignKey(name = "fk_styles_layer")))
     @Column(name = "ld_styleName")
     private Set<String> allowedStyles;
 
@@ -108,9 +102,7 @@ public class LayerDetails implements Serializable, Cloneable {
         }
         if (attributes != null) {
             clone.attributes =
-                    attributes.stream()
-                            .map(LayerAttribute::clone)
-                            .collect(Collectors.toCollection(HashSet::new));
+                    attributes.stream().map(LayerAttribute::clone).collect(Collectors.toCollection(HashSet::new));
         }
         return clone;
     }

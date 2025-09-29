@@ -5,15 +5,14 @@
 
 package org.geoserver.acl.jpa.model;
 
-import lombok.Data;
-import lombok.NonNull;
-import lombok.experimental.Accessors;
-
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.experimental.Accessors;
 
 /**
  * Uniquely identifies an {@link AdminRule}, all properties are mandatory in order for the {@link

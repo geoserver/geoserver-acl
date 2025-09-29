@@ -16,7 +16,9 @@ import lombok.With;
 @Builder(toBuilder = true, builderClassName = "Builder")
 public class RuleIdentifier {
 
-    @NonNull @Default private GrantType access = GrantType.DENY;
+    @NonNull
+    @Default
+    private GrantType access = GrantType.DENY;
 
     private String username;
 

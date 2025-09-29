@@ -6,11 +6,10 @@
  */
 package org.geoserver.acl.domain.adminrules;
 
-import org.geoserver.acl.domain.filter.RuleQuery;
-
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+import org.geoserver.acl.domain.filter.RuleQuery;
 
 public interface AdminRuleAdminService {
 

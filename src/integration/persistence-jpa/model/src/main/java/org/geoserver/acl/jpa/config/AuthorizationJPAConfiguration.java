@@ -4,6 +4,9 @@
  */
 package org.geoserver.acl.jpa.config;
 
+import java.util.Map;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import org.geoserver.acl.jpa.config.AclJpaProperties.JpaProperties;
 import org.geoserver.acl.jpa.model.Rule;
 import org.geoserver.acl.jpa.repository.JpaAdminRuleRepository;
@@ -18,11 +21,6 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import java.util.Map;
-
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
 
 @Configuration(proxyBeanMethods = false)
 @EnableTransactionManagement
@@ -51,8 +49,7 @@ public class AuthorizationJPAConfiguration {
     @Bean("authorizationEntityManagerFactory")
     @DependsOn({"authorizationDataSource", "authorizationVendorAdapter"})
     LocalContainerEntityManagerFactoryBean authorizationEntityManagerFactory( //
-            @Qualifier("authorizationVendorAdapter")
-                    HibernateJpaVendorAdapter authorizationVendorAdapter,
+            @Qualifier("authorizationVendorAdapter") HibernateJpaVendorAdapter authorizationVendorAdapter,
             @Qualifier("authorizationDataSource") DataSource dataSource,
             AclJpaProperties configProps) {
 

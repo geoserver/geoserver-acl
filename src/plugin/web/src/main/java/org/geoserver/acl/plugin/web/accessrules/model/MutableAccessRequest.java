@@ -4,13 +4,11 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.model;
 
-import lombok.Data;
-
-import org.geoserver.acl.authorization.AccessRequest;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.Data;
+import org.geoserver.acl.authorization.AccessRequest;
 
 @Data
 @SuppressWarnings("serial")

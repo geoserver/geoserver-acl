@@ -6,7 +6,14 @@ package org.geoserver.acl.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.net.ssl.SSLContext;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -24,16 +31,6 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.net.ssl.SSLContext;
 
 public class AclClient {
 
@@ -112,18 +109,16 @@ public class AclClient {
         RestTemplate restTemplate = new RestTemplate(requestFactory);
 
         // This allows us to read the response more than once - Necessary for debugging
-        restTemplate.setRequestFactory(
-                new BufferingClientHttpRequestFactory(restTemplate.getRequestFactory()));
+        restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(restTemplate.getRequestFactory()));
 
         // disable default URL encoding
         DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory();
         uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.VALUES_ONLY);
         restTemplate.setUriTemplateHandler(uriBuilderFactory);
 
-        List<HttpMessageConverter<?>> messageConverters =
-                restTemplate.getMessageConverters().stream()
-                        .filter(m -> !(m instanceof MappingJackson2HttpMessageConverter))
-                        .collect(Collectors.toCollection(ArrayList::new));
+        List<HttpMessageConverter<?>> messageConverters = restTemplate.getMessageConverters().stream()
+                .filter(m -> !(m instanceof MappingJackson2HttpMessageConverter))
+                .collect(Collectors.toCollection(ArrayList::new));
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -139,18 +134,16 @@ public class AclClient {
         TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
         SSLContext sslContext;
         try {
-            sslContext =
-                    org.apache.http.ssl.SSLContexts.custom()
-                            .loadTrustMaterial(null, acceptingTrustStrategy)
-                            .build();
+            sslContext = org.apache.http.ssl.SSLContexts.custom()
+                    .loadTrustMaterial(null, acceptingTrustStrategy)
+                    .build();
         } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
             throw new IllegalStateException(e);
         }
-        SSLConnectionSocketFactory csf =
-                new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
-        CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
-        HttpComponentsClientHttpRequestFactory requestFactory =
-                new HttpComponentsClientHttpRequestFactory();
+        SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
+        CloseableHttpClient httpClient =
+                HttpClients.custom().setSSLSocketFactory(csf).build();
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
         requestFactory.setHttpClient(httpClient);
         return requestFactory;
     }

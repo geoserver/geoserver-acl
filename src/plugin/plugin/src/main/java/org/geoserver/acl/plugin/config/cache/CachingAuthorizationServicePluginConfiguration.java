@@ -4,16 +4,14 @@
  */
 package org.geoserver.acl.plugin.config.cache;
 
+import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-
 import org.geoserver.acl.authorization.cache.CachingAuthorizationService;
 import org.geoserver.acl.authorization.cache.CachingAuthorizationServiceConfiguration;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
-import javax.annotation.PostConstruct;
 
 /**
  * Plugin-specific extension for {@link CachingAuthorizationServiceConfiguration} to support

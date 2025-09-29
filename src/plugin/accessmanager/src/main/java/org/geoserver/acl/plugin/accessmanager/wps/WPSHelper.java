@@ -8,6 +8,10 @@ package org.geoserver.acl.plugin.accessmanager.wps;
 
 import static org.geoserver.acl.domain.rules.GrantType.DENY;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
 import org.geoserver.acl.authorization.AccessInfo;
 import org.geoserver.acl.authorization.AccessRequest;
 import org.geoserver.acl.authorization.AuthorizationService;
@@ -22,11 +26,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * @author etj (Emanuele Tajariol @ GeoSolutions) - Originally as part of GeoFence's GeoServer
@@ -66,8 +65,7 @@ public class WPSHelper implements ApplicationContextAware {
      *     consideration since the geometries are more up-to-date. Returns null if no forther
      *     resolution was computed.
      */
-    public WPSAccessInfo resolveWPSAccess(
-            final AccessRequest accessRequest, final AccessInfo wpsAccessInfo) {
+    public WPSAccessInfo resolveWPSAccess(final AccessRequest accessRequest, final AccessInfo wpsAccessInfo) {
         if (!helperAvailable) {
             LOGGER.warning("WPSHelper not available");
             // For more security we should deny the access, anyway let's tell
@@ -136,29 +134,22 @@ public class WPSHelper implements ApplicationContextAware {
             areaRet = GeomHelper.reprojectAndIntersect(areaRet, area);
             clipRet = GeomHelper.reprojectAndIntersect(clipRet, clip);
 
-            CatalogMode stricter =
-                    AccessInfoUtils.getStricter(ret.getCatalogMode(), accessInfo.getCatalogMode());
+            CatalogMode stricter = AccessInfoUtils.getStricter(ret.getCatalogMode(), accessInfo.getCatalogMode());
 
             // CQL (read + write)
-            String cqlRead =
-                    AccessInfoUtils.intersectCQL(
-                            ret.getCqlFilterRead(), accessInfo.getCqlFilterRead());
-            String cqlWrite =
-                    AccessInfoUtils.intersectCQL(
-                            ret.getCqlFilterWrite(), accessInfo.getCqlFilterWrite());
+            String cqlRead = AccessInfoUtils.intersectCQL(ret.getCqlFilterRead(), accessInfo.getCqlFilterRead());
+            String cqlWrite = AccessInfoUtils.intersectCQL(ret.getCqlFilterWrite(), accessInfo.getCqlFilterWrite());
 
             // Attributes
             Set<LayerAttribute> attributes =
-                    AccessInfoUtils.intersectAttributes(
-                            ret.getAttributes(), accessInfo.getAttributes());
+                    AccessInfoUtils.intersectAttributes(ret.getAttributes(), accessInfo.getAttributes());
 
-            ret =
-                    ret.toBuilder()
-                            .catalogMode(stricter)
-                            .cqlFilterRead(cqlRead)
-                            .cqlFilterWrite(cqlWrite)
-                            .attributes(attributes)
-                            .build();
+            ret = ret.toBuilder()
+                    .catalogMode(stricter)
+                    .cqlFilterRead(cqlRead)
+                    .cqlFilterWrite(cqlWrite)
+                    .attributes(attributes)
+                    .build();
 
             // skipping styles (only used in WMS)
         }

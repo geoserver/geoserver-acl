@@ -8,9 +8,13 @@ import static org.geoserver.acl.api.client.integration.ClientExceptionHelper.rea
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-
 import org.geoserver.acl.api.client.DataRulesApi;
 import org.geoserver.acl.api.mapper.EnumsApiMapper;
 import org.geoserver.acl.api.mapper.LayerDetailsApiMapper;
@@ -28,12 +32,6 @@ import org.geoserver.acl.domain.rules.RuleRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientResponseException;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class RuleRepositoryClientAdaptor implements RuleRepository {
@@ -118,8 +116,7 @@ public class RuleRepositoryClientAdaptor implements RuleRepository {
 
         Integer limit = query.getLimit();
         String nextCursor = query.getNextId();
-        List<org.geoserver.acl.api.model.Rule> rules =
-                apiClient.queryRules(limit, nextCursor, filter);
+        List<org.geoserver.acl.api.model.Rule> rules = apiClient.queryRules(limit, nextCursor, filter);
 
         return rules.stream().map(this::map);
     }

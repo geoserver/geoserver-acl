@@ -6,9 +6,8 @@
  */
 package org.geoserver.acl.domain.filter.predicate;
 
-import lombok.EqualsAndHashCode;
-
 import java.io.Serializable;
+import lombok.EqualsAndHashCode;
 
 /** Contains a fixed text OR a special filtering condition (i.e. ANY, DEFAULT). */
 @EqualsAndHashCode(callSuper = true)

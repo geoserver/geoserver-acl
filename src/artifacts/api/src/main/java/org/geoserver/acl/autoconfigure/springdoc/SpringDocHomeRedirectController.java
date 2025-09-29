@@ -4,16 +4,13 @@
  */
 package org.geoserver.acl.autoconfigure.springdoc;
 
+import java.net.URI;
+import javax.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.context.request.NativeWebRequest;
-
-import java.net.URI;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,9 +22,8 @@ class SpringDocHomeRedirectController {
     @GetMapping(value = {"", "/"})
     public String redirectToSwaggerUI() {
         var target = "/openapi/swagger-ui/index.html";
-        URI url =
-                URI.create(
-                        ((HttpServletRequest) req.getNativeRequest()).getRequestURL().toString());
+        URI url = URI.create(
+                ((HttpServletRequest) req.getNativeRequest()).getRequestURL().toString());
         var path = url.getPath();
         if (path != null) {
             if (path.endsWith("/")) path = path.substring(0, path.length() - 1);

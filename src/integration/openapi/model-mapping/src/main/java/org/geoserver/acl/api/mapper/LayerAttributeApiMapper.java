@@ -4,16 +4,15 @@
  */
 package org.geoserver.acl.api.mapper;
 
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.geoserver.acl.domain.rules.LayerAttribute;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
-
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Mapper(
         componentModel = "spring",

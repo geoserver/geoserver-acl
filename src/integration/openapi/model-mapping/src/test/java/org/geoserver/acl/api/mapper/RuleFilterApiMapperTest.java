@@ -9,10 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-
 import org.geoserver.acl.domain.filter.predicate.FilterType;
 import org.geoserver.acl.domain.filter.predicate.SpecialFilterType;
 import org.geoserver.acl.domain.rules.RuleFilter;
@@ -111,8 +109,7 @@ class RuleFilterApiMapperTest {
     }
 
     @SneakyThrows(JsonProcessingException.class)
-    private void print(
-            RuleFilter model, org.geoserver.acl.api.model.RuleFilter api, RuleFilter roundtripped) {
+    private void print(RuleFilter model, org.geoserver.acl.api.model.RuleFilter api, RuleFilter roundtripped) {
         log.debug("model: {}", model);
         log.debug("api  : {}", objectMapper.writeValueAsString(api));
         log.debug("rtp  : {}", roundtripped);

@@ -7,18 +7,15 @@
 
 package org.geoserver.acl.jpa.model;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import lombok.Data;
+import lombok.experimental.Accessors;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)

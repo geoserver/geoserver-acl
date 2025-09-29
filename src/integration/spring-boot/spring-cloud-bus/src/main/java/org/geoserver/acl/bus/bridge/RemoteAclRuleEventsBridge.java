@@ -7,7 +7,6 @@ package org.geoserver.acl.bus.bridge;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.geoserver.acl.domain.adminrules.AdminRuleEvent;
 import org.geoserver.acl.domain.rules.RuleEvent;
 import org.springframework.cloud.bus.ServiceMatcher;

@@ -22,7 +22,6 @@ public class AclEnabledCondition implements ConfigurationCondition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        return context.getEnvironment()
-                .getProperty("geoserver.acl.enabled", Boolean.class, Boolean.TRUE);
+        return context.getEnvironment().getProperty("geoserver.acl.enabled", Boolean.class, Boolean.TRUE);
     }
 }

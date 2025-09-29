@@ -15,10 +15,8 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 class JPAIntegrationAutoConfigurationTest {
 
-    private ApplicationContextRunner runner =
-            new ApplicationContextRunner()
-                    .withConfiguration(
-                            AutoConfigurations.of(JPAIntegrationAutoConfiguration.class));
+    private ApplicationContextRunner runner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(JPAIntegrationAutoConfiguration.class));
 
     @BeforeEach
     void setUp() throws Exception {}
@@ -26,27 +24,23 @@ class JPAIntegrationAutoConfigurationTest {
     @Test
     void testDbConfigWithURL() {
         runner.withPropertyValues("geoserver.acl.datasource.url=jdbc:h2:mem:geoserver-acl")
-                .run(
-                        context -> {
-                            assertThat(context).hasNotFailed();
-                        });
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                });
     }
 
     @Test
     void testDbConfigWithJNDI() {
         runner.withInitializer(new SimpleJNDIStaticContextInitializer())
-                .withConfiguration(
-                        AutoConfigurations.of(
-                                JNDIDataSourceAutoConfiguration.class,
-                                JPAIntegrationAutoConfiguration.class))
+                .withConfiguration(AutoConfigurations.of(
+                        JNDIDataSourceAutoConfiguration.class, JPAIntegrationAutoConfiguration.class))
                 .withPropertyValues(
                         "jndi.datasources.acltest.url: jdbc:h2:mem:acltest", //
                         "jndi.datasources.acltest.username: sa", //
                         "jndi.datasources.acltest.password: sa", //
                         "geoserver.acl.datasource.jndiName=java:comp/env/jdbc/acltest")
-                .run(
-                        context -> {
-                            assertThat(context).hasNotFailed();
-                        });
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                });
     }
 }

@@ -6,15 +6,13 @@ package org.geoserver.acl.authorization;
 
 import static java.lang.String.format;
 
+import java.util.Set;
+import java.util.TreeSet;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-
 import org.geoserver.acl.domain.adminrules.AdminGrantType;
 import org.geoserver.acl.domain.rules.GrantType;
-
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Represents the converged set of visible layer names of a specific workspace for for a {@link
@@ -34,7 +32,8 @@ public class WorkspaceAccessSummary implements Comparable<WorkspaceAccessSummary
      * The workspace name. The special value {@link #NO_WORKSPACE} represents global entities such
      * as global layer groups
      */
-    @NonNull private String workspace;
+    @NonNull
+    private String workspace;
 
     /**
      * Whether the user from the {@link AccessSummaryRequest} is an administrator for {@link
@@ -47,7 +46,8 @@ public class WorkspaceAccessSummary implements Comparable<WorkspaceAccessSummary
      * AccessSummaryRequest} can somehow see, even if only under specific circumstances like for a
      * given OWS/request combination, resulting from {@link GrantType#ALLOW allow} rules.
      */
-    @NonNull private Set<String> allowed;
+    @NonNull
+    private Set<String> allowed;
 
     /**
      * The set of forbidden layer names in {@link #workspace} the user from the {@link
@@ -57,7 +57,8 @@ public class WorkspaceAccessSummary implements Comparable<WorkspaceAccessSummary
      * <p>Complements the {@link #allowed} list as there may be rules allowing access all layers in
      * a workspace after a rules denying access to specific layers in the same workspace.
      */
-    @NonNull private Set<String> forbidden;
+    @NonNull
+    private Set<String> forbidden;
 
     public boolean hideAll() {
         return getAllowed().isEmpty() && getForbidden().contains(ANY);
@@ -70,8 +71,7 @@ public class WorkspaceAccessSummary implements Comparable<WorkspaceAccessSummary
     @Override
     public String toString() {
         return format(
-                "workapce: %s: admin: %s, allowed: %s, forbidden: %s",
-                workspace, adminAccess, allowed, forbidden);
+                "workapce: %s: admin: %s, allowed: %s, forbidden: %s", workspace, adminAccess, allowed, forbidden);
     }
 
     public boolean canSeeLayer(String layerName) {
@@ -116,8 +116,7 @@ public class WorkspaceAccessSummary implements Comparable<WorkspaceAccessSummary
             Set<String> allowedLayers = conflate(allowed);
             Set<String> forbiddenLayers = conflate(forbidden);
 
-            return new WorkspaceAccessSummary(
-                    workspace, adminAccess, allowedLayers, forbiddenLayers);
+            return new WorkspaceAccessSummary(workspace, adminAccess, allowedLayers, forbiddenLayers);
         }
 
         private static Set<String> conflate(Set<String> layers) {

@@ -6,6 +6,7 @@
  */
 package org.geoserver.acl.plugin.web.config;
 
+import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.AbstractSubmitLink;
@@ -17,8 +18,6 @@ import org.geoserver.acl.plugin.accessmanager.AccessManagerConfig;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.model.ExtPropertyModel;
-
-import java.util.logging.Level;
 
 /**
  * ACL wicket administration UI for GeoServer.
@@ -71,11 +70,8 @@ public class ACLServiceConfigPage extends GeoServerSecuredPage {
                     FormComponent<?> url = (FormComponent<?>) super.getForm().get("servicesUrl");
                     url.processInput();
                     pageModel.testConnection();
-                    info(
-                            new StringResourceModel(
-                                            ACLServiceConfigPage.class.getSimpleName()
-                                                    + ".connectionSuccessful")
-                                    .getObject());
+                    info(new StringResourceModel(ACLServiceConfigPage.class.getSimpleName() + ".connectionSuccessful")
+                            .getObject());
                 } catch (Exception e) {
                     error(e);
                     LOGGER.log(Level.WARNING, e.getMessage(), e);

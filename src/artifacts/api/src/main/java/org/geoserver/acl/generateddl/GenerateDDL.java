@@ -4,18 +4,16 @@
  */
 package org.geoserver.acl.generateddl;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.FileCopyUtils;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 @SpringBootApplication
 @Slf4j

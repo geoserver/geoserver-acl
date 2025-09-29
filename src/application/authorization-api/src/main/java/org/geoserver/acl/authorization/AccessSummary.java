@@ -4,15 +4,9 @@
  */
 package org.geoserver.acl.authorization;
 
+import static java.lang.String.format;
 import static org.geoserver.acl.authorization.WorkspaceAccessSummary.ANY;
 import static org.geoserver.acl.authorization.WorkspaceAccessSummary.NO_WORKSPACE;
-
-import static java.lang.String.format;
-
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
-
-import org.geoserver.acl.domain.adminrules.AdminGrantType;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -22,6 +16,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import org.geoserver.acl.domain.adminrules.AdminGrantType;
 
 /**
  * Represents the converged set of visible layer names of a specific workspace for for a {@link
@@ -36,12 +33,11 @@ public class AccessSummary {
     /** Immutable mapping of workspace name to summary */
     private Map<String, WorkspaceAccessSummary> workspaceSummaries;
 
-    private static final WorkspaceAccessSummary HIDE_ALL =
-            WorkspaceAccessSummary.builder()
-                    .workspace("*")
-                    .adminAccess(null)
-                    .addForbidden("*")
-                    .build();
+    private static final WorkspaceAccessSummary HIDE_ALL = WorkspaceAccessSummary.builder()
+            .workspace("*")
+            .adminAccess(null)
+            .addForbidden("*")
+            .build();
 
     private AccessSummary(Map<String, WorkspaceAccessSummary> workspaceSummaries) {
         this.workspaceSummaries = workspaceSummaries;
@@ -67,12 +63,16 @@ public class AccessSummary {
 
     public boolean hasAdminReadAccess(@NonNull String workspaceName) {
         boolean user = workspaceSummaries.getOrDefault(ANY, HIDE_ALL).isUser();
-        return user ? user : workspaceSummaries.getOrDefault(workspaceName, HIDE_ALL).isUser();
+        return user
+                ? user
+                : workspaceSummaries.getOrDefault(workspaceName, HIDE_ALL).isUser();
     }
 
     public boolean hasAdminWriteAccess(@NonNull String workspaceName) {
         boolean admin = workspaceSummaries.getOrDefault(ANY, HIDE_ALL).isAdmin();
-        return admin ? admin : workspaceSummaries.getOrDefault(workspaceName, HIDE_ALL).isAdmin();
+        return admin
+                ? admin
+                : workspaceSummaries.getOrDefault(workspaceName, HIDE_ALL).isAdmin();
     }
 
     public boolean canSeeLayer(String workspaceName, @NonNull String layerName) {

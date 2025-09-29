@@ -37,8 +37,7 @@ public class AccessManagerSpringConfig {
             AccessManagerConfigProvider configProvider) {
 
         LocalWorkspaceCatalog localWorkspaceCatalog = new LocalWorkspaceCatalog(catalog);
-        return new ACLDispatcherCallback(
-                aclAuthorizationService, localWorkspaceCatalog, configProvider);
+        return new ACLDispatcherCallback(aclAuthorizationService, localWorkspaceCatalog, configProvider);
     }
 
     @Bean

@@ -7,11 +7,9 @@ package org.geoserver.acl.api.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.validation.constraints.Pattern;
-
-import org.junit.jupiter.api.Test;
-
 import java.lang.reflect.Method;
 import java.util.stream.IntStream;
+import org.junit.jupiter.api.Test;
 
 class RuleTest {
 
@@ -30,9 +28,7 @@ class RuleTest {
     void testAddressRangeRegEx_valid_expressions() throws Exception {
         testAddressRangeRegEx("10.0.0.1", true);
         testAddressRangeRegEx("192.168.0.1", true);
-        IntStream.rangeClosed(1, 32)
-                .mapToObj(i -> "192.168.0.1/" + i)
-                .forEach(this::assertValidRange);
+        IntStream.rangeClosed(1, 32).mapToObj(i -> "192.168.0.1/" + i).forEach(this::assertValidRange);
     }
 
     private void assertInvalidRange(String range) {

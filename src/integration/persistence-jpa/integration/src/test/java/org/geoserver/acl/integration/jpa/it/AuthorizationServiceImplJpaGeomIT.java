@@ -16,8 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(
         classes = {
-            org.geoserver.acl.integration.jpa.config.AuthorizationJPAPropertiesTestConfiguration
-                    .class,
+            org.geoserver.acl.integration.jpa.config.AuthorizationJPAPropertiesTestConfiguration.class,
             JPAIntegrationConfiguration.class,
             JpaIntegrationTestSupport.class
         })

@@ -6,8 +6,10 @@ package org.geoserver.acl.plugin.web.accessrules.model;
 
 import static java.util.Objects.nonNull;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
 import lombok.Getter;
-
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -16,10 +18,6 @@ import org.geoserver.acl.domain.rules.LayerDetails.LayerType;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.springframework.util.StringUtils;
-
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
 
 @SuppressWarnings("serial")
 public class LayerDetailsEditModel implements Serializable {

@@ -4,6 +4,7 @@
  */
 package org.geoserver.acl.plugin.web.css;
 
+import java.util.List;
 import org.apache.wicket.markup.html.WebPage;
 import org.geoserver.acl.plugin.web.accessrules.AccessRulesACLPage;
 import org.geoserver.acl.plugin.web.accessrules.DataAccessRuleEditPage;
@@ -12,8 +13,6 @@ import org.geoserver.acl.plugin.web.adminrules.AdminRulesACLPage;
 import org.geoserver.web.HeaderContribution;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
 
 @Configuration
 @SuppressWarnings("unchecked")
@@ -25,8 +24,7 @@ public class CSSConfiguration {
      */
     @Bean
     HeaderContribution aclRulesTablePanelCssContribution() {
-        return new CssContribution(
-                "RulesTablePanel.css", AccessRulesACLPage.class, AdminRulesACLPage.class);
+        return new CssContribution("RulesTablePanel.css", AccessRulesACLPage.class, AdminRulesACLPage.class);
     }
 
     /**
@@ -35,8 +33,7 @@ public class CSSConfiguration {
      */
     @Bean
     HeaderContribution aclSimulatorPanelCssContribution() {
-        return new CssContribution(
-                "SimulatorPanel.css", AccessRulesACLPage.class, AdminRulesACLPage.class);
+        return new CssContribution("SimulatorPanel.css", AccessRulesACLPage.class, AdminRulesACLPage.class);
     }
 
     /** Contributes {@code DataAccessRuleEditPage.css} to {@link DataAccessRuleEditPage} */
@@ -51,8 +48,7 @@ public class CSSConfiguration {
      */
     @Bean
     HeaderContribution aclSwitchFieldCssContribution() {
-        return new CssContribution(
-                "switch-field.css", DataAccessRuleEditPage.class, AdminRuleEditPage.class);
+        return new CssContribution("switch-field.css", DataAccessRuleEditPage.class, AdminRuleEditPage.class);
     }
 
     /**
@@ -61,8 +57,7 @@ public class CSSConfiguration {
      */
     @Bean
     HeaderContribution aclTabsetCssContribution() {
-        return new CssContribution(
-                "tabset.css", DataAccessRuleEditPage.class, AccessRulesACLPage.class);
+        return new CssContribution("tabset.css", DataAccessRuleEditPage.class, AccessRulesACLPage.class);
     }
 
     static class CssContribution extends HeaderContribution {

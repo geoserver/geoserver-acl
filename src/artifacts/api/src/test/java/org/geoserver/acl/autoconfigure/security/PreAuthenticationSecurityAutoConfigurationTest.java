@@ -18,12 +18,9 @@ import org.springframework.security.web.authentication.preauth.RequestHeaderAuth
 
 class PreAuthenticationSecurityAutoConfigurationTest {
 
-    private ApplicationContextRunner runner =
-            new ApplicationContextRunner()
-                    .withConfiguration(
-                            AutoConfigurations.of(
-                                    AuthenticationManagerAutoConfiguration.class,
-                                    PreAuthenticationSecurityAutoConfiguration.class));
+    private ApplicationContextRunner runner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(
+                    AuthenticationManagerAutoConfiguration.class, PreAuthenticationSecurityAutoConfiguration.class));
 
     @BeforeEach
     void setUp() throws Exception {}
@@ -33,28 +30,20 @@ class PreAuthenticationSecurityAutoConfigurationTest {
         // contribute a mocked up AuthenticationProvider for AuthenticationManagerAutoConfiguration
         // not to fail due to at least one AuthenticationProvider existing
         AuthenticationProvider mockProvider = mock(AuthenticationProvider.class);
-        runner.withBean(AuthenticationProvider.class, () -> mockProvider)
-                .run(
-                        context ->
-                                assertThat(context)
-                                        .hasNotFailed()
-                                        .doesNotHaveBean(SecurityConfigProperties.class)
-                                        .doesNotHaveBean(RequestHeaderAuthenticationFilter.class)
-                                        .doesNotHaveBean(
-                                                PreAuthenticatedAuthenticationProvider.class));
+        runner.withBean(AuthenticationProvider.class, () -> mockProvider).run(context -> assertThat(context)
+                .hasNotFailed()
+                .doesNotHaveBean(SecurityConfigProperties.class)
+                .doesNotHaveBean(RequestHeaderAuthenticationFilter.class)
+                .doesNotHaveBean(PreAuthenticatedAuthenticationProvider.class));
     }
 
     @Test
     void testConditionalOnPreAuthenticationEnabled() {
-        runner.withPropertyValues("geoserver.acl.security.headers.enabled=true")
-                .run(
-                        context ->
-                                assertThat(context)
-                                        .hasNotFailed()
-                                        .hasSingleBean(SecurityConfigProperties.class)
-                                        .hasSingleBean(RequestHeaderAuthenticationFilter.class)
-                                        .hasSingleBean(
-                                                PreAuthenticatedAuthenticationProvider.class));
+        runner.withPropertyValues("geoserver.acl.security.headers.enabled=true").run(context -> assertThat(context)
+                .hasNotFailed()
+                .hasSingleBean(SecurityConfigProperties.class)
+                .hasSingleBean(RequestHeaderAuthenticationFilter.class)
+                .hasSingleBean(PreAuthenticatedAuthenticationProvider.class));
     }
 
     @Test
@@ -64,15 +53,13 @@ class PreAuthenticationSecurityAutoConfigurationTest {
                         "geoserver.acl.security.headers.user-header: sec-username",
                         "geoserver.acl.security.headers.roles-header: sec-roles",
                         "geoserver.acl.security.headers.admin-roles: ROLE_ADMINISTRATOR,ADMIN")
-                .run(
-                        context -> {
-                            assertThat(context).hasNotFailed();
-                            PreauthHeaders config =
-                                    context.getBean(SecurityConfigProperties.class).getHeaders();
-                            assertThat(config.getUserHeader()).isEqualTo("sec-username");
-                            assertThat(config.getRolesHeader()).isEqualTo("sec-roles");
-                            assertThat(config.getAdminRoles())
-                                    .containsExactly("ROLE_ADMINISTRATOR", "ADMIN");
-                        });
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                    PreauthHeaders config =
+                            context.getBean(SecurityConfigProperties.class).getHeaders();
+                    assertThat(config.getUserHeader()).isEqualTo("sec-username");
+                    assertThat(config.getRolesHeader()).isEqualTo("sec-roles");
+                    assertThat(config.getAdminRoles()).containsExactly("ROLE_ADMINISTRATOR", "ADMIN");
+                });
     }
 }

@@ -4,15 +4,13 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.model;
 
+import java.io.Serializable;
+import java.util.List;
 import lombok.Getter;
 import lombok.NonNull;
-
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.acl.domain.rules.LayerDetails.LayerType;
-
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * @since 1.0
@@ -26,8 +24,7 @@ public class LayerAttributesEditModel implements Serializable {
     private LayerAttributeDataProvider dataProvider;
     private LayerDetailsEditModel details;
 
-    public LayerAttributesEditModel(
-            LayerDetailsEditModel details, IModel<List<MutableLayerAttribute>> model) {
+    public LayerAttributesEditModel(LayerDetailsEditModel details, IModel<List<MutableLayerAttribute>> model) {
         this.details = details;
         this.model = model;
         dataProvider = new LayerAttributeDataProvider(model);

@@ -7,12 +7,11 @@
 
 package org.geoserver.acl.authorization;
 
+import java.util.List;
 import org.geoserver.acl.domain.adminrules.AdminRule;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleAdminService;
-
-import java.util.List;
 
 /**
  * The {@code AuthorizationService} implements the business logic to grant or deny access to layers

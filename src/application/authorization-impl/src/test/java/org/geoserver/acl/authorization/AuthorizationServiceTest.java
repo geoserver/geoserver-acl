@@ -7,6 +7,7 @@
 
 package org.geoserver.acl.authorization;
 
+import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.geoserver.acl.domain.rules.GrantType.ALLOW;
 import static org.geoserver.acl.domain.rules.GrantType.DENY;
@@ -16,8 +17,12 @@ import static org.geoserver.acl.domain.rules.LayerAttribute.AccessType.READWRITE
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import static java.util.List.of;
-
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.geoserver.acl.domain.adminrules.AdminRule;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.filter.predicate.SpecialFilterType;
@@ -27,13 +32,6 @@ import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.geoserver.acl.domain.rules.RuleFilter;
 import org.junit.jupiter.api.Test;
-
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * {@link AuthorizationService} integration/conformance test
@@ -56,19 +54,17 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
 
         assertEquals(0, ruleAdminService.count(RuleFilter.any()));
 
-        final AccessRequest u1 =
-                createRequest("TestUser1", "p1")
-                        .withService("s1")
-                        .withRequest("r1")
-                        .withWorkspace("w1")
-                        .withLayer("l1");
+        final AccessRequest u1 = createRequest("TestUser1", "p1")
+                .withService("s1")
+                .withRequest("r1")
+                .withWorkspace("w1")
+                .withLayer("l1");
 
-        final AccessRequest u2 =
-                createRequest("TestUser2", "p2")
-                        .withService("s1")
-                        .withRequest("r2")
-                        .withWorkspace("w2")
-                        .withLayer("l2");
+        final AccessRequest u2 = createRequest("TestUser2", "p2")
+                .withService("s1")
+                .withRequest("r2")
+                .withWorkspace("w2")
+                .withLayer("l2");
 
         final AccessRequest u3 = createRequest("TestUser3", "g3a", "g3b");
 
@@ -86,14 +82,12 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         assertThat(getMatchingRules(u1.withUser(null)))
                 .as("only group rule should match")
                 .isEqualTo(of(p40));
-        assertThat(getMatchingRules(u1.withService("s3").withWorkspace("w3")))
-                .isEqualTo(of(p30, p40));
+        assertThat(getMatchingRules(u1.withService("s3").withWorkspace("w3"))).isEqualTo(of(p30, p40));
         assertThat(getMatchingRules(u1.withService("s2")))
                 .as("service mismatch")
                 .isEqualTo(of(p40));
 
-        assertThat(getMatchingRules(u1.withRoles(Set.of("p1", "g3a"))))
-                .isEqualTo(of(p10, p40, p50));
+        assertThat(getMatchingRules(u1.withRoles(Set.of("p1", "g3a")))).isEqualTo(of(p10, p40, p50));
         assertThat(getMatchingRules(u2.withRoles(Set.of("p2", "g3b")))).isEqualTo(of(p20, p60));
     }
 
@@ -132,41 +126,44 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         List<Rule> rules = new ArrayList<>();
 
         rules.add(insert(Rule.allow().withPriority(100 + rules.size()).withService("WCS")));
-        rules.add(
-                insert(
-                        Rule.allow()
-                                .withPriority(100 + rules.size())
-                                .withService("s1")
-                                .withRequest("r2")
-                                .withWorkspace("w2")
-                                .withLayer("l2")));
-        rules.add(
-                insert(
-                        Rule.allow()
-                                .withPriority(100 + rules.size())
-                                .withService("s3")
-                                .withRequest("r3")
-                                .withWorkspace("w3")
-                                .withLayer("l3")));
+        rules.add(insert(Rule.allow()
+                .withPriority(100 + rules.size())
+                .withService("s1")
+                .withRequest("r2")
+                .withWorkspace("w2")
+                .withLayer("l2")));
+        rules.add(insert(Rule.allow()
+                .withPriority(100 + rules.size())
+                .withService("s3")
+                .withRequest("r3")
+                .withWorkspace("w3")
+                .withLayer("l3")));
         rules.add(insert(Rule.deny().withPriority(100 + rules.size())));
 
         assertEquals(4, ruleAdminService.count(new RuleFilter(SpecialFilterType.ANY)));
 
-        AccessRequest req =
-                createRequest("u0", "p0")
-                        .withService("WCS")
-                        .withRequest(null)
-                        .withWorkspace("W0")
-                        .withLayer("l0");
+        AccessRequest req = createRequest("u0", "p0")
+                .withService("WCS")
+                .withRequest(null)
+                .withWorkspace("W0")
+                .withLayer("l0");
 
         {
-            assertEquals(2, authorizationService.getMatchingRules(req.withUser(null)).size());
-            assertEquals(ALLOW, authorizationService.getAccessInfo(req.withUser(null)).getGrant());
+            assertEquals(
+                    2, authorizationService.getMatchingRules(req.withUser(null)).size());
+            assertEquals(
+                    ALLOW,
+                    authorizationService.getAccessInfo(req.withUser(null)).getGrant());
         }
         {
-            assertEquals(2, authorizationService.getMatchingRules(req.withRoles(Set.of())).size());
             assertEquals(
-                    ALLOW, authorizationService.getAccessInfo(req.withRoles(Set.of())).getGrant());
+                    2,
+                    authorizationService
+                            .getMatchingRules(req.withRoles(Set.of()))
+                            .size());
+            assertEquals(
+                    ALLOW,
+                    authorizationService.getAccessInfo(req.withRoles(Set.of())).getGrant());
         }
         {
             AccessRequest unmatch = req.withUser(null).withService("UNMATCH");
@@ -190,7 +187,8 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
 
         assertEquals(2, ruleAdminService.count());
 
-        final AccessRequest req = AccessRequest.builder().service("s1").layer("l2").build();
+        final AccessRequest req =
+                AccessRequest.builder().service("s1").layer("l2").build();
         List<Rule> matchingRules = getMatchingRules(req);
         assertThat(matchingRules).isEqualTo(of(r2));
 
@@ -206,41 +204,50 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
 
         insert(Rule.allow().withService("WCS"));
 
-        assertEquals(1, getMatchingRules("u0", null, null, "WCS", null, "W0", "l0").size());
-        assertEquals(ALLOW, getAccessInfo("u0", null, null, "WCS", null, "W0", "l0").getGrant());
+        assertEquals(
+                1, getMatchingRules("u0", null, null, "WCS", null, "W0", "l0").size());
+        assertEquals(
+                ALLOW, getAccessInfo("u0", null, null, "WCS", null, "W0", "l0").getGrant());
 
-        assertEquals(1, getMatchingRules(null, "p0", null, "WCS", null, "W0", "l0").size());
-        assertEquals(ALLOW, getAccessInfo(null, "p0", null, "WCS", null, "W0", "l0").getGrant());
+        assertEquals(
+                1, getMatchingRules(null, "p0", null, "WCS", null, "W0", "l0").size());
+        assertEquals(
+                ALLOW, getAccessInfo(null, "p0", null, "WCS", null, "W0", "l0").getGrant());
 
-        assertEquals(0, getMatchingRules("u0", null, null, "UNMATCH", null, "W0", "l0").size());
-        assertEquals(DENY, getAccessInfo("u0", null, null, "UNMATCH", null, "W0", "l0").getGrant());
+        assertEquals(
+                0,
+                getMatchingRules("u0", null, null, "UNMATCH", null, "W0", "l0").size());
+        assertEquals(
+                DENY,
+                getAccessInfo("u0", null, null, "UNMATCH", null, "W0", "l0").getGrant());
 
-        assertEquals(0, getMatchingRules(null, "p0", null, "UNMATCH", null, "W0", "l0").size());
-        assertEquals(DENY, getAccessInfo(null, "p0", null, "UNMATCH", null, "W0", "l0").getGrant());
+        assertEquals(
+                0,
+                getMatchingRules(null, "p0", null, "UNMATCH", null, "W0", "l0").size());
+        assertEquals(
+                DENY,
+                getAccessInfo(null, "p0", null, "UNMATCH", null, "W0", "l0").getGrant());
     }
 
     @Test
     public void testGroups() {
         assertEquals(0, ruleAdminService.count());
 
-        Rule r1 =
-                insert(
-                        Rule.allow()
-                                .withPriority(10)
-                                .withRolename("p1")
-                                .withService("s1")
-                                .withRequest("r1")
-                                .withWorkspace("w1")
-                                .withLayer("l1"));
+        Rule r1 = insert(Rule.allow()
+                .withPriority(10)
+                .withRolename("p1")
+                .withService("s1")
+                .withRequest("r1")
+                .withWorkspace("w1")
+                .withLayer("l1"));
         Rule r2 = insert(Rule.deny().withPriority(11).withRolename("p1"));
         assertEquals(2, ruleAdminService.count());
 
-        final AccessRequest req1 =
-                createRequest("u1", "p1")
-                        .withService("s1")
-                        .withRequest("r1")
-                        .withWorkspace("w1")
-                        .withLayer("l1");
+        final AccessRequest req1 = createRequest("u1", "p1")
+                .withService("s1")
+                .withRequest("r1")
+                .withWorkspace("w1")
+                .withLayer("l1");
         final AccessRequest req2 = createRequest("u2", "p2");
 
         assertThat(getMatchingRules(req1)).isEqualTo(of(r1, r2));
@@ -303,14 +310,12 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
 
         Rule r1 = insert(Rule.allow().withRolename("g1").withLayer("l1"));
         Set<String> r1Styles = Set.of("style01", "style02");
-        Set<LayerAttribute> r1Atts =
-                Set.of(attrib("att1", NONE), attrib("att2", READONLY), attrib("att3", READWRITE));
+        Set<LayerAttribute> r1Atts = Set.of(attrib("att1", NONE), attrib("att2", READONLY), attrib("att3", READWRITE));
         setLayerDetails(r1, r1Styles, r1Atts);
 
         Rule r2 = insert(Rule.allow().withRolename("g2").withLayer("l1"));
         Set<String> r2Styles = Set.of("style01", "style03");
-        Set<LayerAttribute> r2Atts =
-                Set.of(attrib("att1", READONLY), attrib("att2", READWRITE), attrib("att3", NONE));
+        Set<LayerAttribute> r2Atts = Set.of(attrib("att1", READONLY), attrib("att2", READWRITE), attrib("att3", NONE));
         setLayerDetails(r2, r2Styles, r2Atts);
 
         Rule r3 = insert(Rule.allow().withRolename("g3").withLayer("l1"));
@@ -337,13 +342,9 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
         assertThat(accessInfo.getMatchingRules()).isEqualTo(of(r1.getId(), r2.getId()));
         Set<LayerAttribute> expected =
-                Set.of(
-                        attrib("att1", READONLY),
-                        attrib("att2", READWRITE),
-                        attrib("att3", READWRITE));
+                Set.of(attrib("att1", READONLY), attrib("att2", READWRITE), attrib("att3", READWRITE));
         assertThat(accessInfo.getAttributes()).isEqualTo(expected);
-        assertThat(accessInfo.getAllowedStyles())
-                .isEqualTo(Set.of("style01", "style02", "style03"));
+        assertThat(accessInfo.getAllowedStyles()).isEqualTo(Set.of("style01", "style02", "style03"));
 
         // merging attributes to full access unconstraining styles
         accessInfo = getAccessInfo(g13);
@@ -358,13 +359,18 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
     }
 
     private LayerAttribute attrib(String name, LayerAttribute.AccessType access) {
-        return LayerAttribute.builder().access(access).name(name).dataType("String").build();
+        return LayerAttribute.builder()
+                .access(access)
+                .name(name)
+                .dataType("String")
+                .build();
     }
 
-    private void setLayerDetails(
-            Rule rule, Set<String> allowedStyles, Set<LayerAttribute> attributes) {
-        LayerDetails d1 =
-                LayerDetails.builder().allowedStyles(allowedStyles).attributes(attributes).build();
+    private void setLayerDetails(Rule rule, Set<String> allowedStyles, Set<LayerAttribute> attributes) {
+        LayerDetails d1 = LayerDetails.builder()
+                .allowedStyles(allowedStyles)
+                .attributes(attributes)
+                .build();
         ruleAdminService.setLayerDetails(rule.getId(), d1);
     }
 
@@ -377,8 +383,9 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         // some allowed styles for second rule
         Rule p40 = insert(Rule.allow().withPriority(40).withRolename("g1").withLayer("l1"));
         {
-            LayerDetails d1 =
-                    LayerDetails.builder().allowedStyles(Set.of("style01", "style02")).build();
+            LayerDetails d1 = LayerDetails.builder()
+                    .allowedStyles(Set.of("style01", "style02"))
+                    .build();
             ruleAdminService.setLayerDetails(p40.getId(), d1);
         }
         assertEquals(2, ruleAdminService.count());
@@ -425,17 +432,17 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         assertEquals(List.of(g2deny), getMatchingRules(reqG2));
 
         // test with address filtering
-        assertThat(getMatchingRules(reqAnonymous.withSourceAddress("10.10.100.4"))).isEmpty();
-        assertThat(getMatchingRules(reqG1.withSourceAddress("10.10.100.4")))
-                .isEqualTo(of(g1Ip10, g1allow));
+        assertThat(getMatchingRules(reqAnonymous.withSourceAddress("10.10.100.4")))
+                .isEmpty();
+        assertThat(getMatchingRules(reqG1.withSourceAddress("10.10.100.4"))).isEqualTo(of(g1Ip10, g1allow));
         assertThat(getMatchingRules(reqG1.withSourceAddress("10.10.1.4")))
                 .as("address out of range")
                 .isEqualTo(of(g1allow));
 
-        assertThat(getMatchingRules(reqAnonymous.withSourceAddress("192.168.1.1"))).isEmpty();
+        assertThat(getMatchingRules(reqAnonymous.withSourceAddress("192.168.1.1")))
+                .isEmpty();
 
-        assertThat(getMatchingRules(reqG1.withSourceAddress("192.168.1.1")))
-                .isEqualTo(of(g1ip192, g1allow));
+        assertThat(getMatchingRules(reqG1.withSourceAddress("192.168.1.1"))).isEqualTo(of(g1ip192, g1allow));
         assertThat(getMatchingRules(reqG1.withUser("anyuser").withSourceAddress("192.168.1.1")))
                 .isEqualTo(of(g1ip192, g1allow));
 
@@ -470,7 +477,8 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         assertGetMatchingRules("u3a", "g1,g2", 50);
         assertGetMatchingRules("u3b", "g1,g2", 60);
 
-        AccessRequest request = AccessRequest.builder().user("anonymous").roles("g2").build();
+        AccessRequest request =
+                AccessRequest.builder().user("anonymous").roles("g2").build();
         assertThat(authorizationService.getMatchingRules(request)).isEmpty();
 
         request = AccessRequest.builder().user("anonymous").roles("g1").build();
@@ -501,8 +509,7 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         assertThat(adminAuth.isAdmin()).isFalse();
 
         // add a USER adminrule
-        AdminRule userAdminRule =
-                insert(AdminRule.user().withPriority(20).withUsername(request.getUser()));
+        AdminRule userAdminRule = insert(AdminRule.user().withPriority(20).withUsername(request.getUser()));
 
         accessInfo = authorizationService.getAccessInfo(fullRequest);
         assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
@@ -514,12 +521,10 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
 
         // let's add an ADMIN adminrule on workspace w1
 
-        AdminRule adminRule =
-                adminruleAdminService.insert(
-                        AdminRule.admin()
-                                .withPriority(10)
-                                .withUsername(request.getUser())
-                                .withWorkspace(request.getWorkspace()));
+        AdminRule adminRule = adminruleAdminService.insert(AdminRule.admin()
+                .withPriority(10)
+                .withUsername(request.getUser())
+                .withWorkspace(request.getWorkspace()));
 
         accessInfo = authorizationService.getAccessInfo(fullRequest);
         assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
@@ -584,8 +589,7 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         assertGetMatchingRules("NO", "p1,p2,NO", 60, 70, 999);
     }
 
-    private void assertGetMatchingRules(
-            String userName, String groupNames, Integer... expectedPriorities) {
+    private void assertGetMatchingRules(String userName, String groupNames, Integer... expectedPriorities) {
 
         String[] groups = groupNames == null ? new String[0] : groupNames.split(",");
         AccessRequest request = createRequest(userName, groups);
@@ -595,12 +599,10 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
     private void assertMatchingRules(AccessRequest request, Integer... expectedPriorities) {
         List<Rule> rules = authorizationService.getMatchingRules(request);
 
-        List<Long> pri =
-                rules.stream().map(r -> r.getPriority()).sorted().collect(Collectors.toList());
-        List<Long> exp =
-                Arrays.asList(expectedPriorities).stream()
-                        .map(i -> i.longValue())
-                        .collect(Collectors.toList());
+        List<Long> pri = rules.stream().map(r -> r.getPriority()).sorted().collect(Collectors.toList());
+        List<Long> exp = Arrays.asList(expectedPriorities).stream()
+                .map(i -> i.longValue())
+                .collect(Collectors.toList());
         assertEquals(exp, pri, "Bad rule set selected for filter " + request);
     }
 
@@ -613,13 +615,7 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
             String workspace,
             String layer) {
 
-        return getMatchingRules(
-                createRequest(userName, roleName),
-                sourceAddress,
-                service,
-                request,
-                workspace,
-                layer);
+        return getMatchingRules(createRequest(userName, roleName), sourceAddress, service, request, workspace, layer);
     }
 
     private List<Rule> getMatchingRules(
@@ -630,13 +626,12 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
             String workspace,
             String layer) {
 
-        AccessRequest req =
-                baseRequest
-                        .withSourceAddress(validateNotAny(sourceAddress))
-                        .withService(validateNotAny(service))
-                        .withRequest(validateNotAny(request))
-                        .withWorkspace(validateNotAny(workspace))
-                        .withLayer(validateNotAny(layer));
+        AccessRequest req = baseRequest
+                .withSourceAddress(validateNotAny(sourceAddress))
+                .withService(validateNotAny(service))
+                .withRequest(validateNotAny(request))
+                .withWorkspace(validateNotAny(workspace))
+                .withLayer(validateNotAny(layer));
 
         return getMatchingRules(req);
     }
@@ -654,13 +649,12 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
             String workspace,
             String layer) {
 
-        AccessRequest req =
-                createRequest(userName, roleName)
-                        .withSourceAddress(sourceAddress)
-                        .withService(service)
-                        .withRequest(request)
-                        .withWorkspace(workspace)
-                        .withLayer(layer);
+        AccessRequest req = createRequest(userName, roleName)
+                .withSourceAddress(sourceAddress)
+                .withService(service)
+                .withRequest(request)
+                .withWorkspace(workspace)
+                .withLayer(layer);
 
         return authorizationService.getAccessInfo(req);
     }

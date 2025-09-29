@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URL;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
@@ -36,13 +37,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.w3c.dom.Document;
 
-import java.net.URL;
-
 public class ACLResourceAccessManager_WMTSLayerTest extends AclBaseTest {
 
     private static final String LAYER_NAME = "AMSR2_Snow_Water_Equivalent";
 
-    @Rule public TestHttpClientRule clientMocker = new TestHttpClientRule();
+    @Rule
+    public TestHttpClientRule clientMocker = new TestHttpClientRule();
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -55,8 +55,7 @@ public class ACLResourceAccessManager_WMTSLayerTest extends AclBaseTest {
         cb.setWorkspace(catalog.getWorkspaceByName("sf"));
         WMTSStoreInfo wmts = cb.buildWMTSStore("demo");
         wmts.setCapabilitiesURL(
-                clientMocker.getServer()
-                        + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS");
+                clientMocker.getServer() + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS");
         catalog.add(wmts);
 
         // and a wmts layer as well (cannot use the builder, would turn this test into an online one
@@ -68,8 +67,7 @@ public class ACLResourceAccessManager_WMTSLayerTest extends AclBaseTest {
 
     public void addWmtsLayer() throws Exception {
         String capabilities =
-                clientMocker.getServer()
-                        + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS";
+                clientMocker.getServer() + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS";
         WMTSLayerInfo wml = catalog.getResourceByName("sf", LAYER_NAME, WMTSLayerInfo.class);
         if (wml == null) {
             wml = catalog.getFactory().createWMTSLayer();
@@ -96,15 +94,13 @@ public class ACLResourceAccessManager_WMTSLayerTest extends AclBaseTest {
         MockHttpClient client = new MockHttpClient();
         client.expectGet(
                 new URL(capabilities),
-                new MockHttpResponse(
-                        WMTSLayerTest.class.getResource("nasa.getcapa.xml"), "text/xml"));
+                new MockHttpResponse(WMTSLayerTest.class.getResource("nasa.getcapa.xml"), "text/xml"));
         clientMocker.bind(client, capabilities);
     }
 
     @Test
     public void testWmsLimited() {
-        UsernamePasswordAuthenticationToken user =
-                new UsernamePasswordAuthenticationToken("wmsuser", "wmsuser");
+        UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken("wmsuser", "wmsuser");
 
         // check layer in the sf workspace with a wfs request
         Request request = new Request();
@@ -146,8 +142,7 @@ public class ACLResourceAccessManager_WMTSLayerTest extends AclBaseTest {
         assertNotNull(wmtsLayer);
         logout();
 
-        WMTSAccessLimits limits =
-                (WMTSAccessLimits) accessManager.getAccessLimits(admin, wmtsLayer);
+        WMTSAccessLimits limits = (WMTSAccessLimits) accessManager.getAccessLimits(admin, wmtsLayer);
         assertEquals(Filter.INCLUDE, limits.getReadFilter());
 
         // now fake a getmap request (using a service and request with a different case)
@@ -190,14 +185,8 @@ public class ACLResourceAccessManager_WMTSLayerTest extends AclBaseTest {
 
         assertXpathEvaluatesTo("30", "count(//*[local-name()='Layer'])", dom);
         assertXpathEvaluatesTo(
-                "4",
-                "count(//*[local-name()='Layer']/*[local-name()='Name' and starts-with(text(), 'sf:')])",
-                dom);
+                "4", "count(//*[local-name()='Layer']/*[local-name()='Name' and starts-with(text(), 'sf:')])", dom);
         assertXpathEvaluatesTo(
-                "1",
-                "count(//*[local-name()='Layer']/*[local-name()='Name' and text()='sf:"
-                        + LAYER_NAME
-                        + "'])",
-                dom);
+                "1", "count(//*[local-name()='Layer']/*[local-name()='Name' and text()='sf:" + LAYER_NAME + "'])", dom);
     }
 }

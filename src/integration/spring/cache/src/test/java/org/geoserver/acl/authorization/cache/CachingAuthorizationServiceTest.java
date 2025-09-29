@@ -12,6 +12,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.geoserver.acl.authorization.AccessInfo;
 import org.geoserver.acl.authorization.AccessRequest;
 import org.geoserver.acl.authorization.AccessSummary;
@@ -25,12 +30,6 @@ import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 class CachingAuthorizationServiceTest {
 
@@ -46,34 +45,17 @@ class CachingAuthorizationServiceTest {
         dataAccessCache = new ConcurrentHashMap<>();
         adminAccessCache = new ConcurrentHashMap<>();
         viewablesCache = new ConcurrentHashMap<>();
-        caching =
-                new CachingAuthorizationService(
-                        delegate, dataAccessCache, adminAccessCache, viewablesCache);
+        caching = new CachingAuthorizationService(delegate, dataAccessCache, adminAccessCache, viewablesCache);
     }
 
     @Test
     void testCachingAuthorizationService() {
         var npe = NullPointerException.class;
         assertThrows(
-                npe,
-                () ->
-                        new CachingAuthorizationService(
-                                null, dataAccessCache, adminAccessCache, viewablesCache));
-        assertThrows(
-                npe,
-                () ->
-                        new CachingAuthorizationService(
-                                delegate, null, adminAccessCache, viewablesCache));
-        assertThrows(
-                npe,
-                () ->
-                        new CachingAuthorizationService(
-                                delegate, dataAccessCache, null, viewablesCache));
-        assertThrows(
-                npe,
-                () ->
-                        new CachingAuthorizationService(
-                                delegate, dataAccessCache, adminAccessCache, null));
+                npe, () -> new CachingAuthorizationService(null, dataAccessCache, adminAccessCache, viewablesCache));
+        assertThrows(npe, () -> new CachingAuthorizationService(delegate, null, adminAccessCache, viewablesCache));
+        assertThrows(npe, () -> new CachingAuthorizationService(delegate, dataAccessCache, null, viewablesCache));
+        assertThrows(npe, () -> new CachingAuthorizationService(delegate, dataAccessCache, adminAccessCache, null));
     }
 
     @Test
@@ -94,14 +76,15 @@ class CachingAuthorizationServiceTest {
 
     @Test
     void testGetAdminAuthorization() {
-        AdminAccessRequest req =
-                AdminAccessRequest.builder().roles("ROLE_AUTHENTICATED").workspace("test").build();
-        AdminAccessInfo expected =
-                AdminAccessInfo.builder()
-                        .admin(false)
-                        .workspace("test")
-                        .matchingAdminRule("1")
-                        .build();
+        AdminAccessRequest req = AdminAccessRequest.builder()
+                .roles("ROLE_AUTHENTICATED")
+                .workspace("test")
+                .build();
+        AdminAccessInfo expected = AdminAccessInfo.builder()
+                .admin(false)
+                .workspace("test")
+                .matchingAdminRule("1")
+                .build();
         when(delegate.getAdminAuthorization(req)).thenReturn(expected);
 
         AdminAccessInfo r1 = caching.getAdminAuthorization(req);
@@ -138,12 +121,7 @@ class CachingAuthorizationServiceTest {
     }
 
     private void grantAll(
-            Rule rule1,
-            Rule rule2,
-            Rule rule3,
-            AccessRequest req1,
-            AccessRequest req2,
-            AccessRequest req3) {
+            Rule rule1, Rule rule2, Rule rule3, AccessRequest req1, AccessRequest req2, AccessRequest req3) {
         grant(req1, rule1);
         grant(req2, rule1, rule2);
         grant(req3, rule1, rule2, rule3);
@@ -194,8 +172,10 @@ class CachingAuthorizationServiceTest {
     }
 
     private AdminAccessInfo grant(AdminAccessRequest req, AdminRule matching) {
-        AdminAccessInfo grant =
-                AdminAccessInfo.builder().admin(false).matchingAdminRule(matching.getId()).build();
+        AdminAccessInfo grant = AdminAccessInfo.builder()
+                .admin(false)
+                .matchingAdminRule(matching.getId())
+                .build();
         this.adminAccessCache.put(req, grant);
         return grant;
     }

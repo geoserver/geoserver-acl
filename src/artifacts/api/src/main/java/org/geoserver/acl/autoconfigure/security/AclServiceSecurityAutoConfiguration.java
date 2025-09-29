@@ -4,8 +4,8 @@
  */
 package org.geoserver.acl.autoconfigure.security;
 
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -16,8 +16,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
-
-import java.util.Optional;
 
 @AutoConfiguration
 @EnableWebSecurity
@@ -55,10 +53,9 @@ public class AclServiceSecurityAutoConfiguration {
             log.info("Pre-authentication headers disabled");
         }
 
-        http =
-                http.sessionManagement()
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                        .and();
+        http = http.sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and();
 
         if (config.getInternal().isEnabled()) {
             http = http.httpBasic().and();

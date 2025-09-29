@@ -9,6 +9,12 @@ package org.geoserver.acl.plugin.accessmanager.config;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.OutputStreamWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.acl.plugin.accessmanager.AccessManagerConfig;
@@ -18,13 +24,6 @@ import org.geoserver.test.GeoServerTestSupport;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.UrlResource;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.OutputStreamWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Ignore
 public class AclConfigurationManagerTest extends GeoServerTestSupport {
@@ -51,10 +50,8 @@ public class AclConfigurationManagerTest extends GeoServerTestSupport {
         manager = applicationContext.getBean(AclConfigurationManager.class);
 
         configurer =
-                (AclPropertyPlaceholderConfigurer)
-                        applicationContext.getBean(AclPropertyPlaceholderConfigurer.class);
-        configurer.setLocation(
-                new UrlResource(this.getClass().getResource("/test-config.properties")));
+                (AclPropertyPlaceholderConfigurer) applicationContext.getBean(AclPropertyPlaceholderConfigurer.class);
+        configurer.setLocation(new UrlResource(this.getClass().getResource("/test-config.properties")));
     }
 
     @Test
@@ -71,8 +68,7 @@ public class AclConfigurationManagerTest extends GeoServerTestSupport {
 
         Resource configurationFile = configurer.getConfigFile();
 
-        try (BufferedWriter writer =
-                new BufferedWriter(new OutputStreamWriter(configurationFile.out()))) {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(configurationFile.out()))) {
             writer.write("newUserProperty=custom_property_value\n");
         }
 

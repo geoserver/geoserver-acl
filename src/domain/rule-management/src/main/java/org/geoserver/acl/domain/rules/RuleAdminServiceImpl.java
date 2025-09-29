@@ -7,12 +7,6 @@
 
 package org.geoserver.acl.domain.rules;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
-import org.geoserver.acl.domain.filter.RuleQuery;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -20,6 +14,10 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.geoserver.acl.domain.filter.RuleQuery;
 
 /**
  * Operations on {@link Rule Rule}s.
@@ -36,10 +34,9 @@ public class RuleAdminServiceImpl implements RuleAdminService {
     private final @NonNull RuleRepository ruleRepository;
 
     @Setter
-    private @NonNull Consumer<RuleEvent> eventPublisher =
-            r -> {
-                // no-op
-            };
+    private @NonNull Consumer<RuleEvent> eventPublisher = r -> {
+        // no-op
+    };
 
     // =========================================================================
     // Basic operations
@@ -127,8 +124,7 @@ public class RuleAdminServiceImpl implements RuleAdminService {
      */
     protected Rule sanitizeFields(Rule rule) {
         if (rule.getPriority() < 0)
-            throw new IllegalArgumentException(
-                    "Negative priority is not allowed: " + rule.getPriority());
+            throw new IllegalArgumentException("Negative priority is not allowed: " + rule.getPriority());
 
         // read class' javadoc
         RuleIdentifier identifier = rule.getIdentifier();
@@ -189,8 +185,7 @@ public class RuleAdminServiceImpl implements RuleAdminService {
         RuleQuery<RuleFilter> query = RuleQuery.of(filter).setLimit(2);
         List<Rule> found = ruleRepository.findAll(query).collect(Collectors.toList());
         if (found.size() > 1) {
-            throw new IllegalArgumentException(
-                    "Unexpected rule count for filter " + filter + " : " + found.size());
+            throw new IllegalArgumentException("Unexpected rule count for filter " + filter + " : " + found.size());
         }
 
         return Optional.ofNullable(found.isEmpty() ? null : found.get(0));
@@ -228,8 +223,7 @@ public class RuleAdminServiceImpl implements RuleAdminService {
      *     LIMIT} type
      */
     @Override
-    public void setLimits(@NonNull String ruleId, RuleLimits limits)
-            throws IllegalArgumentException {
+    public void setLimits(@NonNull String ruleId, RuleLimits limits) throws IllegalArgumentException {
 
         ruleRepository.setLimits(ruleId, limits);
         eventPublisher.accept(RuleEvent.updated(ruleId));

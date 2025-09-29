@@ -7,13 +7,12 @@
 
 package org.geoserver.acl.jpa.model;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 
 /**
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)

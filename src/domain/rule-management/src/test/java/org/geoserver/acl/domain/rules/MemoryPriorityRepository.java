@@ -16,12 +16,11 @@ import java.util.stream.Stream;
 
 public abstract class MemoryPriorityRepository<R> {
 
-    private final Comparator<R> comparator =
-            (r1, r2) -> {
-                long p1 = getPriority(r1);
-                long p2 = getPriority(r2);
-                return Long.compare(p1, p2);
-            };
+    private final Comparator<R> comparator = (r1, r2) -> {
+        long p1 = getPriority(r1);
+        long p2 = getPriority(r2);
+        return Long.compare(p1, p2);
+    };
 
     protected SortedSet<R> rules = new TreeSet<>(comparator);
 
@@ -66,26 +65,22 @@ public abstract class MemoryPriorityRepository<R> {
     public abstract Optional<R> findOneByPriority(long priority);
 
     protected int shiftPrioritiesBetween(long min, long max, long offset) {
-        List<R> matches =
-                rules.stream()
-                        .filter(
-                                r -> {
-                                    long p = getPriority(r);
-                                    return p >= min && p <= max;
-                                })
-                        .collect(Collectors.toList());
+        List<R> matches = rules.stream()
+                .filter(r -> {
+                    long p = getPriority(r);
+                    return p >= min && p <= max;
+                })
+                .collect(Collectors.toList());
 
         rules.removeAll(matches);
-        matches.forEach(
-                r -> {
-                    final long priority = getPriority(r) + offset;
-                    R offseted = withPriority(r, priority);
-                    boolean add = rules.add(offseted);
-                    if (!add) {
-                        throw new IllegalStateException(
-                                "Rule with priority " + priority + " already exists");
-                    }
-                });
+        matches.forEach(r -> {
+            final long priority = getPriority(r) + offset;
+            R offseted = withPriority(r, priority);
+            boolean add = rules.add(offseted);
+            if (!add) {
+                throw new IllegalStateException("Rule with priority " + priority + " already exists");
+            }
+        });
         return matches.size() == 0 ? -1 : matches.size();
     }
 
@@ -102,8 +97,7 @@ public abstract class MemoryPriorityRepository<R> {
         }
         if (!rules.add(rNew)) {
             throw new IllegalStateException(
-                    "Can't replace rule, another one with the same priority already exists: "
-                            + rNew);
+                    "Can't replace rule, another one with the same priority already exists: " + rNew);
         }
     }
 }

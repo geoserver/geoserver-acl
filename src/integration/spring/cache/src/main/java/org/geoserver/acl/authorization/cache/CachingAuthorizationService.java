@@ -4,9 +4,10 @@
  */
 package org.geoserver.acl.authorization.cache;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-
 import org.geoserver.acl.authorization.AccessInfo;
 import org.geoserver.acl.authorization.AccessRequest;
 import org.geoserver.acl.authorization.AccessSummary;
@@ -18,9 +19,6 @@ import org.geoserver.acl.authorization.ForwardingAuthorizationService;
 import org.geoserver.acl.domain.adminrules.AdminRuleEvent;
 import org.geoserver.acl.domain.rules.RuleEvent;
 import org.springframework.context.event.EventListener;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * {@link AuthorizationService} decorator that caches requests and responses, listens to events for

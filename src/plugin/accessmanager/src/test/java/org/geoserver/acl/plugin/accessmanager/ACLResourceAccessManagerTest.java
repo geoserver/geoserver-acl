@@ -61,8 +61,7 @@ public class ACLResourceAccessManagerTest extends AclBaseTest {
         assertTrue(wl.isWritable());
 
         // check layer access
-        LayerInfo layer =
-                catalog.getLayerByName(getLayerId(MockData.BASIC_POLYGONS)); // uses the login
+        LayerInfo layer = catalog.getLayerByName(getLayerId(MockData.BASIC_POLYGONS)); // uses the login
 
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, layer);
         assertEquals(Filter.INCLUDE, vl.getReadFilter());
@@ -141,8 +140,7 @@ public class ACLResourceAccessManagerTest extends AclBaseTest {
     public void testCiteLayerAccess() {
         Authentication user = getUser("cite", "cite", "ROLE_AUTHENTICATED");
         // let the cite user see the cite workspace
-        ruleAdminService.insert(
-                Rule.allow().withUsername("cite").withWorkspace("cite"), InsertPosition.FROM_START);
+        ruleAdminService.insert(Rule.allow().withUsername("cite").withWorkspace("cite"), InsertPosition.FROM_START);
 
         login("admin", "geoserver", "ROLE_ADMINISTRATOR");
 
@@ -191,9 +189,7 @@ public class ACLResourceAccessManagerTest extends AclBaseTest {
         Dispatcher.REQUEST.set(request);
 
         LayerInfo generic = catalog.getLayerByName(getLayerId(MockData.GENERICENTITY));
-        assertNull(
-                "Layer should not be visible to WFS as per the default rules set up in AclTestBase",
-                generic);
+        assertNull("Layer should not be visible to WFS as per the default rules set up in AclTestBase", generic);
 
         request = new Request();
         request.setService("WMS");
@@ -201,9 +197,7 @@ public class ACLResourceAccessManagerTest extends AclBaseTest {
         Dispatcher.REQUEST.set(request);
 
         generic = catalog.getLayerByName(getLayerId(MockData.GENERICENTITY));
-        assertNotNull(
-                "Layer should be visible to WMS as per the default rules set up in AclTestBase",
-                generic);
+        assertNotNull("Layer should be visible to WMS as per the default rules set up in AclTestBase", generic);
 
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, generic);
         assertEquals(Filter.INCLUDE, vl.getReadFilter());
@@ -222,18 +216,15 @@ public class ACLResourceAccessManagerTest extends AclBaseTest {
         Authentication user = getUser("area", "area", "ROLE_AUTHENTICATED");
         login("area", "area", "ROLE_AUTHENTICATED");
         // let the area user see the sf workspace
-        Rule rule =
-                ruleAdminService.insert(
-                        Rule.limit().withPriority(1).withUsername("area").withWorkspace("sf"));
+        Rule rule = ruleAdminService.insert(
+                Rule.limit().withPriority(1).withUsername("area").withWorkspace("sf"));
         ruleAdminService.insert(
                 Rule.allow().withPriority(2).withUsername("area").withWorkspace("sf"));
         ruleAdminService.setLimits(
                 rule.getId(),
                 RuleLimits.builder()
-                        .allowedArea(
-                                (MultiPolygon<?>)
-                                        Wkt.fromWkt(
-                                                "SRID=4326;MULTIPOLYGON(((48 62, 48 63, 49 63, 49 62, 48 62)))"))
+                        .allowedArea((MultiPolygon<?>)
+                                Wkt.fromWkt("SRID=4326;MULTIPOLYGON(((48 62, 48 63, 49 63, 49 62, 48 62)))"))
                         .build());
 
         // check we have the geometry filter set
@@ -242,8 +233,7 @@ public class ACLResourceAccessManagerTest extends AclBaseTest {
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, generic);
 
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
-        Geometry limit =
-                new WKTReader().read("MULTIPOLYGON(((48 62, 48 63, 49 63, 49 62, 48 62)))");
+        Geometry limit = new WKTReader().read("MULTIPOLYGON(((48 62, 48 63, 49 63, 49 62, 48 62)))");
         Filter filter = ff.intersects(ff.property(""), ff.literal(limit));
 
         assertEquals(filter, vl.getReadFilter());
@@ -283,10 +273,9 @@ public class ACLResourceAccessManagerTest extends AclBaseTest {
         // Check we have the geometry filter set
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, resource);
 
-        Geometry expectedLimit =
-                new WKTReader()
-                        .read(
-                                " MULTIPOLYGON (((5343335.558077131 8859142.800565697, 5343335.558077131 9100250.907059547, 5454655.048870404 9100250.907059547, 5454655.048870404 8859142.800565697, 5343335.558077131 8859142.800565697)))");
+        Geometry expectedLimit = new WKTReader()
+                .read(
+                        " MULTIPOLYGON (((5343335.558077131 8859142.800565697, 5343335.558077131 9100250.907059547, 5454655.048870404 9100250.907059547, 5454655.048870404 8859142.800565697, 5343335.558077131 8859142.800565697)))");
 
         IntersectExtractor ier = new IntersectExtractor();
         vl.getReadFilter().accept(ier, null);
@@ -329,13 +318,11 @@ public class ACLResourceAccessManagerTest extends AclBaseTest {
         Dispatcher.REQUEST.set(request);
 
         // Check we have the geometry filter set
-        CoverageAccessLimits accessLimits =
-                (CoverageAccessLimits) accessManager.getAccessLimits(user, resource);
+        CoverageAccessLimits accessLimits = (CoverageAccessLimits) accessManager.getAccessLimits(user, resource);
 
-        Geometry expectedLimit =
-                new WKTReader()
-                        .read(
-                                "MULTIPOLYGON (((5343335.558077131 8859142.800565697, 5343335.558077131 9100250.907059547, 5454655.048870404 9100250.907059547, 5454655.048870404 8859142.800565697, 5343335.558077131 8859142.800565697)))");
+        Geometry expectedLimit = new WKTReader()
+                .read(
+                        "MULTIPOLYGON (((5343335.558077131 8859142.800565697, 5343335.558077131 9100250.907059547, 5454655.048870404 9100250.907059547, 5454655.048870404 8859142.800565697, 5343335.558077131 8859142.800565697)))");
 
         assertTrue(expectedLimit.equalsExact(accessLimits.getRasterFilter(), .000000001));
     }

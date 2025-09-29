@@ -18,7 +18,8 @@ import lombok.With;
 @Builder(toBuilder = true, builderClassName = "Builder")
 public class Rule {
 
-    private static final RuleIdentifier EMPTY_IDENTIFIER = RuleIdentifier.builder().build();
+    private static final RuleIdentifier EMPTY_IDENTIFIER =
+            RuleIdentifier.builder().build();
 
     private String id;
 
@@ -33,7 +34,9 @@ public class Rule {
 
     private long priority;
 
-    @NonNull @Default private RuleIdentifier identifier = EMPTY_IDENTIFIER;
+    @NonNull
+    @Default
+    private RuleIdentifier identifier = EMPTY_IDENTIFIER;
 
     private RuleLimits ruleLimits;
 

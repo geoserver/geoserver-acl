@@ -4,10 +4,9 @@
  */
 package org.geoserver.acl.domain.filter.predicate;
 
-import lombok.EqualsAndHashCode;
-
 import java.io.Serializable;
 import java.util.function.Predicate;
+import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
 public abstract class RulePredicate<T> implements Predicate<T>, Serializable, Cloneable {

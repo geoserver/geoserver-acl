@@ -27,35 +27,28 @@ public abstract class AdminRuleApiMapper {
     @Mapping(target = "identifier.rolename", source = "role")
     @Mapping(target = "identifier.workspace", source = "workspace")
     @Mapping(target = "identifier.addressRange", source = "addressRange")
-    public abstract org.geoserver.acl.domain.adminrules.AdminRule toModel(
-            org.geoserver.acl.api.model.AdminRule rule);
+    public abstract org.geoserver.acl.domain.adminrules.AdminRule toModel(org.geoserver.acl.api.model.AdminRule rule);
 
     @Mapping(target = "user", source = "identifier.username")
     @Mapping(target = "role", source = "identifier.rolename")
     @Mapping(target = "workspace", source = "identifier.workspace")
     @Mapping(target = "addressRange", source = "identifier.addressRange")
-    public abstract org.geoserver.acl.api.model.AdminRule toApi(
-            org.geoserver.acl.domain.adminrules.AdminRule rule);
+    public abstract org.geoserver.acl.api.model.AdminRule toApi(org.geoserver.acl.domain.adminrules.AdminRule rule);
 
     @Mapping(target = "identifier", ignore = true)
-    abstract AdminRule updateEntity(
-            @MappingTarget AdminRule.Builder entity, org.geoserver.acl.api.model.AdminRule dto);
+    abstract AdminRule updateEntity(@MappingTarget AdminRule.Builder entity, org.geoserver.acl.api.model.AdminRule dto);
 
     @Mapping(target = "username", source = "user")
     @Mapping(target = "rolename", source = "role")
     abstract AdminRuleIdentifier updateIdentifier(
-            @MappingTarget AdminRuleIdentifier.Builder entity,
-            org.geoserver.acl.api.model.AdminRule dto);
+            @MappingTarget AdminRuleIdentifier.Builder entity, org.geoserver.acl.api.model.AdminRule dto);
 
     public AdminRule patch(
-            org.geoserver.acl.domain.adminrules.AdminRule target,
-            org.geoserver.acl.api.model.AdminRule source) {
+            org.geoserver.acl.domain.adminrules.AdminRule target, org.geoserver.acl.api.model.AdminRule source) {
 
-        AdminRuleIdentifier identifier =
-                updateIdentifier(target.getIdentifier().toBuilder(), source);
+        AdminRuleIdentifier identifier = updateIdentifier(target.getIdentifier().toBuilder(), source);
 
-        org.geoserver.acl.domain.adminrules.AdminRule patched =
-                updateEntity(target.toBuilder(), source);
+        org.geoserver.acl.domain.adminrules.AdminRule patched = updateEntity(target.toBuilder(), source);
 
         return patched.withIdentifier(identifier);
     }

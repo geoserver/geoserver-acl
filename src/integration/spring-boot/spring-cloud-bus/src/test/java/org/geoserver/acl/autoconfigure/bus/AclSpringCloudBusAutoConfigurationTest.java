@@ -23,34 +23,25 @@ class AclSpringCloudBusAutoConfigurationTest {
     private Destination.Factory destinationFactory = new PathDestinationFactory();
     private BusBridge mockBusBridge = mock(BusBridge.class);
 
-    private ApplicationContextRunner runner =
-            new ApplicationContextRunner()
-                    .withBean(Destination.Factory.class, () -> destinationFactory)
-                    .withBean(BusBridge.class, () -> mockBusBridge)
-                    .withConfiguration(
-                            AutoConfigurations.of(
-                                    BusAutoConfiguration.class,
-                                    PathServiceMatcherAutoConfiguration.class,
-                                    AclSpringCloudBusAutoConfiguration.class));
+    private ApplicationContextRunner runner = new ApplicationContextRunner()
+            .withBean(Destination.Factory.class, () -> destinationFactory)
+            .withBean(BusBridge.class, () -> mockBusBridge)
+            .withConfiguration(AutoConfigurations.of(
+                    BusAutoConfiguration.class,
+                    PathServiceMatcherAutoConfiguration.class,
+                    AclSpringCloudBusAutoConfiguration.class));
 
     @Test
     void testDisabledByDefault() {
-        runner.run(
-                context -> {
-                    assertThat(context)
-                            .hasNotFailed()
-                            .doesNotHaveBean(RemoteAclRuleEventsBridge.class);
-                });
+        runner.run(context -> {
+            assertThat(context).hasNotFailed().doesNotHaveBean(RemoteAclRuleEventsBridge.class);
+        });
     }
 
     @Test
     void testEnabled() {
-        runner.withPropertyValues("geoserver.bus.enabled=true")
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasNotFailed()
-                                    .hasSingleBean(RemoteAclRuleEventsBridge.class);
-                        });
+        runner.withPropertyValues("geoserver.bus.enabled=true").run(context -> {
+            assertThat(context).hasNotFailed().hasSingleBean(RemoteAclRuleEventsBridge.class);
+        });
     }
 }

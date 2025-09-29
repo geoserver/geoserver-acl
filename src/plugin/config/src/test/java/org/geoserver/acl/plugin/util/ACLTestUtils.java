@@ -16,9 +16,9 @@ import java.net.URISyntaxException;
 
 public class ACLTestUtils {
 
-    public static String readConfig(String fileName)
-            throws URISyntaxException, FileNotFoundException, IOException {
-        File configFile = new File(ACLTestUtils.class.getResource("/" + fileName).toURI());
+    public static String readConfig(String fileName) throws URISyntaxException, FileNotFoundException, IOException {
+        File configFile =
+                new File(ACLTestUtils.class.getResource("/" + fileName).toURI());
 
         StringBuilder content = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(configFile))) {
@@ -30,8 +30,7 @@ public class ACLTestUtils {
         return content.toString();
     }
 
-    public static String readConfig(File configFile)
-            throws URISyntaxException, FileNotFoundException, IOException {
+    public static String readConfig(File configFile) throws URISyntaxException, FileNotFoundException, IOException {
 
         StringBuilder content = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(configFile))) {

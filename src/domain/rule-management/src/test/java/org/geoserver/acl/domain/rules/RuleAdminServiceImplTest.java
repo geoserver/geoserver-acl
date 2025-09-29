@@ -19,15 +19,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import org.geoserver.acl.domain.filter.RuleQuery;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.geoserver.acl.domain.filter.RuleQuery;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class RuleAdminServiceImplTest {
 
@@ -59,10 +58,8 @@ class RuleAdminServiceImplTest {
 
     @Test
     void insertRuleNonNullId() {
-        IllegalArgumentException expected =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> service.insert(Rule.deny().withId("100")));
+        IllegalArgumentException expected = assertThrows(
+                IllegalArgumentException.class, () -> service.insert(Rule.deny().withId("100")));
         assertThat(expected.getMessage()).contains("a new Rule must not have id, got 100");
     }
 
@@ -83,8 +80,7 @@ class RuleAdminServiceImplTest {
     void insertRuleInsertPosition() {
         Rule rule = Rule.allow();
 
-        when(repository.create(eq(rule), eq(InsertPosition.FROM_START)))
-                .thenReturn(rule.withId("1"));
+        when(repository.create(eq(rule), eq(InsertPosition.FROM_START))).thenReturn(rule.withId("1"));
 
         Rule created = service.insert(rule, InsertPosition.FROM_START);
         assertThat(created).isEqualTo(rule.withId("1"));
@@ -114,12 +110,7 @@ class RuleAdminServiceImplTest {
 
     @Test
     void update_sanitizeFields() {
-        Rule rule =
-                Rule.allow()
-                        .withId("1")
-                        .withPriority(10)
-                        .withService("wms")
-                        .withRequest("getcapabilities");
+        Rule rule = Rule.allow().withId("1").withPriority(10).withService("wms").withRequest("getcapabilities");
         Rule expected = rule.withService("WMS").withRequest("GETCAPABILITIES");
 
         when(repository.save(eq(expected))).thenReturn(expected);
@@ -131,8 +122,7 @@ class RuleAdminServiceImplTest {
 
     @Test
     void shiftNegativeOffset() {
-        IllegalArgumentException expected =
-                assertThrows(IllegalArgumentException.class, () -> service.shift(0, -1));
+        IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> service.shift(0, -1));
         assertThat(expected.getMessage()).contains("Positive offset required");
     }
 
@@ -184,16 +174,14 @@ class RuleAdminServiceImplTest {
 
     @Test
     void getList() {
-        assertThrows(
-                NullPointerException.class, () -> service.getAll((RuleQuery<RuleFilter>) null));
+        assertThrows(NullPointerException.class, () -> service.getAll((RuleQuery<RuleFilter>) null));
 
         RuleQuery<RuleFilter> query = RuleQuery.of(new RuleFilter().setRole("role1"));
 
-        List<Rule> expected =
-                List.of(
-                        Rule.allow().withRolename("role1"),
-                        Rule.deny().withRolename("role1"),
-                        Rule.limit().withRolename("role1"));
+        List<Rule> expected = List.of(
+                Rule.allow().withRolename("role1"),
+                Rule.deny().withRolename("role1"),
+                Rule.limit().withRolename("role1"));
 
         when(repository.findAll(query)).thenReturn(expected.stream());
 
@@ -215,8 +203,7 @@ class RuleAdminServiceImplTest {
 
         when(repository.findAll(eq(query))).thenReturn(List.of(Rule.allow(), Rule.deny()).stream());
 
-        IllegalArgumentException expected =
-                assertThrows(IllegalArgumentException.class, () -> service.getRule(filter));
+        IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> service.getRule(filter));
         assertThat(expected.getMessage()).contains("Unexpected rule count for filter");
     }
 
@@ -273,7 +260,8 @@ class RuleAdminServiceImplTest {
         service.setLimits("1", (RuleLimits) null);
         verify(repository, times(1)).setLimits(eq("1"), isNull());
 
-        RuleLimits limits = RuleLimits.builder().catalogMode(CatalogMode.CHALLENGE).build();
+        RuleLimits limits =
+                RuleLimits.builder().catalogMode(CatalogMode.CHALLENGE).build();
         service.setLimits("1", limits);
         verify(repository, times(1)).setLimits(eq("1"), same(limits));
     }

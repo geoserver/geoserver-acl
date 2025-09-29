@@ -4,12 +4,11 @@
  */
 package org.geoserver.acl.authorization;
 
+import java.util.Set;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.With;
-
-import java.util.Set;
 
 @Value
 @With
@@ -17,7 +16,10 @@ import java.util.Set;
 public class AdminAccessRequest {
 
     private String user;
-    @NonNull private Set<String> roles;
+
+    @NonNull
+    private Set<String> roles;
+
     private String workspace;
     private String sourceAddress;
 
@@ -56,8 +58,7 @@ public class AdminAccessRequest {
     private void checkNotAny(String prop, String value) {
         if (null != value && "*".equals(value.trim())) {
             String msg =
-                    String.format(
-                            "%s.%s can't contain a * wildcard", getClass().getSimpleName(), prop);
+                    String.format("%s.%s can't contain a * wildcard", getClass().getSimpleName(), prop);
             throw new IllegalStateException(msg);
         }
     }

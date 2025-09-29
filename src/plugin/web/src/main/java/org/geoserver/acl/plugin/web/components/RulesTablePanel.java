@@ -6,9 +6,9 @@
  */
 package org.geoserver.acl.plugin.web.components;
 
+import java.io.Serializable;
 import lombok.NonNull;
 import lombok.Setter;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -27,15 +27,12 @@ import org.geoserver.web.wicket.GeoServerDataProvider.PropertyPlaceholder;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
-
 import wicketdnd.DragSource;
 import wicketdnd.DropTarget;
 import wicketdnd.Location;
 import wicketdnd.Operation;
 import wicketdnd.Transfer;
 import wicketdnd.theme.WebTheme;
-
-import java.io.Serializable;
 
 /**
  * {@link GeoServerTablePanel} for an {@link RulesDataProvider}
@@ -127,8 +124,7 @@ public final class RulesTablePanel<R extends Serializable> extends GeoServerTabl
     }
 
     @Override
-    protected Component getComponentForProperty(
-            String id, IModel<R> itemModel, Property<R> property) {
+    protected Component getComponentForProperty(String id, IModel<R> itemModel, Property<R> property) {
         if (property == BUTTONS) {
             return new UpDownButtonsPanel(id, itemModel.getObject());
         }
@@ -168,65 +164,61 @@ public final class RulesTablePanel<R extends Serializable> extends GeoServerTabl
         }
 
         private ImageAjaxLink<Object> moveUpLink() {
-            ImageAjaxLink<Object> upLink =
-                    new ImageAjaxLink<>("up", imageRef("arrow_up.png")) {
+            ImageAjaxLink<Object> upLink = new ImageAjaxLink<>("up", imageRef("arrow_up.png")) {
 
-                        protected @Override void onClick(AjaxRequestTarget target) {
-                            RulesTablePanel.this.getDataProvider().moveUp(rule);
-                            target.add(RulesTablePanel.this);
-                        }
+                protected @Override void onClick(AjaxRequestTarget target) {
+                    RulesTablePanel.this.getDataProvider().moveUp(rule);
+                    target.add(RulesTablePanel.this);
+                }
 
-                        protected @Override void onComponentTag(ComponentTag tag) {
-                            if (RulesTablePanel.this.getDataProvider().canUp(rule)) {
-                                tag.put("style", "visibility:visible");
-                            } else {
-                                tag.put("style", "visibility:hidden");
-                            }
-                        }
-                    };
+                protected @Override void onComponentTag(ComponentTag tag) {
+                    if (RulesTablePanel.this.getDataProvider().canUp(rule)) {
+                        tag.put("style", "visibility:visible");
+                    } else {
+                        tag.put("style", "visibility:hidden");
+                    }
+                }
+            };
             upLink.setOutputMarkupId(true);
             setImgAlt(upLink, "RulesTablePanel.buttons.up");
             return upLink;
         }
 
         private ImageAjaxLink<Object> moveDownLink() {
-            ImageAjaxLink<Object> downLink =
-                    new ImageAjaxLink<Object>("down", imageRef("arrow_down.png")) {
+            ImageAjaxLink<Object> downLink = new ImageAjaxLink<Object>("down", imageRef("arrow_down.png")) {
 
-                        protected @Override void onClick(AjaxRequestTarget target) {
-                            RulesTablePanel.this.getDataProvider().moveDown(rule);
-                            target.add(RulesTablePanel.this);
-                        }
+                protected @Override void onClick(AjaxRequestTarget target) {
+                    RulesTablePanel.this.getDataProvider().moveDown(rule);
+                    target.add(RulesTablePanel.this);
+                }
 
-                        protected @Override void onComponentTag(ComponentTag tag) {
-                            if (RulesTablePanel.this.getDataProvider().canDown(rule)) {
-                                tag.put("style", "visibility:visible");
-                            } else {
-                                tag.put("style", "visibility:hidden");
-                            }
-                        }
-                    };
+                protected @Override void onComponentTag(ComponentTag tag) {
+                    if (RulesTablePanel.this.getDataProvider().canDown(rule)) {
+                        tag.put("style", "visibility:visible");
+                    } else {
+                        tag.put("style", "visibility:hidden");
+                    }
+                }
+            };
             downLink.setOutputMarkupId(true);
             setImgAlt(downLink, "RulesTablePanel.buttons.down");
             return downLink;
         }
 
         private Component editLink() {
-            ImageAjaxLink<Object> editLink =
-                    new ImageAjaxLink<>("edit", imageRef("edit.png")) {
+            ImageAjaxLink<Object> editLink = new ImageAjaxLink<>("edit", imageRef("edit.png")) {
 
-                        protected @Override void onClick(AjaxRequestTarget target) {
-                            onEdit.accept(rule);
-                        }
-                    };
+                protected @Override void onClick(AjaxRequestTarget target) {
+                    onEdit.accept(rule);
+                }
+            };
             editLink.setOutputMarkupId(true);
             setImgAlt(editLink, "RulesTablePanel.buttons.edit");
             return editLink;
         }
 
         private void setImgAlt(ImageAjaxLink<Object> link, String resourceKey) {
-            link.getImage()
-                    .add(new AttributeModifier("alt", new ParamResourceModel(resourceKey, link)));
+            link.getImage().add(new AttributeModifier("alt", new ParamResourceModel(resourceKey, link)));
         }
 
         private PackageResourceReference imageRef(String imageName) {

@@ -7,15 +7,13 @@ package org.geoserver.cloud.jndi;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.util.Hashtable;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.spi.NamingManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test suite for {@link SimpleNamingContextBuilder}
@@ -40,8 +38,7 @@ class SimpleNamingContextBuilderTest {
 
     @Test
     void testNewInitialContext() throws NamingException {
-        System.setProperty(
-                Context.INITIAL_CONTEXT_FACTORY, SimpleNamingContextFactory.class.getName());
+        System.setProperty(Context.INITIAL_CONTEXT_FACTORY, SimpleNamingContextFactory.class.getName());
         InitialContext ctx = new InitialContext();
         Context subcontext = ctx.createSubcontext("java:comp");
         assertThat(subcontext).isInstanceOf(SimpleNamingContext.class);

@@ -15,25 +15,21 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 class JPAIntegrationConfigurationTest {
 
-    private ApplicationContextRunner runner =
-            new ApplicationContextRunner()
-                    .withPropertyValues(
-                            "geoserver.acl.datasource.url=jdbc:h2:mem:geoserver-acl-test")
-                    .withUserConfiguration(
-                            AuthorizationJPAPropertiesTestConfiguration.class,
-                            JPAIntegrationConfiguration.class);
+    private ApplicationContextRunner runner = new ApplicationContextRunner()
+            .withPropertyValues("geoserver.acl.datasource.url=jdbc:h2:mem:geoserver-acl-test")
+            .withUserConfiguration(
+                    AuthorizationJPAPropertiesTestConfiguration.class, JPAIntegrationConfiguration.class);
 
     @Test
     void testAuthorizationRuleRepositoryJpaAdaptor() {
 
-        runner.run(
-                context -> {
-                    assertThat(context)
-                            .hasNotFailed()
-                            .hasSingleBean(RuleRepository.class)
-                            .hasSingleBean(AdminRuleRepository.class)
-                            .hasSingleBean(RuleJpaMapper.class)
-                            .hasSingleBean(AdminRuleJpaMapper.class);
-                });
+        runner.run(context -> {
+            assertThat(context)
+                    .hasNotFailed()
+                    .hasSingleBean(RuleRepository.class)
+                    .hasSingleBean(AdminRuleRepository.class)
+                    .hasSingleBean(RuleJpaMapper.class)
+                    .hasSingleBean(AdminRuleJpaMapper.class);
+        });
     }
 }

@@ -34,8 +34,7 @@ public class AdminRulesACLPageTest extends AclWicketTestSupport {
         // check the rules model
         @SuppressWarnings("unchecked")
         RulesTablePanel<MutableAdminRule> rulesPanel =
-                (RulesTablePanel<MutableAdminRule>)
-                        tester.getComponentFromLastRenderedPage("rulesPanel");
+                (RulesTablePanel<MutableAdminRule>) tester.getComponentFromLastRenderedPage("rulesPanel");
         assertEquals(2, rulesPanel.getDataProvider().size());
     }
 
@@ -55,8 +54,7 @@ public class AdminRulesACLPageTest extends AclWicketTestSupport {
         AdminRulesACLPage page = tester.startPage(AdminRulesACLPage.class);
 
         byte[] serialized = SerializationUtils.serialize(page);
-        AdminRulesACLPage deserialized =
-                (AdminRulesACLPage) SerializationUtils.deserialize(serialized);
+        AdminRulesACLPage deserialized = (AdminRulesACLPage) SerializationUtils.deserialize(serialized);
         assertNotNull(deserialized);
     }
 }

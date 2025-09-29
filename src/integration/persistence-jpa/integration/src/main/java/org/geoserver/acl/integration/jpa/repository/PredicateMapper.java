@@ -9,9 +9,11 @@ import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.EnumPath;
 import com.querydsl.core.types.dsl.StringPath;
-
+import java.util.Optional;
+import java.util.OptionalLong;
+import java.util.Set;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
-
 import org.geoserver.acl.domain.adminrules.AdminGrantType;
 import org.geoserver.acl.domain.adminrules.AdminRuleFilter;
 import org.geoserver.acl.domain.filter.Filter;
@@ -24,11 +26,6 @@ import org.geoserver.acl.jpa.model.QAdminRule;
 import org.geoserver.acl.jpa.model.QAdminRuleIdentifier;
 import org.geoserver.acl.jpa.model.QRule;
 import org.geoserver.acl.jpa.model.QRuleIdentifier;
-
-import java.util.Optional;
-import java.util.OptionalLong;
-import java.util.Set;
-import java.util.stream.Stream;
 
 @Slf4j
 class PredicateMapper {
@@ -56,21 +53,19 @@ class PredicateMapper {
         Predicate role = map(filter.getRole(), qIdentifier.rolename);
         // Predicate address = map(filter.getSourceAddress(), identifier.addressRange);
         Predicate ws = map(filter.getWorkspace(), qIdentifier.workspace);
-        BooleanBuilder predicate =
-                new BooleanBuilder()
-                        .and(grantType)
-                        .and(user)
-                        .and(role)
-                        // .and(address)
-                        .and(ws);
+        BooleanBuilder predicate = new BooleanBuilder()
+                .and(grantType)
+                .and(user)
+                .and(role)
+                // .and(address)
+                .and(ws);
 
         log.debug("Filter    : {}", filter);
         log.debug("Predicate : {}", predicate);
         return Optional.ofNullable(predicate);
     }
 
-    private Predicate map(
-            AdminGrantType grantType, EnumPath<org.geoserver.acl.jpa.model.AdminGrantType> access) {
+    private Predicate map(AdminGrantType grantType, EnumPath<org.geoserver.acl.jpa.model.AdminGrantType> access) {
 
         if (null == grantType) return null;
         switch (grantType) {
@@ -108,16 +103,15 @@ class PredicateMapper {
         Predicate ws = map(filter.getWorkspace(), qIdentifier.workspace);
         Predicate layer = map(filter.getLayer(), qIdentifier.layer);
 
-        BooleanBuilder predicate =
-                new BooleanBuilder()
-                        .and(user)
-                        .and(role)
-                        .and(service)
-                        .and(request)
-                        .and(subfield)
-                        // .and(address)
-                        .and(ws)
-                        .and(layer);
+        BooleanBuilder predicate = new BooleanBuilder()
+                .and(user)
+                .and(role)
+                .and(service)
+                .and(request)
+                .and(subfield)
+                // .and(address)
+                .and(ws)
+                .and(layer);
 
         log.trace("Filter    : {}", filter);
         log.trace("Predicate : {}", predicate);
@@ -136,22 +130,18 @@ class PredicateMapper {
                 return null;
             case DEFAULT:
                 return propertyPath.eq("*");
-            case NAMEVALUE:
-                {
-                    final String text = filter.getText();
-                    if (text == null)
-                        throw new IllegalArgumentException(
-                                "Can't map TextFilter with empty value " + text);
+            case NAMEVALUE: {
+                final String text = filter.getText();
+                if (text == null) throw new IllegalArgumentException("Can't map TextFilter with empty value " + text);
 
-                    if (includeDefault) {
-                        return propertyPath.in("*", text);
-                    }
-                    return propertyPath.eq(text);
+                if (includeDefault) {
+                    return propertyPath.in("*", text);
                 }
+                return propertyPath.eq(text);
+            }
             case IDVALUE:
             default:
-                throw new IllegalArgumentException(
-                        "Unknown or unexpected FilterType for TextFilter: " + type);
+                throw new IllegalArgumentException("Unknown or unexpected FilterType for TextFilter: " + type);
         }
     }
 
@@ -167,23 +157,20 @@ class PredicateMapper {
                 return null;
             case DEFAULT:
                 return propertyPath.eq("*");
-            case NAMEVALUE:
-                {
-                    final Set<String> values = filter.getValues();
-                    if (values == null || values.isEmpty())
-                        throw new IllegalArgumentException(
-                                "Can't map TextFilter with empty value " + values);
+            case NAMEVALUE: {
+                final Set<String> values = filter.getValues();
+                if (values == null || values.isEmpty())
+                    throw new IllegalArgumentException("Can't map TextFilter with empty value " + values);
 
-                    if (includeDefault) {
-                        return propertyPath.in(
-                                Stream.concat(Stream.of("*"), values.stream()).toList());
-                    }
-                    return propertyPath.in(values);
+                if (includeDefault) {
+                    return propertyPath.in(
+                            Stream.concat(Stream.of("*"), values.stream()).toList());
                 }
+                return propertyPath.in(values);
+            }
             case IDVALUE:
             default:
-                throw new IllegalArgumentException(
-                        "Unknown or unexpected FilterType for TextFilter: " + type);
+                throw new IllegalArgumentException("Unknown or unexpected FilterType for TextFilter: " + type);
         }
     }
 }

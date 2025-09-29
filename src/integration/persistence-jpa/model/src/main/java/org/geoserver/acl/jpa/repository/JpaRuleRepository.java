@@ -4,6 +4,9 @@
  */
 package org.geoserver.acl.jpa.repository;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import org.geoserver.acl.jpa.model.Rule;
 import org.geoserver.acl.jpa.model.RuleIdentifier;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,15 +15,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 @TransactionSupported
 public interface JpaRuleRepository
-        extends JpaRepository<Rule, Long>,
-                QuerydslPredicateExecutor<Rule>,
-                PriorityRepository<Rule> {
+        extends JpaRepository<Rule, Long>, QuerydslPredicateExecutor<Rule>, PriorityRepository<Rule> {
 
     @Override
     Optional<Rule> findOneByPriority(long priority);
@@ -40,8 +37,7 @@ public interface JpaRuleRepository
     @TransactionRequired
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("UPDATE Rule SET priority = priority + :offset WHERE priority BETWEEN :min AND :max")
-    void shiftPrioritiesBetween(
-            @Param("min") long min, @Param("max") long max, @Param("offset") long offset);
+    void shiftPrioritiesBetween(@Param("min") long min, @Param("max") long max, @Param("offset") long offset);
 
     @Override
     @TransactionRequired

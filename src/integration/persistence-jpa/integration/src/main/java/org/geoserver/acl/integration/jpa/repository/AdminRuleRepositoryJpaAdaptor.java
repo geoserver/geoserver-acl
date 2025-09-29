@@ -11,10 +11,20 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
-
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Spliterators;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.Setter;
-
 import org.geoserver.acl.domain.adminrules.AdminRule;
 import org.geoserver.acl.domain.adminrules.AdminRuleEvent;
 import org.geoserver.acl.domain.adminrules.AdminRuleFilter;
@@ -34,20 +44,6 @@ import org.geoserver.acl.jpa.repository.TransactionSupported;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Spliterators;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
-
 @TransactionSupported
 public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
 
@@ -57,13 +53,11 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     private final PredicateMapper queryMapper;
 
     @Setter
-    private @NonNull Consumer<AdminRuleEvent> eventPublisher =
-            r -> {
-                // no-op
-            };
+    private @NonNull Consumer<AdminRuleEvent> eventPublisher = r -> {
+        // no-op
+    };
 
-    public AdminRuleRepositoryJpaAdaptor(
-            EntityManager em, JpaAdminRuleRepository jparepo, AdminRuleJpaMapper mapper) {
+    public AdminRuleRepositoryJpaAdaptor(EntityManager em, JpaAdminRuleRepository jparepo, AdminRuleJpaMapper mapper) {
         Objects.requireNonNull(em);
         Objects.requireNonNull(jparepo);
         Objects.requireNonNull(mapper);
@@ -80,8 +74,7 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     // send an updated event for all collaterally updated rule
     private void notifyCollateralUpdates(Set<Long> ids) {
         if (!ids.isEmpty()) {
-            Set<String> updatedIds =
-                    ids.stream().map(RuleJpaMapper::encodeId).collect(Collectors.toSet());
+            Set<String> updatedIds = ids.stream().map(RuleJpaMapper::encodeId).collect(Collectors.toSet());
             this.eventPublisher.accept(AdminRuleEvent.updated(updatedIds));
         }
     }
@@ -93,13 +86,10 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
         findDup(rule).ifPresent(dup -> throwConflict(dup, null));
 
         if (rule.getPriority() < 0)
-            throw new IllegalArgumentException(
-                    "Negative priority is not allowed: " + rule.getPriority());
+            throw new IllegalArgumentException("Negative priority is not allowed: " + rule.getPriority());
 
-        PriorityResolver<org.geoserver.acl.jpa.model.AdminRule> priorityResolver =
-                priorityResolver();
-        final long finalPriority =
-                priorityResolver.resolveFinalPriority(rule.getPriority(), map(position));
+        PriorityResolver<org.geoserver.acl.jpa.model.AdminRule> priorityResolver = priorityResolver();
+        final long finalPriority = priorityResolver.resolveFinalPriority(rule.getPriority(), map(position));
 
         org.geoserver.acl.jpa.model.AdminRule entity = modelMapper.toEntity(rule);
         entity.setPriority(finalPriority);
@@ -170,10 +160,8 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
 
         org.geoserver.acl.jpa.model.AdminRule entity = getOrThrowIAE(rule.getId());
 
-        PriorityResolver<org.geoserver.acl.jpa.model.AdminRule> priorityResolver =
-                priorityResolver();
-        long finalPriority =
-                priorityResolver.resolvePriorityUpdate(entity.getPriority(), rule.getPriority());
+        PriorityResolver<org.geoserver.acl.jpa.model.AdminRule> priorityResolver = priorityResolver();
+        long finalPriority = priorityResolver.resolvePriorityUpdate(entity.getPriority(), rule.getPriority());
 
         modelMapper.updateEntity(entity, rule);
         entity.setPriority(finalPriority);
@@ -198,16 +186,14 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     public Stream<AdminRule> findAll(@NonNull RuleQuery<AdminRuleFilter> query) {
 
         Predicate predicate = queryMapper.toPredicate(query);
-        final java.util.function.Predicate<? super AdminRule> postFilter =
-                filterByAddress(query.getFilter());
+        final java.util.function.Predicate<? super AdminRule> postFilter = filterByAddress(query.getFilter());
 
         if (query.getNextId() != null) {
             Long nextId = decodeId(query.getNextId());
             predicate = QAdminRule.adminRule.id.goe(nextId).and(predicate);
         }
 
-        CloseableIterator<org.geoserver.acl.jpa.model.AdminRule> iterator =
-                queryOrderByPriority(predicate);
+        CloseableIterator<org.geoserver.acl.jpa.model.AdminRule> iterator = queryOrderByPriority(predicate);
 
         try (Stream<org.geoserver.acl.jpa.model.AdminRule> stream = stream(iterator)) {
             Stream<AdminRule> rules = stream.map(modelMapper::toModel).filter(postFilter);
@@ -218,8 +204,7 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
         }
     }
 
-    private CloseableIterator<org.geoserver.acl.jpa.model.AdminRule> queryOrderByPriority(
-            Predicate predicate) {
+    private CloseableIterator<org.geoserver.acl.jpa.model.AdminRule> queryOrderByPriority(Predicate predicate) {
 
         return new JPAQuery<org.geoserver.acl.jpa.model.AdminRule>(em)
                 .from(QAdminRule.adminRule)
@@ -234,8 +219,7 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
                 .onClose(iterator::close);
     }
 
-    private java.util.function.Predicate<? super AdminRule> filterByAddress(
-            Optional<AdminRuleFilter> filter) {
+    private java.util.function.Predicate<? super AdminRule> filterByAddress(Optional<AdminRuleFilter> filter) {
         if (filter.isEmpty()) return r -> true;
 
         IPAddressRangeFilter ipFilter = filter.get().getSourceAddress();
@@ -245,8 +229,7 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     @Override
     @TransactionRequired
     public int shiftPriority(long priorityStart, long offset) {
-        Set<Long> shiftedIds =
-                jparepo.streamIdsByShiftPriority(priorityStart).collect(Collectors.toSet());
+        Set<Long> shiftedIds = jparepo.streamIdsByShiftPriority(priorityStart).collect(Collectors.toSet());
         if (shiftedIds.isEmpty()) {
             return -1;
         }
@@ -302,14 +285,10 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
         List<org.geoserver.acl.jpa.model.AdminRule> matches;
         matches = jparepo.findAllByIdentifier(identifier);
 
-        return matches.stream()
-                .filter(r -> !r.getId().equals(id))
-                .findFirst()
-                .map(modelMapper::toModel);
+        return matches.stream().filter(r -> !r.getId().equals(id)).findFirst().map(modelMapper::toModel);
     }
 
-    private AdminRuleIdentifierConflictException throwConflict(
-            AdminRule rule, DataIntegrityViolationException e) {
+    private AdminRuleIdentifierConflictException throwConflict(AdminRule rule, DataIntegrityViolationException e) {
         throw new AdminRuleIdentifierConflictException(
                 "An AdminRule with the same identifier already exists: " + rule.toShortString(), e);
     }

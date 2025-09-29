@@ -5,23 +5,19 @@
 package org.geoserver.cloud.config.jndidatasource;
 
 import com.zaxxer.hikari.HikariDataSource;
-
+import java.util.Map;
+import java.util.stream.Collectors;
+import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.naming.spi.NamingManager;
+import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.jdbc.support.DatabaseStartupValidator;
-
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.naming.Context;
-import javax.naming.NamingException;
-import javax.naming.spi.NamingManager;
-import javax.sql.DataSource;
 
 /**
  * @since 1.0
@@ -39,8 +35,7 @@ public class JNDIDataSourceAutoConfiguration {
             return;
         }
 
-        configs.entrySet()
-                .forEach(e -> setUpDataSource(toJndiDatasourceName(e.getKey()), e.getValue()));
+        configs.entrySet().forEach(e -> setUpDataSource(toJndiDatasourceName(e.getKey()), e.getValue()));
     }
 
     @Bean
@@ -103,8 +98,7 @@ public class JNDIDataSourceAutoConfiguration {
 
     private void waitForIt(String jndiName, DataSource dataSource, JNDIDatasourceConfig props) {
         if (props.isWaitForIt()) {
-            log.info(
-                    "Waiting up to {} seconds for datasource {}", props.getWaitTimeout(), jndiName);
+            log.info("Waiting up to {} seconds for datasource {}", props.getWaitTimeout(), jndiName);
             DatabaseStartupValidator validator = new DatabaseStartupValidator();
             validator.setDataSource(dataSource);
             validator.setTimeout(props.getWaitTimeout());
@@ -113,10 +107,9 @@ public class JNDIDataSourceAutoConfiguration {
     }
 
     protected DataSource createDataSource(JNDIDatasourceConfig props) {
-        HikariDataSource dataSource =
-                props.initializeDataSourceBuilder() //
-                        .type(HikariDataSource.class)
-                        .build();
+        HikariDataSource dataSource = props.initializeDataSourceBuilder() //
+                .type(HikariDataSource.class)
+                .build();
 
         dataSource.setMaximumPoolSize(props.getMaximumPoolSize());
         dataSource.setMinimumIdle(props.getMinimumIdle());

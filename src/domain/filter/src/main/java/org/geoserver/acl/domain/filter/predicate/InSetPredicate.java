@@ -4,8 +4,6 @@
  */
 package org.geoserver.acl.domain.filter.predicate;
 
-import lombok.EqualsAndHashCode;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,6 +12,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import lombok.EqualsAndHashCode;
 
 /** Contains a fixed text OR a special filtering condition (i.e. ANY, DEFAULT). */
 @EqualsAndHashCode(callSuper = true)

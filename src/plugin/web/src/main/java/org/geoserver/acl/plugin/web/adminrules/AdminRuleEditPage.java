@@ -6,8 +6,8 @@
  */
 package org.geoserver.acl.plugin.web.adminrules;
 
+import java.util.Iterator;
 import lombok.NonNull;
-
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -28,8 +28,6 @@ import org.geoserver.acl.plugin.web.support.SerializableFunction;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
-
-import java.util.Iterator;
 
 @SuppressWarnings("serial")
 public class AdminRuleEditPage extends GeoServerSecuredPage {
@@ -64,27 +62,21 @@ public class AdminRuleEditPage extends GeoServerSecuredPage {
     }
 
     private FormComponent<String> roleChoice() {
-        return autoCompleteChoice(
-                "roleName", ruleModel.bind("roleName"), pageModel::getRoleChoices);
+        return autoCompleteChoice("roleName", ruleModel.bind("roleName"), pageModel::getRoleChoices);
     }
 
     private FormComponent<String> userChoice() {
-        return autoCompleteChoice(
-                "userName", ruleModel.bind("userName"), pageModel::getUserChoices);
+        return autoCompleteChoice("userName", ruleModel.bind("userName"), pageModel::getUserChoices);
     }
 
     private FormComponent<String> workspaceChoice() {
-        return autoCompleteChoice(
-                "workspace", ruleModel.bind("workspace"), pageModel::getWorkspaceChoices);
+        return autoCompleteChoice("workspace", ruleModel.bind("workspace"), pageModel::getWorkspaceChoices);
     }
 
     private AutoCompleteTextField<String> autoCompleteChoice(
-            String id,
-            IModel<String> model,
-            SerializableFunction<String, Iterator<String>> choiceResolver) {
+            String id, IModel<String> model, SerializableFunction<String, Iterator<String>> choiceResolver) {
 
-        AutoCompleteTextField<String> field =
-                new ModelUpdatingAutoCompleteTextField<>(id, model, choiceResolver);
+        AutoCompleteTextField<String> field = new ModelUpdatingAutoCompleteTextField<>(id, model, choiceResolver);
         field.setOutputMarkupId(true);
         field.setConvertEmptyInputStringToNull(true);
         return field;

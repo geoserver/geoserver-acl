@@ -16,8 +16,7 @@ public class AclConfigurationManagerConfiguration {
 
     @Primary
     @Bean
-    AclConfigurationManager aclConfigurationManager(
-            AuthorizationService authService, Environment env) {
+    AclConfigurationManager aclConfigurationManager(AuthorizationService authService, Environment env) {
         String basePath = env.getProperty("geoserver.acl.client.basePath");
         AclConfigurationManager configManager = new AclConfigurationManager(authService);
         configManager.getConfiguration().setServiceUrl(basePath);

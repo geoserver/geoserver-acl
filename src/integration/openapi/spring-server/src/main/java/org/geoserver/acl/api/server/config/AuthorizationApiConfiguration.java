@@ -26,16 +26,13 @@ public class AuthorizationApiConfiguration {
     }
 
     @Bean
-    AuthorizationApiDelegate aclAuthorizationApiImpl(
-            AuthorizationService service, AuthorizationApiSupport support) {
+    AuthorizationApiDelegate aclAuthorizationApiImpl(AuthorizationService service, AuthorizationApiSupport support) {
         return new AuthorizationApiImpl(service, support);
     }
 
     @Bean
     AuthorizationApiSupport aclAuthorizationApiSupport(
-            NativeWebRequest nativeReq,
-            AuthorizationModelApiMapper mapper,
-            RuleApiMapper rulesMapper) {
+            NativeWebRequest nativeReq, AuthorizationModelApiMapper mapper, RuleApiMapper rulesMapper) {
 
         return new AuthorizationApiSupport(nativeReq, mapper, rulesMapper);
     }

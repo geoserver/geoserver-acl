@@ -67,8 +67,7 @@ import org.springframework.test.annotation.DirtiesContext;
             "geoserver.acl.datasource.url=jdbc:h2:mem:geoserver-acl"
         },
         classes = {IntegrationTestsApplication.class})
-class AuthorizationServiceClientAdaptorAccessSummaryIT
-        extends AuthorizationServiceAccessSummaryTest {
+class AuthorizationServiceClientAdaptorAccessSummaryIT extends AuthorizationServiceAccessSummaryTest {
 
     private @Autowired ServerContextSupport serverContext;
     private @LocalServerPort int serverPort;
@@ -78,7 +77,8 @@ class AuthorizationServiceClientAdaptorAccessSummaryIT
     @Override
     @BeforeEach
     protected void setUp() throws Exception {
-        clientContext = new ClientContextSupport().log(false).serverPort(serverPort).setUp();
+        clientContext =
+                new ClientContextSupport().log(false).serverPort(serverPort).setUp();
         serverContext.setUp();
         super.setUp();
     }

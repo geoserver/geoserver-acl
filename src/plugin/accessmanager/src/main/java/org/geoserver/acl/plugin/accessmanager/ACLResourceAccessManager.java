@@ -6,17 +6,24 @@
  */
 package org.geoserver.acl.plugin.accessmanager;
 
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.WARNING;
 import static org.geoserver.acl.authorization.AccessInfo.ALLOW_ALL;
 import static org.geoserver.acl.domain.rules.GrantType.ALLOW;
 import static org.geoserver.acl.domain.rules.GrantType.DENY;
 import static org.geoserver.acl.domain.rules.GrantType.LIMIT;
 import static org.geoserver.acl.plugin.accessmanager.CatalogSecurityFilterBuilder.buildSecurityFilter;
 
-import static java.util.logging.Level.FINE;
-import static java.util.logging.Level.WARNING;
-
 import com.google.common.base.Stopwatch;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.collections4.CollectionUtils;
 import org.geoserver.acl.authorization.AccessInfo;
 import org.geoserver.acl.authorization.AccessRequest;
@@ -78,16 +85,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * {@link ResourceAccessManager} to make GeoServer use the ACL {@link AuthorizationService} to
@@ -242,14 +239,12 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
         // extract the user name
         String workspace = resource.getStore().getWorkspace().getName();
         String layer = resource.getName();
-        return (DataAccessLimits)
-                getAccessLimits(user, resource, layer, workspace, Collections.emptyList());
+        return (DataAccessLimits) getAccessLimits(user, resource, layer, workspace, Collections.emptyList());
     }
 
     /** {@inheritDoc} */
     @Override
-    public DataAccessLimits getAccessLimits(
-            Authentication user, LayerInfo layer, List<LayerGroupInfo> containers) {
+    public DataAccessLimits getAccessLimits(Authentication user, LayerInfo layer, List<LayerGroupInfo> containers) {
         String workspace = layer.getResource().getStore().getWorkspace().getName();
         String layerName = layer.getName();
         return (DataAccessLimits) getAccessLimits(user, layer, layerName, workspace, containers);
@@ -262,8 +257,7 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
         WorkspaceInfo ws = layerGroup.getWorkspace();
         String workspace = ws != null ? ws.getName() : null;
         String layer = layerGroup.getName();
-        return (LayerGroupAccessLimits)
-                getAccessLimits(user, layerGroup, layer, workspace, containers);
+        return (LayerGroupAccessLimits) getAccessLimits(user, layerGroup, layer, workspace, containers);
     }
 
     public AccessManagerConfig getConfig() {
@@ -290,11 +284,7 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
     }
 
     private AccessLimits getAccessLimits(
-            Authentication user,
-            CatalogInfo info,
-            String layer,
-            String workspace,
-            List<LayerGroupInfo> containers) {
+            Authentication user, CatalogInfo info, String layer, String workspace, List<LayerGroupInfo> containers) {
         // shortcut, if the user is the admin, he can do everything
         if (isAdmin(user)) {
             log(FINE, "Admin level access, returning full rights for layer {0}", layer);
@@ -327,17 +317,13 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
                         accessInfo = accessInfo.withGrant(DENY);
                     } else if (noneSingle) {
                         // if a single group is present we don't apply any limit from containers.
-                        processingResult =
-                                getContainerResolverResult(
-                                        info, layer, workspace, user, null, summaries);
+                        processingResult = getContainerResolverResult(info, layer, workspace, user, null, summaries);
                     }
                 }
             } else if (layerGroupsRequested) {
                 // layer is requested in context of a layer group, we need to process the
                 // containers limits.
-                processingResult =
-                        getContainerResolverResult(
-                                info, layer, workspace, user, containers, List.of());
+                processingResult = getContainerResolverResult(info, layer, workspace, user, containers, List.of());
             }
 
             if (isWps) {
@@ -346,8 +332,7 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
                             WARNING,
                             "Don't know how to deal with WPS requests for group data. Won't dive into single process limits.");
                 } else {
-                    WPSAccessInfo resolvedAccessInfo =
-                            wpsHelper.resolveWPSAccess(accessRequest, accessInfo);
+                    WPSAccessInfo resolvedAccessInfo = wpsHelper.resolveWPSAccess(accessRequest, accessInfo);
                     if (resolvedAccessInfo != null) {
                         accessInfo = resolvedAccessInfo.getAccessInfo();
                         processingResult = wpsProcessingResult(accessInfo, resolvedAccessInfo);
@@ -364,18 +349,12 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
 
         AccessLimits limits = buildLayerLimits(info, accessInfo, processingResult);
 
-        log(
-                FINE,
-                "Returning {0} for layer {1} and user {2}",
-                limits,
-                layer,
-                getUserNameFromAuth(user));
+        log(FINE, "Returning {0} for layer {1} and user {2}", limits, layer, getUserNameFromAuth(user));
 
         return limits;
     }
 
-    private AccessLimits buildLayerLimits(
-            CatalogInfo info, AccessInfo accessInfo, ProcessingResult processingResult) {
+    private AccessLimits buildLayerLimits(CatalogInfo info, AccessInfo accessInfo, ProcessingResult processingResult) {
 
         if (info instanceof ResourceInfo) {
             ResourceInfo resource = (ResourceInfo) info;
@@ -386,18 +365,13 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
             return buildLayerLimits(resource, accessInfo, processingResult);
         }
         if (info instanceof LayerGroupInfo) return buildLayerGroupAccessLimits(accessInfo);
-        throw new IllegalArgumentException(
-                "Expected LayerInfo|LayerGroupInfo|ResourceInfo, got " + info);
+        throw new IllegalArgumentException("Expected LayerInfo|LayerGroupInfo|ResourceInfo, got " + info);
     }
 
-    private ProcessingResult wpsProcessingResult(
-            AccessInfo accessInfo, WPSAccessInfo wpsAccessInfo) {
+    private ProcessingResult wpsProcessingResult(AccessInfo accessInfo, WPSAccessInfo wpsAccessInfo) {
         ProcessingResult processingResult;
         processingResult =
-                new ProcessingResult(
-                        wpsAccessInfo.getArea(),
-                        wpsAccessInfo.getClip(),
-                        accessInfo.getCatalogMode());
+                new ProcessingResult(wpsAccessInfo.getArea(), wpsAccessInfo.getClip(), accessInfo.getCatalogMode());
         return processingResult;
     }
 
@@ -437,15 +411,10 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
     // build the accessLimits for an admin user
     private AccessLimits buildAdminAccessLimits(CatalogInfo info) {
         AccessLimits accessLimits;
-        if (info instanceof LayerGroupInfo)
-            accessLimits = buildLayerGroupAccessLimits(AccessInfo.ALLOW_ALL);
+        if (info instanceof LayerGroupInfo) accessLimits = buildLayerGroupAccessLimits(AccessInfo.ALLOW_ALL);
         else if (info instanceof ResourceInfo)
-            accessLimits =
-                    buildResourceAccessLimits((ResourceInfo) info, AccessInfo.ALLOW_ALL, null);
-        else
-            accessLimits =
-                    buildResourceAccessLimits(
-                            ((LayerInfo) info).getResource(), AccessInfo.ALLOW_ALL, null);
+            accessLimits = buildResourceAccessLimits((ResourceInfo) info, AccessInfo.ALLOW_ALL, null);
+        else accessLimits = buildResourceAccessLimits(((LayerInfo) info).getResource(), AccessInfo.ALLOW_ALL, null);
         return accessLimits;
     }
 
@@ -459,8 +428,7 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
 
     private Collection<LayerGroupSummary> getGroupSummary(Object resource) {
         Collection<LayerGroupSummary> summaries;
-        if (resource instanceof ResourceInfo)
-            summaries = groupsCache.getContainerGroupsFor((ResourceInfo) resource);
+        if (resource instanceof ResourceInfo) summaries = groupsCache.getContainerGroupsFor((ResourceInfo) resource);
         else if (resource instanceof LayerInfo)
             summaries = groupsCache.getContainerGroupsFor(((LayerInfo) resource).getResource());
         else summaries = groupsCache.getContainerGroupsFor((LayerGroupInfo) resource);
@@ -500,10 +468,7 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
     }
 
     private WMTSAccessLimits buildWMTSAccessLimits(
-            ResourceInfo info,
-            AccessInfo accessInfo,
-            ProcessingResult resultLimits,
-            final CatalogMode catalogMode) {
+            ResourceInfo info, AccessInfo accessInfo, ProcessingResult resultLimits, final CatalogMode catalogMode) {
 
         final Geometry intersectsArea = resolveIntersectsArea(info, accessInfo, resultLimits);
         Filter readFilter = toFilter(accessInfo.getGrant(), accessInfo.getCqlFilterRead());
@@ -512,10 +477,7 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
     }
 
     private WMSAccessLimits buildWMSAccessLimits(
-            ResourceInfo info,
-            AccessInfo accessInfo,
-            ProcessingResult resultLimits,
-            final CatalogMode catalogMode) {
+            ResourceInfo info, AccessInfo accessInfo, ProcessingResult resultLimits, final CatalogMode catalogMode) {
 
         final Geometry intersectsArea = resolveIntersectsArea(info, accessInfo, resultLimits);
         Filter readFilter = toFilter(accessInfo.getGrant(), accessInfo.getCqlFilterRead());
@@ -525,10 +487,7 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
     }
 
     private CoverageAccessLimits buildCoverageAccessLimits(
-            ResourceInfo info,
-            AccessInfo accessInfo,
-            ProcessingResult resultLimits,
-            final CatalogMode catalogMode) {
+            ResourceInfo info, AccessInfo accessInfo, ProcessingResult resultLimits, final CatalogMode catalogMode) {
 
         final Geometry intersectsArea = resolveIntersectsArea(info, accessInfo, resultLimits);
         final Geometry clipArea = resolveClipArea(info, accessInfo, resultLimits);
@@ -547,10 +506,7 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
     }
 
     private VectorAccessLimits buildVectorAccessLimits(
-            ResourceInfo info,
-            AccessInfo accessInfo,
-            ProcessingResult resultLimits,
-            final CatalogMode catalogMode) {
+            ResourceInfo info, AccessInfo accessInfo, ProcessingResult resultLimits, final CatalogMode catalogMode) {
 
         // merge the area among the filters
         final Geometry intersectsArea = resolveIntersectsArea(info, accessInfo, resultLimits);
@@ -572,8 +528,7 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
         var writeAttributes = toPropertyNames(accessInfo.getAttributes(), PropertyAccessMode.WRITE);
 
         var accessLimits =
-                new VectorAccessLimits(
-                        catalogMode, readAttributes, readFilter, writeAttributes, writeFilter);
+                new VectorAccessLimits(catalogMode, readAttributes, readFilter, writeAttributes, writeFilter);
 
         if (clipArea != null) accessLimits.setClipVectorFilter(clipArea);
         if (intersectsArea != null) accessLimits.setIntersectVectorFilter(intersectsArea);
@@ -585,8 +540,7 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
         return FF.intersects(FF.property(""), FF.literal(intersectsArea));
     }
 
-    private Geometry resolveIntersectsArea(
-            ResourceInfo info, AccessInfo accessInfo, ProcessingResult resultLimits) {
+    private Geometry resolveIntersectsArea(ResourceInfo info, AccessInfo accessInfo, ProcessingResult resultLimits) {
 
         if (resultLimits == null) {
             CoordinateReferenceSystem crs = GeomHelper.getCRSFromInfo(info);
@@ -595,8 +549,7 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
         return resultLimits.getIntersectArea();
     }
 
-    private Geometry resolveClipArea(
-            ResourceInfo info, AccessInfo accessInfo, ProcessingResult resultLimits) {
+    private Geometry resolveClipArea(ResourceInfo info, AccessInfo accessInfo, ProcessingResult resultLimits) {
 
         if (resultLimits == null) {
             CoordinateReferenceSystem crs = GeomHelper.getCRSFromInfo(info);
@@ -605,8 +558,7 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
         return resultLimits.getClipArea();
     }
 
-    private Geometry adaptAndReproject(
-            org.geolatte.geom.Geometry<?> area, CoordinateReferenceSystem crs) {
+    private Geometry adaptAndReproject(org.geolatte.geom.Geometry<?> area, CoordinateReferenceSystem crs) {
         Geometry jtsArea = GeomHelper.toJTS(area);
         return GeomHelper.reprojectGeometry(jtsArea, crs);
     }
@@ -616,8 +568,7 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
             try {
                 return ECQL.toFilter(cqlFilter);
             } catch (CQLException e) {
-                throw new IllegalArgumentException(
-                        "Invalid cql filter found: " + e.getMessage(), e);
+                throw new IllegalArgumentException("Invalid cql filter found: " + e.getMessage(), e);
             }
         }
         boolean includeFilter = actualGrant == ALLOW || actualGrant == LIMIT;
@@ -648,15 +599,8 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
             Collection<LayerGroupSummary> summaries) {
 
         AccessManagerConfig configuration = configProvider.get();
-        ContainerLimitResolver resolver =
-                ContainerLimitResolver.of(
-                        containers,
-                        summaries,
-                        authorizationService,
-                        user,
-                        layer,
-                        workspace,
-                        configuration);
+        ContainerLimitResolver resolver = ContainerLimitResolver.of(
+                containers, summaries, authorizationService, user, layer, workspace, configuration);
 
         ProcessingResult result = resolver.resolveResourceInGroupLimits();
         Geometry intersect = result.getIntersectArea();
@@ -746,8 +690,7 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
      * @return {@code null} if attributes is empty, note {@link ResourceAccessManagerWrapper}
      *     depends on {@code null}. The mapped property names otherwise.
      */
-    private List<PropertyName> toPropertyNames(
-            Set<LayerAttribute> attributes, PropertyAccessMode mode) {
+    private List<PropertyName> toPropertyNames(Set<LayerAttribute> attributes, PropertyAccessMode mode) {
         // handle simple case
         if (attributes == null || attributes.isEmpty()) {
             return null;
@@ -758,8 +701,7 @@ public class ACLResourceAccessManager extends AbstractResourceAccessManager
         for (LayerAttribute attribute : attributes) {
             AccessType access = attribute.getAccess();
             boolean alwaysVisible = access == AccessType.READWRITE;
-            if (alwaysVisible
-                    || (mode == PropertyAccessMode.READ && access == AccessType.READONLY)) {
+            if (alwaysVisible || (mode == PropertyAccessMode.READ && access == AccessType.READONLY)) {
                 PropertyName property = FF.property(attribute.getName());
                 result.add(property);
             }

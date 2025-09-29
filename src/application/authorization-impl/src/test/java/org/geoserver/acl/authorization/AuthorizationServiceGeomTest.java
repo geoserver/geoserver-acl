@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import org.geolatte.geom.Geometry;
 import org.geolatte.geom.MultiPolygon;
 import org.geolatte.geom.codec.Wkt;
@@ -25,8 +26,6 @@ import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleLimits;
 import org.geoserver.acl.domain.rules.SpatialFilterType;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 /**
  * {@link AuthorizationService} integration/conformance test working with geometries
@@ -62,13 +61,12 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
 
         Rule r2 = insert(11, null, null, null, "s1", "r1", null, "w1", "l1", ALLOW);
 
-        AccessRequest request =
-                AccessRequest.builder()
-                        .service("s1")
-                        .request("r1")
-                        .workspace("w1")
-                        .layer("l1")
-                        .build();
+        AccessRequest request = AccessRequest.builder()
+                .service("s1")
+                .request("r1")
+                .workspace("w1")
+                .layer("l1")
+                .build();
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
         Geometry<?> area = accessInfo.getArea();
         assertEquals(3857, area.getCoordinateReferenceSystem().getCrsId().getCode());
@@ -76,24 +74,17 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
 
     private RuleLimits setRuleLimits(Rule rule, String allowedAreaWKT) {
         return setRuleLimits(
-                rule,
-                allowedAreaWKT,
-                RuleLimits.DEFAULT_SPATIAL_FILTERTYPE,
-                RuleLimits.DEFAULT_CATALOG_MODE);
+                rule, allowedAreaWKT, RuleLimits.DEFAULT_SPATIAL_FILTERTYPE, RuleLimits.DEFAULT_CATALOG_MODE);
     }
 
     private RuleLimits setRuleLimits(
-            Rule rule,
-            String allowedAreaWKT,
-            SpatialFilterType spatialFilterType,
-            CatalogMode catalogMode) {
+            Rule rule, String allowedAreaWKT, SpatialFilterType spatialFilterType, CatalogMode catalogMode) {
         MultiPolygon<?> allowedArea = (MultiPolygon<?>) Wkt.fromWkt(allowedAreaWKT);
-        RuleLimits limits =
-                RuleLimits.builder()
-                        .allowedArea(allowedArea)
-                        .spatialFilterType(spatialFilterType)
-                        .catalogMode(catalogMode)
-                        .build();
+        RuleLimits limits = RuleLimits.builder()
+                .allowedArea(allowedArea)
+                .spatialFilterType(spatialFilterType)
+                .catalogMode(catalogMode)
+                .build();
         ruleAdminService.setLimits(rule.getId(), limits);
         return limits;
     }
@@ -112,13 +103,12 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
         Rule r3 = insert(12, null, null, null, "s1", "r1", null, "w1", "l1", LIMIT);
         setRuleLimits(r3, WKT_23032);
 
-        AccessRequest request =
-                AccessRequest.builder()
-                        .service("s1")
-                        .request("r1")
-                        .workspace("w1")
-                        .layer("l1")
-                        .build();
+        AccessRequest request = AccessRequest.builder()
+                .service("s1")
+                .request("r1")
+                .workspace("w1")
+                .layer("l1")
+                .build();
 
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
         Geometry<?> area = accessInfo.getArea();
@@ -141,12 +131,11 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
         Rule p9999 = insert(9999, null, "group1", null, "s1", "r1", null, "w1", "l1", ALLOW);
         Rule p10k = insert(10_000, null, "group2", null, null, null, null, null, null, DENY);
 
-        final AccessRequest request =
-                createRequest("auth11", "group1", "group2")
-                        .withService("s1")
-                        .withRequest("r1")
-                        .withWorkspace("w1")
-                        .withLayer("l1");
+        final AccessRequest request = createRequest("auth11", "group1", "group2")
+                .withService("s1")
+                .withRequest("r1")
+                .withWorkspace("w1")
+                .withLayer("l1");
 
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
         assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
@@ -157,8 +146,7 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
         // as a clip
         // geometry.
         org.locationtech.jts.geom.Geometry testArea =
-                JTS.to(limitsp10.getAllowedArea())
-                        .intersection(JTS.to(llimitsp11.getAllowedArea()));
+                JTS.to(limitsp10.getAllowedArea()).intersection(JTS.to(llimitsp11.getAllowedArea()));
         testArea.normalize();
         assertNull(accessInfo.getArea());
         assertNotNull(accessInfo.getClipArea());
@@ -182,17 +170,15 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
         Rule p14 = insert(14, "u1", "g1", null, "s11", "r11", null, "w11", "l11", LIMIT);
         RuleLimits limitsp14 = setRuleLimits(p14, WKT_WGS84_3, INTERSECT, HIDE);
 
-        AccessRequest request =
-                createRequest("u1", "g1", "g2")
-                        .withService("s11")
-                        .withRequest("r11")
-                        .withWorkspace("w11")
-                        .withLayer("l11");
+        AccessRequest request = createRequest("u1", "g1", "g2")
+                .withService("s11")
+                .withRequest("r11")
+                .withWorkspace("w11")
+                .withLayer("l11");
         // request = user.withWorkspace("w11").withLayer("l11");
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
         assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
-        assertThat(accessInfo.getMatchingRules())
-                .isEqualTo(List.of(p13.getId(), p14.getId(), p9999.getId()));
+        assertThat(accessInfo.getMatchingRules()).isEqualTo(List.of(p13.getId(), p14.getId(), p9999.getId()));
 
         // area in same group, the result should be the
         // two allowed area as an intersects geometry.
@@ -223,12 +209,11 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
         Rule p16 = insert(16, null, "group23", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp16 = setRuleLimits(p16, WKT_WGS84_3, CLIP, HIDE);
 
-        AccessRequest request =
-                createRequest("auth22", "group22", "group23")
-                        .withService("s22")
-                        .withRequest("r22")
-                        .withWorkspace("w22")
-                        .withLayer("l22");
+        AccessRequest request = createRequest("auth22", "group22", "group23")
+                .withService("s22")
+                .withRequest("r22")
+                .withWorkspace("w22")
+                .withLayer("l22");
 
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
         assertEquals(ALLOW, accessInfo.getGrant());
@@ -276,12 +261,11 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
         Rule p20 = insert(20, null, "group32", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp20 = setRuleLimits(p20, WKT_WGS84_4, CLIP, HIDE);
 
-        AccessRequest request =
-                createRequest("auth33", "group31", "group32")
-                        .withService("s22")
-                        .withRequest("r22")
-                        .withWorkspace("w22")
-                        .withLayer("l22");
+        AccessRequest request = createRequest("auth33", "group31", "group32")
+                .withService("s22")
+                .withRequest("r22")
+                .withWorkspace("w22")
+                .withLayer("l22");
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
         assertEquals(ALLOW, accessInfo.getGrant());
 
@@ -291,12 +275,9 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
 
         // the intersects should be equal to the originally defined
         // allowed area
-        org.locationtech.jts.geom.Geometry expectedResult =
-                JTS.to(lp17.getAllowedArea())
-                        .intersection(JTS.to(lp18.getAllowedArea()))
-                        .union(
-                                JTS.to(lp19.getAllowedArea())
-                                        .intersection(JTS.to(lp20.getAllowedArea())));
+        org.locationtech.jts.geom.Geometry expectedResult = JTS.to(lp17.getAllowedArea())
+                .intersection(JTS.to(lp18.getAllowedArea()))
+                .union(JTS.to(lp19.getAllowedArea()).intersection(JTS.to(lp20.getAllowedArea())));
         expectedResult.normalize();
         org.locationtech.jts.geom.Geometry clip = JTS.to(accessInfo.getClipArea());
         clip.normalize();
@@ -325,12 +306,11 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
         Rule p24 = insert(24, null, "group42", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp24 = setRuleLimits(p24, WKT_WGS84_4, INTERSECT, HIDE);
 
-        AccessRequest request =
-                createRequest("auth44", "group41", "group42")
-                        .withService("s22")
-                        .withRequest("r22")
-                        .withWorkspace("w22")
-                        .withLayer("l22");
+        AccessRequest request = createRequest("auth44", "group41", "group42")
+                .withService("s22")
+                .withRequest("r22")
+                .withWorkspace("w22")
+                .withLayer("l22");
 
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
         assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);

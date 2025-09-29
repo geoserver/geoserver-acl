@@ -9,6 +9,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.geolatte.geom.MultiPolygon;
 import org.geolatte.geom.codec.Wkt;
 import org.geoserver.acl.domain.filter.RuleQuery;
@@ -33,22 +38,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-@SpringBootTest(
-        classes = {
-            AuthorizationJPAPropertiesTestConfiguration.class,
-            JPAIntegrationConfiguration.class
-        })
+@SpringBootTest(classes = {AuthorizationJPAPropertiesTestConfiguration.class, JPAIntegrationConfiguration.class})
 @ActiveProfiles("test") // see config props in src/test/resource/application-test.yaml
 class RuleRepositoryJpaAdaptorTest {
 
-    private static final String WORLD =
-            "SRID=4326;MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))";
+    private static final String WORLD = "SRID=4326;MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))";
 
     private @Autowired RuleRepository repo;
     private @Autowired JpaRuleRepository jpaRepo;
@@ -89,29 +83,23 @@ class RuleRepositoryJpaAdaptorTest {
         Rule r1 = Rule.allow().withPriority(1).withRolename("role").withUsername("user1");
         r1 = repo.create(r1, InsertPosition.FIXED);
 
-        Rule r2 =
-                repo.create(
-                        r1.withId(null).withPriority(2).withUsername("user2"),
-                        InsertPosition.FIXED);
+        Rule r2 = repo.create(r1.withId(null).withPriority(2).withUsername("user2"), InsertPosition.FIXED);
 
         Rule r1dup = r2.withUsername("user1");
-        String message =
-                assertThrows(RuleIdentifierConflictException.class, () -> repo.save(r1dup))
-                        .getMessage();
+        String message = assertThrows(RuleIdentifierConflictException.class, () -> repo.save(r1dup))
+                .getMessage();
         assertThat(message).contains(r1.toShortString());
 
         Rule r2dup = r1.withUsername("user2");
-        message =
-                assertThrows(RuleIdentifierConflictException.class, () -> repo.save(r2dup))
-                        .getMessage();
+        message = assertThrows(RuleIdentifierConflictException.class, () -> repo.save(r2dup))
+                .getMessage();
         assertThat(message).contains(r2.toShortString());
     }
 
     private void testCreateDuplicateIdentifier(Rule r1) {
         assertNotNull(repo.create(r1, InsertPosition.FIXED));
 
-        assertThrows(
-                RuleIdentifierConflictException.class, () -> repo.create(r1, InsertPosition.FIXED));
+        assertThrows(RuleIdentifierConflictException.class, () -> repo.create(r1, InsertPosition.FIXED));
     }
 
     @Test
@@ -137,11 +125,11 @@ class RuleRepositoryJpaAdaptorTest {
 
     @Test
     void streamAll() {
-        List<Rule> limits = IntStream.rangeClosed(1, 100).mapToObj(this::addLimitsRule).toList();
-        List<Rule> allows =
-                IntStream.rangeClosed(101, 200)
-                        .mapToObj(this::addAllowRuleWithLayerDetails)
-                        .toList();
+        List<Rule> limits =
+                IntStream.rangeClosed(1, 100).mapToObj(this::addLimitsRule).toList();
+        List<Rule> allows = IntStream.rangeClosed(101, 200)
+                .mapToObj(this::addAllowRuleWithLayerDetails)
+                .toList();
 
         List<Rule> expected = new ArrayList<>(limits);
         expected.addAll(allows);
@@ -152,13 +140,11 @@ class RuleRepositoryJpaAdaptorTest {
 
     private Set<LayerAttribute> sampleAttributes(Rule r) {
         return IntStream.rangeClosed(1, 5)
-                .mapToObj(
-                        i ->
-                                LayerAttribute.builder()
-                                        .name(r.getId() + "-att-" + i)
-                                        .dataType("java.lang.String")
-                                        .access(AccessType.READONLY)
-                                        .build())
+                .mapToObj(i -> LayerAttribute.builder()
+                        .name(r.getId() + "-att-" + i)
+                        .dataType("java.lang.String")
+                        .access(AccessType.READONLY)
+                        .build())
                 .collect(Collectors.toSet());
     }
 
@@ -191,18 +177,17 @@ class RuleRepositoryJpaAdaptorTest {
     }
 
     private void addDetails(Rule r) {
-        LayerDetails ld =
-                LayerDetails.builder()
-                        .allowedStyles(Set.of(r.getId() + "-style-1", r.getId() + "-style-2"))
-                        .area(multiPolygon())
-                        .catalogMode(CatalogMode.CHALLENGE)
-                        .cqlFilterRead("1=1")
-                        .cqlFilterWrite("2=2")
-                        .defaultStyle(r.getId() + "-default-style")
-                        .type(LayerType.VECTOR)
-                        .spatialFilterType(SpatialFilterType.INTERSECT)
-                        .attributes(sampleAttributes(r))
-                        .build();
+        LayerDetails ld = LayerDetails.builder()
+                .allowedStyles(Set.of(r.getId() + "-style-1", r.getId() + "-style-2"))
+                .area(multiPolygon())
+                .catalogMode(CatalogMode.CHALLENGE)
+                .cqlFilterRead("1=1")
+                .cqlFilterWrite("2=2")
+                .defaultStyle(r.getId() + "-default-style")
+                .type(LayerType.VECTOR)
+                .spatialFilterType(SpatialFilterType.INTERSECT)
+                .attributes(sampleAttributes(r))
+                .build();
         repo.setLayerDetails(r.getId(), ld);
     }
 
@@ -212,12 +197,11 @@ class RuleRepositoryJpaAdaptorTest {
                 .name("p" + priority)
                 .description("desc " + priority)
                 .extId("extId-" + priority)
-                .identifier(
-                        Rule.limit().getIdentifier().toBuilder()
-                                .addressRange("10.1.1.1/32")
-                                .layer("layer-" + priority)
-                                .workspace("ws-" + priority)
-                                .build())
+                .identifier(Rule.limit().getIdentifier().toBuilder()
+                        .addressRange("10.1.1.1/32")
+                        .layer("layer-" + priority)
+                        .workspace("ws-" + priority)
+                        .build())
                 .ruleLimits(limits())
                 .build();
     }
@@ -228,12 +212,11 @@ class RuleRepositoryJpaAdaptorTest {
                 .name("p" + priority)
                 .description("desc " + priority)
                 .extId("extId-" + priority)
-                .identifier(
-                        Rule.allow().getIdentifier().toBuilder()
-                                .addressRange("10.1.1.1/32")
-                                .layer("layer-" + priority)
-                                .workspace("ws-" + priority)
-                                .build())
+                .identifier(Rule.allow().getIdentifier().toBuilder()
+                        .addressRange("10.1.1.1/32")
+                        .layer("layer-" + priority)
+                        .workspace("ws-" + priority)
+                        .build())
                 .build();
     }
 

@@ -4,12 +4,11 @@
  */
 package org.geoserver.acl.jpa.repository;
 
+import java.util.Optional;
+import java.util.stream.Stream;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
-
-import java.util.Optional;
-import java.util.stream.Stream;
 
 @NoRepositoryBean
 public interface PriorityRepository<T> extends PagingAndSortingRepository<T, Long> {

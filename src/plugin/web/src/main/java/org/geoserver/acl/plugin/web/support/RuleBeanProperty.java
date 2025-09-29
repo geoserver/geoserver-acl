@@ -6,11 +6,10 @@
  */
 package org.geoserver.acl.plugin.web.support;
 
+import java.util.Comparator;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
-
-import java.util.Comparator;
 
 /** Makes columns unsortable and display "*" instead of empty when null */
 @SuppressWarnings("serial")

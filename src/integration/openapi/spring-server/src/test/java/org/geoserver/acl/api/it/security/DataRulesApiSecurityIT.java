@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Set;
 import org.geoserver.acl.api.model.AccessRequest;
 import org.geoserver.acl.api.model.AdminAccessRequest;
 import org.geoserver.acl.api.model.AdminRule;
@@ -37,11 +38,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import java.util.Set;
-
-@SpringBootTest(
-        classes = SecurityTestConfiguration.class,
-        properties = "spring.main.banner-mode=off")
+@SpringBootTest(classes = SecurityTestConfiguration.class, properties = "spring.main.banner-mode=off")
 class DataRulesApiSecurityIT {
 
     private @MockBean RuleAdminService rulesService;
@@ -79,14 +76,11 @@ class DataRulesApiSecurityIT {
         assertAuthCredentialsNotFound(() -> adminRulesApi.adminRuleExistsById("1"));
         assertAuthCredentialsNotFound(() -> adminRulesApi.countAdminRules(new AdminRuleFilter()));
         assertAuthCredentialsNotFound(() -> adminRulesApi.countAllAdminRules());
-        assertAuthCredentialsNotFound(
-                () -> adminRulesApi.createAdminRule(new AdminRule(), InsertPosition.FIXED));
+        assertAuthCredentialsNotFound(() -> adminRulesApi.createAdminRule(new AdminRule(), InsertPosition.FIXED));
         assertAuthCredentialsNotFound(() -> adminRulesApi.deleteAdminRuleById("1"));
-        assertAuthCredentialsNotFound(
-                () -> adminRulesApi.findAdminRules(1, "", new AdminRuleFilter()));
+        assertAuthCredentialsNotFound(() -> adminRulesApi.findAdminRules(1, "", new AdminRuleFilter()));
         assertAuthCredentialsNotFound(() -> adminRulesApi.findAllAdminRules(null, null));
-        assertAuthCredentialsNotFound(
-                () -> adminRulesApi.findFirstAdminRule(new AdminRuleFilter()));
+        assertAuthCredentialsNotFound(() -> adminRulesApi.findFirstAdminRule(new AdminRuleFilter()));
         assertAuthCredentialsNotFound(() -> adminRulesApi.findOneAdminRuleByPriority(1L));
         assertAuthCredentialsNotFound(() -> adminRulesApi.getAdminRuleById("1"));
         assertAuthCredentialsNotFound(() -> adminRulesApi.shiftAdminRulesByPiority(1L, 2L));
@@ -97,8 +91,7 @@ class DataRulesApiSecurityIT {
     @Test
     void authorizationApiNoSecuritySetUp() {
         assertAuthCredentialsNotFound(() -> authApi.getAccessInfo(new AccessRequest()));
-        assertAuthCredentialsNotFound(
-                () -> authApi.getAdminAuthorization(new AdminAccessRequest()));
+        assertAuthCredentialsNotFound(() -> authApi.getAdminAuthorization(new AdminAccessRequest()));
         assertAuthCredentialsNotFound(() -> authApi.getMatchingRules(new AccessRequest()));
     }
 
@@ -162,8 +155,7 @@ class DataRulesApiSecurityIT {
     void rulesApiAdminUser() {
         assertRulesApiReadOnlyMethodsAllowed();
 
-        rulesApi.createRule(
-                support.toApi(org.geoserver.acl.domain.rules.Rule.allow()), InsertPosition.FIXED);
+        rulesApi.createRule(support.toApi(org.geoserver.acl.domain.rules.Rule.allow()), InsertPosition.FIXED);
         verify(rulesService, times(1)).insert(any(), any());
 
         rulesApi.setRuleAllowedStyles("1", Set.of());
@@ -215,8 +207,7 @@ class DataRulesApiSecurityIT {
             username = "someUser",
             authorities = {"ANY_ROLE"})
     void adminRulesApiNonAdminUser_mutatingMethods() {
-        assertAccessDenied(
-                () -> adminRulesApi.createAdminRule(new AdminRule(), InsertPosition.FIXED));
+        assertAccessDenied(() -> adminRulesApi.createAdminRule(new AdminRule(), InsertPosition.FIXED));
         assertAccessDenied(() -> adminRulesApi.deleteAdminRuleById("1"));
         assertAccessDenied(() -> adminRulesApi.shiftAdminRulesByPiority(1L, 2L));
         assertAccessDenied(() -> adminRulesApi.swapAdminRules("1", "2"));

@@ -38,8 +38,7 @@ public abstract class RuleApiMapper {
     @Mapping(target = "identifier.layer", source = "layer")
     @Mapping(target = "identifier.addressRange", source = "addressRange")
     @Mapping(target = "ruleLimits", source = "limits")
-    public abstract org.geoserver.acl.domain.rules.Rule toModel(
-            org.geoserver.acl.api.model.Rule rule);
+    public abstract org.geoserver.acl.domain.rules.Rule toModel(org.geoserver.acl.api.model.Rule rule);
 
     @Mapping(target = "access", source = "identifier.access")
     @Mapping(target = "user", source = "identifier.username")
@@ -51,13 +50,11 @@ public abstract class RuleApiMapper {
     @Mapping(target = "layer", source = "identifier.layer")
     @Mapping(target = "addressRange", source = "identifier.addressRange")
     @Mapping(target = "limits", source = "ruleLimits")
-    public abstract org.geoserver.acl.api.model.Rule toApi(
-            org.geoserver.acl.domain.rules.Rule rule);
+    public abstract org.geoserver.acl.api.model.Rule toApi(org.geoserver.acl.domain.rules.Rule rule);
 
     @Mapping(target = "identifier", ignore = true)
     @Mapping(target = "ruleLimits", ignore = true)
-    abstract Rule updateEntity(
-            @MappingTarget Rule.Builder entity, org.geoserver.acl.api.model.Rule dto);
+    abstract Rule updateEntity(@MappingTarget Rule.Builder entity, org.geoserver.acl.api.model.Rule dto);
 
     @Mapping(target = "username", source = "user")
     @Mapping(target = "rolename", source = "role")

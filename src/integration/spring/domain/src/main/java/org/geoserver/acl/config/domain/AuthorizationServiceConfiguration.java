@@ -15,8 +15,7 @@ import org.springframework.context.annotation.Configuration;
 public class AuthorizationServiceConfiguration {
 
     @Bean
-    AuthorizationService aclAuthorizationService(
-            AdminRuleAdminService adminRuleService, RuleAdminService ruleService) {
+    AuthorizationService aclAuthorizationService(AdminRuleAdminService adminRuleService, RuleAdminService ruleService) {
         return new AuthorizationServiceImpl(adminRuleService, ruleService);
     }
 }

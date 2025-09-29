@@ -6,6 +6,8 @@
  */
 package org.geoserver.acl.plugin.web.adminrules.model;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.geoserver.acl.domain.adminrules.AdminRule;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.adminrules.AdminRuleIdentifierConflictException;
@@ -14,9 +16,6 @@ import org.geoserver.acl.plugin.web.components.RulesTablePanel;
 import org.geoserver.acl.plugin.web.support.RuleBeanProperty;
 import org.geoserver.web.GeoServerApplication;
 import org.springframework.dao.DuplicateKeyException;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class AdminRulesTableDataProvider extends RulesDataProvider<MutableAdminRule> {

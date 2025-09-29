@@ -4,18 +4,16 @@
  */
 package org.geoserver.acl.integration.jpa.repository;
 
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.function.Function;
 import lombok.Getter;
-
 import org.geoserver.acl.domain.rules.InsertPosition;
 import org.geoserver.acl.jpa.repository.PriorityRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.function.Function;
 
 class PriorityResolver<T> {
 
@@ -32,23 +30,20 @@ class PriorityResolver<T> {
     public long resolveFinalPriority(long priority, InsertPosition position) {
         long finalPriority;
         switch (position) {
-            case FIXED:
-                {
-                    finalPriority = resolveFixedPriority(priority);
-                    break;
-                }
-            case FROM_START:
-                {
-                    long positionFromStart = priority;
-                    finalPriority = resolvePriorityFromStart(positionFromStart);
-                    break;
-                }
-            case FROM_END:
-                {
-                    long positionFromEnd = priority;
-                    finalPriority = resolvePriorityFromEnd(positionFromEnd);
-                    break;
-                }
+            case FIXED: {
+                finalPriority = resolveFixedPriority(priority);
+                break;
+            }
+            case FROM_START: {
+                long positionFromStart = priority;
+                finalPriority = resolvePriorityFromStart(positionFromStart);
+                break;
+            }
+            case FROM_END: {
+                long positionFromEnd = priority;
+                finalPriority = resolvePriorityFromEnd(positionFromEnd);
+                break;
+            }
             default:
                 throw new IllegalStateException("Unknown InsertPosition " + position);
         }
@@ -60,13 +55,10 @@ class PriorityResolver<T> {
         if (priorityUnset) {
             return jparepo.findMaxPriority().orElse(0L) + 1;
         }
-        jparepo.findOneByPriority(requestedPriority)
-                .ifPresent(
-                        r -> {
-                            jparepo.streamIdsByShiftPriority(requestedPriority)
-                                    .forEach(updatedIds::add);
-                            jparepo.shiftPriority(requestedPriority, 1);
-                        });
+        jparepo.findOneByPriority(requestedPriority).ifPresent(r -> {
+            jparepo.streamIdsByShiftPriority(requestedPriority).forEach(updatedIds::add);
+            jparepo.shiftPriority(requestedPriority, 1);
+        });
         return requestedPriority;
     }
 
@@ -154,11 +146,10 @@ class PriorityResolver<T> {
 
         // there are not enough rules from the bottom, use the minimum one
         Optional<Long> min = jparepo.findMinPriority();
-        min.ifPresent(
-                minPriority -> {
-                    jparepo.streamIdsByShiftPriority(minPriority).forEach(updatedIds::add);
-                    jparepo.shiftPriority(minPriority, 1);
-                });
+        min.ifPresent(minPriority -> {
+            jparepo.streamIdsByShiftPriority(minPriority).forEach(updatedIds::add);
+            jparepo.shiftPriority(minPriority, 1);
+        });
         return min.orElse(1L);
     }
 
@@ -175,8 +166,6 @@ class PriorityResolver<T> {
         Sort sort = Sort.by(direction, "priority");
         PageRequest singlePageReq = PageRequest.of(page, pageSize, sort);
 
-        return jparepo.findAll(singlePageReq).getContent().stream()
-                .findFirst()
-                .map(priorityExtractor);
+        return jparepo.findAll(singlePageReq).getContent().stream().findFirst().map(priorityExtractor);
     }
 }

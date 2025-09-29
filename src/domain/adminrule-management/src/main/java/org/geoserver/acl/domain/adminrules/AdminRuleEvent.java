@@ -4,12 +4,11 @@
  */
 package org.geoserver.acl.domain.adminrules;
 
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
-
-import java.util.Set;
 
 @Data
 @AllArgsConstructor(access = AccessLevel.PROTECTED)

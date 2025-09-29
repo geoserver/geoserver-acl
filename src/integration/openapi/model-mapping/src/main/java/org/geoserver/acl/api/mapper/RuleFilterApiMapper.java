@@ -4,6 +4,7 @@
  */
 package org.geoserver.acl.api.mapper;
 
+import java.util.Set;
 import org.geoserver.acl.api.model.AddressRangeFilter;
 import org.geoserver.acl.api.model.AdminGrantType;
 import org.geoserver.acl.api.model.SetFilter;
@@ -13,15 +14,12 @@ import org.geoserver.acl.domain.filter.predicate.SpecialFilterType;
 import org.geoserver.acl.domain.rules.RuleFilter;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
-
 @Component
 public class RuleFilterApiMapper {
 
     public org.geoserver.acl.api.model.AdminRuleFilter map(AdminRuleFilter filter) {
         if (filter == null) return null;
-        org.geoserver.acl.api.model.AdminRuleFilter api =
-                new org.geoserver.acl.api.model.AdminRuleFilter();
+        org.geoserver.acl.api.model.AdminRuleFilter api = new org.geoserver.acl.api.model.AdminRuleFilter();
 
         api.setGrantType(map(filter.getGrantType()));
         api.setRoles(setFilterToApi(filter.getRole()));
@@ -114,8 +112,7 @@ public class RuleFilterApiMapper {
                 return value;
             case IDVALUE:
             default:
-                throw new IllegalArgumentException(
-                        "Unexpected value type for TextFilter: " + filter.getType());
+                throw new IllegalArgumentException("Unexpected value type for TextFilter: " + filter.getType());
         }
     }
 
@@ -154,8 +151,7 @@ public class RuleFilterApiMapper {
                 return value;
             case IDVALUE:
             default:
-                throw new IllegalArgumentException(
-                        "Unexpected value type for TextFilter: " + filter.getType());
+                throw new IllegalArgumentException("Unexpected value type for TextFilter: " + filter.getType());
         }
     }
 
@@ -171,8 +167,7 @@ public class RuleFilterApiMapper {
                 target.setHeuristically(value);
                 if (includeDefault != null) target.setIncludeDefault(includeDefault);
             } else {
-                if (includeDefault != null && includeDefault.booleanValue())
-                    target.setType(SpecialFilterType.DEFAULT);
+                if (includeDefault != null && includeDefault.booleanValue()) target.setType(SpecialFilterType.DEFAULT);
                 else target.setType(SpecialFilterType.ANY);
             }
         }
@@ -194,8 +189,7 @@ public class RuleFilterApiMapper {
                 return value;
             case IDVALUE:
             default:
-                throw new IllegalArgumentException(
-                        "Unexpected value type for TextFilter: " + filter.getType());
+                throw new IllegalArgumentException("Unexpected value type for TextFilter: " + filter.getType());
         }
     }
 
@@ -211,8 +205,7 @@ public class RuleFilterApiMapper {
                 target.setHeuristically(value);
                 if (includeDefault != null) target.setIncludeDefault(includeDefault);
             } else {
-                if (includeDefault != null && includeDefault.booleanValue())
-                    target.setType(SpecialFilterType.DEFAULT);
+                if (includeDefault != null && includeDefault.booleanValue()) target.setType(SpecialFilterType.DEFAULT);
                 else target.setType(SpecialFilterType.ANY);
             }
         }

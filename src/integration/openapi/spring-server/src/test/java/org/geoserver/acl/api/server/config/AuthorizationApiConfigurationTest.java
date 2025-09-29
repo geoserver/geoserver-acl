@@ -17,9 +17,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 class AuthorizationApiConfigurationTest {
 
-    private ApplicationContextRunner runner =
-            new ApplicationContextRunner()
-                    .withConfiguration(UserConfigurations.of(AuthorizationApiConfiguration.class));
+    private ApplicationContextRunner runner = new ApplicationContextRunner()
+            .withConfiguration(UserConfigurations.of(AuthorizationApiConfiguration.class));
 
     private ApplicationContextRunner withMockRepositories() {
         runner = withMock(NativeWebRequest.class);
@@ -33,25 +32,22 @@ class AuthorizationApiConfigurationTest {
 
     @Test
     void testWithAvailableAuthorizationService() {
-        withMockRepositories()
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasNotFailed()
-                                    .hasSingleBean(AuthorizationApiController.class)
-                                    .hasSingleBean(AuthorizationApiDelegate.class);
-                        });
+        withMockRepositories().run(context -> {
+            assertThat(context)
+                    .hasNotFailed()
+                    .hasSingleBean(AuthorizationApiController.class)
+                    .hasSingleBean(AuthorizationApiDelegate.class);
+        });
     }
 
     @Test
     void testMissingAuthorizationService() {
-        runner.run(
-                context -> {
-                    assertThat(context)
-                            .hasFailed()
-                            .getFailure()
-                            .hasMessageContaining("Unsatisfied dependency")
-                            .hasMessageContaining("AuthorizationService");
-                });
+        runner.run(context -> {
+            assertThat(context)
+                    .hasFailed()
+                    .getFailure()
+                    .hasMessageContaining("Unsatisfied dependency")
+                    .hasMessageContaining("AuthorizationService");
+        });
     }
 }

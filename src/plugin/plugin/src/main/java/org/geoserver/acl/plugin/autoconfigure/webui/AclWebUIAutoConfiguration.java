@@ -16,9 +16,6 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration
 @ConditionalOnAclEnabled
 @ConditionalOnClass({GeoServerBasePage.class, SecuritySettingsPage.class})
-@ConditionalOnProperty(
-        name = "geoserver.web-ui.acl.enabled",
-        havingValue = "true",
-        matchIfMissing = false)
+@ConditionalOnProperty(name = "geoserver.web-ui.acl.enabled", havingValue = "true", matchIfMissing = false)
 @Import({ACLWebUIConfiguration.class})
 public class AclWebUIAutoConfiguration {}

@@ -6,8 +6,9 @@ package org.geoserver.acl.api.client.config;
 
 import static java.lang.String.format;
 
+import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
-
 import org.geoserver.acl.api.client.DataRulesApi;
 import org.geoserver.acl.authorization.AuthorizationService;
 import org.geoserver.acl.client.AclClient;
@@ -19,9 +20,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
-
-import java.time.Instant;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Include this configuration to contribute an {@link org.geoserver.acl.api.client.ApiClient}
@@ -69,22 +67,17 @@ public class ApiClientConfiguration {
             }
         }
         if (error != null) {
-            String msg =
-                    format(
-                            "Unable to connect to ACL after %,d seconds. URL: %s, user: %s, error: %s",
-                            timeoutSeconds,
-                            client.getBasePath(),
-                            client.getUsername(),
-                            error.getMessage());
+            String msg = format(
+                    "Unable to connect to ACL after %,d seconds. URL: %s, user: %s, error: %s",
+                    timeoutSeconds, client.getBasePath(), client.getUsername(), error.getMessage());
             throw new BeanInitializationException(msg, error);
         }
     }
 
     private void logWaiting(AclClient client, RuntimeException e) {
-        String msg =
-                format(
-                        "ACL API endpoint not ready. URL: %s, user: %s, error: %s",
-                        client.getBasePath(), client.getUsername(), e.getMessage());
+        String msg = format(
+                "ACL API endpoint not ready. URL: %s, user: %s, error: %s",
+                client.getBasePath(), client.getUsername(), e.getMessage());
         log.info(msg);
     }
 
@@ -93,8 +86,7 @@ public class ApiClientConfiguration {
         DataRulesApi rulesApi = client.getRulesApi();
         try {
             Integer count = rulesApi.countAllRules();
-            log.debug(
-                    "Connected to ACL service at {}, rule count: {}", client.getBasePath(), count);
+            log.debug("Connected to ACL service at {}, rule count: {}", client.getBasePath(), count);
         } catch (RuntimeException e) {
             return e;
         }

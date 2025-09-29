@@ -4,15 +4,12 @@
  */
 package org.geoserver.cloud.jndi;
 
-import lombok.NonNull;
-
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
 import javax.naming.Binding;
 import javax.naming.Context;
 import javax.naming.Name;
@@ -22,6 +19,7 @@ import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.OperationNotSupportedException;
+import lombok.NonNull;
 
 /**
  * Simple implementation of a JNDI naming context. Only supports binding plain Objects to String
@@ -90,8 +88,7 @@ public class SimpleNamingContext implements Context {
             return new SimpleNamingContext(root, this.bindings, this.environment);
         }
 
-        throw new NameNotFoundException(
-                "'" + name + "' not bound. Bindings: " + this.bindings.keySet());
+        throw new NameNotFoundException("'" + name + "' not bound. Bindings: " + this.bindings.keySet());
     }
 
     public @Override Object lookupLink(String name) throws NameNotFoundException {
@@ -118,8 +115,7 @@ public class SimpleNamingContext implements Context {
 
     public @Override Context createSubcontext(String name) {
         final String subcontextName = rootName(this.contextRoot + name);
-        Context subcontext =
-                new SimpleNamingContext(subcontextName, this.bindings, this.environment);
+        Context subcontext = new SimpleNamingContext(subcontextName, this.bindings, this.environment);
         bind(name, subcontext);
         return subcontext;
     }
@@ -244,8 +240,7 @@ public class SimpleNamingContext implements Context {
         throw nameUnsupported();
     }
 
-    protected OperationNotSupportedException nameUnsupported()
-            throws OperationNotSupportedException {
+    protected OperationNotSupportedException nameUnsupported() throws OperationNotSupportedException {
         return new OperationNotSupportedException("javax.naming.Name is not supported");
     }
 
@@ -253,8 +248,7 @@ public class SimpleNamingContext implements Context {
 
         private final Iterator<T> iterator;
 
-        private BaseNamingEnumeration(SimpleNamingContext context, final String root)
-                throws NamingException {
+        private BaseNamingEnumeration(SimpleNamingContext context, final String root) throws NamingException {
 
             if (!root.equals(ROOT_NAME) && !root.endsWith("/")) {
                 throw new IllegalArgumentException("root must end with /: " + root);
@@ -265,15 +259,13 @@ public class SimpleNamingContext implements Context {
             for (String boundName : context.bindings.keySet()) {
                 if (boundName.startsWith(contextRoot)) {
                     final String strippedName = extractSimpleName(contextRoot, boundName);
-                    contents.computeIfAbsent(
-                            strippedName,
-                            name -> {
-                                try {
-                                    return createObject(name, context.lookup(root + name));
-                                } catch (NameNotFoundException e) {
-                                    throw new RuntimeException("Should not happen", e);
-                                }
-                            });
+                    contents.computeIfAbsent(strippedName, name -> {
+                        try {
+                            return createObject(name, context.lookup(root + name));
+                        } catch (NameNotFoundException e) {
+                            throw new RuntimeException("Should not happen", e);
+                        }
+                    });
                 }
             }
             if (contents.size() == 0) {
@@ -286,9 +278,7 @@ public class SimpleNamingContext implements Context {
             int startIndex = contextRoot.length();
             int endIndex = boundName.indexOf('/', startIndex);
             String strippedName =
-                    (endIndex != -1
-                            ? boundName.substring(startIndex, endIndex)
-                            : boundName.substring(startIndex));
+                    (endIndex != -1 ? boundName.substring(startIndex, endIndex) : boundName.substring(startIndex));
             return strippedName;
         }
 
@@ -313,23 +303,21 @@ public class SimpleNamingContext implements Context {
         public @Override void close() {}
     }
 
-    private static final class NameClassPairEnumeration
-            extends BaseNamingEnumeration<NameClassPair> {
+    private static final class NameClassPairEnumeration extends BaseNamingEnumeration<NameClassPair> {
 
-        private NameClassPairEnumeration(SimpleNamingContext context, String root)
-                throws NamingException {
+        private NameClassPairEnumeration(SimpleNamingContext context, String root) throws NamingException {
             super(context, root);
         }
 
         protected @Override NameClassPair createObject(String simpleName, Object obj) {
-            return new org.geoserver.cloud.jndi.NameClassPair(simpleName, obj.getClass().getName());
+            return new org.geoserver.cloud.jndi.NameClassPair(
+                    simpleName, obj.getClass().getName());
         }
     }
 
     private static final class BindingEnumeration extends BaseNamingEnumeration<Binding> {
 
-        private BindingEnumeration(SimpleNamingContext context, String root)
-                throws NamingException {
+        private BindingEnumeration(SimpleNamingContext context, String root) throws NamingException {
             super(context, root);
         }
 

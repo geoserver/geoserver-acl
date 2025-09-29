@@ -6,11 +6,10 @@
  */
 package org.geoserver.acl.plugin.accessmanager.config;
 
-import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.config.GeoServerPropertyConfigurer;
-
 import java.io.IOException;
 import java.util.Properties;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerPropertyConfigurer;
 
 public class AclPropertyPlaceholderConfigurer extends GeoServerPropertyConfigurer {
 

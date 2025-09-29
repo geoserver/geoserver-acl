@@ -4,8 +4,8 @@
  */
 package org.geoserver.acl.plugin.web.components;
 
+import java.util.Locale;
 import lombok.NonNull;
-
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -18,8 +18,6 @@ import org.geolatte.geom.Geometry;
 import org.geolatte.geom.codec.Wkt;
 import org.springframework.util.StringUtils;
 
-import java.util.Locale;
-
 @SuppressWarnings({"serial", "rawtypes"})
 public class GeometryWktTextArea<T extends Geometry> extends TextArea<T> {
 
@@ -29,20 +27,18 @@ public class GeometryWktTextArea<T extends Geometry> extends TextArea<T> {
         return new GeometryWktTextArea<Geometry>(id, Geometry.class, Model.of());
     }
 
-    public GeometryWktTextArea(
-            @NonNull String id, @NonNull Class<T> geomType, @NonNull IModel<T> model) {
+    public GeometryWktTextArea(@NonNull String id, @NonNull Class<T> geomType, @NonNull IModel<T> model) {
         super(id, model);
         this.geomType = geomType;
-        add(
-                new IValidator<T>() {
-                    public @Override void validate(IValidatable<T> validatable) {
-                        try {
-                            validatable.getValue();
-                        } catch (Exception e) {
-                            validatable.error(new ValidationError(e.getMessage()));
-                        }
-                    }
-                });
+        add(new IValidator<T>() {
+            public @Override void validate(IValidatable<T> validatable) {
+                try {
+                    validatable.getValue();
+                } catch (Exception e) {
+                    validatable.error(new ValidationError(e.getMessage()));
+                }
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -51,10 +47,7 @@ public class GeometryWktTextArea<T extends Geometry> extends TextArea<T> {
         super.convertInput();
         Object convertedInput = super.getConvertedInput();
         if (convertedInput instanceof String) {
-            T geom =
-                    (T)
-                            createConverter(geomType)
-                                    .convertToObject((String) convertedInput, getLocale());
+            T geom = (T) createConverter(geomType).convertToObject((String) convertedInput, getLocale());
             setConvertedInput(geom);
         }
     }
@@ -85,10 +78,9 @@ public class GeometryWktTextArea<T extends Geometry> extends TextArea<T> {
                 throw new ConversionException("Unable to parse WKT: " + e.getMessage(), e);
             }
             if (!type.isInstance(fromWkt)) {
-                throw new ConversionException(
-                        String.format(
-                                "Expected %s, got %s",
-                                type.getSimpleName(), fromWkt.getClass().getSimpleName()));
+                throw new ConversionException(String.format(
+                        "Expected %s, got %s",
+                        type.getSimpleName(), fromWkt.getClass().getSimpleName()));
             }
             return fromWkt;
         }

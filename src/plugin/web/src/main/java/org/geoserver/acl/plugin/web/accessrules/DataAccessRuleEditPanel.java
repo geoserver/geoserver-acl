@@ -4,6 +4,8 @@
  */
 package org.geoserver.acl.plugin.web.accessrules;
 
+import java.util.Iterator;
+import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -40,9 +42,6 @@ import org.geoserver.acl.plugin.web.components.IPAddressRangeValidator;
 import org.geoserver.acl.plugin.web.components.ModelUpdatingAutoCompleteTextField;
 import org.geoserver.acl.plugin.web.components.PublishedInfoAutoCompleteTextField;
 import org.geoserver.acl.plugin.web.support.SerializableFunction;
-
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * @see RuleLimitsEditPanel
@@ -149,14 +148,12 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
     }
 
     private DropDownChoice<String> serviceChoice() {
-        DropDownChoice<String> serviceChoice =
-                new DropDownChoice<>("service", pageModel.findServiceNames());
-        serviceChoice.add(
-                new OnChangeAjaxBehavior() {
-                    protected @Override void onUpdate(AjaxRequestTarget target) {
-                        onServiceChange(target);
-                    }
-                });
+        DropDownChoice<String> serviceChoice = new DropDownChoice<>("service", pageModel.findServiceNames());
+        serviceChoice.add(new OnChangeAjaxBehavior() {
+            protected @Override void onUpdate(AjaxRequestTarget target) {
+                onServiceChange(target);
+            }
+        });
         serviceChoice.setNullValid(true);
         return serviceChoice;
     }
@@ -187,8 +184,7 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
 
     private TextField<String> subfieldChoice() {
         AutoCompleteTextField<String> subfieldChoice =
-                autoCompleteChoice(
-                        "subfield", model().bind("subfield"), pageModel::getSubfieldChoices);
+                autoCompleteChoice("subfield", model().bind("subfield"), pageModel::getSubfieldChoices);
 
         subfieldChoice.setOutputMarkupId(true);
         subfieldChoice.setOutputMarkupPlaceholderTag(true);
@@ -216,19 +212,14 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
      */
     private FormComponent<String> workspaceChoice() {
         AutoCompleteTextField<String> choice =
-                autoCompleteChoice(
-                        "workspace", model().bind("workspace"), pageModel::getWorkspaceChoices);
+                autoCompleteChoice("workspace", model().bind("workspace"), pageModel::getWorkspaceChoices);
 
-        choice.add(
-                new OnChangeAjaxBehavior() {
-                    protected @Override void onUpdate(AjaxRequestTarget target) {
-                        String workspaceName = choice.getConvertedInput();
-                        send(
-                                getPage(),
-                                Broadcast.BREADTH,
-                                new WorkspaceChangeEvent(workspaceName, target));
-                    }
-                });
+        choice.add(new OnChangeAjaxBehavior() {
+            protected @Override void onUpdate(AjaxRequestTarget target) {
+                String workspaceName = choice.getConvertedInput();
+                send(getPage(), Broadcast.BREADTH, new WorkspaceChangeEvent(workspaceName, target));
+            }
+        });
 
         return choice;
     }
@@ -243,23 +234,19 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
 
         final IModel<String> layerModel = model().bind("layer");
         PublishedInfoAutoCompleteTextField layerChoice =
-                new PublishedInfoAutoCompleteTextField(
-                        "layer", layerModel, pageModel::getLayerChoices);
+                new PublishedInfoAutoCompleteTextField("layer", layerModel, pageModel::getLayerChoices);
 
-        layerChoice.add(
-                new OnChangeAjaxBehavior() {
-                    protected @Override void onUpdate(AjaxRequestTarget target) {
-                        String layer = layerChoice.getConvertedInput();
-                        send(getPage(), Broadcast.BREADTH, new LayerChangeEvent(layer, target));
-                    }
-                });
+        layerChoice.add(new OnChangeAjaxBehavior() {
+            protected @Override void onUpdate(AjaxRequestTarget target) {
+                String layer = layerChoice.getConvertedInput();
+                send(getPage(), Broadcast.BREADTH, new LayerChangeEvent(layer, target));
+            }
+        });
         return layerChoice;
     }
 
     private AutoCompleteTextField<String> autoCompleteChoice(
-            String id,
-            IModel<String> model,
-            SerializableFunction<String, Iterator<String>> choiceResolver) {
+            String id, IModel<String> model, SerializableFunction<String, Iterator<String>> choiceResolver) {
 
         AutoCompleteTextField<String> field;
         field = new ModelUpdatingAutoCompleteTextField<>(id, model, choiceResolver);
@@ -292,14 +279,12 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
 
     private FormComponent<MutableLayerDetails> layerDetails() {
         LayerDetailsEditModel layerDetailsEditModel = pageModel.layerDetails();
-        LayerDetailsEditPanel layerDetails =
-                new LayerDetailsEditPanel("layerDetails", layerDetailsEditModel);
+        LayerDetailsEditPanel layerDetails = new LayerDetailsEditPanel("layerDetails", layerDetailsEditModel);
         layerDetails.setOutputMarkupPlaceholderTag(true);
         return layerDetails;
     }
 
-    private WebMarkupContainer layerDetailsContainer(
-            FormComponent<MutableLayerDetails> layerDetails) {
+    private WebMarkupContainer layerDetailsContainer(FormComponent<MutableLayerDetails> layerDetails) {
         WebMarkupContainer container = new WebMarkupContainer("layerDetailsContainer");
         container.setOutputMarkupPlaceholderTag(true);
         container.add(layerDetails);
@@ -311,13 +296,12 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
         for (GrantType grant : GrantType.values()) {
             grantType.add(new Radio<>(grant.toString(), Model.of(grant), grantType));
         }
-        grantType.add(
-                new AjaxFormChoiceComponentUpdatingBehavior() {
-                    protected @Override void onUpdate(AjaxRequestTarget target) {
-                        GrantType chosen = grantType.getModel().getObject();
-                        send(new GrantTypeChangeEvent(chosen, target));
-                    }
-                });
+        grantType.add(new AjaxFormChoiceComponentUpdatingBehavior() {
+            protected @Override void onUpdate(AjaxRequestTarget target) {
+                GrantType chosen = grantType.getModel().getObject();
+                send(new GrantTypeChangeEvent(chosen, target));
+            }
+        });
 
         grantType.setRequired(true);
         return grantType;
@@ -341,9 +325,7 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
     }
 
     private void onWorkspaceChangeEvent(WorkspaceChangeEvent event) {
-        pageModel
-                .workSpaceNameChanged(event.getWorkspace(), event.getTarget())
-                .ifPresent(this::send);
+        pageModel.workSpaceNameChanged(event.getWorkspace(), event.getTarget()).ifPresent(this::send);
     }
 
     private void onLayerChangeEvent(LayerChangeEvent event) {

@@ -7,7 +7,6 @@
 package org.geoserver.acl.plugin.web.accessrules;
 
 import lombok.NonNull;
-
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;

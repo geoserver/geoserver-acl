@@ -12,7 +12,6 @@ import lombok.Builder.Default;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.With;
-
 import org.geolatte.geom.MultiPolygon;
 
 /**
@@ -28,15 +27,21 @@ public class RuleLimits {
 
     private MultiPolygon<?> allowedArea;
 
-    @Default @NonNull private SpatialFilterType spatialFilterType = DEFAULT_SPATIAL_FILTERTYPE;
+    @Default
+    @NonNull
+    private SpatialFilterType spatialFilterType = DEFAULT_SPATIAL_FILTERTYPE;
 
-    @Default @NonNull private CatalogMode catalogMode = DEFAULT_CATALOG_MODE;
+    @Default
+    @NonNull
+    private CatalogMode catalogMode = DEFAULT_CATALOG_MODE;
 
     public static RuleLimits clip() {
         return RuleLimits.builder().spatialFilterType(SpatialFilterType.CLIP).build();
     }
 
     public static RuleLimits intersect() {
-        return RuleLimits.builder().spatialFilterType(SpatialFilterType.INTERSECT).build();
+        return RuleLimits.builder()
+                .spatialFilterType(SpatialFilterType.INTERSECT)
+                .build();
     }
 }

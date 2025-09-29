@@ -9,6 +9,9 @@ package org.geoserver.acl.plugin.accessmanager;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import org.geoserver.acl.authorization.AccessRequest;
 import org.geoserver.ows.Request;
 import org.junit.Test;
@@ -16,22 +19,17 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
 public class AccessRequestBuilderTest {
 
     @Test
     public void testFilterByUser() {
         AccessManagerConfig configuration = getAccessManagerConfiguration();
         configuration.setUseRolesToFilter(false);
-        AccessRequestBuilder ruleFilterBuilder =
-                new AccessRequestBuilder(configuration)
-                        .user(getAuthentication())
-                        .request(getRequest())
-                        .layer("states")
-                        .workspace("topp");
+        AccessRequestBuilder ruleFilterBuilder = new AccessRequestBuilder(configuration)
+                .user(getAuthentication())
+                .request(getRequest())
+                .layer("states")
+                .workspace("topp");
 
         AccessRequest request = ruleFilterBuilder.build();
         assertEquals(Set.of(), request.getRoles());
@@ -50,12 +48,11 @@ public class AccessRequestBuilderTest {
         configuration.setUseRolesToFilter(true);
         configuration.setAcceptedRoles(List.of("ROLE_ONE"));
 
-        AccessRequestBuilder ruleFilterBuilder =
-                new AccessRequestBuilder(configuration)
-                        .user(getAuthentication())
-                        .request(getRequest())
-                        .layer("states")
-                        .workspace("topp");
+        AccessRequestBuilder ruleFilterBuilder = new AccessRequestBuilder(configuration)
+                .user(getAuthentication())
+                .request(getRequest())
+                .layer("states")
+                .workspace("topp");
 
         AccessRequest request = ruleFilterBuilder.build();
         assertEquals(Set.of("ROLE_ONE"), request.getRoles());
@@ -70,10 +67,9 @@ public class AccessRequestBuilderTest {
 
     @Test
     public void testDefaults() {
-        AccessRequestBuilder ruleFilterBuilder =
-                new AccessRequestBuilder(getAccessManagerConfiguration())
-                        .user(getAuthentication())
-                        .request(getRequest());
+        AccessRequestBuilder ruleFilterBuilder = new AccessRequestBuilder(getAccessManagerConfiguration())
+                .user(getAuthentication())
+                .request(getRequest());
 
         AccessRequest request = ruleFilterBuilder.build();
         assertEquals(Set.of("ROLE_ONE", "ROLE_TWO"), request.getRoles());
@@ -98,13 +94,10 @@ public class AccessRequestBuilderTest {
     }
 
     private Authentication getAuthentication() {
-        Authentication authentication =
-                new UsernamePasswordAuthenticationToken(
-                        "username",
-                        "password",
-                        Arrays.asList(
-                                new SimpleGrantedAuthority("ROLE_ONE"),
-                                new SimpleGrantedAuthority("ROLE_TWO")));
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                "username",
+                "password",
+                Arrays.asList(new SimpleGrantedAuthority("ROLE_ONE"), new SimpleGrantedAuthority("ROLE_TWO")));
         return authentication;
     }
 }

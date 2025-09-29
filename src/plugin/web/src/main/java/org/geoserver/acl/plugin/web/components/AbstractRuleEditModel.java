@@ -4,12 +4,10 @@
  */
 package org.geoserver.acl.plugin.web.components;
 
+import java.io.Serializable;
 import lombok.Getter;
 import lombok.NonNull;
-
 import org.apache.wicket.model.CompoundPropertyModel;
-
-import java.io.Serializable;
 
 @SuppressWarnings("serial")
 public abstract class AbstractRuleEditModel<R extends Serializable> extends AbstractRulesModel {

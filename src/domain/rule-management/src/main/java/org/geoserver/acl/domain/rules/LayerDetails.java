@@ -7,15 +7,13 @@
 
 package org.geoserver.acl.domain.rules;
 
+import java.util.Set;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.With;
-
 import org.geolatte.geom.MultiPolygon;
-
-import java.util.Set;
 
 /**
  * @since 1.0
@@ -41,13 +39,19 @@ public class LayerDetails {
 
     private MultiPolygon<?> area;
 
-    @Default @NonNull private SpatialFilterType spatialFilterType = SpatialFilterType.INTERSECT;
+    @Default
+    @NonNull
+    private SpatialFilterType spatialFilterType = SpatialFilterType.INTERSECT;
 
-    @Default @NonNull private CatalogMode catalogMode = CatalogMode.HIDE;
+    @Default
+    @NonNull
+    private CatalogMode catalogMode = CatalogMode.HIDE;
 
-    @NonNull private Set<String> allowedStyles;
+    @NonNull
+    private Set<String> allowedStyles;
 
-    @NonNull private Set<LayerAttribute> attributes;
+    @NonNull
+    private Set<LayerAttribute> attributes;
 
     public static class Builder {
         // define (effectively overriding lombok's generated ones) only the builder methods for the

@@ -4,8 +4,11 @@
  */
 package org.geoserver.acl.plugin.web.components;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -14,11 +17,6 @@ import org.apache.wicket.model.Model;
 import org.wicketstuff.select2.ChoiceProvider;
 import org.wicketstuff.select2.Select2MultiChoice;
 import org.wicketstuff.select2.Settings;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Slf4j
 @SuppressWarnings("serial")
@@ -29,8 +27,7 @@ public class Select2SetMultiChoice<T> extends FormComponentPanel<Set<T>> {
     public Select2SetMultiChoice(String id, IModel<Set<T>> model, ChoiceProvider<T> provider) {
         super(id, model);
 
-        Collection<T> initalValue =
-                new ArrayList<T>(model.getObject() == null ? Set.of() : model.getObject());
+        Collection<T> initalValue = new ArrayList<T>(model.getObject() == null ? Set.of() : model.getObject());
         IModel<Collection<T>> selectModel = Model.of(initalValue);
 
         add(select2 = new Select2MultiChoice<>("select", selectModel, provider));
@@ -42,14 +39,13 @@ public class Select2SetMultiChoice<T> extends FormComponentPanel<Set<T>> {
         // set internal select2 component width to 100% to expand to its container's width and
         // respect the width of this container panel
         select2.getSettings().setWidth("100%");
-        select2.add(
-                new OnChangeAjaxBehavior() {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        Collection<T> modelObject = select2.getModelObject();
-                        log.debug("multichoice model updated: {}", modelObject);
-                    }
-                });
+        select2.add(new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                Collection<T> modelObject = select2.getModelObject();
+                log.debug("multichoice model updated: {}", modelObject);
+            }
+        });
     }
 
     public Settings getSettings() {

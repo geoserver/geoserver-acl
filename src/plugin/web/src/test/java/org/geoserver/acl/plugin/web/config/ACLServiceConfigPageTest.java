@@ -8,6 +8,9 @@ package org.geoserver.acl.plugin.web.config;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.acl.plugin.accessmanager.config.AclConfigurationManager;
 import org.geoserver.acl.plugin.web.support.AclWicketTestSupport;
@@ -16,10 +19,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
 
 public class ACLServiceConfigPageTest extends AclWicketTestSupport {
 

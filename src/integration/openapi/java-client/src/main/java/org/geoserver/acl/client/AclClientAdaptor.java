@@ -7,7 +7,6 @@ package org.geoserver.acl.client;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-
 import org.geoserver.acl.api.client.integration.AdminRuleRepositoryClientAdaptor;
 import org.geoserver.acl.api.client.integration.AuthorizationServiceClientAdaptor;
 import org.geoserver.acl.api.client.integration.RuleRepositoryClientAdaptor;
@@ -26,7 +25,6 @@ public class AclClientAdaptor {
         this.client = client;
         this.ruleRepository = new RuleRepositoryClientAdaptor(client.getRulesApi());
         this.adminRuleRepository = new AdminRuleRepositoryClientAdaptor(client.getAdminRulesApi());
-        this.authorizationService =
-                new AuthorizationServiceClientAdaptor(client.getAuthorizationApi());
+        this.authorizationService = new AuthorizationServiceClientAdaptor(client.getAuthorizationApi());
     }
 }

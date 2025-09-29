@@ -19,10 +19,7 @@ import org.springframework.context.annotation.Import;
  */
 @AutoConfiguration(after = AclAccessManagerAutoConfiguration.class)
 @ConditionalOnAclEnabled
-@ConditionalOnProperty(
-        name = "geoserver.acl.client.caching",
-        havingValue = "true",
-        matchIfMissing = true)
+@ConditionalOnProperty(name = "geoserver.acl.client.caching", havingValue = "true", matchIfMissing = true)
 @EnableCaching
 @Import(CachingAuthorizationServicePluginConfiguration.class)
 public class CachingAuthorizationServicePluginAutoConfiguration {}

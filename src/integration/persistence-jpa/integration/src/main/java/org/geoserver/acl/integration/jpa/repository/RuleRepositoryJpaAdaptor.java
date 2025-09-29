@@ -13,11 +13,20 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
-
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Spliterators;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
 import org.geoserver.acl.domain.filter.RuleQuery;
 import org.geoserver.acl.domain.filter.predicate.IPAddressRangeFilter;
 import org.geoserver.acl.domain.rules.InsertPosition;
@@ -38,19 +47,6 @@ import org.geoserver.acl.jpa.repository.TransactionRequired;
 import org.geoserver.acl.jpa.repository.TransactionSupported;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Spliterators;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
-
 @Slf4j
 @TransactionSupported
 public class RuleRepositoryJpaAdaptor implements RuleRepository {
@@ -62,13 +58,11 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     private final PredicateMapper queryMapper;
 
     @Setter
-    private @NonNull Consumer<RuleEvent> eventPublisher =
-            r -> {
-                // no-op
-            };
+    private @NonNull Consumer<RuleEvent> eventPublisher = r -> {
+        // no-op
+    };
 
-    public RuleRepositoryJpaAdaptor(
-            EntityManager em, JpaRuleRepository jparepo, RuleJpaMapper mapper) {
+    public RuleRepositoryJpaAdaptor(EntityManager em, JpaRuleRepository jparepo, RuleJpaMapper mapper) {
         Objects.requireNonNull(em);
         Objects.requireNonNull(jparepo);
         Objects.requireNonNull(mapper);
@@ -119,8 +113,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     public Stream<Rule> findAll(@NonNull RuleQuery<RuleFilter> query) {
 
         Predicate predicate = queryMapper.toPredicate(query);
-        final java.util.function.Predicate<? super Rule> postFilter =
-                filterByAddress(query.getFilter());
+        final java.util.function.Predicate<? super Rule> postFilter = filterByAddress(query.getFilter());
 
         if (query.getNextId() != null) {
             Long nextId = decodeId(query.getNextId());
@@ -141,12 +134,12 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
 
     private CloseableIterator<org.geoserver.acl.jpa.model.Rule> query(Predicate predicate) {
 
-        CloseableIterator<org.geoserver.acl.jpa.model.Rule> iterator =
-                new JPAQuery<org.geoserver.acl.jpa.model.Rule>(em)
-                        .from(QRule.rule)
-                        .where(predicate)
-                        .orderBy(new OrderSpecifier<>(Order.ASC, QRule.rule.priority))
-                        .iterate();
+        CloseableIterator<org.geoserver.acl.jpa.model.Rule> iterator = new JPAQuery<org.geoserver.acl.jpa.model.Rule>(
+                        em)
+                .from(QRule.rule)
+                .where(predicate)
+                .orderBy(new OrderSpecifier<>(Order.ASC, QRule.rule.priority))
+                .iterate();
         return iterator;
     }
 
@@ -156,8 +149,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
                 .onClose(iterator::close);
     }
 
-    private java.util.function.Predicate<? super Rule> filterByAddress(
-            Optional<RuleFilter> filter) {
+    private java.util.function.Predicate<? super Rule> filterByAddress(Optional<RuleFilter> filter) {
 
         if (filter.isEmpty()) return r -> true;
         IPAddressRangeFilter ipFilter = filter.get().getSourceAddress();
@@ -176,8 +168,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
         removeLayerDetailsIfNotApplicableAnyMore(rule, entity);
 
         PriorityResolver<org.geoserver.acl.jpa.model.Rule> priorityResolver = priorityResolver();
-        long finalPriority =
-                priorityResolver.resolvePriorityUpdate(entity.getPriority(), rule.getPriority());
+        long finalPriority = priorityResolver.resolvePriorityUpdate(entity.getPriority(), rule.getPriority());
 
         modelMapper.updateEntity(entity, rule);
         entity.setPriority(finalPriority);
@@ -188,12 +179,10 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
         return modelMapper.toModel(saved);
     }
 
-    private void removeLayerDetailsIfNotApplicableAnyMore(
-            Rule rule, org.geoserver.acl.jpa.model.Rule entity) {
+    private void removeLayerDetailsIfNotApplicableAnyMore(Rule rule, org.geoserver.acl.jpa.model.Rule entity) {
         if (entity.getLayerDetails() != null && !entity.getLayerDetails().isEmpty()) {
-            boolean updatedCanHaveDetails =
-                    ALLOW == rule.getIdentifier().getAccess()
-                            && null != rule.getIdentifier().getLayer();
+            boolean updatedCanHaveDetails = ALLOW == rule.getIdentifier().getAccess()
+                    && null != rule.getIdentifier().getLayer();
             if (!updatedCanHaveDetails) {
                 log.info(
                         "Removing LayerDetails for Rule {} (entity id  {})."
@@ -214,14 +203,12 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     public Rule create(@NonNull Rule rule, @NonNull InsertPosition position) {
         if (null != rule.getId()) throw new IllegalArgumentException("Rule must have no id");
         if (rule.getPriority() < 0)
-            throw new IllegalArgumentException(
-                    "Negative priority is not allowed: " + rule.getPriority());
+            throw new IllegalArgumentException("Negative priority is not allowed: " + rule.getPriority());
 
         findDup(rule).ifPresent(this::throwConflict);
 
         PriorityResolver<org.geoserver.acl.jpa.model.Rule> priorityResolver = priorityResolver();
-        final long finalPriority =
-                priorityResolver.resolveFinalPriority(rule.getPriority(), position);
+        final long finalPriority = priorityResolver.resolveFinalPriority(rule.getPriority(), position);
 
         org.geoserver.acl.jpa.model.Rule entity = modelMapper.toEntity(rule);
         entity.setPriority(finalPriority);
@@ -236,8 +223,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     // send an updated event for all collaterally updated rule
     private void notifyCollateralUpdates(Set<Long> ids) {
         if (!ids.isEmpty()) {
-            Set<String> updatedIds =
-                    ids.stream().map(RuleJpaMapper::encodeId).collect(Collectors.toSet());
+            Set<String> updatedIds = ids.stream().map(RuleJpaMapper::encodeId).collect(Collectors.toSet());
             this.eventPublisher.accept(RuleEvent.updated(updatedIds));
         }
     }
@@ -251,10 +237,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
         final RuleIdentifier identifier = modelMapper.toEntity(rule.getIdentifier());
 
         List<org.geoserver.acl.jpa.model.Rule> matches = jparepo.findAllByIdentifier(identifier);
-        return matches.stream()
-                .filter(r -> !r.getId().equals(id))
-                .findFirst()
-                .map(modelMapper::toModel);
+        return matches.stream().filter(r -> !r.getId().equals(id)).findFirst().map(modelMapper::toModel);
     }
 
     @Override
@@ -294,8 +277,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
         if (offset <= 0) {
             throw new IllegalArgumentException("Positive offset required");
         }
-        Set<Long> shiftedIds =
-                jparepo.streamIdsByShiftPriority(priorityStart).collect(Collectors.toSet());
+        Set<Long> shiftedIds = jparepo.streamIdsByShiftPriority(priorityStart).collect(Collectors.toSet());
         if (shiftedIds.isEmpty()) {
             return -1;
         }
@@ -356,8 +338,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
 
     @Override
     @TransactionRequired
-    public void setLayerDetails(
-            String ruleId, org.geoserver.acl.domain.rules.LayerDetails detailsNew) {
+    public void setLayerDetails(String ruleId, org.geoserver.acl.domain.rules.LayerDetails detailsNew) {
 
         org.geoserver.acl.jpa.model.Rule rule = getOrThrowIAE(ruleId);
 
@@ -374,8 +355,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
 
     @Override
     @TransactionReadOnly
-    public Optional<org.geoserver.acl.domain.rules.LayerDetails> findLayerDetailsByRuleId(
-            @NonNull String ruleId) {
+    public Optional<org.geoserver.acl.domain.rules.LayerDetails> findLayerDetailsByRuleId(@NonNull String ruleId) {
 
         org.geoserver.acl.jpa.model.Rule jparule = getOrThrowIAE(ruleId);
 

@@ -4,9 +4,14 @@
  */
 package org.geoserver.acl.autoconfigure.security;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -21,13 +26,6 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 @AutoConfiguration(before = AuthenticationManagerAutoConfiguration.class)
 @ConditionalOnPreAuthenticationEnabled
 @EnableConfigurationProperties(SecurityConfigProperties.class)
@@ -41,7 +39,7 @@ public class PreAuthenticationSecurityAutoConfiguration {
         String rolesHeader = config.getHeaders().getRolesHeader();
         if (!StringUtils.hasText(userHeader) || !StringUtils.hasText(rolesHeader)) {
             throw new IllegalStateException(
-                            """
+                    """
                     Both user and roles header names must be provided, got \
                     geoserver.acl.security.headers.userHeader: %s, \
                     geoserver.acl.security.headers.rolesHeader: %s
@@ -61,8 +59,7 @@ public class PreAuthenticationSecurityAutoConfiguration {
     }
 
     @Bean
-    PreAuthenticatedAuthenticationProvider preauthAuthProvider(SecurityConfigProperties config)
-            throws Exception {
+    PreAuthenticatedAuthenticationProvider preauthAuthProvider(SecurityConfigProperties config) throws Exception {
         Supplier<Collection<String>> adminRoles = config.getHeaders()::getAdminRoles;
         var provider = new PreAuthenticatedAuthenticationProvider();
         var detailsService = new AuthorizationUserDetailsService(adminRoles);
@@ -87,8 +84,7 @@ public class PreAuthenticationSecurityAutoConfiguration {
          * @throws UsernameNotFoundException
          */
         @Override
-        public UserDetails loadUserDetails(PreAuthenticatedAuthenticationToken token)
-                throws UsernameNotFoundException {
+        public UserDetails loadUserDetails(PreAuthenticatedAuthenticationToken token) throws UsernameNotFoundException {
             final String principal = (String) token.getPrincipal();
             final Set<String> credentials = givenCredentials((String) token.getCredentials());
             Collection<String> rolesConsideredAdmin = adminRoles.get();

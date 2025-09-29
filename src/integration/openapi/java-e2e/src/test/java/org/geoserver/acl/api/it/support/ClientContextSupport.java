@@ -38,12 +38,11 @@ public class ClientContextSupport {
         String username = "admin";
         String password = "auth-not-yet-implemented";
 
-        ConfigurableEnvironment clientEnv =
-                new MockEnvironment() //
-                        .withProperty("geoserver.acl.client.basePath", basePath)
-                        .withProperty("geoserver.acl.client.username", username)
-                        .withProperty("geoserver.acl.client.password", password)
-                        .withProperty("geoserver.acl.client.debug", String.valueOf(logRequests));
+        ConfigurableEnvironment clientEnv = new MockEnvironment() //
+                .withProperty("geoserver.acl.client.basePath", basePath)
+                .withProperty("geoserver.acl.client.username", username)
+                .withProperty("geoserver.acl.client.password", password)
+                .withProperty("geoserver.acl.client.debug", String.valueOf(logRequests));
 
         clientContext = new AnnotationConfigApplicationContext();
         clientContext.setEnvironment(clientEnv);

@@ -7,6 +7,7 @@ package org.geoserver.acl.examples.javaclient;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import org.geoserver.acl.authorization.AccessInfo;
 import org.geoserver.acl.authorization.AccessRequest;
 import org.geoserver.acl.authorization.AuthorizationService;
@@ -22,8 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.List;
-
 /**
  * Demonstrates how to use {@link AclClientAdaptor} to use the domain API directly instead of the
  * raw OpenAPI to manipulate rules and perform authorization requests.
@@ -32,7 +31,8 @@ import java.util.List;
 class JavaClientAdaptorExampleTest {
 
     @Container
-    static GeoServerAclContainer aclServer = GeoServerAclContainer.currentVersion().withDevMode();
+    static GeoServerAclContainer aclServer =
+            GeoServerAclContainer.currentVersion().withDevMode();
 
     /**
      * {@link AclClient} provides the raw API clients through {@link AclClient#getAdminRulesApi()},
@@ -56,11 +56,10 @@ class JavaClientAdaptorExampleTest {
         final String username = aclServer.devAdminUser();
         final String password = aclServer.devAdminPassword();
 
-        client =
-                new AclClient() //
-                        .setBasePath(apiUrl) //
-                        .setUsername(username) //
-                        .setPassword(password);
+        client = new AclClient() //
+                .setBasePath(apiUrl) //
+                .setUsername(username) //
+                .setPassword(password);
 
         adaptor = new AclClientAdaptor(client);
     }
@@ -74,13 +73,12 @@ class JavaClientAdaptorExampleTest {
         AuthorizationService authService = adaptor.getAuthorizationService();
 
         // a user with ROLE_USER has access to layers in the users_ws workspace
-        AccessRequest request =
-                AccessRequest.builder() //
-                        .user("john")
-                        .roles("ROLE_AUTHENTICATED", "ROLE_USER") //
-                        .workspace("users_ws") //
-                        .layer("layer") //
-                        .build();
+        AccessRequest request = AccessRequest.builder() //
+                .user("john")
+                .roles("ROLE_AUTHENTICATED", "ROLE_USER") //
+                .workspace("users_ws") //
+                .layer("layer") //
+                .build();
 
         AccessInfo accessInfo = authService.getAccessInfo(request);
         assertThat(accessInfo.getGrant()).isEqualTo(GrantType.ALLOW);
@@ -99,11 +97,7 @@ class JavaClientAdaptorExampleTest {
 
         // prepare rules to insert
         Rule r1 = Rule.allow().withPriority(1L).withRolename("ROLE_USER").withWorkspace("users_ws");
-        Rule r2 =
-                Rule.allow()
-                        .withPriority(2L)
-                        .withRolename("ROLE_EDITOR")
-                        .withWorkspace("editors_ws");
+        Rule r2 = Rule.allow().withPriority(2L).withRolename("ROLE_EDITOR").withWorkspace("editors_ws");
 
         // insert the rules, response comes with assigned id
         r1 = service.insert(r1);

@@ -9,9 +9,10 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
+import java.util.List;
+import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-
 import org.geoserver.acl.api.model.AdminRule;
 import org.geoserver.acl.api.model.AdminRuleFilter;
 import org.geoserver.acl.api.model.InsertPosition;
@@ -23,9 +24,6 @@ import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.adminrules.AdminRuleIdentifierConflictException;
 import org.geoserver.acl.domain.filter.RuleQuery;
 import org.springframework.http.ResponseEntity;
-
-import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @IsAuthenticated
@@ -43,17 +41,14 @@ public class WorkspaceAdminRulesApiImpl implements WorkspaceAdminRulesApiDelegat
     }
 
     @IsAdmin
-    public @Override ResponseEntity<AdminRule> createAdminRule(
-            AdminRule adminRule, InsertPosition position) {
+    public @Override ResponseEntity<AdminRule> createAdminRule(AdminRule adminRule, InsertPosition position) {
 
         try {
             org.geoserver.acl.domain.adminrules.AdminRule rule;
             if (position == null) {
                 rule = service.insert(support.toModel(adminRule));
             } else {
-                rule =
-                        service.insert(
-                                support.toModel(adminRule), support.toAdminRulesModel(position));
+                rule = service.insert(support.toModel(adminRule), support.toAdminRulesModel(position));
             }
             return ResponseEntity.ok(support.toApi(rule));
         } catch (AdminRuleIdentifierConflictException e) {
@@ -79,8 +74,7 @@ public class WorkspaceAdminRulesApiImpl implements WorkspaceAdminRulesApiDelegat
         return ResponseEntity.ok(service.exists(id));
     }
 
-    public @Override ResponseEntity<List<AdminRule>> findAllAdminRules(
-            Integer limit, String nextCursor) {
+    public @Override ResponseEntity<List<AdminRule>> findAllAdminRules(Integer limit, String nextCursor) {
         return query(RuleQuery.of(limit, nextCursor));
     }
 
@@ -93,8 +87,7 @@ public class WorkspaceAdminRulesApiImpl implements WorkspaceAdminRulesApiDelegat
     }
 
     public @Override ResponseEntity<AdminRule> findOneAdminRuleByPriority(Long priority) {
-        Optional<org.geoserver.acl.domain.adminrules.AdminRule> found =
-                service.getRuleByPriority(priority);
+        Optional<org.geoserver.acl.domain.adminrules.AdminRule> found = service.getRuleByPriority(priority);
 
         return ResponseEntity.status(found.isPresent() ? OK : NOT_FOUND)
                 .body(found.map(support::toApi).orElse(null));
@@ -156,8 +149,7 @@ public class WorkspaceAdminRulesApiImpl implements WorkspaceAdminRulesApiDelegat
     }
 
     @IsAdmin
-    public @Override ResponseEntity<AdminRule> updateAdminRule(
-            @NonNull String id, AdminRule patchBody) {
+    public @Override ResponseEntity<AdminRule> updateAdminRule(@NonNull String id, AdminRule patchBody) {
         org.geoserver.acl.domain.adminrules.AdminRule rule = service.get(id).orElse(null);
         if (null == rule) {
             return support.error(NOT_FOUND, "AdminRule " + id + " does not exist");

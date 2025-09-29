@@ -6,6 +6,9 @@ package org.geoserver.acl.testcontainer;
 
 import static org.junit.Assume.assumeTrue;
 
+import java.time.Duration;
+import java.util.Objects;
+import java.util.logging.Logger;
 import org.junit.Assume;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -15,31 +18,21 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.DockerImageName;
 
-import java.time.Duration;
-import java.util.Objects;
-import java.util.logging.Logger;
-
 public class GeoServerAclContainer extends GenericContainer<GeoServerAclContainer> {
 
     private static final WaitStrategy ACTUATOR_READINESS_PROBE =
-            Wait.forHttp("/actuator/health/readiness")
-                    .forPort(8081)
-                    .withStartupTimeout(Duration.ofSeconds(10));
+            Wait.forHttp("/actuator/health/readiness").forPort(8081).withStartupTimeout(Duration.ofSeconds(10));
 
     public static final String DEFAULT_IMAGE_REPOSITORY = "geoservercloud/geoserver-acl";
 
-    public static final DockerImageName V1_0_0 =
-            DockerImageName.parse(DEFAULT_IMAGE_REPOSITORY + ":1.0.0");
+    public static final DockerImageName V1_0_0 = DockerImageName.parse(DEFAULT_IMAGE_REPOSITORY + ":1.0.0");
 
-    public static final DockerImageName V1_1_0 =
-            DockerImageName.parse(DEFAULT_IMAGE_REPOSITORY + ":1.1.0");
+    public static final DockerImageName V1_1_0 = DockerImageName.parse(DEFAULT_IMAGE_REPOSITORY + ":1.1.0");
 
-    public static final DockerImageName V1_2_0 =
-            DockerImageName.parse(DEFAULT_IMAGE_REPOSITORY + ":1.2.0");
+    public static final DockerImageName V1_2_0 = DockerImageName.parse(DEFAULT_IMAGE_REPOSITORY + ":1.2.0");
 
     public static final String CURRENT_VERSION =
-            Objects.requireNonNull(
-                    GeoServerAclContainer.class.getPackage().getImplementationVersion());
+            Objects.requireNonNull(GeoServerAclContainer.class.getPackage().getImplementationVersion());
 
     public static final DockerImageName CURRENT =
             DockerImageName.parse(DEFAULT_IMAGE_REPOSITORY + ":" + CURRENT_VERSION);
@@ -99,8 +92,7 @@ public class GeoServerAclContainer extends GenericContainer<GeoServerAclContaine
 
     @Override
     protected void doStart() {
-        Logger.getLogger(getClass().getName())
-                .info("Starting " + getDockerImageName() + " test container");
+        Logger.getLogger(getClass().getName()).info("Starting " + getDockerImageName() + " test container");
         super.doStart();
     }
 

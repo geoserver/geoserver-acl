@@ -8,9 +8,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.geoserver.acl.authorization.AccessSummaryRequest.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Test;
-
 import java.util.Set;
+import org.junit.jupiter.api.Test;
 
 class AccessSummaryRequestTest {
 
@@ -24,11 +23,12 @@ class AccessSummaryRequestTest {
 
     @Test
     void testBuild() {
-        AccessSummaryRequest req =
-                builder().user("user").roles("ROLE_ADMINISTRATOR", "ROLE_AUTHENTICATED").build();
+        AccessSummaryRequest req = builder()
+                .user("user")
+                .roles("ROLE_ADMINISTRATOR", "ROLE_AUTHENTICATED")
+                .build();
         assertThat(req.getUser()).isEqualTo("user");
-        assertThat(req.getRoles())
-                .containsExactlyInAnyOrder("ROLE_ADMINISTRATOR", "ROLE_AUTHENTICATED");
+        assertThat(req.getRoles()).containsExactlyInAnyOrder("ROLE_ADMINISTRATOR", "ROLE_AUTHENTICATED");
 
         req = builder().user("user").roles(Set.of("ROLE_1")).build();
         assertThat(req.getRoles()).containsExactlyInAnyOrder("ROLE_1");

@@ -15,8 +15,7 @@ import org.springframework.context.annotation.Configuration;
 public class RuleAdminServiceConfiguration {
 
     @Bean
-    RuleAdminService ruleAdminService(
-            RuleRepository ruleRepository, ApplicationEventPublisher eventPublisher) {
+    RuleAdminService ruleAdminService(RuleRepository ruleRepository, ApplicationEventPublisher eventPublisher) {
         RuleAdminService service = new RuleAdminServiceImpl(ruleRepository);
         service.setEventPublisher(eventPublisher::publishEvent);
         return service;

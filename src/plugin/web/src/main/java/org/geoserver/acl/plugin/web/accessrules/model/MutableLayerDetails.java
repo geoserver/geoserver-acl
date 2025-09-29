@@ -6,9 +6,14 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.NonNull;
-
 import org.geolatte.geom.MultiPolygon;
 import org.geoserver.acl.domain.rules.CatalogMode;
 import org.geoserver.acl.domain.rules.LayerAttribute;
@@ -18,13 +23,6 @@ import org.geoserver.acl.domain.rules.LayerDetails.LayerType;
 import org.geoserver.acl.domain.rules.SpatialFilterType;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 @Data
 @SuppressWarnings("serial")
@@ -52,9 +50,7 @@ public class MutableLayerDetails implements Serializable {
         setSpatialFilterType(ld.getSpatialFilterType());
         setAllowedStyles(ld.getAllowedStyles());
         setAttributes(
-                ld.getAttributes().stream()
-                        .map(MutableLayerAttribute::new)
-                        .collect(Collectors.toList()));
+                ld.getAttributes().stream().map(MutableLayerAttribute::new).collect(Collectors.toList()));
     }
 
     public void setAllowedStyles(Set<String> styles) {
@@ -69,18 +65,15 @@ public class MutableLayerDetails implements Serializable {
 
     public LayerDetails toLayerDetails() {
         Set<LayerAttribute> atts =
-                attributes.stream()
-                        .map(MutableLayerAttribute::toLayerAttribute)
-                        .collect(Collectors.toSet());
-        Builder builder =
-                LayerDetails.builder()
-                        .type(layerType)
-                        .defaultStyle(defaultStyle)
-                        .cqlFilterRead(cqlFilterRead)
-                        .cqlFilterWrite(cqlFilterWrite)
-                        .area(area)
-                        .allowedStyles(allowedStyles)
-                        .attributes(atts);
+                attributes.stream().map(MutableLayerAttribute::toLayerAttribute).collect(Collectors.toSet());
+        Builder builder = LayerDetails.builder()
+                .type(layerType)
+                .defaultStyle(defaultStyle)
+                .cqlFilterRead(cqlFilterRead)
+                .cqlFilterWrite(cqlFilterWrite)
+                .area(area)
+                .allowedStyles(allowedStyles)
+                .attributes(atts);
         // non-nullable attribtues
         if (null != spatialFilterType) builder.spatialFilterType(spatialFilterType);
         if (null != catalogMode) builder.catalogMode(catalogMode);

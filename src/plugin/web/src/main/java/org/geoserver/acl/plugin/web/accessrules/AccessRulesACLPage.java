@@ -46,14 +46,13 @@ public class AccessRulesACLPage extends GeoServerSecuredPage {
     }
 
     private AjaxLink<Object> removeLink() {
-        AjaxLink<Object> link =
-                new AjaxLink<Object>("removeSelected") {
-                    public @Override void onClick(AjaxRequestTarget target) {
-                        dataProvider.remove(rulesTable.getSelection());
-                        rulesTable.clearSelection();
-                        target.add(rulesTable);
-                    }
-                };
+        AjaxLink<Object> link = new AjaxLink<Object>("removeSelected") {
+            public @Override void onClick(AjaxRequestTarget target) {
+                dataProvider.remove(rulesTable.getSelection());
+                rulesTable.clearSelection();
+                target.add(rulesTable);
+            }
+        };
         link.setOutputMarkupId(true);
         link.setEnabled(false);
         return link;
@@ -83,21 +82,18 @@ public class AccessRulesACLPage extends GeoServerSecuredPage {
     private RulesTablePanel<MutableRule> rulesTablePanel() {
         RulesTablePanel<MutableRule> panel = new RulesTablePanel<>("rulesPanel", dataProvider);
         panel.setOutputMarkupId(true);
-        panel.setOnDrop(
-                (moved, target) -> {
-                    dataProvider.onDrop(moved, target);
-                    doReturn(AccessRulesACLPage.class);
-                });
-        panel.setOnSelectionUpdate(
-                target -> {
-                    removeLink.setEnabled(rulesTable.getSelection().size() > 0);
-                    target.add(removeLink);
-                });
-        panel.setOnEdit(
-                rule -> {
-                    DataAccessRuleEditModel editModel = new DataAccessRuleEditModel(rule);
-                    setResponsePage(new DataAccessRuleEditPage(editModel));
-                });
+        panel.setOnDrop((moved, target) -> {
+            dataProvider.onDrop(moved, target);
+            doReturn(AccessRulesACLPage.class);
+        });
+        panel.setOnSelectionUpdate(target -> {
+            removeLink.setEnabled(rulesTable.getSelection().size() > 0);
+            target.add(removeLink);
+        });
+        panel.setOnEdit(rule -> {
+            DataAccessRuleEditModel editModel = new DataAccessRuleEditModel(rule);
+            setResponsePage(new DataAccessRuleEditPage(editModel));
+        });
         return panel;
     }
 

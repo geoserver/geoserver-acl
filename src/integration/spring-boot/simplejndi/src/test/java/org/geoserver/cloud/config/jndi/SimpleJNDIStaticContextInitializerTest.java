@@ -6,16 +6,14 @@ package org.geoserver.cloud.config.jndi;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.geoserver.cloud.jndi.SimpleNamingContext;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-
 import java.util.Hashtable;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.spi.NamingManager;
+import org.geoserver.cloud.jndi.SimpleNamingContext;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 /**
  * @since 1.0
@@ -23,17 +21,15 @@ import javax.naming.spi.NamingManager;
 class SimpleJNDIStaticContextInitializerTest {
 
     private ApplicationContextRunner runner =
-            new ApplicationContextRunner()
-                    .withInitializer(new SimpleJNDIStaticContextInitializer());
+            new ApplicationContextRunner().withInitializer(new SimpleJNDIStaticContextInitializer());
 
     @Test
     void test() throws NamingException {
-        runner.run(
-                context -> {
-                    InitialContext initialContext = new InitialContext();
-                    assertThat(initialContext).isNotNull();
-                    Context ctx = NamingManager.getInitialContext(new Hashtable<>());
-                    assertThat(ctx).isInstanceOf(SimpleNamingContext.class);
-                });
+        runner.run(context -> {
+            InitialContext initialContext = new InitialContext();
+            assertThat(initialContext).isNotNull();
+            Context ctx = NamingManager.getInitialContext(new Hashtable<>());
+            assertThat(ctx).isInstanceOf(SimpleNamingContext.class);
+        });
     }
 }

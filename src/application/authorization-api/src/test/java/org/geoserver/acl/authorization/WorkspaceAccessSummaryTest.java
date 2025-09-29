@@ -7,11 +7,10 @@ package org.geoserver.acl.authorization;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.geoserver.acl.authorization.WorkspaceAccessSummary.builder;
 
+import java.util.Set;
 import org.geoserver.acl.authorization.WorkspaceAccessSummary.Builder;
 import org.geoserver.acl.domain.adminrules.AdminGrantType;
 import org.junit.jupiter.api.Test;
-
-import java.util.Set;
 
 class WorkspaceAccessSummaryTest {
 
@@ -78,28 +77,27 @@ class WorkspaceAccessSummaryTest {
 
     @Test
     void allowedLayersConflates() {
-        WorkspaceAccessSummary was =
-                builderWithWorkspace()
-                        .addAllowed("layer1")
-                        .addAllowed("layer2")
-                        .addAllowed("*")
-                        .build();
+        WorkspaceAccessSummary was = builderWithWorkspace()
+                .addAllowed("layer1")
+                .addAllowed("layer2")
+                .addAllowed("*")
+                .build();
         assertThat(was.getAllowed()).isEqualTo(Set.of("*"));
 
-        was =
-                builderWithWorkspace()
-                        .addAllowed("layer1")
-                        .addAllowed("layer2")
-                        .addAllowed("*")
-                        .addAllowed("layer3")
-                        .addAllowed("layer4")
-                        .build();
+        was = builderWithWorkspace()
+                .addAllowed("layer1")
+                .addAllowed("layer2")
+                .addAllowed("*")
+                .addAllowed("layer3")
+                .addAllowed("layer4")
+                .build();
         assertThat(was.getAllowed()).isEqualTo(Set.of("*"));
     }
 
     @Test
     void forbiddenLayers() {
-        WorkspaceAccessSummary was = builderWithWorkspace().forbidden(Set.of("*")).build();
+        WorkspaceAccessSummary was =
+                builderWithWorkspace().forbidden(Set.of("*")).build();
         assertThat(was.getForbidden()).isEqualTo(Set.of("*"));
         assertThat(was.getAllowed()).isEmpty();
 
@@ -136,7 +134,11 @@ class WorkspaceAccessSummaryTest {
         assertThat(was.canSeeLayer("L1")).isTrue();
         assertThat(was.canSeeLayer("L2")).isFalse();
 
-        was = builderWithWorkspace().addAllowed("L1").addForbidden("L1").addForbidden("L2").build();
+        was = builderWithWorkspace()
+                .addAllowed("L1")
+                .addForbidden("L1")
+                .addForbidden("L2")
+                .build();
         assertThat(was.canSeeLayer("L2")).isFalse();
         assertThat(was.canSeeLayer("L1")).isFalse();
     }

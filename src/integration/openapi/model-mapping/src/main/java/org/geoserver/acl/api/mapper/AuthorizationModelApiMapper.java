@@ -4,6 +4,9 @@
  */
 package org.geoserver.acl.api.mapper;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.geoserver.acl.api.model.AccessInfo;
 import org.geoserver.acl.api.model.AccessRequest;
 import org.geoserver.acl.api.model.AccessSummaryRequest;
@@ -14,10 +17,6 @@ import org.geoserver.acl.authorization.WorkspaceAccessSummary;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Mapper(
         componentModel = "spring",

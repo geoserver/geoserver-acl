@@ -4,26 +4,23 @@
  */
 package org.geoserver.acl.domain.adminrules;
 
-import lombok.NonNull;
-
-import org.geoserver.acl.domain.filter.RuleQuery;
-import org.geoserver.acl.domain.rules.MemoryPriorityRepository;
-import org.geoserver.acl.domain.rules.PriorityResolver;
-import org.geoserver.acl.domain.rules.PriorityResolver.Position;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
+import lombok.NonNull;
+import org.geoserver.acl.domain.filter.RuleQuery;
+import org.geoserver.acl.domain.rules.MemoryPriorityRepository;
+import org.geoserver.acl.domain.rules.PriorityResolver;
+import org.geoserver.acl.domain.rules.PriorityResolver.Position;
 
 /**
  * Reference {@link AdminRuleRepository} implementation, only for tests
  *
  * @since 1.0
  */
-public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRule>
-        implements AdminRuleRepository {
+public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRule> implements AdminRuleRepository {
 
     private final AtomicLong idseq = new AtomicLong();
 
@@ -43,8 +40,7 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
         checkNoDups(rule);
         rule = rule.withId(String.valueOf(idseq.incrementAndGet()));
 
-        long finalPriority =
-                priorityResolver.resolveFinalPriority(rule.getPriority(), map(position));
+        long finalPriority = priorityResolver.resolveFinalPriority(rule.getPriority(), map(position));
         rule = rule.withPriority(finalPriority);
         rules.add(rule);
         return rule;
@@ -69,14 +65,12 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
         checkNoDups(rule);
         final AdminRule current = getOrThrow(rule.getId());
 
-        final long finalPriority =
-                priorityResolver.resolvePriorityUpdate(current.getPriority(), rule.getPriority());
+        final long finalPriority = priorityResolver.resolvePriorityUpdate(current.getPriority(), rule.getPriority());
 
         if (current.getPriority() != finalPriority) {
             rule = rule.withPriority(finalPriority);
             Optional<AdminRule> positionOccupied =
-                    findOneByPriority(finalPriority)
-                            .filter(r -> !r.getId().equals(current.getId()));
+                    findOneByPriority(finalPriority).filter(r -> !r.getId().equals(current.getId()));
             if (positionOccupied.isPresent()) {
                 AdminRule other = positionOccupied.get();
                 rules.remove(current);
@@ -97,9 +91,7 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Invalid id");
         }
-        return findById(id)
-                .orElseThrow(
-                        () -> new IllegalArgumentException("AdminRule " + id + " does not exist"));
+        return findById(id).orElseThrow(() -> new IllegalArgumentException("AdminRule " + id + " does not exist"));
     }
 
     /**
@@ -107,18 +99,14 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
      */
     private void checkNoDups(AdminRule rule) {
         rules.stream()
-                .filter(
-                        r ->
-                                !r.getId().equals(rule.getId())
-                                        && r.getAccess().equals(rule.getAccess())
-                                        && r.getIdentifier().equals(rule.getIdentifier()))
+                .filter(r -> !r.getId().equals(rule.getId())
+                        && r.getAccess().equals(rule.getAccess())
+                        && r.getIdentifier().equals(rule.getIdentifier()))
                 .findFirst()
-                .ifPresent(
-                        duplicate -> {
-                            throw new AdminRuleIdentifierConflictException(
-                                    "An AdminRule with the same identifier already exists: "
-                                            + rule.toShortString());
-                        });
+                .ifPresent(duplicate -> {
+                    throw new AdminRuleIdentifierConflictException(
+                            "An AdminRule with the same identifier already exists: " + rule.toShortString());
+                });
     }
 
     @Override
@@ -141,14 +129,12 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
         String nextId = query.getNextId();
         if (nextId != null) {
             final AtomicBoolean nextIdFound = new AtomicBoolean();
-            matches =
-                    matches.peek(
-                                    r -> {
-                                        if (r.getId().equals(nextId)) {
-                                            nextIdFound.set(true);
-                                        }
-                                    })
-                            .filter(r -> nextIdFound.get());
+            matches = matches.peek(r -> {
+                        if (r.getId().equals(nextId)) {
+                            nextIdFound.set(true);
+                        }
+                    })
+                    .filter(r -> nextIdFound.get());
         }
         Integer limit = query.getLimit();
         if (limit != null) {

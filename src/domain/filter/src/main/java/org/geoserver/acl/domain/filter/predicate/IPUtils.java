@@ -20,19 +20,15 @@ class IPUtils {
 
     private static final String SLASH_FORMAT = "/(\\d{1,3})";
 
-    private static final Pattern[] ipAddressPatterns =
-            new Pattern[] {
-                Pattern.compile(IPV4_ADDRESS),
-                Pattern.compile(IPV6_STANDARD_ADDRESS),
-                Pattern.compile(IPV6_COMPRESSED_ADDRESS)
-            };
+    private static final Pattern[] ipAddressPatterns = new Pattern[] {
+        Pattern.compile(IPV4_ADDRESS), Pattern.compile(IPV6_STANDARD_ADDRESS), Pattern.compile(IPV6_COMPRESSED_ADDRESS)
+    };
 
-    private static final Pattern[] cidrPatterns =
-            new Pattern[] {
-                Pattern.compile(IPV4_ADDRESS + SLASH_FORMAT),
-                Pattern.compile(IPV6_STANDARD_ADDRESS + SLASH_FORMAT),
-                Pattern.compile(IPV6_COMPRESSED_ADDRESS + SLASH_FORMAT)
-            };
+    private static final Pattern[] cidrPatterns = new Pattern[] {
+        Pattern.compile(IPV4_ADDRESS + SLASH_FORMAT),
+        Pattern.compile(IPV6_STANDARD_ADDRESS + SLASH_FORMAT),
+        Pattern.compile(IPV6_COMPRESSED_ADDRESS + SLASH_FORMAT)
+    };
 
     public static boolean isAddressValid(String ipAddress) {
         return checkAllPatterns(ipAddress, ipAddressPatterns);
