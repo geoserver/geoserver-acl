@@ -21,10 +21,10 @@ plugin-test-gs-stable:
 	./mvnw -Denforcer.skip -P gs_stable verify -pl :gs-acl-client-plugin -am -ntp
 
 lint:
-	./mvnw sortpom:verify fmt:check -ntp
+	./mvnw sortpom:verify spotless:check -ntp
 
 format:
-	./mvnw sortpom:sort fmt:format -ntp
+	./mvnw sortpom:sort spotless:apply -ntp
 
 package:
 	./mvnw clean package -DskipTests -U -ntp -T4
@@ -54,8 +54,8 @@ push-image:
 deploy:
 	./mvnw clean package \
 		-pl :gs-acl-client-plugin -pl :gs-acl-api-client-spring6 -pl :gs-acl-testcontainer \
-		--also-make -ntp -T2 -fae -Dfmt.skip -U -DskipTests
+		--also-make -ntp -T2 -fae -Dspotless.skip -U -DskipTests
 	./mvnw deploy \
 		-s $$MAVEN_SETTINGS \
 		-pl :gs-acl-client-plugin -pl :gs-acl-api-client-spring6 -pl :gs-acl-testcontainer \
-		--also-make -ntp -T2 -fae -Dfmt.skip -U -DskipTests
+		--also-make -ntp -T2 -fae -Dspotless.skip -U -DskipTests

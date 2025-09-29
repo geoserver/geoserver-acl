@@ -76,8 +76,9 @@
     <gt.version>34-SNAPSHOT</gt.version>
     <wicket.version>9.21.0</wicket.version>
     <jts.version>1.20.0</jts.version>
-    <fmt.action>format</fmt.action>
     <fmt.skip>false</fmt.skip>
+    <spotless.skip>${fmt.skip}</spotless.skip>
+    <spotless.action>apply</spotless.action>
     <openapi-generator-maven-plugin.version>7.0.1</openapi-generator-maven-plugin.version>
     <openapi-codegen-skip>false</openapi-codegen-skip>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -364,22 +365,9 @@
           <version>3.3.0</version>
         </plugin>
         <plugin>
-          <groupId>com.spotify.fmt</groupId>
-          <artifactId>fmt-maven-plugin</artifactId>
-          <version>2.23</version>
-          <configuration>
-            <verbose>false</verbose>
-            <filesNamePattern>.*\.java</filesNamePattern>
-            <skip>${fmt.skip}</skip>
-            <style>aosp</style>
-          </configuration>
-          <executions>
-            <execution>
-              <goals>
-                <goal>${fmt.action}</goal>
-              </goals>
-            </execution>
-          </executions>
+          <groupId>com.diffplug.spotless</groupId>
+          <artifactId>spotless-maven-plugin</artifactId>
+          <version>3.0.0</version>
         </plugin>
         <plugin>
           <groupId>com.github.ekryd.sortpom</groupId>
@@ -499,8 +487,29 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>com.spotify.fmt</groupId>
-        <artifactId>fmt-maven-plugin</artifactId>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <inherited>true</inherited>
+        <configuration>
+          <skip>${spotless.skip}</skip>
+          <java>
+            <palantirJavaFormat>
+              <version>2.74.0</version>
+            </palantirJavaFormat>
+          </java>
+          <upToDateChecking>
+            <enabled>true</enabled>
+            <indexFile>${project.basedir}/.spotless-index</indexFile>
+          </upToDateChecking>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>${spotless.action}</goal>
+            </goals>
+            <phase>validate</phase>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

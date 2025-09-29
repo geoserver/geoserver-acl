@@ -40,3 +40,5 @@ docker-compose_datadir*
 .vscode
 .openapi-generator
 .openapi-generator-ignore
+
+.spotless-index
