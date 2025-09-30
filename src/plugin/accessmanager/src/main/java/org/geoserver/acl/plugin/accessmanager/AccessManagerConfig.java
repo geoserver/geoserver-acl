@@ -6,6 +6,7 @@
  */
 package org.geoserver.acl.plugin.accessmanager;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ public class AccessManagerConfig implements Serializable, Cloneable {
 
     public static final String URL_INTERNAL = "internal:/";
 
+    @Serial
     private static final long serialVersionUID = 3L;
 
     private boolean allowRemoteAndInlineLayers;

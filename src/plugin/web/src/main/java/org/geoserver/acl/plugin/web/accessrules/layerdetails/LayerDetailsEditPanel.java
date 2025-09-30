@@ -150,14 +150,14 @@ public class LayerDetailsEditPanel extends FormComponentPanel<MutableLayerDetail
 
     public @Override void onEvent(IEvent<?> event) {
         Object payload = event.getPayload();
-        if (payload instanceof GrantTypeChangeEvent) {
-            onGrantTypeChangeEvent((GrantTypeChangeEvent) payload);
+        if (payload instanceof GrantTypeChangeEvent changeEvent2) {
+            onGrantTypeChangeEvent(changeEvent2);
         } else if (payload instanceof WorkspaceChangeEvent) {
             onWorkspaceChangeEvent((WorkspaceChangeEvent) event.getPayload());
-        } else if (payload instanceof LayerChangeEvent) {
-            onLayerChangeEvent((LayerChangeEvent) payload);
-        } else if (payload instanceof PublishedInfoChangeEvent) {
-            onPublishedInfoChangeEvent((PublishedInfoChangeEvent) payload);
+        } else if (payload instanceof LayerChangeEvent changeEvent1) {
+            onLayerChangeEvent(changeEvent1);
+        } else if (payload instanceof PublishedInfoChangeEvent changeEvent) {
+            onPublishedInfoChangeEvent(changeEvent);
         }
     }
 

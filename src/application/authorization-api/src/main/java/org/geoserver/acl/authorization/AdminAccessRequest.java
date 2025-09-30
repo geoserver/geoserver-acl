@@ -57,8 +57,7 @@ public class AdminAccessRequest {
 
     private void checkNotAny(String prop, String value) {
         if (null != value && "*".equals(value.trim())) {
-            String msg =
-                    String.format("%s.%s can't contain a * wildcard", getClass().getSimpleName(), prop);
+            String msg = "%s.%s can't contain a * wildcard".formatted(getClass().getSimpleName(), prop);
             throw new IllegalStateException(msg);
         }
     }

@@ -7,6 +7,7 @@
 
 package org.geoserver.acl.jpa.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -24,6 +25,7 @@ import lombok.experimental.Accessors;
 @Embeddable
 public class RuleLimits implements Serializable, Cloneable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Column(name = "limits_area")

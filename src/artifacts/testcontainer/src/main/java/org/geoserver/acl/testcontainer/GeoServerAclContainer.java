@@ -111,7 +111,7 @@ public class GeoServerAclContainer extends GenericContainer<GeoServerAclContaine
     public String apiUrl() {
         String host = super.getHost();
         int port = apiPort();
-        return String.format("http://%s:%d/acl/api", host, port);
+        return "http://%s:%d/acl/api".formatted(host, port);
     }
 
     @Override

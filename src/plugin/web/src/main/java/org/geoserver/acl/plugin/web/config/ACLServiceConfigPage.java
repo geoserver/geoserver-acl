@@ -6,6 +6,7 @@
  */
 package org.geoserver.acl.plugin.web.config;
 
+import java.io.Serial;
 import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -27,6 +28,7 @@ import org.geoserver.web.wicket.model.ExtPropertyModel;
  */
 public class ACLServiceConfigPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 5845823599005718408L;
 
     private ACLServiceConfigPageModel pageModel;
@@ -54,6 +56,7 @@ public class ACLServiceConfigPage extends GeoServerSecuredPage {
 
     private AbstractSubmitLink testConnectionLink() {
         return new AjaxSubmitLink("test") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             // signature of wicket 7.x, remove when the minimum version is 2.27.x

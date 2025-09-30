@@ -79,8 +79,8 @@ class PredicateMapper {
     }
 
     Optional<Predicate> mapPredicate(Filter<?> filter) {
-        if (filter instanceof RuleFilter) return toPredicate((RuleFilter) filter);
-        if (filter instanceof AdminRuleFilter) return toPredicate((AdminRuleFilter) filter);
+        if (filter instanceof RuleFilter ruleFilter) return toPredicate(ruleFilter);
+        if (filter instanceof AdminRuleFilter ruleFilter) return toPredicate(ruleFilter);
         return Optional.empty();
     }
 

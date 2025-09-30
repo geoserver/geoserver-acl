@@ -91,10 +91,10 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
             // extract the getmap part
             Object ro = operation.getParameters()[0];
             GetMapRequest getMap;
-            if (ro instanceof GetMapRequest) {
-                getMap = (GetMapRequest) ro;
-            } else if (ro instanceof GetFeatureInfoRequest) {
-                getMap = ((GetFeatureInfoRequest) ro).getGetMapRequest();
+            if (ro instanceof GetMapRequest mapRequest) {
+                getMap = mapRequest;
+            } else if (ro instanceof GetFeatureInfoRequest infoRequest) {
+                getMap = infoRequest.getGetMapRequest();
             } else {
                 throw new ServiceException("Unrecognized request object: " + ro);
             }
@@ -262,9 +262,9 @@ public class ACLDispatcherCallback extends AbstractDispatcherCallback {
         List<String> parsedStyles = parseStylesParameter(gsRequest);
         for (Object layer : parseLayersParameter(gsRequest, getMap)) {
             boolean outOfBound = styleIndex >= parsedStyles.size();
-            if (layer instanceof LayerGroupInfo) {
+            if (layer instanceof LayerGroupInfo info) {
                 String styleName = outOfBound ? null : parsedStyles.get(styleIndex);
-                addGroupStyles((LayerGroupInfo) layer, requestedStyles, styleName);
+                addGroupStyles(info, requestedStyles, styleName);
             } else {
                 // the layer is a LayerInfo or MapLayerInfo (if it is a remote layer)
                 if (outOfBound) {

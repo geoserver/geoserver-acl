@@ -7,6 +7,7 @@
 
 package org.geoserver.acl.jpa.model;
 
+import java.io.Serial;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -64,6 +65,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         })
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "Rule")
 public class AdminRule extends Auditable implements Cloneable {
+    @Serial
     private static final long serialVersionUID = 422357467611162461L;
 
     @Id

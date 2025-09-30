@@ -760,8 +760,8 @@ public class AccessManagerIntegrationTest extends GeoServerSystemTestSupport {
 
     private Geometry reproject(Geometry geometry, int srcCRS, int targetCRS)
             throws FactoryException, TransformException {
-        CoordinateReferenceSystem src = CRS.decode(String.format("EPSG:%d", srcCRS));
-        CoordinateReferenceSystem target = CRS.decode(String.format("EPSG:%d", targetCRS));
+        CoordinateReferenceSystem src = CRS.decode("EPSG:%d".formatted(srcCRS));
+        CoordinateReferenceSystem target = CRS.decode("EPSG:%d".formatted(targetCRS));
         return reproject(geometry, src, target, targetCRS);
     }
 

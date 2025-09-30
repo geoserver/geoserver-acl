@@ -41,7 +41,7 @@ public class Rule {
     private RuleLimits ruleLimits;
 
     public @Override String toString() {
-        return String.format("Rule[id: %s, %s]", id, toShortString());
+        return "Rule[id: %s, %s]".formatted(id, toShortString());
     }
 
     public GrantType access() {
@@ -101,6 +101,6 @@ public class Rule {
     }
 
     public String toShortString() {
-        return String.format("priority: %d, %s", getPriority(), getIdentifier().toShortString());
+        return "priority: %d, %s".formatted(getPriority(), getIdentifier().toShortString());
     }
 }

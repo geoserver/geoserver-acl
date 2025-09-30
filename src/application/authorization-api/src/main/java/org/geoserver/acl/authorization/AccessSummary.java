@@ -4,7 +4,6 @@
  */
 package org.geoserver.acl.authorization;
 
-import static java.lang.String.format;
 import static org.geoserver.acl.authorization.WorkspaceAccessSummary.ANY;
 import static org.geoserver.acl.authorization.WorkspaceAccessSummary.NO_WORKSPACE;
 
@@ -104,7 +103,7 @@ public class AccessSummary {
     @Override
     public String toString() {
         var values = new TreeMap<>(workspaceSummaries).values();
-        return format("%s(%s)", getClass().getSimpleName(), values);
+        return "%s(%s)".formatted(getClass().getSimpleName(), values);
     }
 
     public boolean hasAdminRightsToAnyWorkspace() {

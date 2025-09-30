@@ -6,10 +6,12 @@
  */
 package org.geoserver.acl.plugin.accessmanager.config;
 
+import java.io.Serial;
 import org.geoserver.platform.ModuleStatusImpl;
 
 public final class AclModuleStatus extends ModuleStatusImpl {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public AclModuleStatus(String module, String name) {
