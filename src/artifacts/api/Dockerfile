@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre as builder
+FROM eclipse-temurin:25-jre as builder
 ARG JAR_FILE=target/gs-acl-service-*-bin.jar
 
 COPY ${JAR_FILE} application.jar
@@ -6,7 +6,7 @@ COPY ${JAR_FILE} application.jar
 RUN java -Djarmode=layertools -jar application.jar extract
 
 ##########
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:25-jre
 
 LABEL maintainer="GeoServer PSC <geoserver-users@lists.sourceforge.net>"
 
