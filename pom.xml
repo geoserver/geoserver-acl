@@ -346,17 +346,23 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.2.1</version>
+          <version>3.5.4</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>3.2.1</version>
+          <version>3.5.4</version>
+          <configuration>
+            <!-- Timeout for forked JVM to prevent hanging tests in CI -->
+            <forkedProcessTimeoutInSeconds>600</forkedProcessTimeoutInSeconds>
+            <!-- Timeout for individual tests -->
+            <trimStackTrace>false</trimStackTrace>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.4.2</version>
           <configuration>
             <archive>
               <manifest>
@@ -369,7 +375,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.3.1</version>
         </plugin>
         <plugin>
           <groupId>com.diffplug.spotless</groupId>
@@ -384,7 +390,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>flatten-maven-plugin</artifactId>
-          <version>1.5.0</version>
+          <version>1.7.3</version>
           <inherited>true</inherited>
           <configuration>
             <updatePomFile>true</updatePomFile>
@@ -416,7 +422,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.4.0</version>
+          <version>3.6.1</version>
         </plugin>
       </plugins>
     </pluginManagement>

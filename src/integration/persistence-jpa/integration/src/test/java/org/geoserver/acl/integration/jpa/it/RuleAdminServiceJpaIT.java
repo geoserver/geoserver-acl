@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(
@@ -30,6 +31,7 @@ import org.springframework.test.context.ActiveProfiles;
             JPAIntegrationConfiguration.class
         })
 @ActiveProfiles("test") // see config props in src/test/resource/application-test.yaml
+@DirtiesContext
 public class RuleAdminServiceJpaIT extends RuleAdminServiceIT {
 
     private @Autowired JpaRuleRepository jpaRepo;

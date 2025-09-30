@@ -8,6 +8,7 @@
 package org.geoserver.acl.domain.adminrules;
 
 import java.util.Optional;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import lombok.NonNull;
@@ -22,6 +23,16 @@ import org.geoserver.acl.domain.filter.RuleQuery;
  */
 @RequiredArgsConstructor
 public class AdminRuleAdminServiceImpl implements AdminRuleAdminService {
+
+    /**
+     * Lock to serialize all priority-related operations.
+     * Acquired for operations that modify priorities (insert, update, shift, swap).
+     * This prevents race conditions when multiple threads try to create/update rules
+     * with the same priority. The lock is acquired BEFORE starting the transaction.
+     *
+     * Note: Instance variable (not static) so each Spring context has its own lock.
+     */
+    private final ReentrantLock priorityLock = new ReentrantLock();
 
     private final @NonNull AdminRuleRepository repository;
 
@@ -47,9 +58,15 @@ public class AdminRuleAdminServiceImpl implements AdminRuleAdminService {
      */
     @Override
     public AdminRule insert(AdminRule rule, InsertPosition position) {
-        AdminRule created = repository.create(rule, position);
-        eventPublisher.accept(AdminRuleEvent.created(created));
-        return created;
+        // Acquire lock BEFORE the transaction starts to prevent race conditions
+        priorityLock.lock();
+        try {
+            AdminRule created = repository.create(rule, position);
+            eventPublisher.accept(AdminRuleEvent.created(created));
+            return created;
+        } finally {
+            priorityLock.unlock();
+        }
     }
 
     /**
@@ -57,13 +74,19 @@ public class AdminRuleAdminServiceImpl implements AdminRuleAdminService {
      */
     @Override
     public AdminRule update(AdminRule rule) {
-        if (null == rule.getId()) {
-            throw new IllegalArgumentException("AdminRule has no id");
-        }
+        // Acquire lock since updating can shift priorities
+        priorityLock.lock();
+        try {
+            if (null == rule.getId()) {
+                throw new IllegalArgumentException("AdminRule has no id");
+            }
 
-        AdminRule updated = repository.save(rule);
-        eventPublisher.accept(AdminRuleEvent.updated(updated));
-        return updated;
+            AdminRule updated = repository.save(rule);
+            eventPublisher.accept(AdminRuleEvent.updated(updated));
+            return updated;
+        } finally {
+            priorityLock.unlock();
+        }
     }
 
     /**
@@ -77,13 +100,25 @@ public class AdminRuleAdminServiceImpl implements AdminRuleAdminService {
      */
     @Override
     public int shift(long priorityStart, long offset) {
-        return repository.shiftPriority(priorityStart, offset);
+        // Acquire lock for explicit priority shifting
+        priorityLock.lock();
+        try {
+            return repository.shiftPriority(priorityStart, offset);
+        } finally {
+            priorityLock.unlock();
+        }
     }
 
     @Override
     public void swap(@NonNull String id1, @NonNull String id2) {
-        repository.swap(id1, id2);
-        eventPublisher.accept(AdminRuleEvent.updated(id1, id2));
+        // Acquire lock for swapping priorities
+        priorityLock.lock();
+        try {
+            repository.swap(id1, id2);
+            eventPublisher.accept(AdminRuleEvent.updated(id1, id2));
+        } finally {
+            priorityLock.unlock();
+        }
     }
 
     /**
