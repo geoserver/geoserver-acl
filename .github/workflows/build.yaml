@@ -9,10 +9,27 @@ on:
     branches: [ main ]
 
 jobs:
+  lint:
+    name: Validate source code formatting
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        cache: 'maven'
+    - run: |
+        make lint
+
   build:
     name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    strategy:
+      matrix:
+        java-version: [ 17, 21, 25 ]
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -20,12 +37,8 @@ jobs:
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '17'
+        java-version: ${{ matrix.java-version }}
         cache: 'maven'
-
-    - name: Validate source code formatting
-      run: |
-        make lint
 
     - name: Build without tests
       run: |
