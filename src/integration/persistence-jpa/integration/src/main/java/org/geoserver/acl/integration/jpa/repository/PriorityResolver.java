@@ -55,10 +55,14 @@ class PriorityResolver<T> {
         if (priorityUnset) {
             return jparepo.findMaxPriority().orElse(0L) + 1;
         }
-        jparepo.findOneByPriority(requestedPriority).ifPresent(r -> {
+
+        Optional<T> existing = jparepo.findOneByPriority(requestedPriority);
+
+        existing.ifPresent(r -> {
             jparepo.streamIdsByShiftPriority(requestedPriority).forEach(updatedIds::add);
             jparepo.shiftPriority(requestedPriority, 1);
         });
+
         return requestedPriority;
     }
 

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,6 +31,16 @@ import org.geoserver.acl.domain.filter.RuleQuery;
  */
 @RequiredArgsConstructor
 public class RuleAdminServiceImpl implements RuleAdminService {
+
+    /**
+     * Lock to serialize all priority-related operations.
+     * Acquired for operations that modify priorities (insert, update, shift, swap).
+     * This prevents race conditions when multiple threads try to create/update rules
+     * with the same priority. The lock is acquired BEFORE starting the transaction.
+     *
+     * Note: Instance variable (not static) so each Spring context has its own lock.
+     */
+    private final ReentrantLock priorityLock = new ReentrantLock();
 
     private final @NonNull RuleRepository ruleRepository;
 
@@ -62,13 +73,20 @@ public class RuleAdminServiceImpl implements RuleAdminService {
      */
     @Override
     public Rule insert(@NonNull Rule rule, @NonNull InsertPosition position) {
-        if (null != rule.getId())
-            throw new IllegalArgumentException("a new Rule must not have id, got " + rule.getId());
+        // Acquire lock BEFORE the transaction starts to prevent race conditions
+        priorityLock.lock();
+        try {
+            if (null != rule.getId())
+                throw new IllegalArgumentException("a new Rule must not have id, got " + rule.getId());
 
-        rule = sanitizeFields(rule);
-        Rule created = ruleRepository.create(rule, position);
-        eventPublisher.accept(RuleEvent.created(created));
-        return created;
+            rule = sanitizeFields(rule);
+            Rule created = ruleRepository.create(rule, position);
+
+            eventPublisher.accept(RuleEvent.created(created));
+            return created;
+        } finally {
+            priorityLock.unlock();
+        }
     }
 
     /**
@@ -79,14 +97,20 @@ public class RuleAdminServiceImpl implements RuleAdminService {
      */
     @Override
     public Rule update(@NonNull Rule rule) {
-        if (null == rule.getId()) {
-            throw new IllegalArgumentException("Rule has no id");
-        }
+        // Acquire lock since updating can shift priorities
+        priorityLock.lock();
+        try {
+            if (null == rule.getId()) {
+                throw new IllegalArgumentException("Rule has no id");
+            }
 
-        rule = sanitizeFields(rule);
-        Rule updated = ruleRepository.save(rule);
-        eventPublisher.accept(RuleEvent.updated(updated));
-        return updated;
+            rule = sanitizeFields(rule);
+            Rule updated = ruleRepository.save(rule);
+            eventPublisher.accept(RuleEvent.updated(updated));
+            return updated;
+        } finally {
+            priorityLock.unlock();
+        }
     }
 
     /**
@@ -100,10 +124,16 @@ public class RuleAdminServiceImpl implements RuleAdminService {
      */
     @Override
     public int shift(long priorityStart, long offset) {
-        if (offset <= 0) {
-            throw new IllegalArgumentException("Positive offset required");
+        // Acquire lock for explicit priority shifting
+        priorityLock.lock();
+        try {
+            if (offset <= 0) {
+                throw new IllegalArgumentException("Positive offset required");
+            }
+            return ruleRepository.shift(priorityStart, offset);
+        } finally {
+            priorityLock.unlock();
         }
-        return ruleRepository.shift(priorityStart, offset);
     }
 
     /**
@@ -113,8 +143,14 @@ public class RuleAdminServiceImpl implements RuleAdminService {
      */
     @Override
     public void swapPriority(String id1, String id2) {
-        ruleRepository.swap(id1, id2);
-        eventPublisher.accept(RuleEvent.updated(id1, id2));
+        // Acquire lock for swapping priorities
+        priorityLock.lock();
+        try {
+            ruleRepository.swap(id1, id2);
+            eventPublisher.accept(RuleEvent.updated(id1, id2));
+        } finally {
+            priorityLock.unlock();
+        }
     }
 
     /**

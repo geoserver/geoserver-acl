@@ -36,10 +36,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(classes = {AuthorizationJPAPropertiesTestConfiguration.class, JPAIntegrationConfiguration.class})
 @ActiveProfiles("test") // see config props in src/test/resource/application-test.yaml
+@DirtiesContext
 class RuleRepositoryJpaAdaptorTest {
 
     private static final String WORLD = "SRID=4326;MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))";

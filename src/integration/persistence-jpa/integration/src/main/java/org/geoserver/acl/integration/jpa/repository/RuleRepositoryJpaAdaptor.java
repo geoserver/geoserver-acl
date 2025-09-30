@@ -277,6 +277,7 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
         if (offset <= 0) {
             throw new IllegalArgumentException("Positive offset required");
         }
+
         Set<Long> shiftedIds = jparepo.streamIdsByShiftPriority(priorityStart).collect(Collectors.toSet());
         if (shiftedIds.isEmpty()) {
             return -1;

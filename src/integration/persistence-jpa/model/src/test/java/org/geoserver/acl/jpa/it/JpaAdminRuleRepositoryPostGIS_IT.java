@@ -31,7 +31,7 @@ import org.testcontainers.utility.DockerImageName;
 class JpaAdminRuleRepositoryPostGIS_IT extends JpaAdminRuleRepositoryTest {
 
     private static final DockerImageName POSTGIS_IMAGE_NAME =
-            DockerImageName.parse("postgis/postgis:14-3.4").asCompatibleSubstituteFor("postgres");
+            DockerImageName.parse("imresamu/postgis:15-3.4").asCompatibleSubstituteFor("postgres");
 
     @Container
     static PostgreSQLContainer<?> postgis = new PostgreSQLContainer<>(POSTGIS_IMAGE_NAME);
