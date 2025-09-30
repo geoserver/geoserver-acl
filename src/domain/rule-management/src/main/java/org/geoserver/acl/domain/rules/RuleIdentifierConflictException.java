@@ -4,8 +4,11 @@
  */
 package org.geoserver.acl.domain.rules;
 
+import java.io.Serial;
+
 public class RuleIdentifierConflictException extends IllegalArgumentException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public RuleIdentifierConflictException(String msg) {

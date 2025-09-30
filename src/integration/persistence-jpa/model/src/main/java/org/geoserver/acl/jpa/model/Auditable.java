@@ -4,6 +4,7 @@
  */
 package org.geoserver.acl.jpa.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -18,6 +19,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @MappedSuperclass
 public abstract class Auditable implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 141481953116476081L;
 
     @CreatedBy

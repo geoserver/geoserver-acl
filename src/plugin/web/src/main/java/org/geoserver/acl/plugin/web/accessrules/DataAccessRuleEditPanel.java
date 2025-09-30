@@ -313,14 +313,14 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
 
     public @Override void onEvent(IEvent<?> event) {
         Object payload = event.getPayload();
-        if (payload instanceof WorkspaceChangeEvent) {
-            onWorkspaceChangeEvent((WorkspaceChangeEvent) payload);
+        if (payload instanceof WorkspaceChangeEvent changeEvent2) {
+            onWorkspaceChangeEvent(changeEvent2);
         } else if (payload instanceof LayerChangeEvent) {
             onLayerChangeEvent((LayerChangeEvent) event.getPayload());
-        } else if (payload instanceof GrantTypeChangeEvent) {
-            onGrantTypeChanged(((GrantTypeChangeEvent) payload));
-        } else if (payload instanceof PublishedInfoChangeEvent) {
-            onPublishedInfoChangeEvent((PublishedInfoChangeEvent) payload);
+        } else if (payload instanceof GrantTypeChangeEvent changeEvent1) {
+            onGrantTypeChanged(changeEvent1);
+        } else if (payload instanceof PublishedInfoChangeEvent changeEvent) {
+            onPublishedInfoChangeEvent(changeEvent);
         }
     }
 

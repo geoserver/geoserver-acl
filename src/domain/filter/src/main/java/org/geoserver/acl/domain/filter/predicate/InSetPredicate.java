@@ -4,6 +4,7 @@
  */
 package org.geoserver.acl.domain.filter.predicate;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,6 +19,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class InSetPredicate<V> extends RulePredicate<Set<V>> implements Serializable, Cloneable {
 
+    @Serial
     private static final long serialVersionUID = 6565336016075974626L;
 
     private static final String COLLECTION_VALUE_SEPARATOR = ",";

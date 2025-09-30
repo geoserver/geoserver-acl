@@ -4,8 +4,6 @@
  */
 package org.geoserver.acl.api.client.config;
 
-import static java.lang.String.format;
-
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
@@ -67,17 +65,15 @@ public class ApiClientConfiguration {
             }
         }
         if (error != null) {
-            String msg = format(
-                    "Unable to connect to ACL after %,d seconds. URL: %s, user: %s, error: %s",
-                    timeoutSeconds, client.getBasePath(), client.getUsername(), error.getMessage());
+            String msg = "Unable to connect to ACL after %,d seconds. URL: %s, user: %s, error: %s"
+                    .formatted(timeoutSeconds, client.getBasePath(), client.getUsername(), error.getMessage());
             throw new BeanInitializationException(msg, error);
         }
     }
 
     private void logWaiting(AclClient client, RuntimeException e) {
-        String msg = format(
-                "ACL API endpoint not ready. URL: %s, user: %s, error: %s",
-                client.getBasePath(), client.getUsername(), e.getMessage());
+        String msg = "ACL API endpoint not ready. URL: %s, user: %s, error: %s"
+                .formatted(client.getBasePath(), client.getUsername(), e.getMessage());
         log.info(msg);
     }
 

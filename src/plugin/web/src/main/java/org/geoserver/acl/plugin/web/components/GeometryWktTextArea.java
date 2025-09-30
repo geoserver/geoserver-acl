@@ -46,8 +46,8 @@ public class GeometryWktTextArea<T extends Geometry> extends TextArea<T> {
     public void convertInput() {
         super.convertInput();
         Object convertedInput = super.getConvertedInput();
-        if (convertedInput instanceof String) {
-            T geom = (T) createConverter(geomType).convertToObject((String) convertedInput, getLocale());
+        if (convertedInput instanceof String string) {
+            T geom = (T) createConverter(geomType).convertToObject(string, getLocale());
             setConvertedInput(geom);
         }
     }
@@ -78,9 +78,8 @@ public class GeometryWktTextArea<T extends Geometry> extends TextArea<T> {
                 throw new ConversionException("Unable to parse WKT: " + e.getMessage(), e);
             }
             if (!type.isInstance(fromWkt)) {
-                throw new ConversionException(String.format(
-                        "Expected %s, got %s",
-                        type.getSimpleName(), fromWkt.getClass().getSimpleName()));
+                throw new ConversionException("Expected %s, got %s"
+                        .formatted(type.getSimpleName(), fromWkt.getClass().getSimpleName()));
             }
             return fromWkt;
         }

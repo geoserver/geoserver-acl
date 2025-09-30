@@ -47,7 +47,7 @@ public class AdminRule {
     private AdminGrantType access;
 
     public @Override String toString() {
-        return String.format("AdminRule[id: %s, %s]", id, toShortString());
+        return "AdminRule[id: %s, %s]".formatted(id, toShortString());
     }
 
     public boolean isAdmin() {
@@ -79,8 +79,7 @@ public class AdminRule {
     }
 
     public String toShortString() {
-        return String.format(
-                "priority: %d, access: %s, %s",
-                getPriority(), getAccess(), getIdentifier().toShortString());
+        return "priority: %d, access: %s, %s"
+                .formatted(getPriority(), getAccess(), getIdentifier().toShortString());
     }
 }

@@ -84,7 +84,7 @@ public class GetLegendGraphicIntegrationTest extends AclWMSTestSupport {
                 + "&style=%s"
                 + "&format=image/png&width=20&height=20";
 
-        String url = String.format(urlFormat, ""); // default style
+        String url = urlFormat.formatted(""); // default style
         MockHttpServletResponse response = getAsServletResponse(url);
         // default lg style should not fail
         MediaType actual = MediaType.parseMediaType(response.getContentType());

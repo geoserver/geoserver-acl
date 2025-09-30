@@ -70,12 +70,12 @@ public class PublishedInfoDetachableModel extends LoadableDetachableModel<Publis
         super.setObject(info);
         if (null != info) {
             WorkspaceInfo ws;
-            if (info instanceof LayerGroupInfo) {
+            if (info instanceof LayerGroupInfo groupInfo) {
                 type = LayerGroupInfo.class;
-                ws = ((LayerGroupInfo) info).getWorkspace();
-            } else if (info instanceof LayerInfo) {
+                ws = groupInfo.getWorkspace();
+            } else if (info instanceof LayerInfo layerInfo) {
                 type = LayerInfo.class;
-                ws = ((LayerInfo) info).getResource().getStore().getWorkspace();
+                ws = layerInfo.getResource().getStore().getWorkspace();
             } else {
                 throw new IllegalArgumentException("unknown PublishedInfo type " + info);
             }

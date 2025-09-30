@@ -7,6 +7,7 @@
 
 package org.geoserver.acl.jpa.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -59,6 +60,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "Rule")
 public class Rule extends Auditable implements Serializable, Cloneable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id

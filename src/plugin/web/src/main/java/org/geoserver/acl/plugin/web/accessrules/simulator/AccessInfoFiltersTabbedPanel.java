@@ -91,8 +91,8 @@ public class AccessInfoFiltersTabbedPanel extends Panel {
     }
 
     private boolean notEmpty(Object value) {
-        if (value instanceof Collection) {
-            return !((Collection<?>) value).isEmpty();
+        if (value instanceof Collection<?> collection) {
+            return !collection.isEmpty();
         }
         return value != null;
     }

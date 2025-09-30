@@ -9,6 +9,7 @@ package org.geoserver.acl.jpa.model;
 
 import static java.util.Objects.isNull;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,6 +38,7 @@ import org.hibernate.annotations.FetchMode;
 @Embeddable
 public class LayerDetails implements Serializable, Cloneable {
 
+    @Serial
     private static final long serialVersionUID = 1;
 
     public enum LayerType {

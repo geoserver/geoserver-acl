@@ -16,7 +16,7 @@
   <packaging>jar</packaging>
   <name>acl-testcontainer</name>
   <properties>
-    <java.version>11</java.version>
+    <java.version>17</java.version>
   </properties>
   <dependencies>
     <dependency>

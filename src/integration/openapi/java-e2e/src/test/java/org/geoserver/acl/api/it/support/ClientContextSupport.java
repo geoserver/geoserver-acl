@@ -34,7 +34,7 @@ public class ClientContextSupport {
 
     public ClientContextSupport setUp() {
 
-        String basePath = String.format("http://localhost:%d/api", serverPort);
+        String basePath = "http://localhost:%d/api".formatted(serverPort);
         String username = "admin";
         String password = "auth-not-yet-implemented";
 

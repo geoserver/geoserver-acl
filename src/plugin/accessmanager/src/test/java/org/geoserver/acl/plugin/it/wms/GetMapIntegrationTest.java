@@ -47,9 +47,8 @@ public class GetMapIntegrationTest extends AclWMSTestSupport {
             "MULTIPOLYGON (((0.0006 -0.0018, 0.001 -0.0006, 0.0024 -0.0001, 0.0031 -0.0015, 0.0006 -0.0018), (0.0017 -0.0011, 0.0025 -0.0011, 0.0025 -0.0006, 0.0017 -0.0006, 0.0017 -0.0011)))";
 
     private String getMapRequest(String layerName) {
-        return String.format(
-                "wms?layers=%s&styles=&request=getmap&service=wms&width=100&height=100&format=image/png&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002",
-                layerName);
+        return "wms?layers=%s&styles=&request=getmap&service=wms&width=100&height=100&format=image/png&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002"
+                .formatted(layerName);
     }
 
     /**

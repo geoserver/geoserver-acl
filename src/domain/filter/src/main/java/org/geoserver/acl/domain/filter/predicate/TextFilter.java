@@ -6,6 +6,7 @@
  */
 package org.geoserver.acl.domain.filter.predicate;
 
+import java.io.Serial;
 import java.io.Serializable;
 import lombok.EqualsAndHashCode;
 
@@ -13,7 +14,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class TextFilter extends RulePredicate<String> implements Serializable, Cloneable {
 
+    @Serial
     private static final long serialVersionUID = 6565336016075974626L;
+
     private String text;
     private boolean forceUppercase = false;
 

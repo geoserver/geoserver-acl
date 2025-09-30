@@ -206,8 +206,7 @@ public class DataAccessRuleEditModel extends AbstractRuleEditModel<MutableRule> 
             return;
         }
         List<AttributeTypeInfo> attributes = List.of();
-        if (info instanceof LayerInfo) {
-            LayerInfo li = (LayerInfo) info;
+        if (info instanceof LayerInfo li) {
             if (li.getType() == PublishedType.VECTOR) {
                 FeatureTypeInfo resource = (FeatureTypeInfo) li.getResource();
                 try {

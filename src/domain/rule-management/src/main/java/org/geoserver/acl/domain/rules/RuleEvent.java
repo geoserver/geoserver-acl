@@ -4,8 +4,6 @@
  */
 package org.geoserver.acl.domain.rules;
 
-import static java.lang.String.format;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,6 +47,6 @@ public class RuleEvent {
 
     @Override
     public String toString() {
-        return format("%s%s", eventType, ruleIds);
+        return "%s%s".formatted(eventType, ruleIds);
     }
 }

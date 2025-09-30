@@ -4,8 +4,6 @@
  */
 package org.geoserver.acl.authorization;
 
-import static java.lang.String.format;
-
 import java.util.Set;
 import java.util.TreeSet;
 import lombok.Builder;
@@ -70,8 +68,8 @@ public class WorkspaceAccessSummary implements Comparable<WorkspaceAccessSummary
 
     @Override
     public String toString() {
-        return format(
-                "workapce: %s: admin: %s, allowed: %s, forbidden: %s", workspace, adminAccess, allowed, forbidden);
+        return "workapce: %s: admin: %s, allowed: %s, forbidden: %s"
+                .formatted(workspace, adminAccess, allowed, forbidden);
     }
 
     public boolean canSeeLayer(String layerName) {

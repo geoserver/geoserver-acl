@@ -7,6 +7,7 @@
 
 package org.geoserver.acl.jpa.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -26,6 +27,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "LayerAttribute")
 public class LayerAttribute implements Serializable, Cloneable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public enum AccessType {

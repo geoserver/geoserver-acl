@@ -4,6 +4,7 @@
  */
 package org.geoserver.acl.domain.filter.predicate;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.function.Predicate;
 import lombok.EqualsAndHashCode;
@@ -11,6 +12,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 public abstract class RulePredicate<T> implements Predicate<T>, Serializable, Cloneable {
 
+    @Serial
     private static final long serialVersionUID = 6565336016075974626L;
 
     protected FilterType type;

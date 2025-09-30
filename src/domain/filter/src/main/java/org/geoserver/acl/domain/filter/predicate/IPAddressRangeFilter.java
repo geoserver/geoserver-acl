@@ -4,11 +4,14 @@
  */
 package org.geoserver.acl.domain.filter.predicate;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class IPAddressRangeFilter extends RulePredicate<String> implements Serializable, Cloneable {
 
+    @Serial
     private static final long serialVersionUID = 4180011525571457537L;
+
     private String ipAddress;
 
     public IPAddressRangeFilter(FilterType type) {

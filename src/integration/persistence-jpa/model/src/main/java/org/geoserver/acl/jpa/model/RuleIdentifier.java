@@ -5,6 +5,7 @@
 
 package org.geoserver.acl.jpa.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -29,6 +30,7 @@ import lombok.experimental.Accessors;
 @Embeddable
 public class RuleIdentifier implements Serializable, Cloneable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static final String ANY = "*";

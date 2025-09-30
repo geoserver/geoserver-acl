@@ -7,7 +7,6 @@
 
 package org.geoserver.acl.authorization;
 
-import static java.lang.String.format;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 import static org.geoserver.acl.domain.adminrules.AdminGrantType.ADMIN;
@@ -359,7 +358,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     private String unionCQL(String c1, String c2) {
         if (c1 == null || c2 == null) return null;
-        return format("(%s) OR (%s)", c1, c2);
+        return "(%s) OR (%s)".formatted(c1, c2);
     }
 
     private Geometry unionGeometry(Geometry g1, Geometry g2) {
