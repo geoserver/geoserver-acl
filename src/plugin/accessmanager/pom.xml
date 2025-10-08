@@ -43,6 +43,12 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
+      <artifactId>gs-platform</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
@@ -51,6 +57,19 @@
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wms</artifactId>
       <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- required by gs-wfs:tests -->
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-iau-wkt</artifactId>
+      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

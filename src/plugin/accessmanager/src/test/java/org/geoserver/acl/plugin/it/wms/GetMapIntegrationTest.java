@@ -41,7 +41,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 @SuppressWarnings("unused")
-public class GetMapIntegrationTest extends AclWMSTestSupport {
+public class GetMapIntegrationTest extends AbstractAclWMSIntegrationTest {
 
     private final String areWKT =
             "MULTIPOLYGON (((0.0006 -0.0018, 0.001 -0.0006, 0.0024 -0.0001, 0.0031 -0.0015, 0.0006 -0.0018), (0.0017 -0.0011, 0.0025 -0.0011, 0.0025 -0.0006, 0.0017 -0.0006, 0.0017 -0.0011)))";
