@@ -32,6 +32,13 @@
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
+        <artifactId>gs-platform</artifactId>
+        <version>${gs.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
         <artifactId>gs-main</artifactId>
         <version>${gs.version}</version>
         <scope>provided</scope>
@@ -54,6 +61,13 @@
         <artifactId>gs-wfs</artifactId>
         <version>${gs.version}</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-wfs</artifactId>
+        <version>${gs.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>

@@ -25,6 +25,7 @@ import org.geoserver.acl.domain.rules.CatalogMode;
 import org.geoserver.acl.domain.rules.GrantType;
 import org.geoserver.acl.domain.rules.LayerAttribute;
 import org.geoserver.acl.domain.rules.LayerDetails;
+import org.geoserver.acl.domain.rules.LayerDetails.Builder;
 import org.geoserver.acl.domain.rules.LayerDetails.LayerType;
 import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleAdminService;
@@ -183,6 +184,26 @@ public class AclIntegrationTestSupport extends ExternalResource {
                 .build();
         ruleService.setLimits(ruleId, limits);
         return limits;
+    }
+
+    public LayerDetails setCqlReadFilter(Rule allowRule, String cql) {
+        Builder builder = ruleService
+                .getLayerDetails(allowRule)
+                .map(LayerDetails::toBuilder)
+                .orElseGet(LayerDetails::builder);
+        LayerDetails layerDetails = builder.cqlFilterRead(cql).build();
+        ruleService.setLayerDetails(allowRule.getId(), layerDetails);
+        return layerDetails;
+    }
+
+    public LayerDetails setCqlWriteFilter(Rule allowRule, String cql) {
+        Builder builder = ruleService
+                .getLayerDetails(allowRule)
+                .map(LayerDetails::toBuilder)
+                .orElseGet(LayerDetails::builder);
+        LayerDetails layerDetails = builder.cqlFilterWrite(cql).build();
+        ruleService.setLayerDetails(allowRule.getId(), layerDetails);
+        return layerDetails;
     }
 
     public LayerDetails addLayerDetails(

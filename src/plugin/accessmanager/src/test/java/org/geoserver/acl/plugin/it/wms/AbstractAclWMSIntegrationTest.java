@@ -16,7 +16,7 @@ import org.geoserver.wms.WMSTestSupport;
 import org.junit.After;
 import org.junit.Before;
 
-public class AclWMSTestSupport extends WMSTestSupport {
+public class AbstractAclWMSIntegrationTest extends WMSTestSupport {
 
     protected AclIntegrationTestSupport support;
     protected ACLResourceAccessManager accessManager;

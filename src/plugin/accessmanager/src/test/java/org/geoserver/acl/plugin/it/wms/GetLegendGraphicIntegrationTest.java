@@ -25,7 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 @SuppressWarnings("unused")
-public class GetLegendGraphicIntegrationTest extends AclWMSTestSupport {
+public class GetLegendGraphicIntegrationTest extends AbstractAclWMSIntegrationTest {
 
     @Test
     public void testLegendGraphicNestedGroups() throws Exception {
