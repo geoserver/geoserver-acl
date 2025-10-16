@@ -68,12 +68,12 @@
     </snapshotRepository>
   </distributionManagement>
   <properties>
-    <revision>2.4-SNAPSHOT</revision>
+    <revision>2.4.0</revision>
     <java.version>17</java.version>
     <!-- Default GeoServer version to build and test the plugin against-->
-    <gs.version>2.28-SNAPSHOT</gs.version>
+    <gs.version>2.28.0</gs.version>
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
-    <gt.version>34-SNAPSHOT</gt.version>
+    <gt.version>34.0</gt.version>
     <wicket.version>9.21.0</wicket.version>
     <jts.version>1.20.0</jts.version>
     <fmt.skip>false</fmt.skip>
