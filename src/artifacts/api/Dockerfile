@@ -10,6 +10,8 @@ FROM eclipse-temurin:25-jre
 
 LABEL maintainer="GeoServer PSC <geoserver-users@lists.sourceforge.net>"
 
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /opt/app/bin
 ENV DEF_JAVA_TOOL_OPTS="\
 --add-exports=java.desktop/sun.awt.image=ALL-UNNAMED \
