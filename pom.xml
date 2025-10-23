@@ -467,6 +467,8 @@
                   <excludedScopes>test</excludedScopes>
                   <excludes>
                     <exclude>io.swagger.core.v3:swagger-annotations</exclude>
+                    <exclude>javax.measure:unit-api</exclude>
+                    <exclude>org.checkerframework:checker-qual</exclude>
                   </excludes>
                 </dependencyConvergence>
               </rules>

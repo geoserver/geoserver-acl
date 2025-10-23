@@ -4,15 +4,9 @@
  */
 package org.geoserver.acl.testcontainer;
 
-import static org.junit.Assume.assumeTrue;
-
 import java.time.Duration;
 import java.util.Objects;
 import java.util.logging.Logger;
-import org.junit.Assume;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
-import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
@@ -68,26 +62,6 @@ public class GeoServerAclContainer extends GenericContainer<GeoServerAclContaine
     public GeoServerAclContainer disabledWithoutDocker() {
         this.disabledWithoutDocker = true;
         return this;
-    }
-
-    /**
-     * Support for JUnit 4 to have the same effect as JUnit 5's {@code
-     * org.testcontainers.junit.jupiter.@Testcontainers(disabledWithoutDocker = true)} when {@link
-     * #disabledWithoutDocker()}.
-     *
-     * <p>Overrides to apply the {@link Assume assumption} checking the Docker environment is
-     * available if {@link #disabledWithoutDocker() enabled}, so this test container can be used as
-     * a {@code ClassRule @ClassRule} and hence avoid running a container for each test case.
-     */
-    @Override
-    @SuppressWarnings("deprecation")
-    public Statement apply(Statement base, Description description) {
-        if (disabledWithoutDocker) {
-            assumeTrue(
-                    "Docker environment unavailable, ignoring tests",
-                    DockerClientFactory.instance().isDockerAvailable());
-        }
-        return super.apply(base, description);
     }
 
     @Override
