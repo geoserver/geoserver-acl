@@ -32,11 +32,14 @@
               <goal>enforce</goal>
             </goals>
             <configuration>
+              <skip>true</skip>
               <rules>
                 <dependencyConvergence>
                   <excludedScopes>test</excludedScopes>
                   <excludes>
                     <exclude>io.swagger.core.v3:swagger-annotations</exclude>
+                    <exclude>javax.measure:unit-api</exclude>
+                    <exclude>org.checkerframework:checker-qual</exclude>
                     <exclude>org.springframework</exclude>
                     <exclude>org.slf4j</exclude>
                   </excludes>

@@ -23,9 +23,10 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
-import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.rabbitmq.RabbitMQContainer;
+import org.testcontainers.utility.DockerImageName;
 
 /**
  * @see {@literal src/test/resources/application-it.yml}
@@ -35,7 +36,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 class AclSpringCloudBusAutoConfigurationIT {
 
     @Container
-    private static final RabbitMQContainer rabbitMQContainer = new RabbitMQContainer("rabbitmq:3.11-management");
+    private static final RabbitMQContainer rabbitMQContainer =
+            new RabbitMQContainer(DockerImageName.parse("rabbitmq:4-management-alpine"));
 
     @Configuration
     @EnableAutoConfiguration
