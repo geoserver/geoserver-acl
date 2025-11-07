@@ -1,5 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.geoserver.acl.plugin.autoconfigure.accessmanager.AclAccessManagerAutoConfiguration,\
-org.geoserver.acl.plugin.autoconfigure.webui.AclWebUIAutoConfiguration,\
-org.geoserver.acl.plugin.autoconfigure.wps.AclWpsAutoConfiguration,\
-org.geoserver.acl.plugin.autoconfigure.cache.CachingAuthorizationServicePluginAutoConfiguration

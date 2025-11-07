@@ -21,7 +21,6 @@
     <module>application</module>
     <module>openapi</module>
     <module>integration</module>
-    <module>plugin</module>
     <module>artifacts</module>
   </modules>
   <properties>
