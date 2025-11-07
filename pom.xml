@@ -83,7 +83,7 @@
     <mapstruct.version>1.6.3</mapstruct.version>
     <testcontainers.version>2.0.1</testcontainers.version>
     <geolatte.version>1.9.1</geolatte.version>
-    <querydsl.version>5.1.0</querydsl.version>
+    <querydsl.version>7.1</querydsl.version>
     <springdoc.version>2.6.0</springdoc.version>
     <caffeine.version>3.1.8</caffeine.version>
     <snakeyaml.version>2.2</snakeyaml.version>
@@ -218,16 +218,14 @@
         <version>${mapstruct.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.querydsl</groupId>
+        <groupId>io.github.openfeign.querydsl</groupId>
         <artifactId>querydsl-jpa</artifactId>
         <version>${querydsl.version}</version>
-        <classifier>jakarta</classifier>
       </dependency>
       <dependency>
-        <groupId>com.querydsl</groupId>
+        <groupId>io.github.openfeign.querydsl</groupId>
         <artifactId>querydsl-apt</artifactId>
         <version>${querydsl.version}</version>
-        <classifier>jakarta</classifier>
         <scope>provided</scope>
       </dependency>
       <dependency>

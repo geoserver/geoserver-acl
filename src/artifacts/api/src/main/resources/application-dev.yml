@@ -3,7 +3,7 @@ spring.flyway.enabled: false
 
 jndi.datasources.acl.enabled: false
 pg.schema: ''
-acl.db.dialect: org.hibernate.spatial.dialect.h2geodb.GeoDBDialect
+acl.db.dialect: org.hibernate.dialect.H2Dialect
 acl.db.hbm2ddl.auto: create
 acl.security.headers.enabled: true
 

@@ -13,7 +13,7 @@ geoserver.acl:
       hibernate:
         hbm2ddl.auto: create
         show_sql: false
-        dialect: org.hibernate.spatial.dialect.h2geodb.GeoDBDialect
+        dialect: org.hibernate.dialect.H2Dialect
 
 
 logging:

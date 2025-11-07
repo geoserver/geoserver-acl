@@ -6,7 +6,7 @@ package org.geoserver.acl.integration.jpa.repository;
 
 import static org.geoserver.acl.integration.jpa.mapper.AdminRuleJpaMapper.decodeId;
 
-import com.mysema.commons.lang.CloseableIterator;
+import com.querydsl.core.CloseableIterator;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
