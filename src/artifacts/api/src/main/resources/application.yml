@@ -122,7 +122,7 @@ management:
         enabled: true
       show-components: when-authorized
       show-details: when-authorized
-    caches.enabled: true
+    caches.access: read-only
   endpoints:
     web.exposure.include: ['*']
 
@@ -164,73 +164,3 @@ geoserver:
           hbm2ddl.auto: ${acl.db.hbm2ddl.auto:validate}
           dialect: ${acl.db.dialect:org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect} 
 
----
-spring.config.activate.on-profile: local
-server.port: 9000
-
-pg.host: localhost
-pg.port: 6432
-pg.database: acl
-pg.schema: acl
-pg.username: acl
-pg.password: acls3cr3t
-
----
-spring.config.activate.on-profile: dev
-
-spring.flyway.enabled: false
-
-jndi.datasources.acl.enabled: false
-pg.schema: ''
-acl.db.dialect: org.hibernate.spatial.dialect.h2geodb.GeoDBDialect
-acl.db.hbm2ddl.auto: create
-acl.security.headers.enabled: true
-
-geoserver:
-  acl:
-    datasource:
-      url: jdbc:h2:mem:geoserver-acl;DB_CLOSE_DELAY=-1
-      jndi-name: ''
-      hikari:
-        minimum-idle: 1
-        maximum-pool-size: 20
-
----
-spring.config.activate.on-profile: ddl
-
-spring:
-  flyway:
-    enabled: false
-  main.web-application-type: none  
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-      - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
-      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
-      - org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration
-      - org.geoserver.acl.autoconfigure.api.RulesApiAutoConfiguration
-      - org.geoserver.acl.autoconfigure.security.AclServiceSecurityAutoConfiguration
-      - org.geoserver.acl.autoconfigure.security.InternalSecurityConfiguration
-      - org.geoserver.acl.autoconfigure.security.PreAuthenticationSecurityAutoConfiguration
-      - org.geoserver.acl.autoconfigure.security.AuthenticationManagerAutoConfiguration
-      - org.geoserver.acl.autoconfigure.springdoc.SpringDocAutoConfiguration
-
-geoserver:
-  acl:
-    jpa:
-      properties:
-        '[javax.persistence.schema-generation.database.action]': none
-        '[javax.persistence.schema-generation.scripts.action]': create
-        '[javax.persistence.schema-generation.scripts.create-source]': metadata
-        '[javax.persistence.schema-generation.scripts.create-target]': ${scripts.create-target:acl-create.sql}
-
-logging:
-  level:
-    root: error
-    org.geoserver.acl: info
-
----
-spring.config.activate.on-profile: logging_debug_requests
-logging:
-  level:
-    org.springframework.web.filter.CommonsRequestLoggingFilter: trace

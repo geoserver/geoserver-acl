@@ -13,14 +13,14 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.querydsl.core.types.Predicate;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import org.geolatte.geom.MultiPolygon;
 import org.geolatte.geom.codec.Wkt;
 import org.geolatte.geom.crs.CoordinateReferenceSystems;

@@ -6,9 +6,9 @@ package org.geoserver.acl.api.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import jakarta.validation.constraints.Pattern;
 import java.lang.reflect.Method;
 import java.util.stream.IntStream;
-import javax.validation.constraints.Pattern;
 import org.junit.jupiter.api.Test;
 
 class IPAddressRangeTest {
@@ -54,8 +54,8 @@ class IPAddressRangeTest {
         } catch (NoSuchMethodException | SecurityException e) {
             throw new RuntimeException(e);
         }
-        javax.validation.constraints.Pattern[] annotations =
-                getAddressRange.getAnnotationsByType(javax.validation.constraints.Pattern.class);
+        jakarta.validation.constraints.Pattern[] annotations =
+                getAddressRange.getAnnotationsByType(jakarta.validation.constraints.Pattern.class);
 
         final String regexp = annotations[0].regexp();
         assertEquals(range.matches(regexp), validates);

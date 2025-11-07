@@ -4,7 +4,7 @@
  */
 package org.geoserver.acl.autoconfigure.cache;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.acl.authorization.cache.CachingAuthorizationServiceConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;

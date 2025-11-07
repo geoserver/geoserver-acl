@@ -48,6 +48,6 @@ CMD curl -f -s -o /dev/null localhost:$MANAGEMENT_SERVER_PORT/actuator/health ||
 
 ARG APP_ARGS=""
 
-ENTRYPOINT [ "/bin/bash", "-c", "exec java $JAVA_OPTS $JAVA_TOOL_OPTS org.springframework.boot.loader.JarLauncher \"${@}\"", "--" ]
+ENTRYPOINT [ "/bin/bash", "-c", "exec java $JAVA_OPTS $JAVA_TOOL_OPTS org.springframework.boot.loader.launch.JarLauncher \"${@}\"", "--" ]
 
 CMD ["${APP_ARGS}"]

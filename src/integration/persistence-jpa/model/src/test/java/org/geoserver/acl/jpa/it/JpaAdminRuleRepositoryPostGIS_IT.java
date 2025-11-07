@@ -4,7 +4,7 @@
  */
 package org.geoserver.acl.jpa.it;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import org.geoserver.acl.jpa.config.AclDataSourceConfiguration;
 import org.geoserver.acl.jpa.config.AuthorizationJPAConfiguration;
 import org.geoserver.acl.jpa.config.AuthorizationJPAPropertiesTestConfiguration;

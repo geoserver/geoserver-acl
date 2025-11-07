@@ -4,14 +4,15 @@
  */
 package org.geoserver.acl.jpa.config;
 
+import jakarta.persistence.EntityManagerFactory;
 import java.util.Map;
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.geoserver.acl.jpa.config.AclJpaProperties.JpaProperties;
 import org.geoserver.acl.jpa.model.Rule;
 import org.geoserver.acl.jpa.repository.JpaAdminRuleRepository;
 import org.geoserver.acl.jpa.repository.JpaRuleRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -65,6 +66,7 @@ public class AuthorizationJPAConfiguration {
     }
 
     @Bean("authorizationTransactionManager")
+    @DependsOnDatabaseInitialization
     JpaTransactionManager authorizationTransactionManager(
             @Qualifier("authorizationEntityManagerFactory") final EntityManagerFactory emf) {
 
