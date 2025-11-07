@@ -84,13 +84,14 @@
     <testcontainers.version>2.0.1</testcontainers.version>
     <geolatte.version>1.9.1</geolatte.version>
     <querydsl.version>5.1.0</querydsl.version>
-    <springdoc.version>1.8.0</springdoc.version>
+    <springdoc.version>2.6.0</springdoc.version>
     <caffeine.version>3.1.8</caffeine.version>
     <snakeyaml.version>2.2</snakeyaml.version>
     <flyway.version>11.1.0</flyway.version>
     <h2.version>2.2.224</h2.version>
     <jts.version>1.20.0</jts.version>
     <openapi-generator-maven-plugin.version>7.17.0</openapi-generator-maven-plugin.version>
+    <swagger-annotations-jakarta.version>2.2.19</swagger-annotations-jakarta.version>
     <!-- build setings -->
     <fmt.skip>false</fmt.skip>
     <spotless.skip>${fmt.skip}</spotless.skip>
@@ -158,6 +159,16 @@
         <version>${testcontainers.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-annotations-jakarta</artifactId>
+        <version>${swagger-annotations-jakarta.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>${springdoc.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geotools</groupId>
@@ -593,11 +604,6 @@
                 </requireMavenVersion>
                 <dependencyConvergence>
                   <excludedScopes>test</excludedScopes>
-                  <excludes>
-                    <exclude>io.swagger.core.v3:swagger-annotations</exclude>
-                    <exclude>javax.measure:unit-api</exclude>
-                    <exclude>org.checkerframework:checker-qual</exclude>
-                  </excludes>
                 </dependencyConvergence>
               </rules>
             </configuration>
