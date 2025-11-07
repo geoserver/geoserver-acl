@@ -33,17 +33,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(classes = SecurityTestConfiguration.class, properties = "spring.main.banner-mode=off")
 class DataRulesApiSecurityIT {
 
-    private @MockBean RuleAdminService rulesService;
-    private @MockBean AdminRuleAdminService adminRulesService;
-    private @MockBean AuthorizationService authService;
+    private @MockitoBean RuleAdminService rulesService;
+    private @MockitoBean AdminRuleAdminService adminRulesService;
+    private @MockitoBean AuthorizationService authService;
 
     private @Autowired DataRulesApi rulesApi;
     private @Autowired WorkspaceAdminRulesApi adminRulesApi;
