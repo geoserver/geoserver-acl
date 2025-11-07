@@ -18,7 +18,4 @@
     <module>simplejndi</module>
     <module>spring-cloud-bus</module>
   </modules>
-  <properties>
-    <java.version>17</java.version>
-  </properties>
 </project>

@@ -20,7 +20,4 @@
     <module>rule-management</module>
     <module>adminrule-management</module>
   </modules>
-  <properties>
-    <java.version>17</java.version>
-  </properties>
 </project>
