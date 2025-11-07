@@ -8,14 +8,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.geoserver.acl.openapi.spring5</groupId>
-    <artifactId>openapi-spring5</artifactId>
+    <groupId>org.geoserver.acl.openapi.spring</groupId>
+    <artifactId>openapi-spring</artifactId>
     <version>${revision}</version>
   </parent>
   <artifactId>gs-acl-openapi-client</artifactId>
   <dependencies>
     <dependency>
-      <groupId>org.geoserver.acl.openapi.spring5</groupId>
+      <groupId>org.geoserver.acl.openapi.spring</groupId>
       <artifactId>gs-acl-openapi-model</artifactId>
     </dependency>
     <dependency>
@@ -84,6 +84,7 @@
               <generateApiTests>false</generateApiTests>
               <generateModelTests>false</generateModelTests>
               <configOptions>
+                <useJakartaEe>false</useJakartaEe>
                 <library>resttemplate</library>
                 <useTags>true</useTags>
                 <dateLibrary>java8-localdatetime</dateLibrary>

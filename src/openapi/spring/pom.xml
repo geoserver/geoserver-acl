@@ -12,8 +12,8 @@
     <artifactId>openapi</artifactId>
     <version>${revision}</version>
   </parent>
-  <groupId>org.geoserver.acl.openapi.spring5</groupId>
-  <artifactId>openapi-spring5</artifactId>
+  <groupId>org.geoserver.acl.openapi.spring</groupId>
+  <artifactId>openapi-spring</artifactId>
   <packaging>pom</packaging>
   <modules>
     <module>model</module>

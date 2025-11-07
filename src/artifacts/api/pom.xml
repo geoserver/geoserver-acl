@@ -119,7 +119,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.acl.openapi.spring5</groupId>
+      <groupId>org.geoserver.acl.openapi.spring</groupId>
       <artifactId>gs-acl-openapi-client</artifactId>
       <scope>test</scope>
     </dependency>

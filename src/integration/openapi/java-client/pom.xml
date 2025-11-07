@@ -18,7 +18,7 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>org.geoserver.acl.openapi.spring5</groupId>
+      <groupId>org.geoserver.acl.openapi.spring</groupId>
       <artifactId>gs-acl-openapi-client</artifactId>
     </dependency>
     <dependency>
