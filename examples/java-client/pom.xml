@@ -13,9 +13,6 @@
     <version>${revision}</version>
   </parent>
   <artifactId>acl-java-client-example</artifactId>
-  <properties>
-    <testcontainers.version>1.19.3</testcontainers.version>
-  </properties>
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -42,12 +39,10 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-json</artifactId>
-      <version>2.7.18</version>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.26</version>
       <scope>provided</scope>
     </dependency>
 
@@ -55,7 +50,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <version>2.7.18</version>
       <scope>test</scope>
     </dependency>
     <dependency>

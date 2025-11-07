@@ -16,7 +16,16 @@
   <dependencies>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
+      <artifactId>spring-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations-jakarta</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -25,25 +34,11 @@
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-    </dependency>
-    <dependency>
-      <!-- @javax.annotation.Nullable annotation -->
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>jsr305</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jsr310</artifactId>
+      <artifactId>jackson-databind</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-validation</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -92,7 +87,8 @@
               <generateModelDocumentation>false</generateModelDocumentation>
               <enablePostProcessFile>true</enablePostProcessFile>
               <configOptions>
-                <useJakartaEe>false</useJakartaEe>
+                <useJakartaEe>true</useJakartaEe>
+                <useSpringBoot3>true</useSpringBoot3>
                 <dateLibrary>java8-localdatetime</dateLibrary>
                 <openApiNullable>false</openApiNullable>
                 <serializationLibrary>jackson</serializationLibrary>

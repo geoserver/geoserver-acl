@@ -19,24 +19,40 @@
       <artifactId>gs-acl-openapi-model</artifactId>
     </dependency>
     <dependency>
-      <!-- RestTemplate based API client-->
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-    </dependency>
-    <dependency>
-      <!-- @javax.annotation.Generated annotation -->
       <groupId>jakarta.annotation</groupId>
       <artifactId>jakarta.annotation-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>jakarta.servlet</groupId>
-      <artifactId>jakarta.servlet-api</artifactId>
+      <!-- RestClient based API client-->
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <!-- JSON processing: jackson -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+      <artifactId>jackson-jakarta-rs-json-provider</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-smile</artifactId>
     </dependency>
   </dependencies>
   <build>
@@ -84,12 +100,14 @@
               <generateApiTests>false</generateApiTests>
               <generateModelTests>false</generateModelTests>
               <configOptions>
-                <useJakartaEe>false</useJakartaEe>
-                <library>resttemplate</library>
+                <useJakartaEe>true</useJakartaEe>
+                <useSpringBoot3>true</useSpringBoot3>
+                <library>restclient</library>
+                <serializationLibrary>jackson</serializationLibrary>
                 <useTags>true</useTags>
                 <dateLibrary>java8-localdatetime</dateLibrary>
                 <openApiNullable>false</openApiNullable>
-                <useBeanValidation>true</useBeanValidation>
+                <useBeanValidation>false</useBeanValidation>
                 <performBeanValidation>false</performBeanValidation>
                 <withXml>false</withXml>
               </configOptions>

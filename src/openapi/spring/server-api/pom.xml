@@ -38,10 +38,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-commons</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-smile</artifactId>
     </dependency>
@@ -98,6 +94,8 @@
               <generateModelTests>false</generateModelTests>
               <configOptions>
                 <library>spring-boot</library>
+                <useJakartaEe>true</useJakartaEe>
+                <useSpringBoot3>true</useSpringBoot3>
                 <useTags>true</useTags>
                 <reactive>false</reactive>
                 <delegatePattern>true</delegatePattern>
