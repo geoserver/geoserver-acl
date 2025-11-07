@@ -3,22 +3,9 @@ DOCKER_REPO="geoservercloud/geoserver-acl"
 #default target
 build: install build-image test-examples
 
-#build, test, and install all modules, including the API server and GeoServer plugin
+#build, test, and install all modules
 install:
 	./mvnw clean install
-
-# build, test, and install, the geoserver plugin and its dependencies
-plugin:
-	./mvnw clean install -pl :gs-acl-client-plugin --also-make -ntp
-
-# plugin-test-* run with -Denforcer.skip for the CI build
-# to execute it with both Java 11 and 17, ensuring the plugin is compatible with
-# the minimum java version required by GeoServer
-plugin-test-gs-dev:
-	./mvnw -Denforcer.skip -P gs_dev verify -pl :gs-acl-client-plugin -am -ntp
-
-plugin-test-gs-stable:
-	./mvnw -Denforcer.skip -P gs_stable verify -pl :gs-acl-client-plugin -am -ntp
 
 lint:
 	./mvnw sortpom:verify spotless:check -ntp
