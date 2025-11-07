@@ -22,6 +22,12 @@
       <artifactId>gs-acl-openapi-client</artifactId>
     </dependency>
     <dependency>
+      <!-- RestClient based API client-->
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver.acl.integration.openapi</groupId>
       <artifactId>gs-acl-api-model-mapper</artifactId>
     </dependency>

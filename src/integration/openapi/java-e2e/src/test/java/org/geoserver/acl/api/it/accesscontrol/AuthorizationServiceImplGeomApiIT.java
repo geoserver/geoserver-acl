@@ -45,12 +45,7 @@ class AuthorizationServiceImplGeomApiIT extends AuthorizationServiceGeomTest {
     @Override
     @BeforeEach
     protected void setUp() throws Exception {
-        clientContext = new ClientContextSupport()
-                // logging breaks client exception handling, only enable if need to see the
-                // request/response bodies
-                .log(false)
-                .serverPort(serverPort)
-                .setUp();
+        clientContext = new ClientContextSupport().serverPort(serverPort).setUp();
         serverContext.setUp();
         super.setUp();
     }
