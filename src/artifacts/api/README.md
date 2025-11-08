@@ -4,10 +4,11 @@ This is a (spring-boot) application for the GeoServer Access Control List REST A
 
 The OpenAPI 3 specification is available at [acl-api.yaml](../../openapi/acl-api.yaml).
 
-With the application running at [http://localhost:8080/api](http://localhost:8080/api):
+With the application running at [http://localhost:8080](http://localhost:8080):
 
-- The base URL will redirect the browser to the HTML API Swagger test page at [http://localhost:8080/api/v2/swagger-ui/index.html](http://localhost:8080/api/v2/swagger-ui/index.html).
-- The OpenAPI spec is exposed in JSON format at [http://localhost:8080/api/v2/api-docs](http://localhost:8080/api/v2/api-docs)
+- The root URL will redirect to [http://localhost:8080/acl](http://localhost:8080/acl)
+- The base URL [http://localhost:8080/acl](http://localhost:8080/acl) redirects to the HTML API Swagger UI at [http://localhost:8080/acl/openapi/swagger-ui/index.html](http://localhost:8080/acl/openapi/swagger-ui/index.html)
+- The OpenAPI spec is exposed in JSON format at [http://localhost:8080/acl/openapi](http://localhost:8080/acl/openapi)
 
 
 ## Build

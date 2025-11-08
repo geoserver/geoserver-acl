@@ -12,6 +12,7 @@ import org.geoserver.acl.api.model.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -49,7 +50,8 @@ abstract class AbstractAccesControlListApplicationTest {
 
     @BeforeEach
     void setup() {
-        client = baseClient;
+        // Configure client to not follow redirects so we can test redirect responses
+        client = baseClient.withRedirects(Redirects.DONT_FOLLOW);
     }
 
     @Test

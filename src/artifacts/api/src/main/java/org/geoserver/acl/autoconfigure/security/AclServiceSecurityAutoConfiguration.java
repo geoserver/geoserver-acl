@@ -67,7 +67,7 @@ public class AclServiceSecurityAutoConfiguration {
                 .permitAll()
                 .requestMatchers("/actuator/**")
                 .hasAuthority("ROLE_ADMIN")
-                .requestMatchers("/", "/api/api-docs/**", "/api/swagger-ui.html", "/api/swagger-ui/**")
+                .requestMatchers("/", "/openapi", "/openapi/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated());
