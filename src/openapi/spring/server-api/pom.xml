@@ -8,23 +8,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.geoserver.acl.openapi.spring5</groupId>
-    <artifactId>openapi-spring5</artifactId>
+    <groupId>org.geoserver.acl.openapi.spring</groupId>
+    <artifactId>openapi-spring</artifactId>
     <version>${revision}</version>
   </parent>
   <artifactId>gs-acl-openapi-spring-server</artifactId>
   <dependencies>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
+      <groupId>jakarta.validation</groupId>
+      <artifactId>jakarta.validation-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.acl.openapi.spring5</groupId>
+      <groupId>org.geoserver.acl.openapi.spring</groupId>
       <artifactId>gs-acl-openapi-model</artifactId>
     </dependency>
     <dependency>
@@ -36,10 +36,6 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-commons</artifactId>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -98,6 +94,8 @@
               <generateModelTests>false</generateModelTests>
               <configOptions>
                 <library>spring-boot</library>
+                <useJakartaEe>true</useJakartaEe>
+                <useSpringBoot3>true</useSpringBoot3>
                 <useTags>true</useTags>
                 <reactive>false</reactive>
                 <delegatePattern>true</delegatePattern>

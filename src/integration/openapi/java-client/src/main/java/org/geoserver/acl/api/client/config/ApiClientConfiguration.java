@@ -39,12 +39,10 @@ public class ApiClientConfiguration {
 
         String username = config.getUsername();
         String password = config.getPassword();
-        boolean debugging = config.isDebug();
         AclClient client = new AclClient();
         client.setBasePath(basePath);
         client.setUsername(username);
         client.setPassword(password);
-        client.setLogRequests(debugging);
         if (config.isStartupCheck()) {
             waitForIt(client, config.getInitTimeout());
         }

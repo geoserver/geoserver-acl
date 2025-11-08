@@ -15,9 +15,6 @@
   <artifactId>gs-acl-testcontainer</artifactId>
   <packaging>jar</packaging>
   <name>acl-testcontainer</name>
-  <properties>
-    <java.version>17</java.version>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.testcontainers</groupId>

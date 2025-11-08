@@ -4,8 +4,8 @@
  */
 package org.geoserver.acl.integration.jpa.config;
 
+import jakarta.persistence.EntityManager;
 import java.util.function.Consumer;
-import javax.persistence.EntityManager;
 import org.geoserver.acl.domain.adminrules.AdminRuleEvent;
 import org.geoserver.acl.domain.adminrules.AdminRuleRepository;
 import org.geoserver.acl.domain.rules.RuleEvent;

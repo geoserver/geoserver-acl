@@ -77,8 +77,7 @@ class AuthorizationServiceClientAdaptorIT extends AuthorizationServiceTest {
     @Override
     @BeforeEach
     protected void setUp() throws Exception {
-        clientContext =
-                new ClientContextSupport().log(false).serverPort(serverPort).setUp();
+        clientContext = new ClientContextSupport().serverPort(serverPort).setUp();
         serverContext.setUp();
         super.setUp();
     }

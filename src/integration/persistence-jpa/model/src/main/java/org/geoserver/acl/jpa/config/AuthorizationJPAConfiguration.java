@@ -4,8 +4,8 @@
  */
 package org.geoserver.acl.jpa.config;
 
+import jakarta.persistence.EntityManagerFactory;
 import java.util.Map;
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.geoserver.acl.jpa.config.AclJpaProperties.JpaProperties;
 import org.geoserver.acl.jpa.model.Rule;

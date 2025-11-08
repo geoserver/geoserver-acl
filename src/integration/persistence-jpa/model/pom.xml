@@ -19,8 +19,9 @@
       <artifactId>spring-data-jpa</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-spatial</artifactId>
+      <version>6.5.3.Final</version>
     </dependency>
     <dependency>
       <groupId>org.locationtech.jts</groupId>
@@ -40,14 +41,19 @@
       <artifactId>lombok</artifactId>
     </dependency>
     <dependency>
-      <!-- see https://github.com/querydsl/querydsl/tree/master/querydsl-jpa -->
-      <groupId>com.querydsl</groupId>
+      <!-- Using OpenFeign fork for Hibernate 6 support: https://github.com/OpenFeign/querydsl -->
+      <groupId>io.github.openfeign.querydsl</groupId>
       <artifactId>querydsl-jpa</artifactId>
+      <version>${querydsl.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
@@ -90,9 +96,14 @@
         <version>1.1.3</version>
         <dependencies>
           <dependency>
-            <groupId>com.querydsl</groupId>
+            <groupId>io.github.openfeign.querydsl</groupId>
             <artifactId>querydsl-apt</artifactId>
             <version>${querydsl.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.1.0</version>
           </dependency>
         </dependencies>
         <executions>

@@ -12,7 +12,6 @@ public class ApiClientProperties {
     private String basePath;
     private String username;
     private String password;
-    private boolean debug;
     private boolean caching = true;
 
     /** whether to check the connection at startup */

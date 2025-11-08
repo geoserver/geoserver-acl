@@ -78,7 +78,7 @@ class AccesControlListApplicationIT extends AbstractAccesControlListApplicationT
                         startLatch.await();
 
                         // Create rule with same priority via REST API
-                        String json = String.format(
+                        String json =
                                 """
                                 {
                                   "priority": %d,
@@ -87,8 +87,8 @@ class AccesControlListApplicationIT extends AbstractAccesControlListApplicationT
                                   "workspace": "workspace1",
                                   "layer": "layer%d"
                                 }
-                                """,
-                                PRIORITY, index, index);
+                                """
+                                        .formatted(PRIORITY, index, index);
 
                         return post("/api/rules", json, Rule.class);
                     } finally {

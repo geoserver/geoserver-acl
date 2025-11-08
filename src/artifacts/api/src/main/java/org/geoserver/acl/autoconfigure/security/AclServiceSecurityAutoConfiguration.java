@@ -4,13 +4,16 @@
  */
 package org.geoserver.acl.autoconfigure.security;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,9 +21,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 
 @AutoConfiguration
+@Configuration
 @EnableWebSecurity
 @EnableConfigurationProperties(SecurityConfigProperties.class)
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 @Slf4j(topic = "org.geoserver.acl.autoconfigure.security")
 public class AclServiceSecurityAutoConfiguration {
 
@@ -32,7 +36,7 @@ public class AclServiceSecurityAutoConfiguration {
             Optional<RequestHeaderAuthenticationFilter> preAuthFilter)
             throws Exception {
 
-        http.csrf().disable();
+        http.csrf(csrf -> csrf.disable());
 
         if (!config.enabled()) {
             log.warn("No security authentication method is defined!");
@@ -53,23 +57,20 @@ public class AclServiceSecurityAutoConfiguration {
             log.info("Pre-authentication headers disabled");
         }
 
-        http = http.sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and();
+        http = http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         if (config.getInternal().isEnabled()) {
-            http = http.httpBasic().and();
+            http = http.httpBasic(withDefaults());
         }
 
-        http.authorizeRequests()
-                .antMatchers("/actuator/health/**")
+        http.authorizeHttpRequests(requests -> requests.requestMatchers("/actuator/health/**")
                 .permitAll()
-                .antMatchers("/actuator/**")
+                .requestMatchers("/actuator/**")
                 .hasAuthority("ROLE_ADMIN")
-                .antMatchers("/", "/api/api-docs/**", "/api/swagger-ui.html", "/api/swagger-ui/**")
+                .requestMatchers("/", "/openapi", "/openapi/**")
                 .permitAll()
                 .anyRequest()
-                .authenticated();
+                .authenticated());
 
         return http.build();
     }

@@ -37,15 +37,15 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(classes = RulesApiConfiguration.class, properties = "spring.main.banner-mode=off")
 class RulesApiImpTest {
 
-    private @MockBean RuleAdminService rules;
-    private @MockBean AdminRuleAdminService adminRules;
+    private @MockitoBean RuleAdminService rules;
+    private @MockitoBean AdminRuleAdminService adminRules;
 
     private @Autowired DataRulesApiSupport support;
     private @Autowired DataRulesApiImpl api;
@@ -146,7 +146,7 @@ class RulesApiImpTest {
     void testCountAllRules() {
         when(rules.count()).thenReturn(37);
 
-        assertThat(api.countAllRules().getStatusCode()).isEqualByComparingTo(OK);
+        assertThat(api.countAllRules().getStatusCode()).isEqualTo(OK);
         assertThat(api.countAllRules().getBody()).isEqualByComparingTo(37);
     }
 
@@ -162,10 +162,10 @@ class RulesApiImpTest {
         when(rules.get("id1")).thenReturn(Optional.of(found));
         when(rules.get("id2")).thenReturn(Optional.empty());
 
-        assertThat(api.ruleExistsById("id1").getStatusCode()).isEqualByComparingTo(OK);
+        assertThat(api.ruleExistsById("id1").getStatusCode()).isEqualTo(OK);
         assertThat(api.ruleExistsById("id1").getBody()).isTrue();
 
-        assertThat(api.ruleExistsById("id2").getStatusCode()).isEqualByComparingTo(OK);
+        assertThat(api.ruleExistsById("id2").getStatusCode()).isEqualTo(OK);
         assertThat(api.ruleExistsById("id2").getBody()).isFalse();
     }
 

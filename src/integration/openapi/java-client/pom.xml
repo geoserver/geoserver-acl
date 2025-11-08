@@ -13,13 +13,16 @@
     <version>${revision}</version>
   </parent>
   <artifactId>gs-acl-api-client</artifactId>
-  <properties>
-    <java.version>17</java.version>
-  </properties>
   <dependencies>
     <dependency>
-      <groupId>org.geoserver.acl.openapi.spring5</groupId>
+      <groupId>org.geoserver.acl.openapi.spring</groupId>
       <artifactId>gs-acl-openapi-client</artifactId>
+    </dependency>
+    <dependency>
+      <!-- RestClient based API client-->
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.acl.integration.openapi</groupId>
@@ -38,18 +41,8 @@
       <artifactId>gs-acl-authorization-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
-      <artifactId>jackson-dataformat-smile</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>

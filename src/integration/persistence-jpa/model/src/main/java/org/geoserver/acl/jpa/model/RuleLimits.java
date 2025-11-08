@@ -7,12 +7,12 @@
 
 package org.geoserver.acl.jpa.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import java.io.Serial;
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.experimental.Accessors;

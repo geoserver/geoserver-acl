@@ -4,8 +4,8 @@
  */
 package org.geoserver.acl.autoconfigure.springdoc;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
-import javax.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

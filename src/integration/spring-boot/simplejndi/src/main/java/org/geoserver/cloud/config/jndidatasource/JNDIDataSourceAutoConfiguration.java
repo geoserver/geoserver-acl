@@ -12,18 +12,18 @@ import javax.naming.NamingException;
 import javax.naming.spi.NamingManager;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.jdbc.support.DatabaseStartupValidator;
 
 /**
  * @since 1.0
  */
+@AutoConfiguration
 @Slf4j
-@Configuration
 @EnableConfigurationProperties(JNDIDataSourcesConfigurationProperties.class)
 public class JNDIDataSourceAutoConfiguration {
 

@@ -6,11 +6,13 @@ package org.geoserver.acl.integration.jpa.repository;
 
 import static org.geoserver.acl.integration.jpa.mapper.AdminRuleJpaMapper.decodeId;
 
-import com.mysema.commons.lang.CloseableIterator;
+import com.querydsl.core.CloseableIterator;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -21,8 +23,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.Setter;
 import org.geoserver.acl.domain.adminrules.AdminRule;

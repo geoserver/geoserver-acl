@@ -7,7 +7,7 @@ package org.geoserver.acl.jpa.config;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.geoserver.acl.jpa.repository.JpaAdminRuleRepository;
 import org.geoserver.acl.jpa.repository.JpaRuleRepository;

@@ -16,8 +16,7 @@
   <artifactId>openapi</artifactId>
   <packaging>pom</packaging>
   <modules>
-    <module>spring5</module>
-    <module>spring6</module>
+    <module>spring</module>
     <module>python-client</module>
     <module>js-client</module>
   </modules>

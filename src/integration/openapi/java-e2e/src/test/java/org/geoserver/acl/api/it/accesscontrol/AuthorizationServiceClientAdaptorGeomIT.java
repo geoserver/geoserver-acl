@@ -46,8 +46,7 @@ class AuthorizationServiceClientAdaptorGeomIT extends AuthorizationServiceGeomTe
     @Override
     @BeforeEach
     protected void setUp() throws Exception {
-        clientContext =
-                new ClientContextSupport().log(true).serverPort(serverPort).setUp();
+        clientContext = new ClientContextSupport().serverPort(serverPort).setUp();
         serverContext.setUp();
         super.setUp();
     }

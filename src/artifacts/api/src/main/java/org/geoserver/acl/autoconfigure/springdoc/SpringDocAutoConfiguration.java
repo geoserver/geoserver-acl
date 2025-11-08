@@ -8,16 +8,17 @@ import java.net.URI;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.SpringDocConfigProperties;
-import org.springdoc.core.SwaggerUiConfigParameters;
-import org.springdoc.core.SwaggerUiConfigProperties;
 import org.springdoc.core.customizers.ServerBaseUrlCustomizer;
+import org.springdoc.core.properties.SpringDocConfigProperties;
+import org.springdoc.core.properties.SwaggerUiConfigParameters;
+import org.springdoc.core.properties.SwaggerUiConfigProperties;
 import org.springdoc.core.providers.SpringWebProvider;
 import org.springdoc.webmvc.ui.SwaggerConfig;
 import org.springdoc.webmvc.ui.SwaggerWelcomeWebMvc;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpRequest;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -61,7 +62,7 @@ public class SpringDocAutoConfiguration {
         private final @NonNull String servletContextPath;
 
         @Override
-        public String customize(String serverBaseUrl) {
+        public String customize(String serverBaseUrl, HttpRequest request) {
             String url = serverBaseUrl;
             String path = URI.create(serverBaseUrl).getPath();
             if (path.endsWith("/")) path = path.substring(0, path.length() - 1);

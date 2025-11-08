@@ -19,7 +19,6 @@
     <module>model-mapping</module>
     <module>spring-server</module>
     <module>java-client</module>
-    <module>java-client-spring6</module>
     <module>java-e2e</module>
   </modules>
 </project>

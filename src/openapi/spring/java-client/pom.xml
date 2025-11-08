@@ -8,32 +8,47 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.geoserver.acl.openapi.spring6</groupId>
-    <artifactId>openapi-spring6</artifactId>
+    <groupId>org.geoserver.acl.openapi.spring</groupId>
+    <artifactId>openapi-spring</artifactId>
     <version>${revision}</version>
   </parent>
-  <artifactId>gs-acl-openapi-client-spring6</artifactId>
+  <artifactId>gs-acl-openapi-client</artifactId>
   <dependencies>
     <dependency>
-      <groupId>org.geoserver.acl.openapi.spring6</groupId>
-      <artifactId>gs-acl-openapi-model-spring6</artifactId>
+      <groupId>org.geoserver.acl.openapi.spring</groupId>
+      <artifactId>gs-acl-openapi-model</artifactId>
     </dependency>
     <dependency>
-      <!-- RestTemplate based API client-->
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <!-- RestClient based API client-->
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
       <scope>provided</scope>
     </dependency>
+    <!-- JSON processing: jackson -->
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-      <scope>provided</scope>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
     </dependency>
     <dependency>
-      <!-- @javax.annotation.Generated annotation -->
-      <groupId>jakarta.annotation</groupId>
-      <artifactId>jakarta.annotation-api</artifactId>
-      <scope>provided</scope>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+      <artifactId>jackson-jakarta-rs-json-provider</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-smile</artifactId>
     </dependency>
   </dependencies>
   <build>
@@ -61,6 +76,7 @@
         <artifactId>openapi-generator-maven-plugin</artifactId>
         <executions>
           <execution>
+            <?m2e ignore?>
             <id>generate-client</id>
             <goals>
               <goal>generate</goal>
@@ -80,12 +96,14 @@
               <generateApiTests>false</generateApiTests>
               <generateModelTests>false</generateModelTests>
               <configOptions>
-                <library>resttemplate</library>
                 <useJakartaEe>true</useJakartaEe>
+                <useSpringBoot3>true</useSpringBoot3>
+                <library>restclient</library>
+                <serializationLibrary>jackson</serializationLibrary>
                 <useTags>true</useTags>
                 <dateLibrary>java8-localdatetime</dateLibrary>
                 <openApiNullable>false</openApiNullable>
-                <useBeanValidation>true</useBeanValidation>
+                <useBeanValidation>false</useBeanValidation>
                 <performBeanValidation>false</performBeanValidation>
                 <withXml>false</withXml>
               </configOptions>
