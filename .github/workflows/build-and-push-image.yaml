@@ -6,6 +6,11 @@ on:
       - main
     tags:
       - '*'
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
 
 jobs:
   build:
