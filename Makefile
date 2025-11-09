@@ -5,6 +5,29 @@ VERSION?=$(shell git describe --tags --exact-match 2>/dev/null || ./mvnw help:ev
 #default target
 build: install build-image test-examples
 
+.PHONY: help
+help:
+	@echo "GeoServer ACL Makefile targets:"
+	@echo ""
+	@echo "  build          - Build, test, and install all modules, build Docker image, and test examples (default)"
+	@echo "  install        - Build, test, and install all modules"
+	@echo "  package        - Build all modules without tests"
+	@echo "  test           - Run unit and integration tests"
+	@echo "  test-examples  - Install testcontainer module and run example tests"
+	@echo ""
+	@echo "Code quality:"
+	@echo "  lint           - Verify code formatting and pom.xml file ordering"
+	@echo "  format         - Apply code formatting and sort pom.xml files"
+	@echo ""
+	@echo "Docker:"
+	@echo "  build-image    - Build Docker image (run 'make package' first if code changed)"
+	@echo "  push-image     - Push Docker image to Docker Hub"
+	@echo ""
+	@echo "Other:"
+	@echo "  deploy         - Package and deploy artifacts (requires MAVEN_SETTINGS)"
+	@echo "  show-version   - Display current project version"
+	@echo ""
+
 #build, test, and install all modules
 install:
 	./mvnw -Drevision=$(VERSION) clean install
