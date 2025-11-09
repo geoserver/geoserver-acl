@@ -1,5 +1,4 @@
 ![build](https://github.com/geoserver/geoserver-acl/actions/workflows/build.yaml/badge.svg)
-![plugin](https://github.com/groldan/geoserver-acl/actions/workflows/build-plugin.yaml/badge.svg)
 
 # GeoServer Access Control List (ACL)
 
