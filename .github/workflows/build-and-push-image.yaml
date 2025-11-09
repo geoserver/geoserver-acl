@@ -42,11 +42,11 @@ jobs:
         # Sets up docker build command as an alias to docker buildx
         install: true
 
-    - name: Package
-      run: ./mvnw clean package -DskipTests -U -ntp -pl :gs-acl-service -am
-
     - name: Set version tag
-      run: echo "TAG=$(./mvnw help:evaluate -q -DforceStdout -Dexpression=project.version)" >> $GITHUB_ENV
+      run: echo "TAG=$(make show-version)" >> $GITHUB_ENV
+
+    - name: Package
+      run: make package
 
     - name: Build and push
       uses: docker/build-push-action@v6
