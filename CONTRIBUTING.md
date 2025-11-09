@@ -109,9 +109,19 @@ GeoServer does not have much in the way of strict commit policies. Our current c
 
 3. **Do not commit jars or libs, use Maven instead:** In general never commit a depending library directly into the repository, this is what we use Maven for. If you have a jar that is not present in any maven repositories, ask on the developer list to get it uploaded to one of the project maven repositories.
 
-4. **Ensure code is properly formatted:** We follow the [Google formatting conventions](https://google.github.io/styleguide/javaguide.html) with the AOSP variant (4 spaces indent instead of 2).
-   
-   The [google-java-format project](https://github.com/google/google-java-format) offers plugins for various IDEs. If your IDE is not supported, please just build once on the command line before committing.
+4. **Ensure code is properly formatted:** We use the [Palantir Java Format](https://github.com/palantir/palantir-java-format) conventions for code formatting.
+
+   The project uses [Spotless](https://github.com/diffplug/spotless) with Palantir Java Format to enforce consistent code formatting. Before committing, ensure your code is properly formatted:
+
+   ```bash
+   # Check if code is properly formatted
+   make lint
+
+   # Automatically format code
+   make format
+   ```
+
+   The Spotless Maven plugin will automatically format your code when you run `make format` or `./mvnw spotless:apply`. Your IDE can also be configured to use Palantir Java Format - check the [Palantir Java Format documentation](https://github.com/palantir/palantir-java-format) for IDE plugins.
 
 ## Community commit access
 
