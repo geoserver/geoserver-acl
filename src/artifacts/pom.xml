@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.geoserver.acl</groupId>
-    <artifactId>gs-acl</artifactId>
+    <artifactId>gs-acl-modules</artifactId>
     <version>${revision}</version>
   </parent>
   <artifactId>artifacts</artifactId>

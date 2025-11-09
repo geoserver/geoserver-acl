@@ -9,13 +9,13 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.geoserver.acl</groupId>
-    <artifactId>gs-acl-bom</artifactId>
+    <artifactId>gs-acl-parent</artifactId>
     <version>${revision}</version>
   </parent>
-  <artifactId>gs-acl</artifactId>
+  <artifactId>gs-acl-modules</artifactId>
   <packaging>pom</packaging>
-  <name>GeoServer Cloud ACL</name>
-  <description>GeoServer Cloud ACL is a java web application that handles Access Control List rules.</description>
+  <name>GeoServer ACL Modules</name>
+  <description>GeoServer ACL is a java web application that handles Access Control List rules.</description>
   <modules>
     <module>domain</module>
     <module>application</module>
@@ -27,6 +27,33 @@
     <fork.javac>true</fork.javac>
     <javac.maxHeapSize>256M</javac.maxHeapSize>
   </properties>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.geoserver.acl</groupId>
+        <artifactId>gs-acl-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <dependencies>
+    <dependency>
+      <!--
+       Adding the BOM as a dependency with type=pom and scope=provided here
+       does not change the dependency tree for the submodules at all, but forces the BOM to be installed
+       in the local maven repository first, either when building the whole project or when a submodule is
+       built independently
+       -->
+      <groupId>org.geoserver.acl</groupId>
+      <artifactId>gs-acl-bom</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>
