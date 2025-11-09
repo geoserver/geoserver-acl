@@ -23,7 +23,7 @@ ENV DEF_JAVA_TOOL_OPTS="\
 --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED \
 --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED \
 -Djava.awt.headless=true"
-ENV JAVA_OPTS="-XX:MaxRAMPercentage=80 -XshowSettings:system"
+ENV JAVA_OPTS="-XX:+UseCompactObjectHeaders -XX:MaxRAMPercentage=80 -XshowSettings:system"
 
 ENV JAVA_TOOL_OPTS="$DEF_JAVA_TOOL_OPTS"
 ENV MANAGEMENT_SERVER_PORT=8081
