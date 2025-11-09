@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/* (c) 2025 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver.acl</groupId>
+    <artifactId>gs-acl-parent</artifactId>
+    <version>${revision}</version>
+  </parent>
+  <artifactId>gs-acl-bom</artifactId>
+  <name>GeoServer ACL :: Bill of Materials</name>
+  <dependencyManagement>
+    <dependencies>
+      <!-- Domain -->
+      <dependency>
+        <groupId>org.geoserver.acl.domain</groupId>
+        <artifactId>gs-acl-filter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.domain</groupId>
+        <artifactId>gs-acl-accessrules</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.domain</groupId>
+        <artifactId>gs-acl-accessrules</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.domain</groupId>
+        <artifactId>gs-acl-adminrules</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.domain</groupId>
+        <artifactId>gs-acl-adminrules</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl</groupId>
+        <artifactId>gs-acl-authorization-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl</groupId>
+        <artifactId>gs-acl-authorization</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl</groupId>
+        <artifactId>gs-acl-authorization</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <!-- OpenAPI code-gen libraries -->
+      <dependency>
+        <groupId>org.geoserver.acl.openapi.spring</groupId>
+        <artifactId>gs-acl-openapi-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.openapi.spring</groupId>
+        <artifactId>gs-acl-openapi-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.openapi.spring</groupId>
+        <artifactId>gs-acl-openapi-spring-server</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- JPA integration -->
+      <dependency>
+        <groupId>org.geoserver.acl.integration.jpa</groupId>
+        <artifactId>gs-acl-jpa-persistence</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.integration.jpa</groupId>
+        <artifactId>gs-acl-jpa-integration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- OpenAPI integration -->
+      <dependency>
+        <groupId>org.geoserver.acl.integration.openapi</groupId>
+        <artifactId>gs-acl-api-model-mapper</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.integration.openapi</groupId>
+        <artifactId>gs-acl-api-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.integration.openapi</groupId>
+        <artifactId>gs-acl-api-impl</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- Spring/boot integration -->
+      <dependency>
+        <groupId>org.geoserver.acl.integration</groupId>
+        <artifactId>gs-acl-domain-spring-integration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.integration</groupId>
+        <artifactId>gs-acl-cache</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.integration</groupId>
+        <artifactId>gs-acl-simplejndi</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.integration</groupId>
+        <artifactId>gs-acl-spring-cloud-bus</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- Deliverables -->
+      <dependency>
+        <groupId>org.geoserver.acl.app</groupId>
+        <artifactId>gs-acl-service</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl</groupId>
+        <artifactId>gs-acl-testcontainer</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <build>
+    <plugins>
+      <plugin>
+        <!--
+        flatten plugin configured to install a BOM pom, though not using flattenMode=bom because it doesn't resolve
+        version properties and adds properties defined in the root pom.
+        See https://www.mojohaus.org/flatten-maven-plugin/flatten-mojo.html#flattenMode
+        -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <configuration>
+          <updatePomFile>true</updatePomFile>
+          <flattenMode>ossrh</flattenMode>
+          <pomElements>
+            <!--
+            Take the element from the interpolated POM (original POM with variables interpolated).
+            This avoids adding dependencies defined in the root pom (e.g. junit)
+            -->
+            <dependencyManagement>interpolate</dependencyManagement>
+          </pomElements>
+        </configuration>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+            <phase>process-resources</phase>
+          </execution>
+          <execution>
+            <id>flatten.clean</id>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <phase>clean</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

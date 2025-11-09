@@ -9,10 +9,10 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.geoserver.acl.examples</groupId>
-    <artifactId>acl-examples</artifactId>
+    <artifactId>gs-acl-examples</artifactId>
     <version>${revision}</version>
   </parent>
-  <artifactId>acl-java-client-example</artifactId>
+  <artifactId>gs-acl-java-client-example</artifactId>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.acl.integration.openapi</groupId>
