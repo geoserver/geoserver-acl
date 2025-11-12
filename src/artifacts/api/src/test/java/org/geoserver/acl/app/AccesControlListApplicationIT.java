@@ -22,9 +22,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -36,7 +36,7 @@ class AccesControlListApplicationIT extends AbstractAccesControlListApplicationT
             DockerImageName.parse("imresamu/postgis:15-3.4").asCompatibleSubstituteFor("postgres");
 
     @Container
-    static PostgreSQLContainer<?> postgis = new PostgreSQLContainer<>(POSTGIS_IMAGE_NAME);
+    static PostgreSQLContainer postgis = new PostgreSQLContainer(POSTGIS_IMAGE_NAME);
 
     /** Set up the properties defined in values.yml and used as place-holders in application.yml */
     @DynamicPropertySource
