@@ -9,6 +9,28 @@ import java.util.Set;
 import java.util.stream.Stream;
 import org.geoserver.acl.domain.filter.RuleQuery;
 
+/**
+ * Repository port for persisting and querying data access rules.
+ *
+ * <p>Port in hexagonal architecture - domain defines the interface, integration layer implements it
+ * (e.g., JPA adapter).
+ *
+ * <p>Responsibilities:
+ * <ul>
+ *   <li>CRUD operations
+ *   <li>Priority-based querying (always returns rules in ascending priority order)
+ *   <li>Rule filtering with complex criteria
+ *   <li>Priority management (shifting, swapping)
+ *   <li>Layer details management (for ALLOW rules)
+ * </ul>
+ *
+ * <p>Returns {@link Stream} for large result sets to avoid loading all rules into memory.
+ *
+ * @since 1.0
+ * @see Rule
+ * @see RuleAdminService
+ * @see RuleQuery
+ */
 public interface RuleRepository {
 
     boolean existsById(String id);
