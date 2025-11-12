@@ -10,14 +10,46 @@ import java.io.Serial;
 import java.io.Serializable;
 import lombok.EqualsAndHashCode;
 
-/** Contains a fixed text OR a special filtering condition (i.e. ANY, DEFAULT). */
+/**
+ * Predicate for filtering rules by text fields.
+ *
+ * <p>Matches string values against rule fields (username, rolename, service, request,
+ * workspace, layer). Supports three modes:
+ * <ul>
+ *   <li><b>NAMEVALUE:</b> Match exact text (e.g., "admin", "WMS")
+ *   <li><b>ANY:</b> Match all rules (wildcard "*")
+ *   <li><b>DEFAULT:</b> Match only rules with null value (catch-all rules)
+ * </ul>
+ *
+ * <p>The {@code forceUppercase} flag normalizes text to uppercase for OGC service/request names
+ * (WMS, WFS, GetMap, GetFeature) where the spec requires case-insensitive matching.
+ *
+ * <p>{@link #setHeuristically(String)} parses inputs:
+ * null -> DEFAULT, "*" -> ANY, other -> NAMEVALUE.
+ *
+ * <p>Example:
+ * <pre>{@code
+ * TextFilter userFilter = new TextFilter("admin");
+ * userFilter.test("admin"); // true
+ *
+ * TextFilter serviceFilter = new TextFilter(FilterType.ANY);
+ * serviceFilter.test("WMS"); // true
+ * }</pre>
+ *
+ * @since 1.0
+ * @see RulePredicate
+ * @see FilterType
+ */
 @EqualsAndHashCode(callSuper = true)
 public class TextFilter extends RulePredicate<String> implements Serializable, Cloneable {
 
     @Serial
     private static final long serialVersionUID = 6565336016075974626L;
 
+    /** Text value to match (only used when type is NAMEVALUE). */
     private String text;
+
+    /** Force uppercase for case-insensitive matching (used for OGC service/request names). */
     private boolean forceUppercase = false;
 
     public TextFilter(FilterType type) {

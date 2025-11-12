@@ -9,15 +9,40 @@ import java.io.Serializable;
 import java.util.function.Predicate;
 import lombok.EqualsAndHashCode;
 
+/**
+ * Base class for rule filtering predicates.
+ *
+ * <p>Each predicate has a {@link FilterType} that determines its matching strategy:
+ * <ul>
+ *   <li><b>ANY:</b> Match all rules
+ *   <li><b>DEFAULT:</b> Match only rules with null field value (catch-all rules)
+ *   <li><b>NAMEVALUE:</b> Match rules with a specific field value
+ * </ul>
+ *
+ * <p>The {@code includeDefault} flag controls whether NAMEVALUE predicates also match DEFAULT
+ * rules. When true, a predicate matching "admin" will also match rules with null username.
+ *
+ * <p>Implementations: {@link TextFilter} for strings, {@link InSetPredicate} for sets,
+ * {@link IPAddressRangeFilter} for IP ranges.
+ *
+ * @param <T> the type of value being tested (e.g., String, Set)
+ * @since 1.0
+ * @see FilterType
+ */
 @EqualsAndHashCode
 public abstract class RulePredicate<T> implements Predicate<T>, Serializable, Cloneable {
 
     @Serial
     private static final long serialVersionUID = 6565336016075974626L;
 
+    /** Filter matching strategy (ANY, DEFAULT, or NAMEVALUE). */
     protected FilterType type;
 
-    /** Only used in TYPE_NAME, tells if also default Rules should be matched. */
+    /**
+     * Whether to include default (null) rules when matching specific values.
+     * <p>Only applies to NAMEVALUE. When true, matching "admin" also matches rules with null
+     * in that field. When false, only exact matches are returned.
+     */
     protected boolean includeDefault = true;
 
     public RulePredicate(FilterType type) {

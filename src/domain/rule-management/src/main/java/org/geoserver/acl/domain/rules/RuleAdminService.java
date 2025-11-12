@@ -12,6 +12,42 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.geoserver.acl.domain.filter.RuleQuery;
 
+/**
+ * Domain service for managing data access rules.
+ *
+ * <p>Extends {@link RuleRepository} with business logic:
+ * <ul>
+ *   <li>Business validation and constraint enforcement
+ *   <li>Field sanitization (service/request names to uppercase for OGC compliance)
+ *   <li>Priority management (unique priorities, automatic shifting)
+ *   <li>Event publishing for cache invalidation and distributed updates
+ *   <li>Concurrency control (uses {@code ReentrantLock} for priority operations)
+ * </ul>
+ *
+ * <p>After mutations (insert, update, delete), publishes {@link RuleEvent} to registered listeners
+ * for cache invalidation and remote distribution in clustered deployments.
+ *
+ * <p>Example:
+ * <pre>{@code
+ * // Configure event publishing
+ * ruleAdminService.setEventPublisher(event -> {
+ *     if (event.getType() == RuleEvent.EventType.UPDATED) {
+ *         authorizationCache.invalidate(event.getRuleIds());
+ *     }
+ * });
+ *
+ * // Insert rule
+ * Rule newRule = Rule.allow()
+ *     .withUsername("alice")
+ *     .withWorkspace("topp");
+ * Rule created = ruleAdminService.insert(newRule, InsertPosition.FROM_START);
+ * }</pre>
+ *
+ * @since 1.0
+ * @see Rule
+ * @see RuleRepository
+ * @see RuleEvent
+ */
 public interface RuleAdminService {
 
     void setEventPublisher(Consumer<RuleEvent> eventPublisher);
