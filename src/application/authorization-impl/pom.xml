@@ -22,6 +22,25 @@
       <groupId>org.geotools</groupId>
       <artifactId>gt-main</artifactId>
       <scope>provided</scope>
+      <exclusions>
+        <!-- add some exclusions, we only need CRS.decore()/JTS.transform() utility methods -->
+        <exclusion>
+          <groupId>org.geotools</groupId>
+          <artifactId>gt-http</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.imagen</groupId>
+          <artifactId>core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.imagen</groupId>
+          <artifactId>utilities</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
