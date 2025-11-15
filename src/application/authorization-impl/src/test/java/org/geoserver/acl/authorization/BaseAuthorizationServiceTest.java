@@ -24,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 /**
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
+ * @author Gabriel Roldan - Camptocamp
  */
 public abstract class BaseAuthorizationServiceTest {
 
@@ -119,7 +120,6 @@ public abstract class BaseAuthorizationServiceTest {
         if ("*".equals(user)) user = null;
         if ("*".equals(role)) role = null;
         if ("*".equals(workspace)) workspace = null;
-        AdminRuleAdminService service = getAdminRuleAdminService();
         AdminRuleIdentifier identifier = AdminRuleIdentifier.builder()
                 .username(user)
                 .rolename(role)

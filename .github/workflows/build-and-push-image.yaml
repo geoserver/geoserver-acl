@@ -58,6 +58,6 @@ jobs:
       with:
         platforms: linux/amd64,linux/arm64
         push: true
-        context: ./src/artifacts/api
+        context: ./src/infrastructure/app-main
         tags: geoservercloud/geoserver-acl:${{ env.TAG }}
 

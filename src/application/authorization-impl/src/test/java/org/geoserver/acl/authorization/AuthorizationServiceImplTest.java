@@ -36,8 +36,9 @@ import org.junit.jupiter.api.Test;
  * BaseAuthorizationServiceTest}
  *
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
+ * @author Gabriel Roldan - Camptocamp
  */
-@SuppressWarnings("java:S5786") // class is public cause it's inherited
+@SuppressWarnings({"java:S5786", "unused"}) // class is public cause it's inherited
 public class AuthorizationServiceImplTest extends AuthorizationServiceTest {
 
     @Override

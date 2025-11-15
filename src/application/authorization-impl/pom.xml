@@ -8,14 +8,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.geoserver.acl</groupId>
-    <artifactId>application</artifactId>
+    <groupId>org.geoserver.acl.application</groupId>
+    <artifactId>gs-acl-application</artifactId>
     <version>${revision}</version>
   </parent>
-  <artifactId>gs-acl-authorization</artifactId>
+  <artifactId>gs-acl-authorization-impl</artifactId>
+  <description>Application Logic Implementation: Concrete AuthorizationServiceImpl with GeoTools dependency</description>
   <dependencies>
     <dependency>
-      <groupId>org.geoserver.acl</groupId>
+      <groupId>org.geoserver.acl.application</groupId>
       <artifactId>gs-acl-authorization-api</artifactId>
     </dependency>
     <dependency>
@@ -63,14 +64,14 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
-      <artifactId>gs-acl-accessrules</artifactId>
-      <type>test-jar</type>
+      <artifactId>gs-acl-data-rules</artifactId>
+      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.acl.domain</groupId>
-      <artifactId>gs-acl-adminrules</artifactId>
-      <type>test-jar</type>
+      <artifactId>gs-acl-workspaceadmin-rules</artifactId>
+      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
   </dependencies>

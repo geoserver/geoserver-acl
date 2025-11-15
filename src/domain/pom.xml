@@ -9,15 +9,17 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.geoserver.acl</groupId>
-    <artifactId>gs-acl-modules</artifactId>
+    <artifactId>gs-acl-modules-parent</artifactId>
     <version>${revision}</version>
   </parent>
   <groupId>org.geoserver.acl.domain</groupId>
-  <artifactId>domain</artifactId>
+  <artifactId>gs-acl-domain</artifactId>
   <packaging>pom</packaging>
+  <name>GeoServer ACL :: Domain Layer</name>
+  <description>Core Business Logic and Ports (Framework-Free)</description>
   <modules>
-    <module>filter</module>
-    <module>rule-management</module>
-    <module>adminrule-management</module>
+    <module>access-criteria</module>
+    <module>data-rules</module>
+    <module>workspaceadmin-rules</module>
   </modules>
 </project>

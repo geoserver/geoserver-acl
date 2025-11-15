@@ -13,8 +13,9 @@
     <version>${revision}</version>
   </parent>
   <groupId>org.geoserver.acl.docs</groupId>
-  <artifactId>docs</artifactId>
+  <artifactId>gs-acl-docs</artifactId>
   <packaging>pom</packaging>
+  <name>Documentation :: User and API documentation</name>
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -58,12 +59,12 @@
               <skip>${openapi-codegen-skip}</skip>
               <!-- see https://openapi-generator.tech/docs/generators/java/ -->
               <generatorName>html2</generatorName>
-              <inputSpec>${project.basedir}/../src/openapi/acl-api.yaml</inputSpec>
+              <inputSpec>${project.basedir}/../src/infrastructure/web-api/spec/src/main/resources/geoserver-acl-web-api-spec-v1.yaml</inputSpec>
               <generateModels>true</generateModels>
               <generateApis>true</generateApis>
-              <modelPackage>org.geoserver.acl.api.model</modelPackage>
-              <apiPackage>org.geoserver.acl.api.server</apiPackage>
-              <output>${project.basedir}/api</output>
+              <modelPackage>org.geoserver.acl.webapi.v1.model</modelPackage>
+              <apiPackage>org.geoserver.acl.webapi.v1.server</apiPackage>
+              <output>${project.basedir}/api/v1</output>
             </configuration>
           </execution>
         </executions>

@@ -5,8 +5,8 @@
 package org.geoserver.acl.authorization;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.geoserver.acl.authorization.AccessSummaryRequest.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.geoserver.acl.authorization.AccessSummaryRequest.builder;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Set;
 import org.junit.jupiter.api.Test;

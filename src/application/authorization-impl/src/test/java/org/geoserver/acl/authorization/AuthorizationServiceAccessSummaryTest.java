@@ -6,7 +6,7 @@
 package org.geoserver.acl.authorization;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.geoserver.acl.domain.adminrules.AdminGrantType.*;
+import static org.geoserver.acl.domain.adminrules.AdminGrantType.ADMIN;
 import static org.geoserver.acl.domain.rules.GrantType.ALLOW;
 import static org.geoserver.acl.domain.rules.GrantType.DENY;
 

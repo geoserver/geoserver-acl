@@ -64,7 +64,6 @@ jobs:
 
     - name: Build and run examples
       run: |
-        ./mvnw install -pl :gs-acl-api-client -am -DskipTests
         make test-examples
 
         

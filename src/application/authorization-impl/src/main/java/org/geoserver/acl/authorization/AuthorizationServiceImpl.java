@@ -11,9 +11,6 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 import static org.geoserver.acl.domain.adminrules.AdminGrantType.ADMIN;
 import static org.geoserver.acl.domain.adminrules.AdminGrantType.USER;
-import static org.geoserver.acl.domain.rules.CatalogMode.CHALLENGE;
-import static org.geoserver.acl.domain.rules.CatalogMode.HIDE;
-import static org.geoserver.acl.domain.rules.CatalogMode.MIXED;
 import static org.geoserver.acl.domain.rules.GrantType.ALLOW;
 import static org.geoserver.acl.domain.rules.GrantType.DENY;
 import static org.geoserver.acl.domain.rules.GrantType.LIMIT;
@@ -65,11 +62,23 @@ import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * <B>Note:</B> <TT>service</TT> and <TT>request</TT> params are usually set by the client, and by
- * OGC specs they are not case sensitive, so we're going to turn all of them uppercase. See also
- * {@link RuleAdminService}.
+ * Default implementation of {@link AuthorizationService}.
+ *
+ * <p>Evaluates {@link Rule}s and {@link AdminRule}s from {@link RuleAdminService} and {@link
+ * AdminRuleAdminService} to make authorization decisions for GeoServer resource access.
+ *
+ * <p>Key responsibilities:
+ *
+ * <ul>
+ *   <li>Matching rules against request context (user, roles, IP, service, workspace, layer)
+ *   <li>Resolving multiple applicable rules into authorization decisions
+ *   <li>Handling spatial restrictions with GeoTools geometry operations and CRS transformations
+ *   <li>Managing attribute-level and row-level (CQL) access filters
+ *   <li>Determining catalog visibility modes
+ * </ul>
  *
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
+ * @author Gabriel Roldan - Camptocamp
  */
 @Slf4j(topic = "org.geoserver.acl.authorization")
 @RequiredArgsConstructor
@@ -78,23 +87,18 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     private final AdminRuleAdminService adminRuleService;
     private final RuleAdminService ruleService;
 
-    /**
-     * @param filter
-     * @return a plain List of the grouped matching Rules.
-     */
     @Override
     public List<Rule> getMatchingRules(@NonNull AccessRequest request) {
         request = request.validate();
         Map<String, List<Rule>> found = getMatchingRulesByRole(request);
-        return flatten(found);
+        return flatten(found).toList();
     }
 
-    private List<Rule> flatten(Map<String, List<Rule>> found) {
+    private Stream<Rule> flatten(Map<String, List<Rule>> found) {
         return found.values().stream()
                 .flatMap(List::stream)
                 .sorted((r1, r2) -> Long.compare(r1.getPriority(), r2.getPriority()))
-                .distinct()
-                .collect(Collectors.toList());
+                .distinct();
     }
 
     @Override
@@ -111,10 +115,11 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             ret = enlargeAccessInfo(ret, accessInfo);
         }
 
-        if (null == ret) ret = AccessInfo.DENY_ALL;
+        if (null == ret) {
+            ret = AccessInfo.DENY_ALL;
+        }
 
-        List<String> matchingIds =
-                flatten(groupedRules).stream().map(Rule::getId).collect(Collectors.toList());
+        List<String> matchingIds = flatten(groupedRules).map(Rule::getId).toList();
         ret = ret.withMatchingRules(matchingIds);
         log.debug("Request: {}, response: {}", request, ret);
         return ret;
@@ -283,6 +288,26 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         };
     }
 
+    /**
+     * Unions two {@link AccessInfo} objects to create a more permissive combined access.
+     *
+     * <p>This method implements the access enlargement logic when a user has multiple roles. It
+     * combines permissions by taking the union (most permissive) of restrictions:
+     *
+     * <ul>
+     *   <li><strong>Grant Type</strong>: DENY blocks enlargement; only ALLOW grants are combined
+     *   <li><strong>Spatial Filters</strong>: Geometries are unioned to allow access to larger areas
+     *   <li><strong>CQL Filters</strong>: Combined with OR to allow access to more rows
+     *   <li><strong>Attributes</strong>: Unioned with READWRITE > READONLY access level
+     *   <li><strong>Styles</strong>: Unioned to allow more style choices
+     *   <li><strong>Catalog Mode</strong>: Uses less restrictive mode (CHALLENGE > MIXED > HIDE)
+     * </ul>
+     *
+     * @param baseAccess the base access info, may be {@code null}
+     * @param moreAccess additional access info to union, may be {@code null}
+     * @return combined access info, {@code null} if both inputs are {@code null} or if any is
+     *     DENY
+     */
     private AccessInfo enlargeAccessInfo(AccessInfo baseAccess, AccessInfo moreAccess) {
         if (baseAccess == null) {
             if (moreAccess == null) return null;
@@ -300,7 +325,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                 String cqlWrite = unionCQL(baseAccess.getCqlFilterWrite(), moreAccess.getCqlFilterWrite());
                 ret.cqlFilterWrite(cqlWrite);
 
-                CatalogMode catalogMode = getLarger(baseAccess.getCatalogMode(), moreAccess.getCatalogMode());
+                CatalogMode catalogMode = CatalogMode.lenient(baseAccess.getCatalogMode(), moreAccess.getCatalogMode());
                 ret.catalogMode(catalogMode);
 
                 if (baseAccess.getDefaultStyle() == null || moreAccess.getDefaultStyle() == null) {
@@ -326,20 +351,20 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     // if yes set both, to make sure user doesn't acquire visibility
     // on not allowed geometries
     private void setAllowedAreas(AccessInfo baseAccess, AccessInfo moreAccess, AccessInfo.Builder ret) {
-        final Geometry baseIntersects = toJTS(baseAccess.getArea());
+        final Geometry baseIntersects = toJTS(baseAccess.getIntersectArea());
         final Geometry baseClip = toJTS(baseAccess.getClipArea());
-        final Geometry moreIntersects = toJTS(moreAccess.getArea());
+        final Geometry moreIntersects = toJTS(moreAccess.getIntersectArea());
         final Geometry moreClip = toJTS(moreAccess.getClipArea());
         final Geometry unionIntersects = unionGeometry(baseIntersects, moreIntersects);
         final Geometry unionClip = unionGeometry(baseClip, moreClip);
         if (unionIntersects == null) {
             if (baseIntersects != null && moreClip != null) {
-                ret.area(baseAccess.getArea());
+                ret.intersectArea(baseAccess.getIntersectArea());
             } else if (moreIntersects != null && baseClip != null) {
-                ret.area(moreAccess.getArea());
+                ret.intersectArea(moreAccess.getIntersectArea());
             }
         } else {
-            ret.area(org.geolatte.geom.jts.JTS.from(unionIntersects));
+            ret.intersectArea(org.geolatte.geom.jts.JTS.from(unionIntersects));
         }
         if (unionClip == null) {
             if (baseClip != null && moreIntersects != null) {
@@ -362,7 +387,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     }
 
     private Geometry unionGeometry(Geometry g1, Geometry g2) {
-        if (g1 == null || g2 == null) return null;
+        if (g1 == null) return g2;
+        if (g2 == null) return g1;
 
         int targetSRID = g1.getSRID();
         Geometry result = g1.union(reprojectGeometry(targetSRID, g2));
@@ -425,6 +451,16 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         return allowedStyles;
     }
 
+    /**
+     * Evaluates a list of rules for a single role and returns the authorization decision.
+     *
+     * <p>Processes the rules to determine whether access is granted or denied, and if granted, what
+     * restrictions apply (spatial filters, attribute access, CQL filters, styles, catalog mode).
+     *
+     * @param ruleList rules to evaluate for a single role
+     * @return resolved access info with grant decision and applicable restrictions, or {@code null}
+     *     if no conclusive decision can be made
+     */
     private AccessInfo resolveRuleset(List<Rule> ruleList) {
 
         List<RuleLimits> limits = new ArrayList<>();
@@ -446,6 +482,33 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         return ret;
     }
 
+    /**
+     * Builds an ALLOW {@link AccessInfo} by combining accumulated LIMIT restrictions with the
+     * rule's layer details.
+     *
+     * <p>This method is called when an ALLOW rule is found after processing LIMIT rules. It:
+     *
+     * <ol>
+     *   <li>Intersects spatial filters from all LIMIT rules
+     *   <li>Retrieves layer details (attributes, CQL, styles) from the ALLOW rule
+     *   <li>Combines LIMIT and layer-level spatial restrictions
+     *   <li>Determines final spatial filter type (INTERSECT vs CLIP)
+     *   <li>Resolves catalog mode (most restrictive from limits and layer details)
+     * </ol>
+     *
+     * <h3>Spatial Filter Resolution</h3>
+     *
+     * <ul>
+     *   <li><strong>INTERSECT</strong>: Allowed area bounds query results (geometry check)
+     *   <li><strong>CLIP</strong>: Features are clipped to allowed area (geometry modification)
+     *   <li>If any LIMIT or layer detail uses CLIP, the result uses CLIP
+     *   <li>Multiple geometries are intersected to get the most restrictive area
+     * </ul>
+     *
+     * @param rule the ALLOW rule granting access
+     * @param limits accumulated restrictions from preceding LIMIT rules
+     * @return access info with grant=ALLOW and all applicable restrictions
+     */
     private AccessInfo buildAllowAccessInfo(Rule rule, List<RuleLimits> limits) {
         AccessInfo.Builder accessInfo = AccessInfo.builder().grant(ALLOW);
 
@@ -458,11 +521,11 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         if (null != details) {
             // intersect the allowed area of the rule to the proper type
             SpatialFilterType spatialFilterType = getSpatialFilterType(rule, details);
-            atLeastOneClip = spatialFilterType.equals(CLIP);
+            atLeastOneClip = spatialFilterType == CLIP;
 
             area = intersect(area, toJTS(details.getArea()));
 
-            cmode = getStricter(cmode, details.getCatalogMode());
+            cmode = CatalogMode.stricter(cmode, details.getCatalogMode());
 
             accessInfo.attributes(details.getAttributes());
             accessInfo.cqlFilterRead(details.getCqlFilterRead());
@@ -475,13 +538,12 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
         if (area != null) {
             // if we have a clip area we apply clip type since is more restrictive,
-            // otherwise we
-            // keep the intersect
+            // otherwise we keep the intersect
             org.geolatte.geom.Geometry<?> finalArea = org.geolatte.geom.jts.JTS.from(area);
             if (atLeastOneClip) {
                 accessInfo.clipArea(finalArea);
             } else {
-                accessInfo.area(finalArea);
+                accessInfo.intersectArea(finalArea);
             }
         }
         return accessInfo.build();
@@ -537,48 +599,44 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     private CatalogMode resolveCatalogMode(List<RuleLimits> limits) {
         CatalogMode ret = null;
         for (RuleLimits limit : limits) {
-            ret = getStricter(ret, limit.getCatalogMode());
+            ret = CatalogMode.stricter(ret, limit.getCatalogMode());
         }
         return ret;
-    }
-
-    protected static CatalogMode getStricter(CatalogMode m1, CatalogMode m2) {
-
-        if (m1 == null) return m2;
-        if (m2 == null) return m1;
-
-        if (HIDE == m1 || HIDE == m2) return HIDE;
-
-        if (MIXED == m1 || MIXED == m2) return MIXED;
-
-        return CHALLENGE;
-    }
-
-    protected static CatalogMode getLarger(CatalogMode m1, CatalogMode m2) {
-
-        if (m1 == null) return m2;
-        if (m2 == null) return m1;
-
-        if (CHALLENGE == m1 || CHALLENGE == m2) return CHALLENGE;
-
-        if (MIXED == m1 || MIXED == m2) return MIXED;
-
-        return HIDE;
     }
 
     // ==========================================================================
 
     /**
-     * Returns Rules matching a filter
+     * Queries matching rules and groups them by role for independent resolution.
      *
-     * <p>Compatible filters: username assigned and rolename:ANY -> should consider all the roles
-     * the user belongs to username:ANY and rolename assigned -> should consider all the users
-     * belonging to the given role
+     * <p>This method is a key part of the authorization algorithm. It:
      *
-     * @param filter a RuleFilter for rule selection. <B>side effect</B> May be changed by the
-     *     method
-     * @return a Map having role names as keys, and the list of matching Rules as values. The NULL
-     *     key holds the rules for the DEFAULT group.
+     * <ol>
+     *   <li>Builds a {@link RuleFilter} from the access request
+     *   <li>Queries {@link RuleAdminService} for matching rules
+     *   <li>Groups results by role name (or {@code null} for DEFAULT role)
+     *   <li>Ensures DEFAULT role rules are included in every role's list
+     * </ol>
+     *
+     * <h3>Role-Based Grouping Logic</h3>
+     *
+     * <ul>
+     *   <li><strong>User has no roles</strong>: Returns DEFAULT role rules only (key = {@code null})
+     *   <li><strong>User has roles</strong>: Returns map with one entry per role, each containing:
+     *       <ul>
+     *         <li>Rules specific to that role
+     *         <li>DEFAULT role rules (rules with no role assignment)
+     *       </ul>
+     * </ul>
+     *
+     * <p><strong>Note</strong>: DEFAULT rules match all users and are duplicated across all roles
+     * to ensure consistent evaluation. This allows each role's ruleset to be resolved independently
+     * without cross-role dependencies.
+     *
+     * @param request the validated access request
+     * @return map of role name to matching rules, with {@code null} key for DEFAULT role when user
+     *     has no roles
+     * @throws IllegalArgumentException if the request is invalid
      */
     @SuppressWarnings("java:S125")
     protected Map<String, List<Rule>> getMatchingRulesByRole(AccessRequest request) throws IllegalArgumentException {
@@ -652,6 +710,17 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         return adminRuleService.getFirstMatch(adminRuleFilter);
     }
 
+    /**
+     * Reprojects a geometry to the target coordinate reference system.
+     *
+     * <p>When combining spatial filters from multiple rules, geometries may have different SRIDs.
+     * This method uses GeoTools to transform geometries to a common CRS for geometric operations.
+     *
+     * @param targetSRID the target SRID (EPSG code)
+     * @param geom the geometry to reproject
+     * @return reprojected geometry with target SRID set, or original geometry if SRIDs match
+     * @throws IllegalStateException if CRS transformation fails
+     */
     private Geometry reprojectGeometry(int targetSRID, Geometry geom) {
         if (targetSRID == geom.getSRID()) return geom;
         try {

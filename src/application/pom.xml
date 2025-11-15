@@ -9,11 +9,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.geoserver.acl</groupId>
-    <artifactId>gs-acl-modules</artifactId>
+    <artifactId>gs-acl-modules-parent</artifactId>
     <version>${revision}</version>
   </parent>
-  <artifactId>application</artifactId>
+  <groupId>org.geoserver.acl.application</groupId>
+  <artifactId>gs-acl-application</artifactId>
   <packaging>pom</packaging>
+  <name>GeoServer ACL :: Application Layer</name>
+  <description>Use Cases and Application Services (Framework-Free)</description>
   <modules>
     <module>authorization-api</module>
     <module>authorization-impl</module>

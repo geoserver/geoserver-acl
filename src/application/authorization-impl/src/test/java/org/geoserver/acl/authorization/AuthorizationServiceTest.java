@@ -40,13 +40,18 @@ import org.junit.jupiter.api.Test;
  * BaseAuthorizationServiceTest}
  *
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
+ * @author Gabriel Roldan - Camptocamp
  */
+@SuppressWarnings("unused")
 public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceTest {
 
+    @Override
     protected abstract RuleAdminService getRuleAdminService();
 
+    @Override
     protected abstract AdminRuleAdminService getAdminRuleAdminService();
 
+    @Override
     protected abstract AuthorizationService getAuthorizationService();
 
     @Test
@@ -194,7 +199,7 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
 
         AccessInfo accessInfo = getAccessInfo(req);
         assertEquals(ALLOW, accessInfo.getGrant());
-        assertNull(accessInfo.getArea());
+        assertNull(accessInfo.getIntersectArea());
     }
 
     @Test
