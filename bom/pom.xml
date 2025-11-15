@@ -16,123 +16,107 @@
   <name>GeoServer ACL :: Bill of Materials</name>
   <dependencyManagement>
     <dependencies>
-      <!-- Domain -->
       <dependency>
         <groupId>org.geoserver.acl.domain</groupId>
-        <artifactId>gs-acl-filter</artifactId>
+        <artifactId>gs-acl-accesscriteria</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver.acl.domain</groupId>
-        <artifactId>gs-acl-accessrules</artifactId>
+        <artifactId>gs-acl-data-rules</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver.acl.domain</groupId>
-        <artifactId>gs-acl-accessrules</artifactId>
+        <artifactId>gs-acl-data-rules</artifactId>
         <version>${project.version}</version>
-        <type>test-jar</type>
+        <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver.acl.domain</groupId>
-        <artifactId>gs-acl-adminrules</artifactId>
+        <artifactId>gs-acl-workspaceadmin-rules</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver.acl.domain</groupId>
-        <artifactId>gs-acl-adminrules</artifactId>
+        <artifactId>gs-acl-workspaceadmin-rules</artifactId>
         <version>${project.version}</version>
-        <type>test-jar</type>
+        <classifier>tests</classifier>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.acl</groupId>
+        <groupId>org.geoserver.acl.application</groupId>
         <artifactId>gs-acl-authorization-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.acl</groupId>
-        <artifactId>gs-acl-authorization</artifactId>
+        <groupId>org.geoserver.acl.application</groupId>
+        <artifactId>gs-acl-authorization-impl</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.acl</groupId>
-        <artifactId>gs-acl-authorization</artifactId>
+        <groupId>org.geoserver.acl.application</groupId>
+        <artifactId>gs-acl-authorization-impl</artifactId>
         <version>${project.version}</version>
-        <type>test-jar</type>
-      </dependency>
-      <!-- OpenAPI code-gen libraries -->
-      <dependency>
-        <groupId>org.geoserver.acl.openapi.spring</groupId>
-        <artifactId>gs-acl-openapi-model</artifactId>
-        <version>${project.version}</version>
+        <classifier>tests</classifier>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.acl.openapi.spring</groupId>
-        <artifactId>gs-acl-openapi-client</artifactId>
+        <groupId>org.geoserver.acl.infrastructure</groupId>
+        <artifactId>gs-acl-jpa-adapter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.acl.openapi.spring</groupId>
-        <artifactId>gs-acl-openapi-spring-server</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <!-- JPA integration -->
-      <dependency>
-        <groupId>org.geoserver.acl.integration.jpa</groupId>
-        <artifactId>gs-acl-jpa-persistence</artifactId>
+        <groupId>org.geoserver.acl.infrastructure</groupId>
+        <artifactId>gs-acl-springboot-jndi</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.acl.integration.jpa</groupId>
-        <artifactId>gs-acl-jpa-integration</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <!-- OpenAPI integration -->
-      <dependency>
-        <groupId>org.geoserver.acl.integration.openapi</groupId>
-        <artifactId>gs-acl-api-model-mapper</artifactId>
+        <groupId>org.geoserver.acl.infrastructure</groupId>
+        <artifactId>gs-acl-spring-config</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.acl.integration.openapi</groupId>
-        <artifactId>gs-acl-api-client</artifactId>
+        <groupId>org.geoserver.acl.infrastructure</groupId>
+        <artifactId>gs-acl-spring-cache-adapter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.acl.integration.openapi</groupId>
-        <artifactId>gs-acl-api-impl</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <!-- Spring/boot integration -->
-      <dependency>
-        <groupId>org.geoserver.acl.integration</groupId>
-        <artifactId>gs-acl-domain-spring-integration</artifactId>
+        <groupId>org.geoserver.acl.infrastructure</groupId>
+        <artifactId>gs-acl-spring-cloud-bus-adapter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.geoserver.acl.integration</groupId>
-        <artifactId>gs-acl-cache</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.geoserver.acl.integration</groupId>
-        <artifactId>gs-acl-simplejndi</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.geoserver.acl.integration</groupId>
-        <artifactId>gs-acl-spring-cloud-bus</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <!-- Deliverables -->
-      <dependency>
-        <groupId>org.geoserver.acl.app</groupId>
-        <artifactId>gs-acl-service</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.geoserver.acl</groupId>
+        <groupId>org.geoserver.acl.infrastructure</groupId>
         <artifactId>gs-acl-testcontainer</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.infrastructure</groupId>
+        <artifactId>gs-acl-webapi-spec</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.infrastructure</groupId>
+        <artifactId>gs-acl-webapi-v1-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.infrastructure</groupId>
+        <artifactId>gs-acl-webapi-v1-model-mapper</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.infrastructure</groupId>
+        <artifactId>gs-acl-webapi-v1-restclient</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.infrastructure</groupId>
+        <artifactId>gs-acl-webapi-v1-client-adapter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver.acl.infrastructure</groupId>
+        <artifactId>gs-acl-webapi-v1-server-adapter</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>

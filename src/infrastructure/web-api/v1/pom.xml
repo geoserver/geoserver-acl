@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/* (c) 2023 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver.acl.infrastructure</groupId>
+    <artifactId>gs-acl-webapi-parent</artifactId>
+    <version>${revision}</version>
+  </parent>
+  <artifactId>gs-acl-webapi-v1</artifactId>
+  <packaging>pom</packaging>
+  <name>Infrastructure :: Web API V1</name>
+  <description>Web API Adapter (Primary): All components related to the REST API v1</description>
+  <modules>
+    <module>generated-model</module>
+    <module>clients</module>
+    <module>spring</module>
+  </modules>
+</project>

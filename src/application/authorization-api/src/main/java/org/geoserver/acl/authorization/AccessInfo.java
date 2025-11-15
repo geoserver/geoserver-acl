@@ -20,7 +20,9 @@ import org.geoserver.acl.domain.rules.GrantType;
 import org.geoserver.acl.domain.rules.LayerAttribute;
 
 /**
- * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
+ * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of
+ *         GeoFence)
+ * @author Gabriel Roldan - Camptocamp
  */
 @Value
 @With
@@ -39,7 +41,7 @@ public class AccessInfo {
     @Default
     private GrantType grant = GrantType.DENY;
 
-    private Geometry<?> area;
+    private Geometry<?> intersectArea;
 
     private Geometry<?> clipArea;
 
@@ -63,7 +65,7 @@ public class AccessInfo {
     public String toString() {
         StringBuilder sb = new StringBuilder("AccessInfo[grant: ").append(grant);
         if (catalogMode != null) sb.append(", catalogMode: ").append(catalogMode);
-        if (area != null) sb.append(", area: yes");
+        if (intersectArea != null) sb.append(", intersectArea: yes");
         if (clipArea != null) sb.append(", clipArea: yes");
         if (defaultStyle != null) sb.append(", def style: ").append(defaultStyle);
         if (null != allowedStyles && !allowedStyles.isEmpty())
@@ -78,7 +80,8 @@ public class AccessInfo {
 
     public static class Builder {
         // explicitly implement only mutators that need to ensure immutability
-        // Ignore squid:S1068, private field required for the lombok-generated build() method
+        // Ignore squid:S1068, private field required for the lombok-generated build()
+        // method
         @SuppressWarnings("squid:S1068")
         private Set<LayerAttribute> attributes = Set.of();
 

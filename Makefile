@@ -45,8 +45,9 @@ test:
 	./mvnw -Drevision=$(VERSION) verify -ntp -T4
 
 test-examples:
-	./mvnw -Drevision=$(VERSION) install -DskipTests -ntp -pl :gs-acl-testcontainer
-	./mvnw -Drevision=$(VERSION) verify -ntp -T4 -f examples/
+	./mvnw -Drevision=$(VERSION) install -pl :gs-acl-webapi-v1-client-adapter -am -ntp -nsu -DskipTests
+	./mvnw -Drevision=$(VERSION) install -DskipTests -ntp -nsu -pl :gs-acl-testcontainer
+	./mvnw -Drevision=$(VERSION) verify -ntp -nsu -T4 -f examples/
 
 # Make sure `make package` was run before if anything changed since the last build
 # Consecutive COPY commands in Dockerfile fail on github runners
@@ -56,7 +57,7 @@ test-examples:
 # https://github.community/t/attempting-to-build-docker-image-with-copy-from-on-actions/16715
 # https://stackoverflow.com/questions/51115856/docker-failed-to-export-image-failed-to-create-image-failed-to-get-layer
 build-image:
-	DOCKER_BUILDKIT=1 docker build -t $(DOCKER_REPO):$(VERSION) src/artifacts/api/
+	DOCKER_BUILDKIT=1 docker build -t $(DOCKER_REPO):$(VERSION) src/infrastructure/app-main/
 
 push-image:
 	docker push $(DOCKER_REPO):$(VERSION)

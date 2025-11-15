@@ -12,16 +12,14 @@
     <artifactId>gs-acl-parent</artifactId>
     <version>${revision}</version>
   </parent>
-  <artifactId>gs-acl-modules</artifactId>
+  <artifactId>gs-acl-modules-parent</artifactId>
   <packaging>pom</packaging>
   <name>GeoServer ACL Modules</name>
   <description>GeoServer ACL is a java web application that handles Access Control List rules.</description>
   <modules>
     <module>domain</module>
     <module>application</module>
-    <module>openapi</module>
-    <module>integration</module>
-    <module>artifacts</module>
+    <module>infrastructure</module>
   </modules>
   <properties>
     <fork.javac>true</fork.javac>

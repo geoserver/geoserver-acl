@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/* (c) 2023 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver.acl.infrastructure</groupId>
+    <artifactId>gs-acl-webapi-v1-clients-parent</artifactId>
+    <version>${revision}</version>
+  </parent>
+  <artifactId>gs-acl-webapi-v1-typescript-client</artifactId>
+  <description>Generated TypeScript Client: For consumption by JavaScript/TypeScript clients</description>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <?m2e ignore?>
+            <id>generate-typescript-client</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <skip>${openapi-codegen-skip}</skip>
+              <inputSpec>${project.basedir}/../../../spec/src/main/resources/geoserver-acl-web-api-spec-v1.yaml</inputSpec>
+              <!-- https://openapi-generator.tech/docs/generators/typescript-fetch/ -->
+              <generatorName>typescript-fetch</generatorName>
+              <configOptions>
+                <npmName>geoserver-acl-client-v1</npmName>
+                <!-- By default, TypeScript creates enums with number values (e.g., enum Status { OK, ERROR } becomes OK=0, ERROR=1). This is brittle. -->
+                <stringEnums>true</stringEnums>
+                <!-- Produce ES6-compliant code. typescript-fetch implies async/await and fetch. Setting it to true ensures modern syntax, like const and let instead of var.-->
+                <supportsES6>true</supportsES6>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

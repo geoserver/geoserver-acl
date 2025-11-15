@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/* (c) 2023 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver.acl.infrastructure</groupId>
+    <artifactId>gs-acl-webapi-v1-clients-parent</artifactId>
+    <version>${revision}</version>
+  </parent>
+  <artifactId>gs-acl-webapi-v1-restclient</artifactId>
+  <description>Generated "Dumb" Client for SpringWeb: Raw RestClient, depends only on generated-model</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver.acl.infrastructure</groupId>
+      <artifactId>gs-acl-webapi-v1-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <!-- RestClient based API client-->
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <!-- JSON processing: jackson -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+      <artifactId>jackson-jakarta-rs-json-provider</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-smile</artifactId>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-generated-openapi-sources</id>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <?m2e ignore?>
+            <id>generate-client</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <skip>${openapi-codegen-skip}</skip>
+              <inputSpec>${project.basedir}/../../../spec/src/main/resources/geoserver-acl-web-api-spec-v1.yaml</inputSpec>
+              <!-- see https://openapi-generator.tech/docs/generators/java -->
+              <generatorName>java</generatorName>
+              <modelPackage>org.geoserver.acl.webapi.v1.model</modelPackage>
+              <apiPackage>org.geoserver.acl.webapi.v1.client</apiPackage>
+              <invokerPackage>org.geoserver.acl.webapi.v1.client</invokerPackage>
+              <generateApis>true</generateApis>
+              <generateModels>false</generateModels>
+              <generateSupportingFiles>true</generateSupportingFiles>
+              <!--supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate-->
+              <generateApiTests>false</generateApiTests>
+              <generateModelTests>false</generateModelTests>
+              <configOptions>
+                <useJakartaEe>true</useJakartaEe>
+                <useSpringBoot3>true</useSpringBoot3>
+                <library>restclient</library>
+                <serializationLibrary>jackson</serializationLibrary>
+                <useTags>true</useTags>
+                <dateLibrary>java8-localdatetime</dateLibrary>
+                <openApiNullable>false</openApiNullable>
+                <useBeanValidation>false</useBeanValidation>
+                <performBeanValidation>false</performBeanValidation>
+                <withXml>false</withXml>
+              </configOptions>
+              <importMappings>
+                <importMapping>Rule=org.geoserver.acl.webapi.v1.model.Rule</importMapping>
+                <importMapping>RuleLimits=org.geoserver.acl.webapi.v1.model.RuleLimits</importMapping>
+                <importMapping>LayerDetails=org.geoserver.acl.webapi.v1.model.LayerDetails</importMapping>
+                <importMapping>RuleFilter=org.geoserver.acl.webapi.v1.model.RuleFilter</importMapping>
+                <importMapping>AdminRule=org.geoserver.acl.webapi.v1.model.AdminRule</importMapping>
+                <importMapping>AdminRuleFilter=org.geoserver.acl.webapi.v1.model.AdminRuleFilter</importMapping>
+                <importMapping>InsertPosition=org.geoserver.acl.webapi.v1.model.InsertPosition</importMapping>
+              </importMappings>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -33,15 +33,54 @@ import org.junit.jupiter.api.Test;
  * <p>Concrete implementations must supply the required services in {@link
  * BaseAuthorizationServiceTest}
  */
+@SuppressWarnings("unused")
 public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServiceTest {
-    private static final String WKT_WGS84_1 =
-            "SRID=4326;MultiPolygon (((-1.93327272727272859 5.5959090909090925, 2.22727272727272707 5.67609090909091041, 2.00454545454545441 4.07245454545454599, -1.92436363636363761 4.54463636363636425, -1.92436363636363761 4.54463636363636425, -1.93327272727272859 5.5959090909090925)))";
-    private static final String WKT_WGS84_2 =
-            "SRID=4326;MultiPolygon (((-1.46109090909091011 5.68500000000000139, -0.68600000000000083 5.7651818181818193, -0.73945454545454625 2.00554545454545519, -1.54127272727272846 1.9610000000000003, -1.46109090909091011 5.68500000000000139)))";
-    private static final String WKT_WGS84_3 =
-            "SRID=4326;MultiPolygon (((-1.78181818181818308 5.95227272727272894, -0.16927272727272813 5.4711818181818197, 1.97781818181818148 3.81409090909090986, 1.93327272727272748 2.05009090909090919, -2.6638181818181832 2.64700000000000069, -1.78181818181818308 5.95227272727272894)))";
-    private static final String WKT_WGS84_4 =
-            "SRID=4326;MultiPolygon (((-1.30963636363636482 5.96118181818181991, 1.78181818181818175 4.84754545454545571, -0.90872727272727349 2.26390909090909132, -1.30963636363636482 5.96118181818181991)))";
+    /*
+     * Simple test geometries with their spatial relationships:
+     *
+     *               (10,30)                                                     (40,30)
+     * +-------------------+                             +-----------------------------+
+     * |                   |                             |                             |
+     * |        P2         |                             |             P4              |
+     * |                   |                             |                             |
+     * |                   |                             |               (36,25)       |
+     * |           +-------+-----------------------------+---------------------+       |
+     * |           |       |                             |                     |       |
+     * |           |       |               P3            |                     |       |
+     * |           |       |                             |                     |       |
+     * |           |       |                   (23,20)   |                     |       |
+     * |     +-----+-------+-------------------------+   |                     |       |
+     * |     |     |       |                         |   |                     |       |
+     * |     |     |       |                         |   |                     |       |
+     * |     |     |       |                         |   |                     |       |
+     * |     |     |       |                         |   |                     |       |
+     * |     |     |       |     P1                  |   |                     |       |
+     * |     |     |       |                         |   |                     |       |
+     * |     |     |       |                         |   |                     |       |
+     * |     |     |       |                         |   |                     |       |
+     * |     |     |       |                         |   |                     |       |
+     * |     +-----+-------+-------------------------+   |                     |       |
+     * |     (3,10)|       |                             |                     |       |
+     * |           |       |                             |                     |       |
+     * |           |       |                             |                     |       |
+     * |           |       |                             |                     |       |
+     * |           +-------+-----------------------------+---------------------+       |
+     * |           (6,5)   |                             |                             |
+     * |                   |                             |                             |
+     * |                   |                             |                             |
+     * |                   |                             |                             |
+     * +-------------------+                             +-----------------------------+
+     * (0,0)                                             (25,0)
+     *
+     * WKT_WGS84_1 (P1): (3,10) to (23,20)  - overlaps with P2 and P3
+     * WKT_WGS84_2 (P2): (0,0)  to (10,30)  - overlaps with P1 and P3
+     * WKT_WGS84_3 (P3): (6,5)  to (36,25)  - overlaps with P1, P2, and P4
+     * WKT_WGS84_4 (P4): (25,0) to (40,30)  - overlaps with P3
+     */
+    private static final String WKT_WGS84_1 = "SRID=4326;MULTIPOLYGON(((3 10, 3 20, 23 20, 23 10, 3 10)))";
+    private static final String WKT_WGS84_2 = "SRID=4326;MULTIPOLYGON(((0 0, 0 30, 10 30, 10 0, 0 0)))";
+    private static final String WKT_WGS84_3 = "SRID=4326;MULTIPOLYGON(((6 5, 6 25, 36 25, 36 5, 6 5)))";
+    private static final String WKT_WGS84_4 = "SRID=4326;MULTIPOLYGON(((25 0, 25 30, 40 30, 40 0, 25 0)))";
 
     private static final String WKT_3003 =
             "SRID=3003;MultiPolygon (((1680529.71478682174347341 4849746.00902365241199732, 1682436.7076464940328151 4849731.7422441728413105, 1682446.21883281995542347 4849208.62699576932936907, 1680524.95919364970177412 4849279.96089325752109289, 1680529.71478682174347341 4849746.00902365241199732)))";
@@ -68,7 +107,7 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
                 .layer("l1")
                 .build();
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-        Geometry<?> area = accessInfo.getArea();
+        Geometry<?> area = accessInfo.getIntersectArea();
         assertEquals(3857, area.getCoordinateReferenceSystem().getCrsId().getCode());
     }
 
@@ -111,7 +150,7 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
                 .build();
 
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-        Geometry<?> area = accessInfo.getArea();
+        Geometry<?> area = accessInfo.getIntersectArea();
         assertEquals(3003, area.getCoordinateReferenceSystem().getCrsId().getCode());
     }
 
@@ -148,7 +187,7 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
         org.locationtech.jts.geom.Geometry testArea =
                 JTS.to(limitsp10.getAllowedArea()).intersection(JTS.to(llimitsp11.getAllowedArea()));
         testArea.normalize();
-        assertNull(accessInfo.getArea());
+        assertNull(accessInfo.getIntersectArea());
         assertNotNull(accessInfo.getClipArea());
 
         org.locationtech.jts.geom.Geometry resultArea = JTS.to(accessInfo.getClipArea());
@@ -163,12 +202,13 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
     @Test
     public void testRuleSpatialFilterTypeIntersectsSameGroup() {
 
-        Rule p9999 = insert(9999, null, "g1", null, "s11", "r11", null, "w11", "l11", ALLOW);
         Rule p13 = insert(13, "u1", "g1", null, "s11", "r11", null, "w11", "l11", LIMIT);
         RuleLimits limitsp13 = setRuleLimits(p13, WKT_WGS84_1, INTERSECT, HIDE);
 
         Rule p14 = insert(14, "u1", "g1", null, "s11", "r11", null, "w11", "l11", LIMIT);
         RuleLimits limitsp14 = setRuleLimits(p14, WKT_WGS84_3, INTERSECT, HIDE);
+
+        Rule p9999 = insert(9999, null, "g1", null, "s11", "r11", null, "w11", "l11", ALLOW);
 
         AccessRequest request = createRequest("u1", "g1", "g2")
                 .withService("s11")
@@ -186,9 +226,9 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
                 JTS.to(limitsp13.getAllowedArea()).intersection(JTS.to(limitsp14.getAllowedArea()));
         testArea.normalize();
         assertNull(accessInfo.getClipArea());
-        assertNotNull(accessInfo.getArea());
+        assertNotNull(accessInfo.getIntersectArea());
 
-        org.locationtech.jts.geom.Geometry resultArea = JTS.to(accessInfo.getArea());
+        org.locationtech.jts.geom.Geometry resultArea = JTS.to(accessInfo.getIntersectArea());
         resultArea.normalize();
         assertTrue(testArea.equalsExact(resultArea, 10.0E-15));
     }
@@ -201,13 +241,13 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
     @Test
     public void testRuleSpatialFilterTypeEnlargeAccess() {
 
-        insert(999, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
-
         Rule p15 = insert(15, null, "group22", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp15 = setRuleLimits(p15, WKT_WGS84_1, INTERSECT, HIDE);
 
         Rule p16 = insert(16, null, "group23", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp16 = setRuleLimits(p16, WKT_WGS84_3, CLIP, HIDE);
+
+        insert(999, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
 
         AccessRequest request = createRequest("auth22", "group22", "group23")
                 .withService("s22")
@@ -221,12 +261,12 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
         // we got a user in two groups one with an intersect spatialFilterType
         // and the other with a clip spatialFilterType. The two area should haven
         // been kept separated
-        assertNotNull(accessInfo.getArea());
+        assertNotNull(accessInfo.getIntersectArea());
         assertNotNull(accessInfo.getClipArea());
 
         // the intersects should be equal to the originally defined
         // allowed area
-        org.locationtech.jts.geom.Geometry intersects = JTS.to(accessInfo.getArea());
+        org.locationtech.jts.geom.Geometry intersects = JTS.to(accessInfo.getIntersectArea());
         intersects.normalize();
         assertTrue(intersects.equalsExact(JTS.to(lp15.getAllowedArea()), 10.0E-15));
 
@@ -247,8 +287,6 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
     @Test
     public void testRuleSpatialFilterTypeFourRules() {
 
-        insert(999, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
-
         Rule p17 = insert(17, null, "group31", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp17 = setRuleLimits(p17, WKT_WGS84_1, INTERSECT, HIDE);
 
@@ -261,6 +299,8 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
         Rule p20 = insert(20, null, "group32", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp20 = setRuleLimits(p20, WKT_WGS84_4, CLIP, HIDE);
 
+        insert(999, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
+
         AccessRequest request = createRequest("auth33", "group31", "group32")
                 .withService("s22")
                 .withRequest("r22")
@@ -270,7 +310,7 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
         assertEquals(ALLOW, accessInfo.getGrant());
 
         // we should have only the clip geometry
-        assertNull(accessInfo.getArea());
+        assertNull(accessInfo.getIntersectArea());
         assertNotNull(accessInfo.getClipArea());
 
         // the intersects should be equal to the originally defined
@@ -292,8 +332,6 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
     @Test
     public void testRuleSpatialFilterTypeFourRules2() {
 
-        insert(999, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
-
         Rule p21 = insert(21, null, "group41", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp21 = setRuleLimits(p21, WKT_WGS84_1, CLIP, HIDE);
 
@@ -306,6 +344,8 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
         Rule p24 = insert(24, null, "group42", null, "s22", "r22", null, "w22", "l22", LIMIT);
         RuleLimits lp24 = setRuleLimits(p24, WKT_WGS84_4, INTERSECT, HIDE);
 
+        insert(999, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
+
         AccessRequest request = createRequest("auth44", "group41", "group42")
                 .withService("s22")
                 .withRequest("r22")
@@ -315,7 +355,7 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
         assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
         // we should have both
-        assertThat(accessInfo.getArea()).isNotNull();
+        assertThat(accessInfo.getIntersectArea()).isNotNull();
         assertThat(accessInfo.getClipArea()).isNotNull();
 
         // the intersects should be equal to the originally defined
@@ -323,7 +363,7 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
         org.locationtech.jts.geom.Geometry expectedIntersects =
                 JTS.to(lp23.getAllowedArea()).intersection(JTS.to(lp24.getAllowedArea()));
         expectedIntersects.normalize();
-        org.locationtech.jts.geom.Geometry intersects = JTS.to(accessInfo.getArea());
+        org.locationtech.jts.geom.Geometry intersects = JTS.to(accessInfo.getIntersectArea());
         intersects.normalize();
 
         assertTrue(expectedIntersects.equalsExact(intersects, 10.0E-15));
@@ -334,5 +374,26 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
                 JTS.to(lp21.getAllowedArea()).intersection(JTS.to(lp22.getAllowedArea()));
         expectedClip.normalize();
         assertTrue(expectedClip.equalsExact(clip, 10.0E-15));
+    }
+
+    @Test
+    public void testLimitAndAllowRuleEnlargementLayerGroup() throws Exception {
+        Rule limit = insert(1, null, "ROLE_ONE", null, "wms", null, null, null, "lakes_and_places", LIMIT);
+        RuleLimits geomLimits = setRuleLimits(limit, WKT_WGS84_3, INTERSECT, HIDE);
+
+        Rule allow = insert(2, null, null, null, null, null, null, null, null, ALLOW);
+
+        // ROLE_ONE matches both rules, ROLE_TWO only the allow rule, ROLE_ONE wins with the stricter settings
+        AccessRequest request = createRequest("gabe", "ROLE_ONE", "ROLE_TWO")
+                .withService("WMS")
+                .withRequest("GetMap")
+                .withWorkspace(null)
+                .withLayer("lakes_and_places");
+
+        AccessInfo accessInfo = authorizationService.getAccessInfo(request);
+        assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
+        // we should have both
+        assertThat(accessInfo.getIntersectArea()).isNotNull();
+        assertThat(accessInfo.getClipArea()).isNull();
     }
 }

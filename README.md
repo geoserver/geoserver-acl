@@ -204,7 +204,7 @@ For more detailed information:
 
 - [GeoServer ACL Documentation](https://geoserver.org/geoserver-acl/) - Official documentation
 - [GeoServer Cloud Documentation](https://geoserver.org/geoserver-cloud/) - GeoServer Cloud integration details
-- [API Documentation](https://geoserver.org/geoserver-acl/api/) - REST API reference
+- [API Documentation](https://geoserver.org/geoserver-acl/api/v1) - REST API reference
 
 ## Contributing
 
