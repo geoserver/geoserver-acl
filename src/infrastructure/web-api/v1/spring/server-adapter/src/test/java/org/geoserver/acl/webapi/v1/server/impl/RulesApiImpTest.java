@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
+import org.geoserver.acl.config.webapi.v1.server.ApiServerConfiguration;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.filter.RuleQuery;
 import org.geoserver.acl.domain.rules.InsertPosition;
@@ -31,8 +32,8 @@ import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.geoserver.acl.domain.rules.RuleFilter;
 import org.geoserver.acl.domain.rules.RuleIdentifierConflictException;
-import org.geoserver.acl.webapi.v1.server.config.RulesApiConfiguration;
-import org.geoserver.acl.webapi.v1.server.support.DataRulesApiSupport;
+import org.geoserver.acl.webapi.v1.server.DataRulesApiDelegateImpl;
+import org.geoserver.acl.webapi.v1.server.DataRulesApiSupport;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,14 +42,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-@SpringBootTest(classes = RulesApiConfiguration.class, properties = "spring.main.banner-mode=off")
+@SpringBootTest(classes = ApiServerConfiguration.class, properties = "spring.main.banner-mode=off")
 class RulesApiImpTest {
 
     private @MockitoBean RuleAdminService rules;
     private @MockitoBean AdminRuleAdminService adminRules;
 
     private @Autowired DataRulesApiSupport support;
-    private @Autowired DataRulesApiImpl api;
+    private @Autowired DataRulesApiDelegateImpl api;
 
     @Test
     void testCreateRule() {

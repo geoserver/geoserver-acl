@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Set;
 import org.geoserver.acl.authorization.AuthorizationService;
+import org.geoserver.acl.config.webapi.v1.server.ApiServerConfiguration;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.geoserver.acl.webapi.v1.model.AccessRequest;
@@ -27,10 +28,8 @@ import org.geoserver.acl.webapi.v1.model.RuleFilter;
 import org.geoserver.acl.webapi.v1.model.RuleLimits;
 import org.geoserver.acl.webapi.v1.server.AuthorizationApi;
 import org.geoserver.acl.webapi.v1.server.DataRulesApi;
+import org.geoserver.acl.webapi.v1.server.DataRulesApiSupport;
 import org.geoserver.acl.webapi.v1.server.WorkspaceAdminRulesApi;
-import org.geoserver.acl.webapi.v1.server.config.AuthorizationApiConfiguration;
-import org.geoserver.acl.webapi.v1.server.config.RulesApiConfiguration;
-import org.geoserver.acl.webapi.v1.server.support.DataRulesApiSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +58,7 @@ class DataRulesApiSecurityTest {
     private @Autowired DataRulesApiSupport support;
 
     @Configuration
-    @Import({RulesApiConfiguration.class, AuthorizationApiConfiguration.class})
+    @Import(ApiServerConfiguration.class)
     @EnableMethodSecurity
     static class SecurityTestConfiguration {}
 

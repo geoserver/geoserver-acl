@@ -47,6 +47,20 @@ public class CachingAuthorizationService extends ForwardingAuthorizationService 
         this.viewablesCache = viewablesCache;
     }
 
+    @EventListener(RuleEvent.class)
+    public void onRuleEventEvictAll(RuleEvent event) {
+        int evictCount = evictAll(ruleAccessCache);
+        evictViewables();
+        log.debug("evicted all {} authorizations upon event {}", evictCount, event);
+    }
+
+    @EventListener(AdminRuleEvent.class)
+    public void onAdminRuleEventEvictAll(AdminRuleEvent event) {
+        int evictCount = evictAll(adminRuleAccessCache);
+        evictViewables();
+        log.debug("evicted all {} admin authorizations upon event {}", evictCount, event);
+    }
+
     @Override
     public AccessInfo getAccessInfo(@NonNull AccessRequest request) {
         return ruleAccessCache.computeIfAbsent(request, this::load);
@@ -77,20 +91,6 @@ public class CachingAuthorizationService extends ForwardingAuthorizationService 
     private <A> A logLoaded(Object request, A accessInfo) {
         log.debug("loaded and cached {} -> {}", request, accessInfo);
         return accessInfo;
-    }
-
-    @EventListener(RuleEvent.class)
-    public void onRuleEvent(RuleEvent event) {
-        int evictCount = evictAll(ruleAccessCache);
-        evictViewables();
-        log.debug("evicted all {} authorizations upon event {}", evictCount, event);
-    }
-
-    @EventListener(AdminRuleEvent.class)
-    public void onAdminRuleEvent(AdminRuleEvent event) {
-        int evictCount = evictAll(adminRuleAccessCache);
-        evictViewables();
-        log.debug("evicted all {} admin authorizations upon event {}", evictCount, event);
     }
 
     public void evictAll() {

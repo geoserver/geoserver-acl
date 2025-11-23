@@ -4,9 +4,9 @@
  */
 package org.geoserver.acl.autoconfigure.persistence;
 
-import org.geoserver.acl.integration.jpa.config.JPAIntegrationConfiguration;
-import org.geoserver.acl.jpa.config.AclJpaProperties;
-import org.geoserver.cloud.config.jndidatasource.JNDIDataSourceAutoConfiguration;
+import org.geoserver.acl.config.persistence.jpa.AclJpaProperties;
+import org.geoserver.acl.config.persistence.jpa.JPAIntegrationConfiguration;
+import org.geoserver.acl.config.simplejndi.JNDIDataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

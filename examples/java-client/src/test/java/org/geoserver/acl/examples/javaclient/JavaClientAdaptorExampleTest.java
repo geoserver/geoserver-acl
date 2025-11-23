@@ -11,21 +11,20 @@ import java.util.List;
 import org.geoserver.acl.authorization.AccessInfo;
 import org.geoserver.acl.authorization.AccessRequest;
 import org.geoserver.acl.authorization.AuthorizationService;
-import org.geoserver.acl.client.AclClient;
-import org.geoserver.acl.client.AclClientAdaptor;
 import org.geoserver.acl.domain.rules.GrantType;
 import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleAdminService;
-import org.geoserver.acl.domain.rules.RuleAdminServiceImpl;
 import org.geoserver.acl.testcontainer.GeoServerAclContainer;
+import org.geoserver.acl.webapi.client.AclClientAdapter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
- * Demonstrates how to use {@link AclClientAdaptor} to use the domain API directly instead of the
- * raw OpenAPI to manipulate rules and perform authorization requests.
+ * Demonstrates how to use {@link AclClientAdapter} to use the {@link RuleAdminService} and {@link AuthorizationService} APIs
+ * directly instead of the raw OpenAPI to manipulate rules and perform
+ * authorization requests.
  */
 @Testcontainers(disabledWithoutDocker = true)
 class JavaClientAdaptorExampleTest {
@@ -35,18 +34,13 @@ class JavaClientAdaptorExampleTest {
             GeoServerAclContainer.currentVersion().withDevMode();
 
     /**
-     * {@link AclClient} provides the raw API clients through {@link AclClient#getAdminRulesApi()},
-     * {@link AclClient#getRulesApi()}, and {@link AclClient#getAuthorizationApi()}
+     * {@link AclClientAdapter} provides domain repositories and the authorization
+     * implementation using the {@link AclClientAdapter} API client through
+     * {@link AclClientAdapter#createRuleAdminService(java.util.function.Consumer)},
+     * {@link AclClientAdapter#getRuleRepository()}, and
+     * {@link AclClientAdapter#createAuthorizationService()}
      */
-    private AclClient client;
-
-    /**
-     * {@link AclClientAdaptor} provides domain repositories and the authorization implementation
-     * using the {@link AclClient} API client through {@link
-     * AclClientAdaptor#getAdminRuleRepository()}, {@link AclClientAdaptor#getRuleRepository()}, and
-     * {@link AclClientAdaptor#getAuthorizationService()}
-     */
-    AclClientAdaptor adaptor;
+    private AclClientAdapter adaptor;
 
     @BeforeEach
     void beforeEach() {
@@ -56,12 +50,10 @@ class JavaClientAdaptorExampleTest {
         final String username = aclServer.devAdminUser();
         final String password = aclServer.devAdminPassword();
 
-        client = new AclClient() //
+        adaptor = new AclClientAdapter() //
                 .setBasePath(apiUrl) //
                 .setUsername(username) //
                 .setPassword(password);
-
-        adaptor = new AclClientAdaptor(client);
     }
 
     @Test
@@ -69,8 +61,9 @@ class JavaClientAdaptorExampleTest {
         List<Rule> rules = createSampleRules();
         assertThat(rules).isNotEmpty();
 
-        // Get the AuthorizationService that will defer requests to the remote ACL service
-        AuthorizationService authService = adaptor.getAuthorizationService();
+        // Get the AuthorizationService that will defer requests to the remote ACL
+        // service
+        AuthorizationService authService = adaptor.createAuthorizationService();
 
         // a user with ROLE_USER has access to layers in the users_ws workspace
         AccessRequest request = AccessRequest.builder() //
@@ -93,7 +86,7 @@ class JavaClientAdaptorExampleTest {
     public List<Rule> createSampleRules() {
         // you can use a RuleAdminService using the repository implementation provided
         // by the API client adaptor to defer service calls to the remote service
-        RuleAdminService service = new RuleAdminServiceImpl(adaptor.getRuleRepository());
+        RuleAdminService service = adaptor.createRuleAdminService();
 
         // prepare rules to insert
         Rule r1 = Rule.allow().withPriority(1L).withRolename("ROLE_USER").withWorkspace("users_ws");

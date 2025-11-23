@@ -6,8 +6,8 @@ package org.geoserver.acl.autoconfigure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.geoserver.cloud.config.jndi.SimpleJNDIStaticContextInitializer;
-import org.geoserver.cloud.config.jndidatasource.JNDIDataSourceAutoConfiguration;
+import org.geoserver.acl.config.simplejndi.JNDIDataSourceAutoConfiguration;
+import org.geoserver.acl.config.simplejndi.SimpleJNDIStaticContextInitializer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
