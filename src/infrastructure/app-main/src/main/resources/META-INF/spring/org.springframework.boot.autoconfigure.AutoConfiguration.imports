@@ -1,9 +1,9 @@
-org.geoserver.acl.autoconfigure.api.GeoServerAclServerApiAutoConfiguration
-org.geoserver.acl.autoconfigure.bus.RabbitAutoConfiguration
-org.geoserver.acl.autoconfigure.cache.CachingAuthorizationServiceServerAutoConfiguration
+org.geoserver.acl.autoconfigure.webapi.server.GeoServerAclWebApiServerAutoConfiguration
+org.geoserver.acl.autoconfigure.webapi.springdoc.SpringDocAutoConfiguration
+org.geoserver.acl.autoconfigure.application.cache.CachingAuthorizationServiceServerAutoConfiguration
 org.geoserver.acl.autoconfigure.persistence.JPAIntegrationAutoConfiguration
+org.geoserver.acl.autoconfigure.messaging.bus.RabbitAutoConfiguration
 org.geoserver.acl.autoconfigure.security.AclServiceSecurityAutoConfiguration
 org.geoserver.acl.autoconfigure.security.AuthenticationManagerAutoConfiguration
 org.geoserver.acl.autoconfigure.security.InternalSecurityAutoConfiguration
 org.geoserver.acl.autoconfigure.security.PreAuthenticationSecurityAutoConfiguration
-org.geoserver.acl.autoconfigure.springdoc.SpringDocAutoConfiguration

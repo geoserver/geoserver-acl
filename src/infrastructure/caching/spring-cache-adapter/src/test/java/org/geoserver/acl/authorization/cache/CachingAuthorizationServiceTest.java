@@ -108,15 +108,15 @@ class CachingAuthorizationServiceTest {
         AccessRequest req3 = req(rule3);
 
         grantAll(rule1, rule2, rule3, req1, req2, req3);
-        caching.onRuleEvent(RuleEvent.updated(rule1));
+        caching.onRuleEventEvictAll(RuleEvent.updated(rule1));
         assertThat(dataAccessCache).isEmpty();
 
         grantAll(rule1, rule2, rule3, req1, req2, req3);
-        caching.onRuleEvent(RuleEvent.deleted(rule2.getId()));
+        caching.onRuleEventEvictAll(RuleEvent.deleted(rule2.getId()));
         assertThat(dataAccessCache).isEmpty();
 
         grantAll(rule1, rule2, rule3, req1, req2, req3);
-        caching.onRuleEvent(RuleEvent.created(rule3));
+        caching.onRuleEventEvictAll(RuleEvent.created(rule3));
         assertThat(dataAccessCache).isEmpty();
     }
 
@@ -139,15 +139,15 @@ class CachingAuthorizationServiceTest {
         var req3 = req1.withUser("user3");
 
         grantAll(rule1, rule2, rule3, req1, req2, req3);
-        caching.onAdminRuleEvent(AdminRuleEvent.created(rule1));
+        caching.onAdminRuleEventEvictAll(AdminRuleEvent.created(rule1));
         assertThat(adminAccessCache).isEmpty();
 
         grantAll(rule1, rule2, rule3, req1, req2, req3);
-        caching.onAdminRuleEvent(AdminRuleEvent.updated(rule2));
+        caching.onAdminRuleEventEvictAll(AdminRuleEvent.updated(rule2));
         assertThat(adminAccessCache).isEmpty();
 
         grantAll(rule1, rule2, rule3, req1, req2, req3);
-        caching.onAdminRuleEvent(AdminRuleEvent.deleted(rule3.getId()));
+        caching.onAdminRuleEventEvictAll(AdminRuleEvent.deleted(rule3.getId()));
         assertThat(adminAccessCache).isEmpty();
     }
 
