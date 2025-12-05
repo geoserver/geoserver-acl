@@ -4,7 +4,6 @@
  */
 package org.geoserver.acl.webapi.client;
 
-import tools.jackson.databind.ObjectMapper;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -32,6 +31,7 @@ import org.geoserver.acl.webapi.v1.client.WorkspaceAdminRulesApi;
 import org.geoserver.acl.webapi.v1.client.auth.HttpBasicAuth;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Client for the GeoServer ACL (Access Control List) REST API.

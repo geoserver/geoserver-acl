@@ -73,7 +73,7 @@
     <java.version>17</java.version>
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
     <gt.version>35-SNAPSHOT</gt.version>
-    <spring-cloud.version>2025.0.1</spring-cloud.version>
+    <spring-cloud.version>2025.1.1</spring-cloud.version>
     <spring-boot.version>4.0.2</spring-boot.version>
     <lombok.version>1.18.42</lombok.version>
     <mapstruct.version>1.6.3</mapstruct.version>
@@ -83,11 +83,10 @@
     <querydsl.version>7.1</querydsl.version>
     <springdoc.version>3.0.1</springdoc.version>
     <caffeine.version>3.2.3</caffeine.version>
-    <flyway.version>11.16.0</flyway.version>
     <h2.version>2.2.224</h2.version>
     <jts.version>1.20.0</jts.version>
     <openapi-generator-maven-plugin.version>7.17.0</openapi-generator-maven-plugin.version>
-    <swagger-annotations-jakarta.version>2.2.19</swagger-annotations-jakarta.version>
+    <swagger-annotations-jakarta.version>2.2.41</swagger-annotations-jakarta.version>
     <!-- build setings -->
     <fmt.skip>false</fmt.skip>
     <spotless.skip>${fmt.skip}</spotless.skip>
@@ -195,16 +194,6 @@
         <artifactId>querydsl-apt</artifactId>
         <version>${querydsl.version}</version>
         <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-flyway</artifactId>
-        <version>4.0.2</version>
-      </dependency>
-      <dependency>
-        <groupId>org.flywaydb</groupId>
-        <artifactId>flyway-database-postgresql</artifactId>
-        <version>${flyway.version}</version>
       </dependency>
       <!-- for project dependencies use the BOM (gs-acl-bom) -->
     </dependencies>
@@ -517,14 +506,51 @@
       <dependencyManagement>
         <dependencies>
           <dependency>
+            <!--
+            [ERROR] +-org.geoserver.acl.application:gs-acl-authorization-impl:jar:3.0-SNAPSHOT
+            [ERROR]   +-org.geotools:gt-main:jar:35-SNAPSHOT:provided
+            [ERROR]     +-org.geotools:gt-referencing:jar:35-SNAPSHOT:provided
+            [ERROR]       +-org.geotools:gt-metadata:jar:35-SNAPSHOT:provided
+            [ERROR]         +-org.geotools:gt-api:jar:35-SNAPSHOT:provided
+            [ERROR]           +-tech.units:indriya:jar:2.2:provided
+            [ERROR]             +-tech.uom.lib:uom-lib-common:jar:2.2:provided
+            [ERROR]               +-javax.measure:unit-api:jar:2.2:provided
+            [ERROR] and
+            [ERROR] +-org.geoserver.acl.application:gs-acl-authorization-impl:jar:3.0-SNAPSHOT
+            [ERROR]   +-org.geotools:gt-main:jar:35-SNAPSHOT:provided
+            [ERROR]     +-org.geotools:gt-referencing:jar:35-SNAPSHOT:provided
+            [ERROR]       +-org.geotools:gt-metadata:jar:35-SNAPSHOT:provided
+            [ERROR]         +-org.geotools:gt-api:jar:35-SNAPSHOT:provided
+            [ERROR]           +-javax.measure:unit-api:jar:2.2:provided
+            -->
             <groupId>javax.measure</groupId>
             <artifactId>unit-api</artifactId>
             <version>2.2</version>
           </dependency>
           <dependency>
-            <groupId>org.checkerframework</groupId>
-            <artifactId>checker-qual</artifactId>
-            <version>3.49.5</version>
+            <!--
+            [ERROR] Dependency convergence error for org.jetbrains:annotations:jar:13.0. Paths to dependency are:
+            [ERROR] +-org.geoserver.acl.infrastructure:gs-acl-spring-cloud-bus-adapter:jar:3.0-SNAPSHOT
+            [ERROR]   +-org.springframework.cloud:spring-cloud-starter-bus-amqp:jar:5.0.1:provided
+            [ERROR]     +-org.springframework.cloud:spring-cloud-starter-stream-rabbit:jar:5.0.1:provided
+            [ERROR]       +-org.springframework.cloud:spring-cloud-stream-binder-rabbit:jar:5.0.1:provided
+            [ERROR]         +-org.springframework.cloud:spring-cloud-stream:jar:5.0.1:provided
+            [ERROR]           +-org.jetbrains.kotlin:kotlin-reflect:jar:2.2.21:provided
+            [ERROR]             +-org.jetbrains.kotlin:kotlin-stdlib:jar:2.2.21:provided
+            [ERROR]               +-org.jetbrains:annotations:jar:13.0:provided
+            [ERROR] and
+            [ERROR] +-org.geoserver.acl.infrastructure:gs-acl-spring-cloud-bus-adapter:jar:3.0-SNAPSHOT
+            [ERROR]   +-org.springframework.cloud:spring-cloud-starter-bus-amqp:jar:5.0.1:provided
+            [ERROR]     +-org.springframework.cloud:spring-cloud-starter-stream-rabbit:jar:5.0.1:provided
+            [ERROR]       +-org.springframework.cloud:spring-cloud-stream-binder-rabbit:jar:5.0.1:provided
+            [ERROR]         +-org.springframework.cloud:spring-cloud-stream:jar:5.0.1:provided
+            [ERROR]           +-org.jetbrains.kotlinx:kotlinx-coroutines-reactor:jar:1.10.2:provided
+            [ERROR]             +-org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:jar:1.10.2:provided
+            [ERROR]               +-org.jetbrains:annotations:jar:23.0.0:provided
+            -->
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>23.0.0</version>
           </dependency>
         </dependencies>
       </dependencyManagement>

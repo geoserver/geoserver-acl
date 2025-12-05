@@ -6,7 +6,6 @@ package org.geoserver.acl.webapi.v1.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import tools.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.acl.domain.filter.predicate.FilterType;
@@ -16,6 +15,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 @Slf4j(topic = "mapper-test")
 class RuleFilterApiMapperTest {

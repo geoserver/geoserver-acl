@@ -12,11 +12,10 @@ import org.geoserver.acl.webapi.v1.model.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
+import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -53,7 +52,7 @@ abstract class AbstractAccesControlListApplicationTest {
     @BeforeEach
     void setup() {
         // Configure client to not follow redirects so we can test redirect responses
-        client = baseClient.withRedirects(Redirects.DONT_FOLLOW);
+        client = baseClient.withRedirects(org.springframework.boot.http.client.HttpRedirects.DONT_FOLLOW);
     }
 
     @Test
@@ -121,8 +120,7 @@ abstract class AbstractAccesControlListApplicationTest {
         }
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        var url = fullUrl(path);
-        return client.exchange(url, HttpMethod.GET, entity, responseType);
+        return client.exchange(path, HttpMethod.GET, entity, responseType);
     }
 
     private ResponseEntity<Rule> createRule(String json) {
@@ -137,13 +135,6 @@ abstract class AbstractAccesControlListApplicationTest {
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         HttpEntity<String> entity = new HttpEntity<>(requestBodyJson, headers);
 
-        var url = fullUrl(path);
-        return client.postForEntity(url, entity, responseType, urlVariables);
-    }
-
-    private String fullUrl(String path) {
-        String rootUri = client.getRootUri();
-        assertThat(rootUri).endsWith("/acl");
-        return rootUri + path;
+        return client.postForEntity(path, entity, responseType, urlVariables);
     }
 }
