@@ -1,16 +1,18 @@
 openapi: 3.0.0
 info:
-  title: GeoServer ACL
+  title: GeoServer Access Control List (ACL) API
+  version: 1.0.0
   description: |
-    The GeoServer Access Control List (ACL) API provides fine-grained authorization control for GeoServer resources.
+    This API provides comprehensive control over the GeoServer Access Control List (ACL) system.
+    It allows for the management of fine-grained access rules and provides endpoints to query authorization decisions.
 
-    This API manages two types of rules:
-    - **Data Rules**: Control access to GeoServer layers, workspaces, and services based on user, role, IP address, and request type
-    - **Admin Rules**: Grant workspace administration privileges to users
+    The API is divided into three main areas:
+    1.  **Data Rules:** For managing access to specific GeoServer resources (layers, services, etc.).
+    2.  **Workspace Admin Rules:** For managing administrative privileges on a per-workspace basis.
+    3.  **Authorization:** For querying the ACL system to determine access rights for a given request.
 
     Rules are evaluated in priority order (lower numbers = higher priority) to determine whether a request should be allowed, denied, or limited.
     The API also provides authorization endpoints that evaluate these rules for specific access requests.
-  version: 1.0.0
 servers:
 - url: /api
   description: Base path for all API endpoints
