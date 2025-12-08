@@ -3,8 +3,6 @@ name: Documentation Preview Cleanup
 on:
   pull_request_target:
     types: [closed]
-    paths:
-      - 'docs/**'
 
 permissions:
   contents: write
