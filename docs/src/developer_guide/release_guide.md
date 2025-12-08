@@ -73,7 +73,16 @@ The Jenkins job will:
 - Build and deploy artifacts to OSGeo releases repository
 - Artifacts will be versioned according to the tag name
 
-### 5. Verify the Release
+### 5. Create GitHub Release
+
+While artifacts are published automatically to Docker Hub and Maven Central, you should create a release entry on GitHub to host the changelog.
+
+1. Go to the [Releases page](https://github.com/geoserver/geoserver-acl/releases)
+2. Draft a new release using the tag you just pushed (e.g., `3.0.0`)
+3. Generate release notes (using the "Generate release notes" button) or paste the changelog
+4. Publish the release
+
+### 6. Verify the Release
 
 After both processes complete, verify:
 
@@ -86,7 +95,7 @@ docker pull geoservercloud/geoserver-acl:3.0.0
 Check the OSGeo releases repository:
 - https://repo.osgeo.org/repository/Geoserver-releases/
 
-### 6. Update Documentation
+### 7. Update Documentation
 
 After a successful release:
 - Update the changelog (if applicable)
@@ -140,4 +149,3 @@ make show-version
 - **Docker Images:** https://hub.docker.com/r/geoservercloud/geoserver-acl
 - **Maven Releases:** https://repo.osgeo.org/repository/Geoserver-releases/
 - **Maven Snapshots:** https://repo.osgeo.org/repository/geoserver-snapshots/
-

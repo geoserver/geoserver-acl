@@ -26,6 +26,7 @@ help:
 	@echo "Other:"
 	@echo "  deploy         - Package and deploy artifacts (requires MAVEN_SETTINGS)"
 	@echo "  show-version   - Display current project version"
+	@echo "  docs           - Generate documentation (see docs/Makefile)"
 	@echo ""
 
 #build, test, and install all modules
@@ -68,3 +69,7 @@ deploy:
 
 show-version:
 	@echo ${VERSION}
+
+.PHONY: docs
+docs:
+	(cd docs/ && make build)

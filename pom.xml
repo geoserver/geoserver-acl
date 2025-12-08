@@ -40,7 +40,6 @@
   <modules>
     <module>bom</module>
     <module>src</module>
-    <module>docs</module>
   </modules>
   <scm>
     <connection>scm:git:git@github.com:geoserver/geoserver-acl.git</connection>
