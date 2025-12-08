@@ -6,6 +6,7 @@ on:
     paths:
       - 'docs/**'
       - '.github/workflows/docs.yaml'
+      - 'src/infrastructure/web-api/spec/src/**'
   workflow_dispatch:
 
 jobs:
