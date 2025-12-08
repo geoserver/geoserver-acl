@@ -1,0 +1,11 @@
+# Python virtual env
+.venv/
+__pycache__/
+
+# Build output
+site/
+
+# Generated files
+src/api/openapi.yaml
+src/assets/images/structurizr
+structurizr/exports/

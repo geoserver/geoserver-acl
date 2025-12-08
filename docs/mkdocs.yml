@@ -1,0 +1,143 @@
+site_name: Access Control List
+site_description: GeoServer ACL is an advanced, high-performance authorization system for GeoServer
+site_author: GeoServer Project
+copyright: "&copy; 2023  Open Source Geospatial Foundation. All rights reserved."
+repo_url: https://github.com/geoserver/geoserver-acl
+edit_uri: edit/main/docs/src/
+site_url: !ENV [SITE_URL, 'https://geoserver.org/geoserver-acl']
+docs_dir: src
+
+theme:
+  name: material
+  custom_dir: overrides
+  logo: assets/images/geoserver-acl-logo.svg
+  favicon: assets/images/favicon.ico
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      # primary: custom, so it respects the overrides in src/assets/stylesheets/extra.css for --md-primary-fg-color etc.
+      primary: custom
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: white
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+  
+extra_css:
+  - assets/stylesheets/extra.css
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+      title: On this page
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - htmlproofer:
+      enabled: !ENV [HTMLPROOFER_ENABLED, true]
+      raise_error: true
+      raise_error_after_finish: false
+      validate_external_urls: false
+      validate_rendered_template: true
+      ignore_pages:
+        - community/contributors.md
+  - minify:
+      minify_html: true
+
+nav:
+  - Home: index.md
+  - User Guide:
+    - user_guide/index.md
+    - Understanding Access Control: user_guide/access_control.md
+    - Using OWS Services: user_guide/ows_services.md
+    - Workspace Administration: user_guide/workspace_admin.md
+    - Troubleshooting: user_guide/troubleshooting.md
+  - Administrator Guide:
+    - admin_guide/index.md
+    - Installation: admin_guide/installation.md
+    - Configuration: admin_guide/configuration.md
+    - Rule Management: admin_guide/rule_management.md
+    - Admin Rule Management: admin_guide/admin_rule_management.md
+    - Spatial & Attribute Filtering: admin_guide/filtering.md
+    - REST API Usage: admin_guide/rest_api.md
+    - Monitoring: admin_guide/monitoring.md
+  - Developer Guide:
+    - developer_guide/index.md
+    - Architecture: developer_guide/architecture.md
+    - Building from Source: developer_guide/building.md
+    - API Integration: developer_guide/api_integration.md
+    - Release Guide: developer_guide/release_guide.md
+    - Contributing: developer_guide/contributing.md
+  - Community:
+    - Overview: community/index.md
+    - Contributors: community/contributors.md
+  - API Reference:
+    - api/index.md
+
+extra:
+  banner_message: !ENV [BANNER_MESSAGE, '']
+  analytics:
+    provider: google
+    property: G-EC8GC2KSYW
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/geoserver/geoserver-acl
+    - icon: fontawesome/solid/globe
+      link: https://geoserver/geoserver-acl
