@@ -177,6 +177,26 @@ jobs:
         path: docs/site/
         retention-days: 14
 
+    - name: Wait for deployment (Best Effort)
+      if: github.event_name == 'pull_request_target'
+      timeout-minutes: 3
+      continue-on-error: true
+      run: |
+        # Calculate URL
+        URL="https://geoserver.org/geoserver-acl/preview/pr-${{ github.event.pull_request.number }}/"
+        echo "Waiting for $URL to be reachable..."
+        
+        # Poll for up to 2 minutes (24 * 5s)
+        for i in {1..24}; do
+          if curl --output /dev/null --silent --head --fail "$URL"; then
+            echo "✅ Site is live!"
+            exit 0
+          fi
+          echo "💤 Waiting for GitHub Pages propagation... ($((i*5))s)"
+          sleep 5
+        done
+        echo "⚠️ Timeout waiting for site to go live. It should be available shortly."
+
     - name: Comment on PR with preview link
       if: github.event_name == 'pull_request_target'
       uses: actions/github-script@v7
