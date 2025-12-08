@@ -1,0 +1,104 @@
+{
+  "projectName": "geoserver-acl",
+  "projectOwner": "geoserver",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "docs/src/community/contributors.md"
+  ],
+  "imageSize": 120,
+  "commit": false,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "groldan",
+      "name": "Gabriel Roldan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/207423?v=4",
+      "profile": "https://github.com/groldan",
+      "contributions": [
+        "code",
+        "doc",
+        "infra",
+        "design",
+        "ideas",
+        "maintenance",
+        "research",
+        "talk"
+      ]
+    },
+    {
+      "login": "vuilleumierc",
+      "name": "Cécile Vuilleumier",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18527151?v=4",
+      "profile": "https://github.com/vuilleumierc",
+      "contributions": [
+        "code",
+        "bug",
+        "test",
+        "infra",
+        "review"
+      ]
+    },
+    {
+      "login": "jemacchi",
+      "name": "Jose Macchi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1171099?v=4",
+      "profile": "http://josemacchi.wordpress.com/",
+      "contributions": [
+        "bug",
+        "test",
+        "infra",
+        "review"
+      ]
+    },
+    {
+      "login": "danduk82",
+      "name": "Andrea Borghi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2493436?v=4",
+      "profile": "https://github.com/danduk82",
+      "contributions": [
+        "infra",
+        "bug",
+        "test",
+        "code",
+        "talk",
+        "userTesting"
+      ]
+    },
+    {
+      "login": "ebelo",
+      "name": "Emmanuel Belo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/496153?v=4",
+      "profile": "https://www.camptocamp.com/",
+      "contributions": [
+        "fundingFinding",
+        "promotion",
+        "business"
+      ]
+    },
+    {
+      "login": "fgravin",
+      "name": "Florent Gravin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1491924?v=4",
+      "profile": "https://github.com/fgravin",
+      "contributions": [
+        "business",
+        "ideas",
+        "promotion",
+        "fundingFinding"
+      ]
+    },
+    {
+      "login": "roldandesign",
+      "name": "Camila Roldan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/242018486?v=4",
+      "profile": "https://github.com/roldandesign",
+      "contributions": [
+        "design"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "contributorsSortAlphabetically": true
+}
