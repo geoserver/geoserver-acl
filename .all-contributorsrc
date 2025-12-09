@@ -109,6 +109,17 @@
         "fundingFinding",
         "projectManagement"
       ]
+    },
+    {
+      "login": "dispiste",
+      "name": "Cesar Martinez Izquierdo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1564127?v=4",
+      "profile": "https://github.com/dispiste",
+      "contributions": [
+        "bug",
+        "userTesting",
+        "financial"
+      ]
     }
   ],
   "contributorsPerLine": 7,
