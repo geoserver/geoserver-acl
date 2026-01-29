@@ -59,10 +59,6 @@
           <artifactId>gt-http</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-core</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>org.eclipse.imagen</groupId>
           <artifactId>core</artifactId>
         </exclusion>

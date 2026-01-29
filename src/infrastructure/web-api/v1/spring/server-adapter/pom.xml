@@ -14,6 +14,9 @@
   </parent>
   <artifactId>gs-acl-webapi-v1-server-adapter</artifactId>
   <description>Adapter Implementation: code-generates and implements server interfaces</description>
+  <properties>
+    <openapi-codegen-skip>true</openapi-codegen-skip>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.acl.infrastructure</groupId>
@@ -42,6 +45,10 @@
     <dependency>
       <groupId>tools.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-smile</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>tools.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
     </dependency>
     <dependency>
       <!-- this is just to avoid compiler warnings like "unknown enum constant org.mapstruct.ReportingPolicy.ERROR", not needed at runtime -->
@@ -117,6 +124,7 @@
             </goals>
             <phase>generate-sources</phase>
             <configuration>
+              <skipAddSource>${openapi-codegen-skip}</skipAddSource>
               <sources>
                 <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
               </sources>

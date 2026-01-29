@@ -14,6 +14,9 @@
   </parent>
   <artifactId>gs-acl-webapi-v1-restclient</artifactId>
   <description>Generated "Dumb" Client for SpringWeb: Raw RestClient, depends only on generated-model</description>
+  <properties>
+    <openapi-codegen-skip>true</openapi-codegen-skip>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.acl.infrastructure</groupId>
@@ -34,11 +37,10 @@
     <dependency>
       <groupId>tools.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>3.0.4</version>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
+      <groupId>tools.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
     </dependency>
     <dependency>
       <groupId>tools.jackson.core</groupId>
@@ -66,6 +68,7 @@
             </goals>
             <phase>generate-sources</phase>
             <configuration>
+              <skipAddSource>${openapi-codegen-skip}</skipAddSource>
               <sources>
                 <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
               </sources>
