@@ -4,8 +4,7 @@
  */
 package org.geoserver.acl.webapi.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.databind.ObjectMapper;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -168,7 +167,6 @@ public class AclClientAdapter {
     static RestClient createRestClient() {
         // Create ObjectMapper with JavaTimeModule for proper date/time serialization
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
 
         // Build RestClient with custom ObjectMapper and HTTPS support
         HttpComponentsClientHttpRequestFactory requestFactory = getClientHttpRequestFactoryForHttps();

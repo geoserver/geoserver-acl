@@ -11,13 +11,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Import;
 
 /**
- * {@link org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration} is disabled in
+ * {@link org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration} is disabled in
  * {@literal application.yml}; this auto configuration enables it when the {@literal
  * geoserver.bus.enabled} configuration property is {@code true}.
  */
 @AutoConfiguration(before = AclSpringCloudBusAutoConfiguration.class)
 @ConditionalOnProperty(name = "geoserver.bus.enabled", havingValue = "true", matchIfMissing = false)
-@Import(org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration.class)
+@Import(org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration.class)
 @Slf4j
 public class RabbitAutoConfiguration {
 

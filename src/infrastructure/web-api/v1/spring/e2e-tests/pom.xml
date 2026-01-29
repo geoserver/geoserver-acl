@@ -41,9 +41,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <version>4.0.2</version>
       <!-- only to get @LocalServerPort working, not because spring-boot was needed at all -->
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
+      <artifactId>spring-boot-starter-webmvc</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

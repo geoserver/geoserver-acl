@@ -40,7 +40,7 @@
       <artifactId>gs-acl-authorization-impl</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <groupId>tools.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-smile</artifactId>
     </dependency>
     <dependency>
@@ -80,12 +80,6 @@
       <artifactId>jakarta.validation-api</artifactId>
     </dependency>
     <dependency>
-      <!-- @javax.annotation.Generated annotation -->
-      <groupId>jakarta.annotation</groupId>
-      <artifactId>jakarta.annotation-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
       <scope>provided</scope>
@@ -105,8 +99,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-test</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security-test</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

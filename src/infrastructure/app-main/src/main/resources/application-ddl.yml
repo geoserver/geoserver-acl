@@ -3,10 +3,10 @@ spring:
   flyway.enabled: false
   main.web-application-type: none  
   autoconfigure.exclude:
-    - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-    - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
-    - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
-    - org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration
+    - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
+    - org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration
+    - org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration
+    - org.springframework.boot.jdbc.autoconfigure.JndiDataSourceAutoConfiguration
     - org.geoserver.acl.autoconfigure.api.RulesApiAutoConfiguration
     - org.geoserver.acl.autoconfigure.security.AclServiceSecurityAutoConfiguration
     - org.geoserver.acl.autoconfigure.security.InternalSecurityConfiguration

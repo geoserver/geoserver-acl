@@ -4,8 +4,8 @@
  */
 package org.geoserver.acl.webapi.v1.server;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
