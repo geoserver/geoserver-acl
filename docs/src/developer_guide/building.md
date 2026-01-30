@@ -33,12 +33,6 @@ If you prefer using Maven directly or need to pass specific flags:
 ./mvnw clean install -DskipTests
 ```
 
-### Build GeoServer Plugin Only
-The plugin must be built against Java 11 source compatibility.
-```bash
-./mvnw clean install -pl src/plugin -Pgs-plugin
-```
-
 ### Build Docker Image
 ```bash
 ./mvnw clean package -pl src/application/authorization-app -Pdocker -DskipTests
