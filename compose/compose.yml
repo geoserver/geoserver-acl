@@ -33,7 +33,7 @@ services:
       - PG_SCHEMA=acl
       - PG_USER=acl
       - PG_PASSWORD=acls3cr3t
-      - SPRING_PROFILES_ACTIVE=logging-debug-requests
+        #- SPRING_PROFILES_ACTIVE=logging-debug-requests
       # uncomment for remote debugging
       #- JAVA_OPTS=-Xdebug -agentlib:jdwp=transport=dt_socket,address=*:15005,server=y,suspend=n
     depends_on:

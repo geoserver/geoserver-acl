@@ -70,23 +70,25 @@
   </distributionManagement>
   <properties>
     <revision>3.0-SNAPSHOT</revision>
+    <!-- default target java version, submodules may override -->
     <java.version>17</java.version>
+    <java.sdk.version>17</java.sdk.version>
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
     <gt.version>35-SNAPSHOT</gt.version>
     <spring-cloud.version>2025.1.1</spring-cloud.version>
     <spring-boot.version>4.0.2</spring-boot.version>
+    <jackson.version>3.0.4</jackson.version>
     <lombok.version>1.18.42</lombok.version>
     <mapstruct.version>1.6.3</mapstruct.version>
-    <jackson.version>3.0.4</jackson.version>
-    <testcontainers.version>2.0.3</testcontainers.version>
     <geolatte.version>1.10</geolatte.version>
     <querydsl.version>7.1</querydsl.version>
     <springdoc.version>3.0.1</springdoc.version>
     <caffeine.version>3.2.3</caffeine.version>
     <h2.version>2.2.224</h2.version>
     <jts.version>1.20.0</jts.version>
-    <openapi-generator-maven-plugin.version>7.19.0</openapi-generator-maven-plugin.version>
+    <testcontainers.version>2.0.3</testcontainers.version>
     <swagger-annotations-jakarta.version>2.2.41</swagger-annotations-jakarta.version>
+    <openapi-generator-maven-plugin.version>7.19.0</openapi-generator-maven-plugin.version>
     <!-- build setings -->
     <fmt.skip>false</fmt.skip>
     <spotless.skip>${fmt.skip}</spotless.skip>
@@ -296,17 +298,41 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>3.5.4</version>
+          <inherited>true</inherited>
+          <configuration>
+            <reuseForks>false</reuseForks>
+            <forkCount>1C</forkCount>
+            <argLine>--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED  --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED</argLine>
+            <systemPropertyVariables>
+              <!-- remove when it's not necessary anymore for Java 25 -->
+              <net.bytebuddy.experimental>true</net.bytebuddy.experimental>
+            </systemPropertyVariables>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
           <version>3.5.4</version>
-          <configuration>
-            <!-- Timeout for forked JVM to prevent hanging tests in CI -->
-            <forkedProcessTimeoutInSeconds>600</forkedProcessTimeoutInSeconds>
-            <!-- Timeout for individual tests -->
-            <trimStackTrace>false</trimStackTrace>
-          </configuration>
+          <inherited>true</inherited>
+          <executions>
+            <execution>
+              <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+              </goals>
+              <configuration>
+                <forkCount>2</forkCount>
+                <reuseForks>false</reuseForks>
+                <trimStackTrace>false</trimStackTrace>
+                <!-- Timeout for forked JVM to prevent hanging tests in CI -->
+                <forkedProcessTimeoutInSeconds>600</forkedProcessTimeoutInSeconds>
+                <systemPropertyVariables>
+                  <!-- remove when it's not necessary anymore for Java 25 -->
+                  <net.bytebuddy.experimental>true</net.bytebuddy.experimental>
+                </systemPropertyVariables>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -395,7 +421,7 @@
             <configuration>
               <rules>
                 <requireJavaVersion>
-                  <version>[17,)</version>
+                  <version>[${java.sdk.version},)</version>
                 </requireJavaVersion>
                 <requireMavenVersion>
                   <!--
@@ -409,8 +435,8 @@
                      developers or CI/CD pipelines using different Maven versions may face
                      unexpected build failures or inconsistencies.
                   -->
-                  <version>3.9</version>
-                  <message>You must use Maven 3.9 or higher to build this project.</message>
+                  <version>[3.9.11,)</version>
+                  <message>You must use Maven 3.9.11 or higher to build this project.</message>
                 </requireMavenVersion>
               </rules>
             </configuration>
