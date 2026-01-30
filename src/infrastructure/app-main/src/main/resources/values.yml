@@ -54,7 +54,7 @@ acl.security.headers.admin-roles: ROLE_ADMINISTRATOR
 
 
 ---
-spring.config.activate.on-profile: logging_debug
+spring.config.activate.on-profile: logging-debug
 logging:
   level:
     root: info
@@ -62,7 +62,7 @@ logging:
     org.geoserver.acl.bus.bridge: debug
 
 ---
-spring.config.activate.on-profile: logging_debug_events
+spring.config.activate.on-profile: logging-debug-events
 logging:
     org.geoserver.acl.bus.bridge: debug
 

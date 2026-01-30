@@ -64,6 +64,7 @@ spring:
     default-property-inclusion: non-empty
     serialization:
       indent-output: true
+  jmx.enabled: false
   cache:
     type: caffeine
     caffeine:
@@ -129,11 +130,15 @@ management:
     os.enabled: true
   endpoint:
     health:
-      probes:
-        enabled: true
+      probes.enabled: true
       show-components: when-authorized
       show-details: when-authorized
     caches.access: read-only
+    startup.access: read-only
+    env:
+      show-values: when-authorized
+    configprops:
+      show-values: when-authorized
   endpoints:
     web.exposure.include: ['*']
 
