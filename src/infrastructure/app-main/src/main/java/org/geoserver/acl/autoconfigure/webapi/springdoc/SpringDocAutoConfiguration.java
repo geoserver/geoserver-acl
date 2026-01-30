@@ -10,11 +10,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.customizers.ServerBaseUrlCustomizer;
 import org.springdoc.core.properties.SpringDocConfigProperties;
-import org.springdoc.core.properties.SwaggerUiConfigParameters;
 import org.springdoc.core.properties.SwaggerUiConfigProperties;
 import org.springdoc.core.providers.SpringWebProvider;
 import org.springdoc.webmvc.ui.SwaggerConfig;
 import org.springdoc.webmvc.ui.SwaggerWelcomeWebMvc;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -47,14 +47,9 @@ public class SpringDocAutoConfiguration {
     SwaggerWelcomeWebMvc xForwardedPrefixAwareSwaggerWelcome(
             SwaggerUiConfigProperties swaggerUiConfig,
             SpringDocConfigProperties springDocConfigProperties,
-            SwaggerUiConfigParameters swaggerUiConfigParameters,
-            SpringWebProvider springWebProvider) {
+            ObjectProvider<SpringWebProvider> springWebProvider) {
         return new ServletContextSuffixingSwaggerWelcomeWebMvc(
-                swaggerUiConfig,
-                springDocConfigProperties,
-                swaggerUiConfigParameters,
-                springWebProvider,
-                servletContextPath);
+                swaggerUiConfig, springDocConfigProperties, springWebProvider, servletContextPath);
     }
 
     @RequiredArgsConstructor
@@ -65,9 +60,11 @@ public class SpringDocAutoConfiguration {
         public String customize(String serverBaseUrl, HttpRequest request) {
             String url = serverBaseUrl;
             String path = URI.create(serverBaseUrl).getPath();
-            if (path.endsWith("/")) path = path.substring(0, path.length() - 1);
+            if (path.endsWith("/")) {
+                path = path.substring(0, path.length() - 1);
+            }
             if (!path.endsWith(servletContextPath)) {
-                UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(serverBaseUrl);
+                UriComponentsBuilder builder = UriComponentsBuilder.fromPath(serverBaseUrl);
                 builder.path(servletContextPath);
                 url = builder.build().toString();
             }
@@ -83,10 +80,9 @@ public class SpringDocAutoConfiguration {
         public ServletContextSuffixingSwaggerWelcomeWebMvc(
                 SwaggerUiConfigProperties swaggerUiConfig,
                 SpringDocConfigProperties springDocConfigProperties,
-                SwaggerUiConfigParameters swaggerUiConfigParameters,
-                SpringWebProvider springWebProvider,
+                ObjectProvider<SpringWebProvider> springWebProvider,
                 String contextPath) {
-            super(swaggerUiConfig, springDocConfigProperties, swaggerUiConfigParameters, springWebProvider);
+            super(swaggerUiConfig, springDocConfigProperties, springWebProvider);
             this.servletContextPath = contextPath;
         }
 
@@ -94,7 +90,9 @@ public class SpringDocAutoConfiguration {
         protected String buildUrl(String contextPath, final String docsUrl) {
             String realContextPath = contextPath;
 
-            if (!realContextPath.endsWith(this.servletContextPath)) realContextPath += this.servletContextPath;
+            if (!realContextPath.endsWith(this.servletContextPath)) {
+                realContextPath += this.servletContextPath;
+            }
             var url = super.buildUrl(realContextPath, docsUrl);
             log.debug("buildUrl({}, {}): {}", contextPath, docsUrl, url);
             return url;

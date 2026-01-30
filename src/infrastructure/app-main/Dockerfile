@@ -13,19 +13,24 @@ LABEL maintainer="GeoServer PSC <geoserver-users@lists.sourceforge.net>"
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/app/bin
-ENV DEF_JAVA_TOOL_OPTS="\
+ENV DEFAULT_JAVA_TOOL_OPTIONS="\
 --add-exports=java.desktop/sun.awt.image=ALL-UNNAMED \
 --add-opens=java.base/java.lang=ALL-UNNAMED \
---add-opens=java.base/java.util=ALL-UNNAMED \
 --add-opens=java.base/java.lang.reflect=ALL-UNNAMED \
+--add-opens=java.base/java.util=ALL-UNNAMED \
 --add-opens=java.base/java.text=ALL-UNNAMED \
 --add-opens=java.desktop/java.awt.font=ALL-UNNAMED \
 --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED \
 --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED \
--Djava.awt.headless=true"
-ENV JAVA_OPTS="-XX:+UseCompactObjectHeaders -XX:MaxRAMPercentage=80 -XshowSettings:system"
+-Djava.awt.headless=true \
+--enable-native-access=ALL-UNNAMED \
+-XX:+UseCompressedOops \
+-XX:+UseCompactObjectHeaders"
 
-ENV JAVA_TOOL_OPTS="$DEF_JAVA_TOOL_OPTS"
+ENV JAVA_TOOL_OPTIONS="$DEFAULT_JAVA_TOOL_OPTIONS"
+
+ENV JAVA_OPTS="-XX:MaxRAMPercentage=80 -XshowSettings:system"
+
 ENV MANAGEMENT_SERVER_PORT=8081
 EXPOSE 8080
 EXPOSE 8081

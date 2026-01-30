@@ -6,9 +6,6 @@ package org.geoserver.acl.webapi.v1.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.acl.domain.filter.predicate.FilterType;
@@ -17,6 +14,8 @@ import org.geoserver.acl.domain.rules.RuleFilter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 @Slf4j(topic = "mapper-test")
 class RuleFilterApiMapperTest {
@@ -30,7 +29,6 @@ class RuleFilterApiMapperTest {
     @BeforeAll
     static void createObjectMapper() {
         objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
     }
 
     @BeforeEach
@@ -108,14 +106,14 @@ class RuleFilterApiMapperTest {
         assertEquals(model, roundtripped);
     }
 
-    @SneakyThrows(JsonProcessingException.class)
+    @SneakyThrows(JacksonException.class)
     private void print(RuleFilter model, org.geoserver.acl.webapi.v1.model.RuleFilter api, RuleFilter roundtripped) {
         log.debug("model: {}", model);
         log.debug("api  : {}", objectMapper.writeValueAsString(api));
         log.debug("rtp  : {}", roundtripped);
     }
 
-    @SneakyThrows(JsonProcessingException.class)
+    @SneakyThrows(JacksonException.class)
     void print(org.geoserver.acl.webapi.v1.model.RuleFilter api) {
         String encoded = objectMapper.writeValueAsString(api);
         System.err.println(encoded);

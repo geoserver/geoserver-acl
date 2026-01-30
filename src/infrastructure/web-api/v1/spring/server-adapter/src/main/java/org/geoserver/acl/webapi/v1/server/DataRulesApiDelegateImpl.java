@@ -23,9 +23,9 @@ import org.geoserver.acl.webapi.v1.model.LayerDetails;
 import org.geoserver.acl.webapi.v1.model.Rule;
 import org.geoserver.acl.webapi.v1.model.RuleFilter;
 import org.geoserver.acl.webapi.v1.model.RuleLimits;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 
 @RequiredArgsConstructor
 @IsAuthenticated

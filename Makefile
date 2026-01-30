@@ -48,7 +48,7 @@ test:
 test-examples:
 	./mvnw -Drevision=$(VERSION) install -pl :gs-acl-webapi-v1-client-adapter -am -ntp -nsu -DskipTests
 	./mvnw -Drevision=$(VERSION) install -DskipTests -ntp -nsu -pl :gs-acl-testcontainer
-	./mvnw -Drevision=$(VERSION) verify -ntp -nsu -T4 -f examples/
+	./mvnw -Drevision=$(VERSION) install -ntp -nsu -T4 -f examples/
 
 # Make sure `make package` was run before if anything changed since the last build
 # Consecutive COPY commands in Dockerfile fail on github runners

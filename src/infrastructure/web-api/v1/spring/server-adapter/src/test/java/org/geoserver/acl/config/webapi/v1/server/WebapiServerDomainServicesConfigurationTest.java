@@ -7,7 +7,6 @@ package org.geoserver.acl.config.webapi.v1.server;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.geoserver.acl.domain.adminrules.AdminRuleRepository;
 import org.geoserver.acl.domain.rules.RuleRepository;
 import org.geoserver.acl.webapi.v1.mapper.AdminRuleApiMapper;
@@ -22,6 +21,7 @@ import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.web.context.request.NativeWebRequest;
+import tools.jackson.datatype.jsr310.JavaTimeModule;
 
 class WebapiServerDomainServicesConfigurationTest {
 

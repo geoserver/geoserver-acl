@@ -5,7 +5,7 @@
 package org.geoserver.acl.examples.javaclient;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import org.geoserver.acl.authorization.AccessInfo;

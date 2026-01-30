@@ -26,7 +26,7 @@ import org.mapstruct.ReportingPolicy;
             GeometryApiMapper.class,
             RuleLimitsApiMapper.class
         })
-public abstract class RuleApiMapper {
+public interface RuleApiMapper {
 
     @Mapping(target = "identifier.access", source = "access")
     @Mapping(target = "identifier.username", source = "user")
@@ -38,7 +38,7 @@ public abstract class RuleApiMapper {
     @Mapping(target = "identifier.layer", source = "layer")
     @Mapping(target = "identifier.addressRange", source = "addressRange")
     @Mapping(target = "ruleLimits", source = "limits")
-    public abstract org.geoserver.acl.domain.rules.Rule toModel(org.geoserver.acl.webapi.v1.model.Rule rule);
+    org.geoserver.acl.domain.rules.Rule toModel(org.geoserver.acl.webapi.v1.model.Rule rule);
 
     @Mapping(target = "access", source = "identifier.access")
     @Mapping(target = "user", source = "identifier.username")
@@ -54,10 +54,10 @@ public abstract class RuleApiMapper {
 
     @Mapping(target = "identifier", ignore = true)
     @Mapping(target = "ruleLimits", ignore = true)
-    abstract Rule updateEntity(@MappingTarget Rule.Builder entity, org.geoserver.acl.webapi.v1.model.Rule dto);
+    Rule updateEntity(@MappingTarget Rule.Builder entity, org.geoserver.acl.webapi.v1.model.Rule dto);
 
     @Mapping(target = "username", source = "user")
     @Mapping(target = "rolename", source = "role")
-    abstract RuleIdentifier updateIdentifier(
+    RuleIdentifier updateIdentifier(
             @MappingTarget RuleIdentifier.Builder entity, org.geoserver.acl.webapi.v1.model.Rule dto);
 }

@@ -4,8 +4,6 @@
  */
 package org.geoserver.acl.persistence.jpa.mapper;
 
-import java.util.Optional;
-import org.geoserver.acl.domain.rules.LayerDetails;
 import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleIdentifier;
 import org.mapstruct.InjectionStrategy;
@@ -58,10 +56,6 @@ public interface RuleJpaMapper {
     @Mapping(target = "lastModifiedBy", ignore = true)
     @Mapping(target = "lastModifiedDate", ignore = true)
     void updateEntity(@MappingTarget org.geoserver.acl.persistence.jpa.model.Rule entity, Rule model);
-
-    default org.geoserver.acl.persistence.jpa.model.LayerDetails toEntity(Optional<LayerDetails> value) {
-        return value == null ? null : value.map(this::toEntity).orElse(null);
-    }
 
     org.geoserver.acl.persistence.jpa.model.LayerDetails toEntity(org.geoserver.acl.domain.rules.LayerDetails value);
 

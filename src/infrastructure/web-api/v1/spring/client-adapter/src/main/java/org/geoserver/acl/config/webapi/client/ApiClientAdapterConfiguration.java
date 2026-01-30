@@ -9,10 +9,10 @@ import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.geoserver.acl.webapi.client.AclClientAdapter;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 /**

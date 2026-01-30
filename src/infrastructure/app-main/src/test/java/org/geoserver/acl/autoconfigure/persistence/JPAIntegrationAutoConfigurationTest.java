@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.geoserver.acl.config.simplejndi.JNDIDataSourceAutoConfiguration;
 import org.geoserver.acl.config.simplejndi.SimpleJNDIStaticContextInitializer;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -17,9 +16,6 @@ class JPAIntegrationAutoConfigurationTest {
 
     private ApplicationContextRunner runner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(JPAIntegrationAutoConfiguration.class));
-
-    @BeforeEach
-    void setUp() throws Exception {}
 
     @Test
     void testDbConfigWithURL() {
