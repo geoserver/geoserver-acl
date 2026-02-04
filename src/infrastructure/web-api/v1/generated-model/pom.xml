@@ -14,6 +14,9 @@
   </parent>
   <artifactId>gs-acl-webapi-v1-model</artifactId>
   <description>Generated DTOs: From the OpenAPI specification</description>
+  <properties>
+    <openapi-codegen-skip>true</openapi-codegen-skip>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.acl.infrastructure</groupId>
@@ -29,21 +32,17 @@
       <artifactId>swagger-annotations-jakarta</artifactId>
     </dependency>
     <dependency>
-      <groupId>jakarta.annotation</groupId>
-      <artifactId>jakarta.annotation-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>jakarta.validation</groupId>
       <artifactId>jakarta.validation-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
+      <groupId>tools.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jsr310</artifactId>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -64,6 +63,7 @@
             </goals>
             <phase>generate-sources</phase>
             <configuration>
+              <skipAddSource>${openapi-codegen-skip}</skipAddSource>
               <sources>
                 <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
               </sources>

@@ -36,9 +36,8 @@ public class InternalSecurityAutoConfiguration {
             @Qualifier("internalUserDetailsService") UserDetailsService internalUserDetailsService,
             PasswordEncoder encoder) {
 
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(internalUserDetailsService);
         provider.setAuthoritiesMapper(new NullAuthoritiesMapper());
-        provider.setUserDetailsService(internalUserDetailsService);
 
         provider.setPasswordEncoder(encoder);
 

@@ -7,7 +7,7 @@ package org.geoserver.acl.simplejndi;
 import java.util.Hashtable;
 import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Simple implementation of a JNDI naming context builder.

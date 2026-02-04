@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.geoserver.acl.config.authorization.cache.CachingAuthorizationServiceConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -18,6 +19,7 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration
 @ConditionalOnProperty(name = "geoserver.acl.caching.enabled", havingValue = "true", matchIfMissing = true)
 @Import(CachingAuthorizationServiceConfiguration.class)
+@EnableCaching
 @Slf4j(topic = "org.geoserver.acl.autoconfigure.cache")
 public class CachingAuthorizationServiceServerAutoConfiguration {
 

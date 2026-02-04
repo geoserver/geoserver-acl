@@ -15,7 +15,7 @@ import org.testcontainers.utility.DockerImageName;
 public class GeoServerAclContainer extends GenericContainer<GeoServerAclContainer> {
 
     private static final WaitStrategy ACTUATOR_READINESS_PROBE =
-            Wait.forHttp("/actuator/health/readiness").forPort(8081).withStartupTimeout(Duration.ofSeconds(10));
+            Wait.forHttp("/actuator/health/readiness").forPort(8081).withStartupTimeout(Duration.ofSeconds(30));
 
     public static final String DEFAULT_IMAGE_REPOSITORY = "geoservercloud/geoserver-acl";
 

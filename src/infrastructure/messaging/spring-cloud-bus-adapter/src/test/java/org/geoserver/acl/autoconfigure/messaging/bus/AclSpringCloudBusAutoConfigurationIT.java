@@ -103,7 +103,7 @@ class AclSpringCloudBusAutoConfigurationIT {
     }
 
     @Test
-    void testRuleEvent() throws InterruptedException {
+    void testRuleEvent() {
         RuleEvent ruleEvent = RuleEvent.deleted("r1", "r2", "r3");
         // publish on app1
         app1Context.publishEvent(ruleEvent);
@@ -125,7 +125,7 @@ class AclSpringCloudBusAutoConfigurationIT {
     }
 
     @Test
-    void testAdminRuleEvent() throws InterruptedException {
+    void testAdminRuleEvent() {
         AdminRuleEvent adminEvent = AdminRuleEvent.deleted("a1", "a2", "a3");
         // publish on app1
         app1Context.publishEvent(adminEvent);

@@ -65,7 +65,7 @@ flowchart LR
 GeoServer ACL originated as a fork of [GeoFence](https://github.com/geoserver/geofence). It retains the proven logic of the original project but rebuilds the underlying architecture for modern deployment needs, offering:
 
 *   **Cloud Native Design**: Ready for Docker, Kubernetes, and microservices environments.
-*   **Modern Tech Stack**: Built on Spring Boot 3 and Java 17+.
+*   **Modern Tech Stack**: Built on Spring Boot 4 and Java 17+.
 *   **Modular Architecture**: Decoupled authorization service for improved maintainability and scalability.
 
 ## Get Involved

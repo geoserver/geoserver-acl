@@ -4,9 +4,9 @@
  */
 package org.geoserver.acl.config.webapi.v1.server;
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import tools.jackson.datatype.jsr310.JavaTimeModule;
 
 @Configuration(proxyBeanMethods = false)
 class ObjectMapperConfiguration {

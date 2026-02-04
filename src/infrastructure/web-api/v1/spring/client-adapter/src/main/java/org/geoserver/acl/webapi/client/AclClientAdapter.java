@@ -4,8 +4,6 @@
  */
 package org.geoserver.acl.webapi.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -33,6 +31,7 @@ import org.geoserver.acl.webapi.v1.client.WorkspaceAdminRulesApi;
 import org.geoserver.acl.webapi.v1.client.auth.HttpBasicAuth;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Client for the GeoServer ACL (Access Control List) REST API.
@@ -167,13 +166,11 @@ public class AclClientAdapter {
 
     static RestClient createRestClient() {
         // Create ObjectMapper with JavaTimeModule for proper date/time serialization
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
+        JsonMapper defaultObjectMapper = ApiClient.createDefaultObjectMapper(null);
 
         // Build RestClient with custom ObjectMapper and HTTPS support
         HttpComponentsClientHttpRequestFactory requestFactory = getClientHttpRequestFactoryForHttps();
-
-        return ApiClient.buildRestClientBuilder(objectMapper)
+        return ApiClient.buildRestClientBuilder(defaultObjectMapper)
                 .requestFactory(requestFactory)
                 .build();
     }
