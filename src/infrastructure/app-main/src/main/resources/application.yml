@@ -89,14 +89,6 @@ spring:
       # RestClientAutoConfiguration, RestTemplateAutoConfiguration, transitive from org.springframework.cloud:spring-cloud-bus
       - org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration
       - org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration
-      # Spring Cloud Stream autoconfigurations - disabled by default since geoserver.bus.enabled=false
-      # These are re-enabled by the custom org.geoserver.acl.autoconfigure.messaging.bus.RabbitAutoConfiguration when bus is enabled
-      - org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration
-      - org.springframework.boot.amqp.autoconfigure.health.RabbitHealthContributorAutoConfiguration
-      - org.springframework.boot.amqp.autoconfigure.metrics.RabbitMetricsAutoConfiguration
-      - org.springframework.cloud.stream.config.BindingServiceConfiguration
-      - org.springframework.cloud.stream.function.FunctionConfiguration
-      - org.springframework.cloud.stream.config.BindersHealthIndicatorAutoConfiguration
   jpa:
     open-in-view: false
   rabbitmq:
@@ -111,6 +103,8 @@ spring:
       id: ${info.instance-id}
       trace.enabled: false #switch on tracing of acks (default off).
     stream:
+      # Prevents Stream from treating every java Function bean as a Rabbit queue
+      function.autodetect: false 
       bindings:
         # same bindings as for geoserver cloud
         springCloudBusOutput:

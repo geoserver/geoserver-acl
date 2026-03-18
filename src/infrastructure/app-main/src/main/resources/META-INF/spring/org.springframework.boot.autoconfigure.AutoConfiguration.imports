@@ -2,7 +2,6 @@ org.geoserver.acl.autoconfigure.webapi.server.GeoServerAclWebApiServerAutoConfig
 org.geoserver.acl.autoconfigure.webapi.springdoc.SpringDocAutoConfiguration
 org.geoserver.acl.autoconfigure.application.cache.CachingAuthorizationServiceServerAutoConfiguration
 org.geoserver.acl.autoconfigure.persistence.JPAIntegrationAutoConfiguration
-org.geoserver.acl.autoconfigure.messaging.bus.RabbitAutoConfiguration
 org.geoserver.acl.autoconfigure.security.AclServiceSecurityAutoConfiguration
 org.geoserver.acl.autoconfigure.security.AuthenticationManagerAutoConfiguration
 org.geoserver.acl.autoconfigure.security.InternalSecurityAutoConfiguration

@@ -39,8 +39,25 @@ class AclSpringCloudBusAutoConfigurationTest {
 
     @Test
     void testEnabled() {
-        runner.withPropertyValues("geoserver.bus.enabled=true").run(context -> {
-            assertThat(context).hasNotFailed().hasSingleBean(RemoteAclRuleEventsBridge.class);
-        });
+        runner.withPropertyValues("geoserver.bus.enabled=true", "spring.cloud.bus.enabled=true")
+                .run(context -> {
+                    assertThat(context).hasNotFailed().hasSingleBean(RemoteAclRuleEventsBridge.class);
+                });
+    }
+
+    @Test
+    void conditionalOnBusEnabled() {
+        runner.withPropertyValues("geoserver.bus.enabled=true", "spring.cloud.bus.enabled=false")
+                .run(context -> {
+                    assertThat(context).hasNotFailed().doesNotHaveBean(RemoteAclRuleEventsBridge.class);
+                });
+    }
+
+    @Test
+    void conditionalOnGeoServerBusEnabled() {
+        runner.withPropertyValues("geoserver.bus.enabled=false", "spring.cloud.bus.enabled=true")
+                .run(context -> {
+                    assertThat(context).hasNotFailed().doesNotHaveBean(RemoteAclRuleEventsBridge.class);
+                });
     }
 }
