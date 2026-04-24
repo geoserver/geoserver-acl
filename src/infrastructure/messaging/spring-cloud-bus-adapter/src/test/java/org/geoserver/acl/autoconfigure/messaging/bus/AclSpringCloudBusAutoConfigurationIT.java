@@ -27,6 +27,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.rabbitmq.RabbitMQContainer;
 import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.MountableFile;
 
 /**
  * @see {@literal src/test/resources/application-it.yml}
@@ -36,8 +37,13 @@ import org.testcontainers.utility.DockerImageName;
 class AclSpringCloudBusAutoConfigurationIT {
 
     @Container
-    private static final RabbitMQContainer rabbitMQContainer =
-            new RabbitMQContainer(DockerImageName.parse("rabbitmq:4-management-alpine"));
+    private static final RabbitMQContainer rabbitMQContainer = new RabbitMQContainer(
+                    DockerImageName.parse("rabbitmq:4-management-alpine"))
+            // Permit the deprecated `queue_master_locator` feature so RabbitMQ 4.x
+            // accepts the `x-queue-master-locator` argument that spring-amqp 4.0.0
+            // AnonymousQueue adds to Spring Cloud Bus consumer queues.
+            // TODO: remove once spring-amqp/spring-cloud-bus stops emitting the argument.
+            .withRabbitMQConfig(MountableFile.forClasspathResource("rabbitmq.conf"));
 
     @Configuration
     @EnableAutoConfiguration
