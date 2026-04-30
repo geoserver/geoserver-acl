@@ -22,7 +22,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * equivalent to PostgreSQL's {@code pg_advisory_xact_lock(bigint)}.
  *
  * <p>On startup, detects H2 and registers a {@code CREATE ALIAS} pointing to
- * {@link #pg_advisory_xact_lock(long)}. On PostgreSQL, this configuration is a no-op — the native
+ * {@link #pg_advisory_xact_lock(long)}. On PostgreSQL, this configuration is a no-op - the native
  * function is used directly.
  *
  * <p>The lock uses a per-key {@link ReentrantLock} that is acquired when the SQL function is called
@@ -40,7 +40,7 @@ public class H2PgCompatConfiguration {
     /**
      * Creates a no-op {@code pg_advisory_xact_lock} function on H2 so the advisory lock calls in
      * the JPA adaptors work transparently. On PostgreSQL the native function is used. Safe to call
-     * on any database — only executes the DDL when H2 is detected.
+     * on any database - only executes the DDL when H2 is detected.
      */
     @Bean
     SmartInitializingSingleton h2PgAdvisoryLockCompat(@Qualifier("authorizationDataSource") DataSource dataSource) {

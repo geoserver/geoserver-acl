@@ -35,7 +35,7 @@ class AccesControlListApplicationTest extends AbstractAccesControlListApplicatio
 
     @Test
     void rootRedirectsToSwaggerUIWithXForwardedHeaders() {
-        var headers = new HttpHeaders();
+        HttpHeaders headers = new HttpHeaders();
         headers.add("X-Forwarded-Prefix", "/geoserver/cloud");
 
         String expected = "/geoserver/cloud/acl/openapi/swagger-ui/index.html";

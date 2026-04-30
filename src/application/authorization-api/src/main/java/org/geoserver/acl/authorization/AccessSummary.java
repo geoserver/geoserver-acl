@@ -8,6 +8,7 @@ import static org.geoserver.acl.authorization.WorkspaceAccessSummary.ANY;
 import static org.geoserver.acl.authorization.WorkspaceAccessSummary.NO_WORKSPACE;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,7 +82,7 @@ public class AccessSummary {
     }
 
     private WorkspaceAccessSummary summary(@NonNull String workspaceName) {
-        var summary = workspaceSummaries.get(workspaceName);
+        WorkspaceAccessSummary summary = workspaceSummaries.get(workspaceName);
         if (null == summary) summary = workspaceSummaries.getOrDefault(ANY, HIDE_ALL);
         return summary;
     }
@@ -102,7 +103,7 @@ public class AccessSummary {
 
     @Override
     public String toString() {
-        var values = new TreeMap<>(workspaceSummaries).values();
+        Collection<WorkspaceAccessSummary> values = new TreeMap<>(workspaceSummaries).values();
         return "%s(%s)".formatted(getClass().getSimpleName(), values);
     }
 

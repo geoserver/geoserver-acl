@@ -215,7 +215,6 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
                 .withRequest("r11")
                 .withWorkspace("w11")
                 .withLayer("l11");
-        // request = user.withWorkspace("w11").withLayer("l11");
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
         assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
         assertThat(accessInfo.getMatchingRules()).isEqualTo(List.of(p13.getId(), p14.getId(), p9999.getId()));

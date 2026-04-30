@@ -16,7 +16,7 @@ public class GeoServerAclWebApiServerAutoConfiguration {
 
     @Bean
     CommonsRequestLoggingFilter commonsRequestLoggingFilter() {
-        var filter = new CommonsRequestLoggingFilter();
+        CommonsRequestLoggingFilter filter = new CommonsRequestLoggingFilter();
         filter.setHeaderPredicate(h -> h.toLowerCase().startsWith("x-forward"));
         filter.setIncludeHeaders(true);
         filter.setIncludeQueryString(true);

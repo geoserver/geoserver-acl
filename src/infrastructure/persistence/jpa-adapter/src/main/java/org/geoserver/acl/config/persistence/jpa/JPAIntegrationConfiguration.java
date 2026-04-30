@@ -31,9 +31,9 @@ import org.springframework.context.annotation.Import;
  *
  * <p>Imports:
  * <ul>
- *   <li>{@link AclDataSourceConfiguration} — datasource (JNDI or JDBC/HikariCP)
- *   <li>{@link AuthorizationJPAConfiguration} — EntityManagerFactory, TransactionManager, JPA repositories
- *   <li>{@link H2PgCompatConfiguration} — H2 shim for {@code pg_advisory_xact_lock}, used by the
+ *   <li>{@link AclDataSourceConfiguration} - datasource (JNDI or JDBC/HikariCP)
+ *   <li>{@link AuthorizationJPAConfiguration} - EntityManagerFactory, TransactionManager, JPA repositories
+ *   <li>{@link H2PgCompatConfiguration} - H2 shim for {@code pg_advisory_xact_lock}, used by the
  *       dev profile and H2-based integration tests
  * </ul>
  */

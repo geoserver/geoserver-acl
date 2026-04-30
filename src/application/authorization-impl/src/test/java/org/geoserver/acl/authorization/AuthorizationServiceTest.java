@@ -342,7 +342,6 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         assertThat(accessInfo.getAttributes()).isEqualTo(r2Atts);
         assertThat(accessInfo.getAllowedStyles()).isEqualTo(r2Styles);
 
-        // merging attributes at higher access level merging styles
         accessInfo = getAccessInfo(g12);
         assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
         assertThat(accessInfo.getMatchingRules()).isEqualTo(of(r1.getId(), r2.getId()));
@@ -351,7 +350,6 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         assertThat(accessInfo.getAttributes()).isEqualTo(expected);
         assertThat(accessInfo.getAllowedStyles()).isEqualTo(Set.of("style01", "style02", "style03"));
 
-        // merging attributes to full access unconstraining styles
         accessInfo = getAccessInfo(g13);
         assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
         assertThat(accessInfo.getMatchingRules()).isEqualTo(of(r1.getId(), r3.getId()));
@@ -383,9 +381,7 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
     @Test
     public void testGetAccessInfo_EmptyAllowableStyles() {
         assertEquals(0, ruleAdminService.count());
-        // no details for first rule
         Rule p30 = insert(Rule.allow().withPriority(30).withRolename("g2").withLayer("l1"));
-        // some allowed styles for second rule
         Rule p40 = insert(Rule.allow().withPriority(40).withRolename("g1").withLayer("l1"));
         {
             LayerDetails d1 = LayerDetails.builder()
@@ -430,13 +426,10 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         AccessRequest reqG1 = createRequest(null, "g1", "ROLE_1");
         AccessRequest reqG2 = createRequest(null, "g2", "ROLE_2");
 
-        // test without address filtering
-
         assertEquals(List.of(), getMatchingRules(reqAnonymous));
         assertEquals(List.of(g1allow), getMatchingRules(reqG1));
         assertEquals(List.of(g2deny), getMatchingRules(reqG2));
 
-        // test with address filtering
         assertThat(getMatchingRules(reqAnonymous.withSourceAddress("10.10.100.4")))
                 .isEmpty();
         assertThat(getMatchingRules(reqG1.withSourceAddress("10.10.100.4"))).isEqualTo(of(g1Ip10, g1allow));
@@ -513,7 +506,6 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         AdminAccessInfo adminAuth = authorizationService.getAdminAuthorization(adminReq);
         assertThat(adminAuth.isAdmin()).isFalse();
 
-        // add a USER adminrule
         AdminRule userAdminRule = insert(AdminRule.user().withPriority(20).withUsername(request.getUser()));
 
         accessInfo = authorizationService.getAccessInfo(fullRequest);
@@ -523,8 +515,6 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         adminAuth = authorizationService.getAdminAuthorization(adminReq);
         assertThat(adminAuth.isAdmin()).isFalse();
         assertThat(adminAuth.getMatchingAdminRule()).isEqualTo(userAdminRule.getId());
-
-        // let's add an ADMIN adminrule on workspace w1
 
         AdminRule adminRule = adminruleAdminService.insert(AdminRule.admin()
                 .withPriority(10)

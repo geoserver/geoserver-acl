@@ -50,7 +50,7 @@ class CachingAuthorizationServiceTest {
 
     @Test
     void testCachingAuthorizationService() {
-        var npe = NullPointerException.class;
+        Class<NullPointerException> npe = NullPointerException.class;
         assertThrows(
                 npe, () -> new CachingAuthorizationService(null, dataAccessCache, adminAccessCache, viewablesCache));
         assertThrows(npe, () -> new CachingAuthorizationService(delegate, null, adminAccessCache, viewablesCache));
@@ -130,13 +130,14 @@ class CachingAuthorizationServiceTest {
 
     @Test
     void testOnAdminRuleEventEvictsAll() {
-        var rule1 = AdminRule.admin().withId("r1").withWorkspace("ws1");
-        var rule2 = rule1.withId("r2");
-        var rule3 = rule1.withId("r3");
+        AdminRule rule1 = AdminRule.admin().withId("r1").withWorkspace("ws1");
+        AdminRule rule2 = rule1.withId("r2");
+        AdminRule rule3 = rule1.withId("r3");
 
-        var req1 = AdminAccessRequest.builder().user("user1").workspace("ws1").build();
-        var req2 = req1.withUser("user2");
-        var req3 = req1.withUser("user3");
+        AdminAccessRequest req1 =
+                AdminAccessRequest.builder().user("user1").workspace("ws1").build();
+        AdminAccessRequest req2 = req1.withUser("user2");
+        AdminAccessRequest req3 = req1.withUser("user3");
 
         grantAll(rule1, rule2, rule3, req1, req2, req3);
         caching.onAdminRuleEventEvictAll(AdminRuleEvent.created(rule1));
