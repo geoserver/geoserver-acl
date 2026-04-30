@@ -36,7 +36,7 @@ public class RemoteAclRuleEventsBridge {
         if (isLocal(event)) {
             String busId = serviceMatcher.getBusId();
             Destination destination = destinationService();
-            var remote = RemoteRuleEvent.valueOf(this, busId, destination, event);
+            RemoteRuleEvent remote = RemoteRuleEvent.valueOf(this, busId, destination, event);
             log.debug("RuleEvent produced on this instance, publishing {}", remote);
             publisher.publishEvent(remote);
         }
@@ -56,7 +56,7 @@ public class RemoteAclRuleEventsBridge {
         if (isLocal(event)) {
             String busId = serviceMatcher.getBusId();
             Destination destination = destinationService();
-            var remote = RemoteAdminRuleEvent.valueOf(this, busId, destination, event);
+            RemoteAdminRuleEvent remote = RemoteAdminRuleEvent.valueOf(this, busId, destination, event);
             log.debug("AdminRuleEvent produced on this instance, publishing {}", remote);
             publisher.publishEvent(remote);
         }

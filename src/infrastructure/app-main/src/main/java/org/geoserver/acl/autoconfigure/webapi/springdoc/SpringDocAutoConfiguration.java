@@ -93,7 +93,7 @@ public class SpringDocAutoConfiguration {
             if (!realContextPath.endsWith(this.servletContextPath)) {
                 realContextPath += this.servletContextPath;
             }
-            var url = super.buildUrl(realContextPath, docsUrl);
+            String url = super.buildUrl(realContextPath, docsUrl);
             log.debug("buildUrl({}, {}): {}", contextPath, docsUrl, url);
             return url;
         }

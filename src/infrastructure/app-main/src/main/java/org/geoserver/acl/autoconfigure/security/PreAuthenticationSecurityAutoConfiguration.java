@@ -61,8 +61,8 @@ public class PreAuthenticationSecurityAutoConfiguration {
     @Bean
     PreAuthenticatedAuthenticationProvider preauthAuthProvider(SecurityConfigProperties config) throws Exception {
         Supplier<Collection<String>> adminRoles = config.getHeaders()::getAdminRoles;
-        var provider = new PreAuthenticatedAuthenticationProvider();
-        var detailsService = new AuthorizationUserDetailsService(adminRoles);
+        PreAuthenticatedAuthenticationProvider provider = new PreAuthenticatedAuthenticationProvider();
+        AuthorizationUserDetailsService detailsService = new AuthorizationUserDetailsService(adminRoles);
         provider.setPreAuthenticatedUserDetailsService(detailsService);
         return provider;
     }

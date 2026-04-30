@@ -156,13 +156,11 @@ public class RuleFilter implements Filter<Rule>, Cloneable {
     }
 
     public RuleFilter setRole(Set<String> roles) {
-        //        if (roles == null) throw new NullPointerException();
         role.setValues(roles);
         return this;
     }
 
     public RuleFilter setRole(String name) {
-        //        if (name == null) throw new NullPointerException();
         role.setText(name);
         return this;
     }

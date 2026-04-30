@@ -118,7 +118,8 @@ class WorkspaceAccessSummaryTest {
 
     @Test
     void canSeeLayer() {
-        var was = builderWithWorkspace().addForbidden("*").addAllowed("L1").build();
+        WorkspaceAccessSummary was =
+                builderWithWorkspace().addForbidden("*").addAllowed("L1").build();
         assertThat(was.canSeeLayer("L1")).isTrue();
         assertThat(was.canSeeLayer("L2")).isFalse();
 

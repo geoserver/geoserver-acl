@@ -43,11 +43,11 @@ public abstract class AuthorizationServiceAccessSummaryTest extends BaseAuthoriz
     @Order(9)
     void adminRules() {
         insert(ADMIN, 1, "*", "ROLE_1", "ws1");
-        var req = req("*", "ROLE_1");
+        AccessSummaryRequest req = req("*", "ROLE_1");
         Set<String> allowedLayers = Set.of();
         Set<String> forbiddenLayers = Set.of();
-        var expected = summary(workspace(ADMIN, "ws1", allowedLayers, forbiddenLayers));
-        var actual = authorizationService.getUserAccessSummary(req);
+        AccessSummary expected = summary(workspace(ADMIN, "ws1", allowedLayers, forbiddenLayers));
+        AccessSummary actual = authorizationService.getUserAccessSummary(req);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -55,8 +55,8 @@ public abstract class AuthorizationServiceAccessSummaryTest extends BaseAuthoriz
     @Order(10)
     @DisplayName("given an empty rule database, nothing is visible")
     void empty() {
-        var req = req("user1", "ROLE_1");
-        var viewables = authorizationService.getUserAccessSummary(req);
+        AccessSummaryRequest req = req("user1", "ROLE_1");
+        AccessSummary viewables = authorizationService.getUserAccessSummary(req);
         assertThat(viewables).isNotNull();
         assertThat(viewables.getWorkspaces()).isEmpty();
     }
@@ -65,22 +65,22 @@ public abstract class AuthorizationServiceAccessSummaryTest extends BaseAuthoriz
     @Order(20)
     @DisplayName("given a single matching rule on role with no layer, all layers in the workspace are visible")
     void singleWorkspaceRuleAllowAllLayers() {
-        var req = req("user1", "ROLE_1");
+        AccessSummaryRequest req = req("user1", "ROLE_1");
         insert(1, "*", "ROLE_1", "w1", "*", ALLOW);
-        var viewables = authorizationService.getUserAccessSummary(req);
-        var expected = summary(workspace("w1", "*"));
+        AccessSummary viewables = authorizationService.getUserAccessSummary(req);
+        AccessSummary expected = summary(workspace("w1", "*"));
         assertThat(viewables).isEqualTo(expected);
     }
 
     @Test
     @Order(30)
     void rulesMatchingUsernameAndRoles() {
-        var req = req("user1", "ROLE_1", "ROLE_2");
+        AccessSummaryRequest req = req("user1", "ROLE_1", "ROLE_2");
         insert(1, "*", "ROLE_1", "w1", "*", ALLOW);
         insert(2, "*", "ROLE_2", "w2", "allowed1", ALLOW);
         insert(3, "user1", null, "w3", "L3", ALLOW);
-        var viewables = authorizationService.getUserAccessSummary(req);
-        var expected = summary(workspace("w1", "*"), workspace("w2", "allowed1"), workspace("w3", "L3"));
+        AccessSummary viewables = authorizationService.getUserAccessSummary(req);
+        AccessSummary expected = summary(workspace("w1", "*"), workspace("w2", "allowed1"), workspace("w3", "L3"));
         assertThat(viewables).isEqualTo(expected);
     }
 
@@ -88,92 +88,84 @@ public abstract class AuthorizationServiceAccessSummaryTest extends BaseAuthoriz
     @Order(40)
     void denyRulePreserverdIfCatchesAllRequests() {
         AuthorizationService service = authorizationService;
-        var req = req("user1", "ROLE_1", "ROLE_2");
+        AccessSummaryRequest req = req("user1", "ROLE_1", "ROLE_2");
         insert(1, "user1", "*", "w1", "hidden1", DENY);
         insert(2, "*", "ROLE_1", "w1", "*", ALLOW);
 
-        var accessRequestBuilder =
+        AccessRequest.Builder accessRequestBuilder =
                 AccessRequest.builder().user("user1").roles("ROLE_1", "ROLE_2").workspace("w1");
 
-        // preflight
-        var accessInfo =
+        AccessInfo accessInfo =
                 service.getAccessInfo(accessRequestBuilder.layer("visible").build());
         assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
 
         accessInfo = service.getAccessInfo(accessRequestBuilder.layer("hidden1").build());
         assertThat(accessInfo.getGrant()).isEqualTo(DENY);
 
-        // summary test
-        var viewables = authorizationService.getUserAccessSummary(req);
+        AccessSummary viewables = authorizationService.getUserAccessSummary(req);
         Set<String> allowed = Set.of("*");
         Set<String> forbidden = Set.of("hidden1");
-        var expected = summary(workspace("w1", allowed, forbidden));
+        AccessSummary expected = summary(workspace("w1", allowed, forbidden));
         assertThat(viewables).isEqualTo(expected);
     }
 
     @Test
     @Order(41)
     void denyRuleRemovedIfNotCatchAll() {
-        // rule 1 is denies access to layer hidden1 for a specific service, but rule 2 grants access
-        // to all, so rule 2 prevails because the summary tells layers that are somehow visible and
-        // only list forbidden layers that can never be visible
+        // rule 2 prevails over rule 1's service-scoped deny: the summary lists forbidden layers
+        // only when they can never be visible, and rule 2 makes hidden1 visible outside WMS
         insert(1, "user1", "*", null, "WMS", null, null, "w1", "hidden1", DENY);
         insert(2, "*", "ROLE_1", "w1", "*", ALLOW);
 
-        var req = req("user1", "ROLE_1", "ROLE_2");
-        var viewables = authorizationService.getUserAccessSummary(req);
+        AccessSummaryRequest req = req("user1", "ROLE_1", "ROLE_2");
+        AccessSummary viewables = authorizationService.getUserAccessSummary(req);
         Set<String> allowed = Set.of("*");
         Set<String> forbidden = Set.of();
-        var expected = summary(workspace("w1", allowed, forbidden));
+        AccessSummary expected = summary(workspace("w1", allowed, forbidden));
         assertThat(viewables).isEqualTo(expected);
     }
 
     @Test
     @Order(42)
     void denyAllPreservedButExplicitAllowRuleAlsoPreserved() {
-        // a deny all rule does not prevent specific allowed layers to be seen
-        var req = req("user1", "ROLE_1", "ROLE_2");
+        AccessSummaryRequest req = req("user1", "ROLE_1", "ROLE_2");
         insert(1, "*", "ROLE_1", "w1", "L1", ALLOW);
         insert(2, "*", "ROLE_2", "w1", "L2", ALLOW);
         insert(3, "user1", "*", "w1", "*", DENY);
 
-        var viewables = authorizationService.getUserAccessSummary(req);
+        AccessSummary viewables = authorizationService.getUserAccessSummary(req);
         Set<String> allowed = Set.of("L1", "L2");
         Set<String> forbidden = Set.of("*");
-        var expected = summary(workspace("w1", allowed, forbidden));
+        AccessSummary expected = summary(workspace("w1", allowed, forbidden));
         assertThat(viewables).isEqualTo(expected);
     }
 
     @Test
     @Order(50)
     void singleRoleMatchAndDefaultAllow() {
-        var req = req("user1", "ROLE_1");
-        // matching rule
+        AccessSummaryRequest req = req("user1", "ROLE_1");
         insert(1, "user1", "ROLE_1", "w1", "*", ALLOW);
-        // default rule allowing all on w2
         insert(2, null, null, "w2", null, ALLOW);
-        var expected = summary(workspace("w1", "*"), workspace("w2", "*"));
-        var viewables = authorizationService.getUserAccessSummary(req);
+        AccessSummary expected = summary(workspace("w1", "*"), workspace("w2", "*"));
+        AccessSummary viewables = authorizationService.getUserAccessSummary(req);
         assertThat(viewables).isEqualTo(expected);
     }
 
     @Test
     @Order(60)
     void workspaceAdminMustAdhereToExplicitlyHiddenLayers() {
-        // matching rule
         insert(1, "user1", "*", "w1", null, ALLOW);
         insert(2, "*", "ROLE_1", "w1", "hiddenlayer", DENY);
         insert(3, "*", "ROLE_2", "w1", "*", ALLOW);
 
-        // preflight, layer initially hidden
-        var expected = summary(workspace("w1", "*", "hiddenlayer"));
+        AccessSummary expected = summary(workspace("w1", "*", "hiddenlayer"));
 
-        var req = req("user1", "ROLE_1", "ROLE_2");
-        var viewables = authorizationService.getUserAccessSummary(req);
+        AccessSummaryRequest req = req("user1", "ROLE_1", "ROLE_2");
+        AccessSummary viewables = authorizationService.getUserAccessSummary(req);
         assertThat(viewables).isEqualTo(expected);
 
         insert(4, "*", "ROLE_2", "*", "*", ALLOW);
-        // make it an admin, still can't see w1:hiddenlayer
+        // promoting to admin must not reveal layers explicitly denied at the data-rule level
         insert(ADMIN, 1, "*", "ROLE_1", "w1");
 
         expected = summary(workspace("*", "*"), workspace(ADMIN, "w1", Set.of("*"), Set.of("hiddenlayer")));

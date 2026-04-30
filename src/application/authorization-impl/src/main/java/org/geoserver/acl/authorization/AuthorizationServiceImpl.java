@@ -163,7 +163,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             Map<String, List<AdminRule>> adminRulesByWorkspace,
             Map<String, List<Rule>> rulesByWorkspace) {
 
-        var builder = WorkspaceAccessSummary.builder();
+        WorkspaceAccessSummary.Builder builder = WorkspaceAccessSummary.builder();
         builder.workspace(workspace);
         conflateAdminRules(builder, adminRulesByWorkspace.getOrDefault(workspace, List.of()));
         conflateRules(builder, rulesByWorkspace.getOrDefault(workspace, List.of()));
@@ -346,10 +346,10 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         }
     }
 
-    // takes care of properly setting the allowedAreas to returned accessInfo
-    // if the union results is null check if the other allowedArea exists
-    // if yes set both, to make sure user doesn't acquire visibility
-    // on not allowed geometries
+    /**
+     * When the union of two allowed areas is null, fall back to setting both originals so the user
+     * cannot acquire visibility on geometries that neither rule allowed individually.
+     */
     private void setAllowedAreas(AccessInfo baseAccess, AccessInfo moreAccess, AccessInfo.Builder ret) {
         final Geometry baseIntersects = toJTS(baseAccess.getIntersectArea());
         final Geometry baseClip = toJTS(baseAccess.getClipArea());
@@ -408,12 +408,10 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         if (a0.isEmpty() || a1.isEmpty()) return Set.of();
 
         Set<LayerAttribute> ret = new HashSet<>();
-        // add both attributes only in a0, and enlarge common attributes
         for (LayerAttribute attr0 : a0) {
             getAttribute(attr0.getName(), a1)
                     .ifPresentOrElse(attr1 -> ret.add(enlargeAccess(attr0, attr1)), () -> ret.add(attr0));
         }
-        // now add attributes that are only in a1
         for (LayerAttribute attr1 : a1) {
             getAttribute(attr1.getName(), a0)
                     .ifPresentOrElse(attr0 -> log.trace("ignoring att {}", attr0.getName()), () -> ret.add(attr1));

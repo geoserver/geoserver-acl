@@ -21,10 +21,10 @@ class SpringDocHomeRedirectController {
 
     @GetMapping(value = {"", "/"})
     public String redirectToSwaggerUI() {
-        var target = "/openapi/swagger-ui/index.html";
+        String target = "/openapi/swagger-ui/index.html";
         URI url = URI.create(
                 ((HttpServletRequest) req.getNativeRequest()).getRequestURL().toString());
-        var path = url.getPath();
+        String path = url.getPath();
         if (path != null) {
             if (path.endsWith("/")) path = path.substring(0, path.length() - 1);
             if (!path.endsWith(servletContextPath)) target = servletContextPath + target;

@@ -57,21 +57,21 @@ abstract class AbstractAccesControlListApplicationTest {
 
     @Test
     void getRulesUnauthorizedIfNotLoggedIn() {
-        var response = get("/api/rules", String.class);
+        ResponseEntity<String> response = get("/api/rules", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
     void getRulesLoggedInAsNonAdminUser() {
         loginAsUser();
-        var response = get("/api/rules", String.class);
+        ResponseEntity<String> response = get("/api/rules", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     void createAllowRule() {
         loginAsAdmin();
-        var response = createRule(
+        ResponseEntity<Rule> response = createRule(
                 """
                         {
                           "priority": 0,
@@ -86,7 +86,7 @@ abstract class AbstractAccesControlListApplicationTest {
     @Test
     void createDenyRule() {
         loginAsAdmin();
-        var response = createRule(
+        ResponseEntity<Rule> response = createRule(
                 """
                         {
                           "priority": 0,

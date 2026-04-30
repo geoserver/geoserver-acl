@@ -104,9 +104,9 @@ public class AuthorizationServiceImplTest extends AuthorizationServiceTest {
         assertThat(ws3Auth.isAdmin()).isFalse();
 
         // conflate should give only user access
-        var builder = WorkspaceAccessSummary.builder().workspace("ws3");
+        Builder builder = WorkspaceAccessSummary.builder().workspace("ws3");
         service.conflateAdminRules(builder, List.of(r3, r4));
-        var wsSummary = builder.build();
+        WorkspaceAccessSummary wsSummary = builder.build();
         assertThat(wsSummary.getAdminAccess()).isEqualTo(USER);
 
         builder = WorkspaceAccessSummary.builder().workspace("ws3");
@@ -149,14 +149,14 @@ public class AuthorizationServiceImplTest extends AuthorizationServiceTest {
         AuthorizationServiceImpl service = (AuthorizationServiceImpl) super.authorizationService;
         String user = "user1";
         Set<String> roles = Set.of("ROLE_1", "ROLE_2");
-        var actual = service.getRulesByWorkspace(user, roles);
+        Map<String, List<Rule>> actual = service.getRulesByWorkspace(user, roles);
         assertThat(actual).isEqualTo(Map.of("w1", list(r1, r2, r3)));
     }
 
     @Test
     void conflateRules() {
         Rule r1 = insert(LIMIT, 1, "*", "ROLE_1", "ws1", "L1");
-        var wsSummary = conflateRules("ws1", r1);
+        WorkspaceAccessSummary wsSummary = conflateRules("ws1", r1);
         assertThat(wsSummary.getAllowed()).isEmpty();
         assertThat(wsSummary.getForbidden()).isEmpty();
 
