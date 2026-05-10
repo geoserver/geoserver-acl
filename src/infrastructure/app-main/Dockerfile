@@ -1,6 +1,8 @@
 FROM eclipse-temurin:25-jre AS builder
 ARG JAR_FILE=target/gs-acl-app-*-bin.jar
 
+WORKDIR /builder
+
 COPY ${JAR_FILE} application.jar
 
 RUN java -Djarmode=layertools -jar application.jar extract
@@ -43,10 +45,10 @@ EXPOSE 8081
 RUN mkdir /etc/geoserver && chmod 0777 /etc/geoserver
 COPY src/main/resources/values.yml /etc/geoserver/acl-service.yml
 
-COPY --from=builder dependencies/ ./
-COPY --from=builder snapshot-dependencies/ ./
-COPY --from=builder spring-boot-loader/ ./
-COPY --from=builder application/ ./
+COPY --from=builder /builder/dependencies/ ./
+COPY --from=builder /builder/snapshot-dependencies/ ./
+COPY --from=builder /builder/spring-boot-loader/ ./
+COPY --from=builder /builder/application/ ./
 
 HEALTHCHECK \
 --interval=10s \
