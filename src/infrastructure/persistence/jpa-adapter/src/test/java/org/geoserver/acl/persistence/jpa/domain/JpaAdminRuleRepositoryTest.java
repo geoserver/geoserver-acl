@@ -36,6 +36,7 @@ import org.springframework.test.context.ActiveProfiles;
             AuthorizationJPAConfiguration.class
         })
 @ActiveProfiles("test")
+@SuppressWarnings("java:S5786") // must be public, it's extended from other packages
 public class JpaAdminRuleRepositoryTest {
 
     private @Autowired JpaAdminRuleRepository repo;
@@ -93,8 +94,8 @@ public class JpaAdminRuleRepositoryTest {
     }
 
     private void testSaveDuplicateIdentifier(JpaAdminRule rule) {
-        rule = rule.clone().setId(null);
-        JpaAdminRule duplicateKey = rule.clone().setPriority(rule.getPriority() + 1000);
+        rule = new JpaAdminRule(rule).setId(null);
+        JpaAdminRule duplicateKey = new JpaAdminRule(rule).setPriority(rule.getPriority() + 1000);
         assertEquals(rule.getIdentifier(), duplicateKey.getIdentifier());
 
         repo.saveAndFlush(rule);
@@ -104,12 +105,11 @@ public class JpaAdminRuleRepositoryTest {
 
     @Test
     void testSave_Identifier() {
-        JpaAdminRuleIdentifier expected = entity.getIdentifier()
+        JpaAdminRuleIdentifier expected = new JpaAdminRuleIdentifier(entity.getIdentifier()
                 .setAddressRange(new JpaIPAddressRange(1000L, 2000L, 32))
                 .setRolename("ROLE_USER")
                 .setUsername("user")
-                .setWorkspace("workspace")
-                .clone();
+                .setWorkspace("workspace"));
 
         JpaAdminRule saved = repo.saveAndFlush(entity);
         em.detach(saved);
@@ -140,8 +140,7 @@ public class JpaAdminRuleRepositoryTest {
         Iterable<JpaAdminRule> res = repo.findAll(predicate, Sort.by("priority"));
         List<JpaAdminRule> actual = new ArrayList<>();
         res.forEach(actual::add);
-        assertThat(actual.size()).isEqualTo(expected.size());
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).hasSameSizeAs(expected).isEqualTo(expected);
     }
 
     /** Adds sample rules in reverse natural order and returns them in natural order */
@@ -150,19 +149,19 @@ public class JpaAdminRuleRepositoryTest {
         List<JpaAdminRule> expected = new ArrayList<>();
 
         rule.setAccess(JpaAdminGrantType.ADMIN).getIdentifier();
-        expected.add(rule.clone());
+        expected.add(new JpaAdminRule(rule));
 
         rule.getIdentifier().setAddressRange(new JpaIPAddressRange(1000L, 2000L, 32));
-        expected.add(rule.clone());
+        expected.add(new JpaAdminRule(rule));
 
         rule.getIdentifier().setRolename("rolename");
-        expected.add(rule.clone());
+        expected.add(new JpaAdminRule(rule));
 
         rule.getIdentifier().setUsername("user");
-        expected.add(rule.clone());
+        expected.add(new JpaAdminRule(rule));
 
         rule.getIdentifier().setWorkspace("workspace");
-        expected.add(rule.clone());
+        expected.add(new JpaAdminRule(rule));
 
         IntStream.range(0, expected.size()).forEach(p -> expected.get(p).setPriority(p));
 

@@ -15,11 +15,25 @@ import org.geoserver.acl.domain.filter.predicate.IPAddressRangeFilter;
 import org.geoserver.acl.domain.filter.predicate.InSetPredicate;
 import org.geoserver.acl.domain.filter.predicate.SpecialFilterType;
 import org.geoserver.acl.domain.filter.predicate.TextFilter;
+import org.jspecify.annotations.Nullable;
 
+/**
+ * Query predicate for selecting {@link AdminRule}s by user, role, source IP, workspace, and
+ * grant type.
+ *
+ * <p>Each match field can be set to a literal value, to {@link SpecialFilterType#ANY} (no
+ * constraint on that field), or to {@link SpecialFilterType#DEFAULT} (only rules whose value is
+ * null). Used with {@link org.geoserver.acl.domain.filter.RuleQuery} to drive
+ * {@link AdminRuleAdminService} queries and as the runtime predicate that {@code test}s
+ * individual rules against the criteria.
+ *
+ * @see AdminRule
+ * @see SpecialFilterType
+ */
 @EqualsAndHashCode
-public class AdminRuleFilter implements Filter<AdminRule>, Cloneable {
+public class AdminRuleFilter implements Filter<AdminRule> {
 
-    private @Getter @Setter AdminGrantType grantType;
+    private @Nullable @Getter @Setter AdminGrantType grantType;
 
     private final @Getter TextFilter user;
     private final @Getter InSetPredicate<String> role;
@@ -43,7 +57,7 @@ public class AdminRuleFilter implements Filter<AdminRule>, Cloneable {
         FilterType ft = type.getRelatedType();
 
         user = new TextFilter(ft);
-        role = new InSetPredicate<String>(ft);
+        role = new InSetPredicate<>(ft);
         sourceAddress = new IPAddressRangeFilter(ft);
         workspace = new TextFilter(ft);
     }
@@ -58,20 +72,10 @@ public class AdminRuleFilter implements Filter<AdminRule>, Cloneable {
 
     public AdminRuleFilter(AdminRuleFilter source) {
         grantType = source.getGrantType();
-        try {
-            user = source.user.clone();
-            role = source.role.clone();
-            sourceAddress = source.sourceAddress.clone();
-            workspace = source.workspace.clone();
-        } catch (CloneNotSupportedException ex) {
-            // Should not happen
-            throw new UnknownError("Clone error - should not happen");
-        }
-    }
-
-    @Override
-    public AdminRuleFilter clone() {
-        return new AdminRuleFilter(this);
+        user = new TextFilter(source.user);
+        role = new InSetPredicate<>(source.role);
+        sourceAddress = new IPAddressRangeFilter(source.sourceAddress);
+        workspace = new TextFilter(source.workspace);
     }
 
     public static AdminRuleFilter any() {
@@ -93,8 +97,7 @@ public class AdminRuleFilter implements Filter<AdminRule>, Cloneable {
         return this;
     }
 
-    public AdminRuleFilter setRole(String name) {
-        if (name == null) throw new NullPointerException();
+    public AdminRuleFilter setRole(@NonNull String name) {
         role.setText(name);
         return this;
     }
@@ -139,12 +142,12 @@ public class AdminRuleFilter implements Filter<AdminRule>, Cloneable {
 
     @Override
     public boolean test(@NonNull AdminRule rule) {
-        AdminRuleIdentifier idf = rule.getIdentifier();
+        AdminRuleIdentifier idf = rule.identifier();
 
-        return getRole().test(idf.getRolename())
-                && getSourceAddress().test(idf.getAddressRange())
-                && getUser().test(idf.getUsername())
-                && getWorkspace().test(idf.getWorkspace())
-                && (grantType == null || grantType.equals(rule.getAccess()));
+        return getRole().test(idf.rolename())
+                && getSourceAddress().test(idf.addressRange())
+                && getUser().test(idf.username())
+                && getWorkspace().test(idf.workspace())
+                && (grantType == null || grantType.equals(rule.access()));
     }
 }

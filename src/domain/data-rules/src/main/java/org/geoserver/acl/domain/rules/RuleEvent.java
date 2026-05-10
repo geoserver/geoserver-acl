@@ -64,11 +64,11 @@ public class RuleEvent {
     private Set<String> ruleIds;
 
     public static RuleEvent created(@NonNull Rule rule) {
-        return new RuleEvent(EventType.CREATED, Set.of(rule.getId()));
+        return new RuleEvent(EventType.CREATED, Set.of(rule.id()));
     }
 
     public static RuleEvent updated(@NonNull Rule... rules) {
-        return updated(Stream.of(rules).map(Rule::getId).collect(Collectors.toSet()));
+        return updated(Stream.of(rules).map(Rule::id).collect(Collectors.toSet()));
     }
 
     public static RuleEvent updated(@NonNull String... ids) {

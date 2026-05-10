@@ -29,6 +29,7 @@ import lombok.NonNull;
  * @see org.springframework.jndi.JndiTemplate#createInitialContext
  * @since 1.0
  */
+@SuppressWarnings("java:S1149") // gotta use HashTable as per Context contract
 public class SimpleNamingContext implements Context {
 
     private static final String ROOT_NAME = "";
@@ -54,9 +55,7 @@ public class SimpleNamingContext implements Context {
 
         this.contextRoot = root;
         this.bindings = boundObjects;
-        if (env != null) {
-            this.environment.putAll(env);
-        }
+        this.environment.putAll(env);
     }
 
     public @Override NamingEnumeration<NameClassPair> list(String root) throws NamingException {
@@ -140,7 +139,9 @@ public class SimpleNamingContext implements Context {
         return this.environment.remove(propName);
     }
 
-    public @Override void close() {}
+    public @Override void close() {
+        // nothing to do
+    }
 
     /**
      * @throws OperationNotSupportedException javax.naming.Name is not supported
@@ -240,7 +241,7 @@ public class SimpleNamingContext implements Context {
         throw nameUnsupported();
     }
 
-    protected OperationNotSupportedException nameUnsupported() throws OperationNotSupportedException {
+    protected OperationNotSupportedException nameUnsupported() {
         return new OperationNotSupportedException("javax.naming.Name is not supported");
     }
 
@@ -263,7 +264,7 @@ public class SimpleNamingContext implements Context {
                         try {
                             return createObject(name, context.lookup(root + name));
                         } catch (NameNotFoundException e) {
-                            throw new RuntimeException("Should not happen", e);
+                            throw new IllegalStateException("Should not happen", e);
                         }
                     });
                 }
@@ -277,9 +278,7 @@ public class SimpleNamingContext implements Context {
         protected String extractSimpleName(final String contextRoot, String boundName) {
             int startIndex = contextRoot.length();
             int endIndex = boundName.indexOf('/', startIndex);
-            String strippedName =
-                    (endIndex != -1 ? boundName.substring(startIndex, endIndex) : boundName.substring(startIndex));
-            return strippedName;
+            return endIndex != -1 ? boundName.substring(startIndex, endIndex) : boundName.substring(startIndex);
         }
 
         protected abstract T createObject(String simpleName, Object obj);

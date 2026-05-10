@@ -88,7 +88,9 @@ class PriorityResolver<T> {
             return targetPriority;
         }
 
-        long min, max, offset;
+        long min;
+        long max;
+        long offset;
         if (targetPriority < currentPriority) {
             // move up, from M to N, only shift M to N - 1
             // e.g. for [1,2,3,4,5], current = 4, target = 2, shift [2,3] by one
@@ -111,8 +113,7 @@ class PriorityResolver<T> {
 
     private boolean slotBusy(long targetPriority) {
         final Optional<T> another = jparepo.findOneByPriority(targetPriority);
-        final boolean slotBusy = another.isPresent();
-        return slotBusy;
+        return another.isPresent();
     }
 
     private long resolvePriorityFromStart(final long requestedPosition) {

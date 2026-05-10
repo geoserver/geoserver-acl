@@ -17,10 +17,10 @@ class WorkspaceAccessSummaryTest {
     @Test
     void buildDefaults() {
         WorkspaceAccessSummary was = builder().build();
-        assertThat(was.getWorkspace()).isEqualTo("*");
-        assertThat(was.getAllowed()).isEmpty();
-        assertThat(was.getForbidden()).isEmpty();
-        assertThat(was.getAdminAccess()).isNull();
+        assertThat(was.workspace()).isEqualTo("*");
+        assertThat(was.allowed()).isEmpty();
+        assertThat(was.forbidden()).isEmpty();
+        assertThat(was.adminAccess()).isNull();
         assertThat(was.isAdmin()).isFalse();
         assertThat(was.isUser()).isFalse();
     }
@@ -28,10 +28,10 @@ class WorkspaceAccessSummaryTest {
     @Test
     void buildOnlyWorkspace() {
         WorkspaceAccessSummary was = builderWithWorkspace().build();
-        assertThat(was.getWorkspace()).isEqualTo("cite");
-        assertThat(was.getAllowed()).isEmpty();
-        assertThat(was.getForbidden()).isEmpty();
-        assertThat(was.getAdminAccess()).isNull();
+        assertThat(was.workspace()).isEqualTo("cite");
+        assertThat(was.allowed()).isEmpty();
+        assertThat(was.forbidden()).isEmpty();
+        assertThat(was.adminAccess()).isNull();
         assertThat(was.isAdmin()).isFalse();
         assertThat(was.isUser()).isFalse();
     }
@@ -40,8 +40,8 @@ class WorkspaceAccessSummaryTest {
     void buildAdmin() {
         WorkspaceAccessSummary was =
                 builderWithWorkspace().adminAccess(AdminGrantType.ADMIN).build();
-        assertThat(was.getWorkspace()).isEqualTo("cite");
-        assertThat(was.getAdminAccess()).isEqualTo(AdminGrantType.ADMIN);
+        assertThat(was.workspace()).isEqualTo("cite");
+        assertThat(was.adminAccess()).isEqualTo(AdminGrantType.ADMIN);
         assertThat(was.isAdmin()).isTrue();
         assertThat(was.isUser()).isTrue();
     }
@@ -50,8 +50,8 @@ class WorkspaceAccessSummaryTest {
     void buildUser() {
         WorkspaceAccessSummary was =
                 builderWithWorkspace().adminAccess(AdminGrantType.USER).build();
-        assertThat(was.getWorkspace()).isEqualTo("cite");
-        assertThat(was.getAdminAccess()).isEqualTo(AdminGrantType.USER);
+        assertThat(was.workspace()).isEqualTo("cite");
+        assertThat(was.adminAccess()).isEqualTo(AdminGrantType.USER);
         assertThat(was.isAdmin()).isFalse();
         assertThat(was.isUser()).isTrue();
     }
@@ -59,20 +59,20 @@ class WorkspaceAccessSummaryTest {
     @Test
     void allowedLayers() {
         WorkspaceAccessSummary was = builderWithWorkspace().allowed(Set.of("*")).build();
-        assertThat(was.getAllowed()).isEqualTo(Set.of("*"));
+        assertThat(was.allowed()).isEqualTo(Set.of("*"));
 
         was = builderWithWorkspace().allowed(Set.of("layer1", "layer2")).build();
-        assertThat(was.getAllowed()).isEqualTo(Set.of("layer1", "layer2"));
+        assertThat(was.allowed()).isEqualTo(Set.of("layer1", "layer2"));
     }
 
     @Test
     void addAllowedLayers() {
         WorkspaceAccessSummary was = builderWithWorkspace().addAllowed("*").build();
-        assertThat(was.getWorkspace()).isEqualTo("cite");
-        assertThat(was.getAllowed()).isEqualTo(Set.of("*"));
+        assertThat(was.workspace()).isEqualTo("cite");
+        assertThat(was.allowed()).isEqualTo(Set.of("*"));
 
         was = builderWithWorkspace().addAllowed("layer1").addAllowed("layer2").build();
-        assertThat(was.getAllowed()).isEqualTo(Set.of("layer1", "layer2"));
+        assertThat(was.allowed()).isEqualTo(Set.of("layer1", "layer2"));
     }
 
     @Test
@@ -82,7 +82,7 @@ class WorkspaceAccessSummaryTest {
                 .addAllowed("layer2")
                 .addAllowed("*")
                 .build();
-        assertThat(was.getAllowed()).isEqualTo(Set.of("*"));
+        assertThat(was.allowed()).isEqualTo(Set.of("*"));
 
         was = builderWithWorkspace()
                 .addAllowed("layer1")
@@ -91,29 +91,29 @@ class WorkspaceAccessSummaryTest {
                 .addAllowed("layer3")
                 .addAllowed("layer4")
                 .build();
-        assertThat(was.getAllowed()).isEqualTo(Set.of("*"));
+        assertThat(was.allowed()).isEqualTo(Set.of("*"));
     }
 
     @Test
     void forbiddenLayers() {
         WorkspaceAccessSummary was =
                 builderWithWorkspace().forbidden(Set.of("*")).build();
-        assertThat(was.getForbidden()).isEqualTo(Set.of("*"));
-        assertThat(was.getAllowed()).isEmpty();
+        assertThat(was.forbidden()).isEqualTo(Set.of("*"));
+        assertThat(was.allowed()).isEmpty();
 
         was = builderWithWorkspace().forbidden(Set.of("l1", "l2")).build();
-        assertThat(was.getForbidden()).isEqualTo(Set.of("l1", "l2"));
-        assertThat(was.getAllowed()).isEmpty();
+        assertThat(was.forbidden()).isEqualTo(Set.of("l1", "l2"));
+        assertThat(was.allowed()).isEmpty();
     }
 
     @Test
     void addForbiddenLayers() {
         WorkspaceAccessSummary was = builderWithWorkspace().addForbidden("*").build();
-        assertThat(was.getForbidden()).isEqualTo(Set.of("*"));
+        assertThat(was.forbidden()).isEqualTo(Set.of("*"));
 
         was = builderWithWorkspace().addForbidden("l1").addForbidden("l2").build();
-        assertThat(was.getForbidden()).isEqualTo(Set.of("l1", "l2"));
-        assertThat(was.getAllowed()).isEmpty();
+        assertThat(was.forbidden()).isEqualTo(Set.of("l1", "l2"));
+        assertThat(was.allowed()).isEmpty();
     }
 
     @Test

@@ -71,8 +71,8 @@ abstract class ConcurrentPriorityBaseTest {
         });
 
         List<Long> priorities = ruleAdminService.getAll().toList().stream()
-                .filter(r -> created.stream().anyMatch(c -> c.getId().equals(r.getId())))
-                .map(Rule::getPriority)
+                .filter(r -> created.stream().anyMatch(c -> c.id().equals(r.id())))
+                .map(Rule::priority)
                 .sorted()
                 .toList();
 
@@ -104,8 +104,8 @@ abstract class ConcurrentPriorityBaseTest {
         });
 
         List<Long> priorities = adminRuleAdminService.getAll().toList().stream()
-                .filter(r -> created.stream().anyMatch(c -> c.getId().equals(r.getId())))
-                .map(AdminRule::getPriority)
+                .filter(r -> created.stream().anyMatch(c -> c.id().equals(r.id())))
+                .map(AdminRule::priority)
                 .sorted()
                 .toList();
 

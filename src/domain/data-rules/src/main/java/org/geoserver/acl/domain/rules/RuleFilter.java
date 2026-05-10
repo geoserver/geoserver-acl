@@ -35,7 +35,7 @@ import org.geoserver.acl.domain.filter.predicate.TextFilter;
  * @author Gabriel Roldan - Camptocamp
  */
 @EqualsAndHashCode
-public class RuleFilter implements Filter<Rule>, Cloneable {
+public class RuleFilter implements Filter<Rule> {
 
     private final TextFilter user;
     private final InSetPredicate<String> role;
@@ -129,23 +129,17 @@ public class RuleFilter implements Filter<Rule>, Cloneable {
     }
 
     public RuleFilter(RuleFilter source) {
-        try {
-            user = source.user.clone();
-            role = source.role.clone();
-            sourceAddress = source.sourceAddress.clone();
-            service = source.service.clone();
-            request = source.request.clone();
-            subfield = source.subfield.clone();
-            workspace = source.workspace.clone();
-            layer = source.layer.clone();
-        } catch (CloneNotSupportedException ex) {
-            // Should not happen
-            throw new UnknownError("Clone error - should not happen");
-        }
+        user = new TextFilter(source.user);
+        role = new InSetPredicate<>(source.role);
+        sourceAddress = new IPAddressRangeFilter(source.sourceAddress);
+        service = new TextFilter(source.service);
+        request = new TextFilter(source.request);
+        subfield = new TextFilter(source.subfield);
+        workspace = new TextFilter(source.workspace);
+        layer = new TextFilter(source.layer);
     }
 
-    public RuleFilter setUser(String name) {
-        if (name == null) throw new NullPointerException();
+    public RuleFilter setUser(@NonNull String name) {
         user.setText(name);
         return this;
     }
@@ -280,20 +274,15 @@ public class RuleFilter implements Filter<Rule>, Cloneable {
     }
 
     @Override
-    public RuleFilter clone() {
-        return new RuleFilter(this);
-    }
-
-    @Override
     public boolean test(@NonNull Rule rule) {
-        RuleIdentifier idf = rule.getIdentifier();
-        return getLayer().test(idf.getLayer())
-                && getRequest().test(idf.getRequest())
-                && getRole().test(idf.getRolename())
-                && getService().test(idf.getService())
-                && getSourceAddress().test(idf.getAddressRange())
-                && getSubfield().test(idf.getSubfield())
-                && getUser().test(idf.getUsername())
-                && getWorkspace().test(idf.getWorkspace());
+        RuleIdentifier idf = rule.identifier();
+        return getLayer().test(idf.layer())
+                && getRequest().test(idf.request())
+                && getRole().test(idf.rolename())
+                && getService().test(idf.service())
+                && getSourceAddress().test(idf.addressRange())
+                && getSubfield().test(idf.subfield())
+                && getUser().test(idf.username())
+                && getWorkspace().test(idf.workspace());
     }
 }

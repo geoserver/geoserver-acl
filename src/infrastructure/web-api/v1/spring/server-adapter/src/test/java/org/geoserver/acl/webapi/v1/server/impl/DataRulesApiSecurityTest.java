@@ -179,7 +179,7 @@ class DataRulesApiSecurityTest {
         verify(rulesService, times(1)).setLimits(eq("1"), any());
 
         rulesApi.shiftRulesByPriority(1L, 2L);
-        verify(rulesService, times(1)).shift(eq(1L), eq(2L));
+        verify(rulesService, times(1)).shift(1L, 2L);
 
         rulesApi.swapRules("1", "2");
         verify(rulesService, times(1)).swapPriority("1", "2");

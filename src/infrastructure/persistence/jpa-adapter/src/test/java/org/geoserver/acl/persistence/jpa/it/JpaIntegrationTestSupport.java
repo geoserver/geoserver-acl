@@ -5,7 +5,7 @@
 package org.geoserver.acl.persistence.jpa.it;
 
 import lombok.Getter;
-import org.geoserver.acl.authorization.AuthorizationServiceImpl;
+import org.geoserver.acl.authorization.impl.AuthorizationServiceImpl;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminServiceImpl;
 import org.geoserver.acl.domain.adminrules.AdminRuleRepository;
@@ -39,6 +39,4 @@ public class JpaIntegrationTestSupport {
 
         authorizationService = new AuthorizationServiceImpl(adminruleAdminService, ruleAdminService);
     }
-
-    public void tearDown() {}
 }

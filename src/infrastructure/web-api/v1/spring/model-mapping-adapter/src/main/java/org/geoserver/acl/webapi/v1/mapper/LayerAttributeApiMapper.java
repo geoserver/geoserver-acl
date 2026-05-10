@@ -37,8 +37,6 @@ abstract class LayerAttributeApiMapper {
     Set<org.geoserver.acl.webapi.v1.model.LayerAttribute> wrapAttributes(Set<LayerAttribute> value) {
         if (value == null || value.isEmpty()) return null;
 
-        Set<org.geoserver.acl.webapi.v1.model.LayerAttribute> latts =
-                value.stream().map(this::map).collect(Collectors.toSet());
-        return latts;
+        return value.stream().map(this::map).collect(Collectors.toSet());
     }
 }

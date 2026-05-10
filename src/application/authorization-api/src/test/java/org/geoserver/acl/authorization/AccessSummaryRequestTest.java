@@ -27,20 +27,20 @@ class AccessSummaryRequestTest {
                 .user("user")
                 .roles("ROLE_ADMINISTRATOR", "ROLE_AUTHENTICATED")
                 .build();
-        assertThat(req.getUser()).isEqualTo("user");
-        assertThat(req.getRoles()).containsExactlyInAnyOrder("ROLE_ADMINISTRATOR", "ROLE_AUTHENTICATED");
+        assertThat(req.user()).isEqualTo("user");
+        assertThat(req.roles()).containsExactlyInAnyOrder("ROLE_ADMINISTRATOR", "ROLE_AUTHENTICATED");
 
         req = builder().user("user").roles(Set.of("ROLE_1")).build();
-        assertThat(req.getRoles()).containsExactlyInAnyOrder("ROLE_1");
+        assertThat(req.roles()).containsExactlyInAnyOrder("ROLE_1");
 
         req = builder().user("user").roles(Set.of("ROLE_1", "ROLE_2", "ROLE_3")).build();
-        assertThat(req.getRoles()).containsExactlyInAnyOrder("ROLE_1", "ROLE_2", "ROLE_3");
+        assertThat(req.roles()).containsExactlyInAnyOrder("ROLE_1", "ROLE_2", "ROLE_3");
     }
 
     @Test
     void testNullUserAllowedIfRolesIsNotEmpty() {
         AccessSummaryRequest req = builder().roles("ROLE_ANONYMOUS").build();
-        assertThat(req.getUser()).isNull();
-        assertThat(req.getRoles()).isEqualTo(Set.of("ROLE_ANONYMOUS"));
+        assertThat(req.user()).isNull();
+        assertThat(req.roles()).isEqualTo(Set.of("ROLE_ANONYMOUS"));
     }
 }

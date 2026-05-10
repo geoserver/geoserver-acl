@@ -90,14 +90,14 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     @TransactionRequired
     public AdminRule create(AdminRule rule, InsertPosition position) {
         lockPrioritiesForUpdate();
-        if (null != rule.getId()) throw new IllegalArgumentException("Rule must have no id");
+        if (null != rule.id()) throw new IllegalArgumentException("Rule must have no id");
         findDup(rule).ifPresent(dup -> throwConflict(dup, null));
 
-        if (rule.getPriority() < 0)
-            throw new IllegalArgumentException("Negative priority is not allowed: " + rule.getPriority());
+        if (rule.priority() < 0)
+            throw new IllegalArgumentException("Negative priority is not allowed: " + rule.priority());
 
         PriorityResolver<org.geoserver.acl.persistence.jpa.domain.JpaAdminRule> priorityResolver = priorityResolver();
-        final long finalPriority = priorityResolver.resolveFinalPriority(rule.getPriority(), map(position));
+        final long finalPriority = priorityResolver.resolveFinalPriority(rule.priority(), map(position));
 
         org.geoserver.acl.persistence.jpa.domain.JpaAdminRule entity = modelMapper.toEntity(rule);
         entity.setPriority(finalPriority);
@@ -163,13 +163,13 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
     @TransactionRequired
     public AdminRule save(AdminRule rule) {
         lockPrioritiesForUpdate();
-        Objects.requireNonNull(rule.getId());
+        Objects.requireNonNull(rule.id());
         findDup(rule).ifPresent(dup -> throwConflict(dup, null));
 
-        org.geoserver.acl.persistence.jpa.domain.JpaAdminRule entity = getOrThrowIAE(rule.getId());
+        org.geoserver.acl.persistence.jpa.domain.JpaAdminRule entity = getOrThrowIAE(rule.id());
 
         PriorityResolver<org.geoserver.acl.persistence.jpa.domain.JpaAdminRule> priorityResolver = priorityResolver();
-        long finalPriority = priorityResolver.resolvePriorityUpdate(entity.getPriority(), rule.getPriority());
+        long finalPriority = priorityResolver.resolvePriorityUpdate(entity.getPriority(), rule.priority());
 
         modelMapper.updateEntity(entity, rule);
         entity.setPriority(finalPriority);
@@ -233,7 +233,7 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
         if (filter.isEmpty()) return r -> true;
 
         IPAddressRangeFilter ipFilter = filter.get().getSourceAddress();
-        return rule -> ipFilter.test(rule.getIdentifier().getAddressRange());
+        return rule -> ipFilter.test(rule.identifier().addressRange());
     }
 
     @Override
@@ -285,8 +285,8 @@ public class AdminRuleRepositoryJpaAdaptor implements AdminRuleRepository {
 
     private Optional<AdminRule> findDup(AdminRule rule) {
 
-        final Long id = decodeId(rule.getId());
-        final JpaAdminRuleIdentifier identifier = modelMapper.toEntity(rule.getIdentifier());
+        final Long id = decodeId(rule.id());
+        final JpaAdminRuleIdentifier identifier = modelMapper.toEntity(rule.identifier());
 
         List<org.geoserver.acl.persistence.jpa.domain.JpaAdminRule> matches;
         matches = jparepo.findAllByIdentifier(identifier);

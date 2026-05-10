@@ -4,7 +4,7 @@
  *
  * Original from GeoFence 3.6 under GPL 2.0 license
  */
-package org.geoserver.acl.authorization;
+package org.geoserver.acl.authorization.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.geoserver.acl.authorization.AccessRequest;
+import org.geoserver.acl.authorization.AuthorizationService;
 import org.geoserver.acl.domain.adminrules.AdminGrantType;
 import org.geoserver.acl.domain.adminrules.AdminRule;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
@@ -33,7 +35,7 @@ public abstract class BaseAuthorizationServiceTest {
     protected AuthorizationService authorizationService;
 
     @BeforeEach
-    protected void setUp() throws Exception {
+    protected void setUp() {
         ruleAdminService = getRuleAdminService();
         adminruleAdminService = getAdminRuleAdminService();
         authorizationService = getAuthorizationService();

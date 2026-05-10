@@ -23,7 +23,6 @@ import jakarta.persistence.SecondaryTable;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import java.io.Serial;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -72,9 +71,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         foreignKey = @ForeignKey(name = "fk_adminrule_priority_adminrule"),
         indexes = {@Index(name = "idx_adminrule_priority", columnList = "priority")})
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "Rule")
-public class JpaAdminRule extends Auditable implements Cloneable {
-    @Serial
-    private static final long serialVersionUID = 422357467611162461L;
+public class JpaAdminRule extends Auditable {
 
     @Id
     @GeneratedValue(generator = "acl_adminrules_sequence_generator", strategy = GenerationType.SEQUENCE)
@@ -107,15 +104,16 @@ public class JpaAdminRule extends Auditable implements Cloneable {
     @Column(name = "grant_type", nullable = false)
     private JpaAdminGrantType access = JpaAdminGrantType.USER;
 
-    // visible for testing
-    public @Override JpaAdminRule clone() {
-        JpaAdminRule clone;
-        try {
-            clone = (JpaAdminRule) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-        clone.identifier = identifier.clone();
-        return clone;
+    public JpaAdminRule() {}
+
+    public JpaAdminRule(JpaAdminRule other) {
+        super(other);
+        this.id = other.id;
+        this.extId = other.extId;
+        this.name = other.name;
+        this.description = other.description;
+        this.priority = other.priority;
+        this.identifier = new JpaAdminRuleIdentifier(other.identifier);
+        this.access = other.access;
     }
 }

@@ -12,6 +12,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 
 /**
+ * Base class for {@link AuthorizationService} decorators that forward every call to a wrapped
+ * delegate.
+ *
+ * <p>Subclasses extend this type to layer behavior such as caching or instrumentation on top of a
+ * concrete authorization service, overriding only the methods whose behavior they need to change
+ * and inheriting straight delegation for the rest.
+ *
  * @since 2.0
  */
 @RequiredArgsConstructor

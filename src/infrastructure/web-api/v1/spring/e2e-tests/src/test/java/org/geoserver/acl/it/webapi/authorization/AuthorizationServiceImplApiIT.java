@@ -5,7 +5,7 @@
 package org.geoserver.acl.it.webapi.authorization;
 
 import org.geoserver.acl.authorization.AuthorizationService;
-import org.geoserver.acl.authorization.AuthorizationServiceTest;
+import org.geoserver.acl.authorization.impl.AuthorizationServiceTest;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.adminrules.AdminRuleRepository;
 import org.geoserver.acl.domain.rules.RuleAdminService;
@@ -84,7 +84,7 @@ class AuthorizationServiceImplApiIT extends AuthorizationServiceTest {
 
     @Override
     @BeforeEach
-    protected void setUp() throws Exception {
+    protected void setUp() {
         clientContext = new ClientContextSupport().serverPort(serverPort).setUp();
         serverContext.setUp();
         super.setUp();

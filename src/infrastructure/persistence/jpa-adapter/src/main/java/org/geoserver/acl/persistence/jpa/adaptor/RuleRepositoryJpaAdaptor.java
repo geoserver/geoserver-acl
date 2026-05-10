@@ -143,13 +143,11 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
 
     private CloseableIterator<org.geoserver.acl.persistence.jpa.domain.JpaRule> query(Predicate predicate) {
 
-        CloseableIterator<org.geoserver.acl.persistence.jpa.domain.JpaRule> iterator = new JPAQuery<
-                        org.geoserver.acl.persistence.jpa.domain.JpaRule>(em)
+        return new JPAQuery<org.geoserver.acl.persistence.jpa.domain.JpaRule>(em)
                 .from(QJpaRule.jpaRule)
                 .where(predicate)
                 .orderBy(new OrderSpecifier<>(Order.ASC, QJpaRule.jpaRule.priority))
                 .iterate();
-        return iterator;
     }
 
     private Stream<org.geoserver.acl.persistence.jpa.domain.JpaRule> stream(
@@ -162,23 +160,21 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
 
         if (filter.isEmpty()) return r -> true;
         IPAddressRangeFilter ipFilter = filter.get().getSourceAddress();
-        return rule -> {
-            return ipFilter.test(rule.getIdentifier().getAddressRange());
-        };
+        return rule -> ipFilter.test(rule.identifier().addressRange());
     }
 
     @Override
     @TransactionRequired
     public Rule save(Rule rule) {
         lockPrioritiesForUpdate();
-        Objects.requireNonNull(rule.getId());
+        Objects.requireNonNull(rule.id());
         findDup(rule).ifPresent(this::throwConflict);
 
-        org.geoserver.acl.persistence.jpa.domain.JpaRule entity = getOrThrowIAE(rule.getId());
+        org.geoserver.acl.persistence.jpa.domain.JpaRule entity = getOrThrowIAE(rule.id());
         removeLayerDetailsIfNotApplicableAnyMore(rule, entity);
 
         PriorityResolver<org.geoserver.acl.persistence.jpa.domain.JpaRule> priorityResolver = priorityResolver();
-        long finalPriority = priorityResolver.resolvePriorityUpdate(entity.getPriority(), rule.getPriority());
+        long finalPriority = priorityResolver.resolvePriorityUpdate(entity.getPriority(), rule.priority());
 
         modelMapper.updateEntity(entity, rule);
         entity.setPriority(finalPriority);
@@ -192,18 +188,18 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     private void removeLayerDetailsIfNotApplicableAnyMore(
             Rule rule, org.geoserver.acl.persistence.jpa.domain.JpaRule entity) {
         if (entity.getLayerDetails() != null && !entity.getLayerDetails().isEmpty()) {
-            boolean updatedCanHaveDetails = ALLOW == rule.getIdentifier().getAccess()
-                    && null != rule.getIdentifier().getLayer();
+            boolean updatedCanHaveDetails = ALLOW == rule.identifier().access()
+                    && null != rule.identifier().layer();
             if (!updatedCanHaveDetails) {
                 log.info(
                         "Removing LayerDetails for Rule {} (entity id  {})."
                                 + " Tansitioned from [access={}, layer={}] to [access={}, layer={}]",
-                        rule.getId(),
+                        rule.id(),
                         entity.getId(),
                         entity.getIdentifier().getAccess(),
                         entity.getIdentifier().getLayer(),
-                        rule.getIdentifier().getAccess(),
-                        rule.getIdentifier().getLayer());
+                        rule.identifier().access(),
+                        rule.identifier().layer());
                 entity.setLayerDetails(null);
             }
         }
@@ -213,14 +209,14 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     @TransactionRequired
     public Rule create(@NonNull Rule rule, @NonNull InsertPosition position) {
         lockPrioritiesForUpdate();
-        if (null != rule.getId()) throw new IllegalArgumentException("Rule must have no id");
-        if (rule.getPriority() < 0)
-            throw new IllegalArgumentException("Negative priority is not allowed: " + rule.getPriority());
+        if (null != rule.id()) throw new IllegalArgumentException("Rule must have no id");
+        if (rule.priority() < 0)
+            throw new IllegalArgumentException("Negative priority is not allowed: " + rule.priority());
 
         findDup(rule).ifPresent(this::throwConflict);
 
         PriorityResolver<org.geoserver.acl.persistence.jpa.domain.JpaRule> priorityResolver = priorityResolver();
-        final long finalPriority = priorityResolver.resolveFinalPriority(rule.getPriority(), position);
+        final long finalPriority = priorityResolver.resolveFinalPriority(rule.priority(), position);
 
         org.geoserver.acl.persistence.jpa.domain.JpaRule entity = modelMapper.toEntity(rule);
         entity.setPriority(finalPriority);
@@ -241,12 +237,12 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     }
 
     private Optional<Rule> findDup(Rule rule) {
-        if (rule.getIdentifier().getAccess() == LIMIT) {
+        if (rule.identifier().access() == LIMIT) {
             return Optional.empty();
         }
 
-        final Long id = decodeId(rule.getId());
-        final JpaRuleIdentifier identifier = modelMapper.toEntity(rule.getIdentifier());
+        final Long id = decodeId(rule.id());
+        final JpaRuleIdentifier identifier = modelMapper.toEntity(rule.identifier());
 
         List<org.geoserver.acl.persistence.jpa.domain.JpaRule> matches = jparepo.findAllByIdentifier(identifier);
         return matches.stream().filter(r -> !r.getId().equals(id)).findFirst().map(modelMapper::toModel);

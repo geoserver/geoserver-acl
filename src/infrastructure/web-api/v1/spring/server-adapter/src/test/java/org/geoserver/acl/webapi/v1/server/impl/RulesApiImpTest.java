@@ -7,7 +7,6 @@ package org.geoserver.acl.webapi.v1.server.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -180,6 +179,6 @@ class RulesApiImpTest {
         assertThat(api.setRuleAllowedStyles("id1", Set.of("s1", "s2")).getStatusCode())
                 .isEqualTo(OK);
 
-        verify(rules, times(1)).setAllowedStyles(eq("id1"), eq(Set.of("s1", "s2")));
+        verify(rules, times(1)).setAllowedStyles("id1", Set.of("s1", "s2"));
     }
 }

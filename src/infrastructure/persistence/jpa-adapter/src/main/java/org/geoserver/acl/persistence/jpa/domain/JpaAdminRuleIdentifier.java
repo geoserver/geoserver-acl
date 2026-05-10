@@ -6,7 +6,6 @@
 package org.geoserver.acl.persistence.jpa.domain;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
@@ -24,7 +23,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @Embeddable
-public class JpaAdminRuleIdentifier implements Cloneable {
+public class JpaAdminRuleIdentifier {
     public static final String ANY = "*";
 
     @NonNull
@@ -41,22 +40,18 @@ public class JpaAdminRuleIdentifier implements Cloneable {
 
     @NonNull
     @Embedded
-    @AttributeOverrides({
-        @AttributeOverride(name = "low", column = @Column(name = "ip_low")),
-        @AttributeOverride(name = "high", column = @Column(name = "ip_high")),
-        @AttributeOverride(name = "size", column = @Column(name = "ip_size"))
-    })
+    @AttributeOverride(name = "low", column = @Column(name = "ip_low"))
+    @AttributeOverride(name = "high", column = @Column(name = "ip_high"))
+    @AttributeOverride(name = "size", column = @Column(name = "ip_size"))
     private JpaIPAddressRange addressRange = new JpaIPAddressRange();
 
-    public @Override JpaAdminRuleIdentifier clone() {
-        JpaAdminRuleIdentifier clone;
-        try {
-            clone = (JpaAdminRuleIdentifier) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-        clone.addressRange = addressRange.clone();
-        return clone;
+    public JpaAdminRuleIdentifier() {}
+
+    public JpaAdminRuleIdentifier(JpaAdminRuleIdentifier other) {
+        this.username = other.username;
+        this.rolename = other.rolename;
+        this.workspace = other.workspace;
+        this.addressRange = new JpaIPAddressRange(other.addressRange);
     }
 
     public String username() {

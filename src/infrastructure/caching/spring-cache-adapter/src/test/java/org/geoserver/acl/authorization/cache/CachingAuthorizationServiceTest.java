@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.geoserver.acl.authorization.AccessInfo;
 import org.geoserver.acl.authorization.AccessRequest;
@@ -40,7 +39,7 @@ class CachingAuthorizationServiceTest {
     private ConcurrentMap<AccessSummaryRequest, AccessSummary> viewablesCache;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         delegate = mock(AuthorizationService.class);
         dataAccessCache = new ConcurrentHashMap<>();
         adminAccessCache = new ConcurrentHashMap<>();
@@ -112,7 +111,7 @@ class CachingAuthorizationServiceTest {
         assertThat(dataAccessCache).isEmpty();
 
         grantAll(rule1, rule2, rule3, req1, req2, req3);
-        caching.onRuleEventEvictAll(RuleEvent.deleted(rule2.getId()));
+        caching.onRuleEventEvictAll(RuleEvent.deleted(rule2.id()));
         assertThat(dataAccessCache).isEmpty();
 
         grantAll(rule1, rule2, rule3, req1, req2, req3);
@@ -148,7 +147,7 @@ class CachingAuthorizationServiceTest {
         assertThat(adminAccessCache).isEmpty();
 
         grantAll(rule1, rule2, rule3, req1, req2, req3);
-        caching.onAdminRuleEventEvictAll(AdminRuleEvent.deleted(rule3.getId()));
+        caching.onAdminRuleEventEvictAll(AdminRuleEvent.deleted(rule3.id()));
         assertThat(adminAccessCache).isEmpty();
     }
 
@@ -166,7 +165,7 @@ class CachingAuthorizationServiceTest {
     }
 
     private AccessInfo grant(AccessRequest req, Rule... matching) {
-        List<String> ids = Stream.of(matching).map(Rule::getId).collect(Collectors.toList());
+        List<String> ids = Stream.of(matching).map(Rule::id).toList();
         AccessInfo grant = AccessInfo.ALLOW_ALL.withMatchingRules(ids);
         this.dataAccessCache.put(req, grant);
         return grant;
@@ -175,7 +174,7 @@ class CachingAuthorizationServiceTest {
     private AdminAccessInfo grant(AdminAccessRequest req, AdminRule matching) {
         AdminAccessInfo grant = AdminAccessInfo.builder()
                 .admin(false)
-                .matchingAdminRule(matching.getId())
+                .matchingAdminRule(matching.id())
                 .build();
         this.adminAccessCache.put(req, grant);
         return grant;
@@ -184,8 +183,8 @@ class CachingAuthorizationServiceTest {
     private AccessRequest req(Rule r) {
         return AccessRequest.builder()
                 .roles("TEST_ROLE")
-                .workspace(r.getIdentifier().getWorkspace())
-                .layer(r.getIdentifier().getLayer())
+                .workspace(r.identifier().workspace())
+                .layer(r.identifier().layer())
                 .build();
     }
 }

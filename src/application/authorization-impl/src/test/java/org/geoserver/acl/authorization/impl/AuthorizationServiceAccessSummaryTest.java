@@ -3,7 +3,7 @@
  * application directory.
  */
 
-package org.geoserver.acl.authorization;
+package org.geoserver.acl.authorization.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.geoserver.acl.domain.adminrules.AdminGrantType.ADMIN;
@@ -14,6 +14,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import lombok.NonNull;
+import org.geoserver.acl.authorization.AccessInfo;
+import org.geoserver.acl.authorization.AccessRequest;
+import org.geoserver.acl.authorization.AccessSummary;
+import org.geoserver.acl.authorization.AccessSummaryRequest;
+import org.geoserver.acl.authorization.AuthorizationService;
+import org.geoserver.acl.authorization.WorkspaceAccessSummary;
 import org.geoserver.acl.domain.adminrules.AdminGrantType;
 import org.geoserver.acl.domain.rules.GrantType;
 import org.geoserver.acl.domain.rules.Rule;
@@ -97,10 +103,10 @@ public abstract class AuthorizationServiceAccessSummaryTest extends BaseAuthoriz
 
         AccessInfo accessInfo =
                 service.getAccessInfo(accessRequestBuilder.layer("visible").build());
-        assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
 
         accessInfo = service.getAccessInfo(accessRequestBuilder.layer("hidden1").build());
-        assertThat(accessInfo.getGrant()).isEqualTo(DENY);
+        assertThat(accessInfo.grant()).isEqualTo(DENY);
 
         AccessSummary viewables = authorizationService.getUserAccessSummary(req);
         Set<String> allowed = Set.of("*");

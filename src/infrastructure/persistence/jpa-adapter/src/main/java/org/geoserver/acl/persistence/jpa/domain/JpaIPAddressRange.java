@@ -23,7 +23,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
-public class JpaIPAddressRange implements Cloneable {
+public class JpaIPAddressRange {
 
     public static final long NULL = -1L;
 
@@ -36,8 +36,8 @@ public class JpaIPAddressRange implements Cloneable {
     @Column(nullable = false)
     private int size = (int) NULL;
 
-    public @Override JpaIPAddressRange clone() {
-        return new JpaIPAddressRange(low, high, size);
+    public JpaIPAddressRange(JpaIPAddressRange other) {
+        this(other.low, other.high, other.size);
     }
 
     /**

@@ -5,7 +5,6 @@
 package org.geoserver.acl.domain.filter.predicate;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,7 +16,7 @@ import lombok.EqualsAndHashCode;
 
 /** Contains a fixed text OR a special filtering condition (i.e. ANY, DEFAULT). */
 @EqualsAndHashCode(callSuper = true)
-public class InSetPredicate<V> extends RulePredicate<Set<V>> implements Serializable, Cloneable {
+public class InSetPredicate<V> extends RulePredicate<Set<V>> {
 
     @Serial
     private static final long serialVersionUID = 6565336016075974626L;
@@ -42,6 +41,11 @@ public class InSetPredicate<V> extends RulePredicate<Set<V>> implements Serializ
     public InSetPredicate(Set<V> values) {
         super(FilterType.NAMEVALUE);
         this.values = values == null ? Set.of() : Set.copyOf(values);
+    }
+
+    public InSetPredicate(InSetPredicate<V> other) {
+        super(other);
+        this.values = other.values;
     }
 
     @SuppressWarnings("unchecked")
@@ -83,21 +87,11 @@ public class InSetPredicate<V> extends RulePredicate<Set<V>> implements Serializ
 
     @Override
     public String toString() {
-        switch (type) {
-            case ANY:
-            case DEFAULT:
-                return type.toString();
-            case NAMEVALUE:
-                return values + (includeDefault ? "+" : "");
-            case IDVALUE:
-            default:
-                throw new AssertionError();
-        }
-    }
-
-    @Override
-    public InSetPredicate<V> clone() throws CloneNotSupportedException {
-        return (InSetPredicate<V>) super.clone();
+        return switch (type) {
+            case ANY, DEFAULT -> type.toString();
+            case NAMEVALUE -> values + (includeDefault ? "+" : "");
+            default -> throw new AssertionError();
+        };
     }
 
     @SuppressWarnings("unchecked")
@@ -107,22 +101,21 @@ public class InSetPredicate<V> extends RulePredicate<Set<V>> implements Serializ
 
     @Override
     public boolean test(Set<V> values) {
-        switch (type) {
-            case ANY:
-                return true;
-            case DEFAULT:
-                return values == null || values.isEmpty();
-            case NAMEVALUE:
-                Set<V> filter = getValues() == null ? Set.of() : getValues();
-                values = values == null ? Set.of() : values;
-                if (this.isIncludeDefault()) {
-                    return values.isEmpty() || values.stream().anyMatch(filter::contains);
-                }
-                return values.stream().anyMatch(filter::contains);
-            case IDVALUE:
-            default:
-                throw new IllegalArgumentException();
+        if (values == null) {
+            values = Set.of();
         }
+        return switch (type) {
+            case ANY -> true;
+            case DEFAULT -> values.isEmpty();
+            case NAMEVALUE -> {
+                Set<V> filter = getValues() == null ? Set.of() : getValues();
+                if (this.isIncludeDefault()) {
+                    yield values.isEmpty() || values.stream().anyMatch(filter::contains);
+                }
+                yield values.stream().anyMatch(filter::contains);
+            }
+            default -> throw new IllegalArgumentException();
+        };
     }
 
     public static String asTextValue(Collection<String> values) {
@@ -135,7 +128,7 @@ public class InSetPredicate<V> extends RulePredicate<Set<V>> implements Serializ
         }
         if (value.contains(COLLECTION_VALUE_SEPARATOR)) {
             return Arrays.stream(value.split(COLLECTION_VALUE_SEPARATOR))
-                    .map(n -> n.trim())
+                    .map(String::trim)
                     .filter(n -> !n.isBlank())
                     .collect(Collectors.toCollection(TreeSet::new));
         }

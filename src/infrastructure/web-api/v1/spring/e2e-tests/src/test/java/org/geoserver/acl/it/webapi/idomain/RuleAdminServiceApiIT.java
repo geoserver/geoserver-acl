@@ -36,7 +36,7 @@ class RuleAdminServiceApiIT extends RuleAdminServiceIT {
 
     @Override
     @BeforeEach
-    protected void setUp() throws Exception {
+    protected void setUp() {
         clientContext = new ClientContextSupport().serverPort(serverPort).setUp();
         JpaRuleRepository jparepo = serverContext.getBean(JpaRuleRepository.class);
         jparepo.deleteAll();

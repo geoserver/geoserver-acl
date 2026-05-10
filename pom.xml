@@ -78,7 +78,7 @@
     <spring-cloud.version>2025.1.1</spring-cloud.version>
     <spring-boot.version>4.0.6</spring-boot.version>
     <jackson.version>3.1.2</jackson.version>
-    <lombok.version>1.18.42</lombok.version>
+    <lombok.version>1.18.46</lombok.version>
     <flyway.version>12.1.0</flyway.version>
     <mapstruct.version>1.6.3</mapstruct.version>
     <geolatte.version>1.10</geolatte.version>
@@ -91,6 +91,14 @@
     <swagger-annotations-jakarta.version>2.2.41</swagger-annotations-jakarta.version>
     <openapi-generator-maven-plugin.version>7.19.0</openapi-generator-maven-plugin.version>
     <!-- build setings -->
+    <!--
+    Default empty argLine so surefire's <argLine>@{argLine} ...</argLine> resolves
+    to nothing when the coverage profile is inactive. The coverage profile's
+    jacoco:prepare-agent execution overrides this with the agent's -javaagent flags;
+    without this default the literal '@{argLine}' would be passed to the JVM and
+    crash the test fork.
+    -->
+    <argLine></argLine>
     <fmt.skip>false</fmt.skip>
     <spotless.skip>${fmt.skip}</spotless.skip>
     <spotless.action>apply</spotless.action>
@@ -100,6 +108,11 @@
   </properties>
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.jspecify</groupId>
+        <artifactId>jspecify</artifactId>
+        <version>1.0.0</version>
+      </dependency>
       <dependency>
         <groupId>tools.jackson</groupId>
         <artifactId>jackson-bom</artifactId>
@@ -313,7 +326,7 @@
           <configuration>
             <reuseForks>false</reuseForks>
             <forkCount>1C</forkCount>
-            <argLine>--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED  --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED</argLine>
+            <argLine>@{argLine} --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED  --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED</argLine>
             <systemPropertyVariables>
               <!-- remove when it's not necessary anymore for Java 25 -->
               <net.bytebuddy.experimental>true</net.bytebuddy.experimental>
@@ -332,8 +345,9 @@
                 <goal>verify</goal>
               </goals>
               <configuration>
-                <forkCount>2</forkCount>
+                <forkCount>1C</forkCount>
                 <reuseForks>false</reuseForks>
+                <argLine>@{argLine} --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED  --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED</argLine>
                 <trimStackTrace>false</trimStackTrace>
                 <!-- Timeout for forked JVM to prevent hanging tests in CI -->
                 <forkedProcessTimeoutInSeconds>600</forkedProcessTimeoutInSeconds>
@@ -409,6 +423,11 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>3.6.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>0.8.14</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -619,6 +638,37 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>coverage</id>
+      <activation>
+        <property>
+          <name>coverage</name>
+        </property>
+      </activation>
+      <modules>
+        <module>coverage-report</module>
+      </modules>
+      <properties>
+        <!--
+        Point SonarQube at the single aggregated report rather than each module's
+        per-module jacoco.xml. The per-module reports only contain coverage from
+        the module's own .exec files, so cross-module contributions (e.g., e2e-tests
+        exercising server-adapter/authorization-impl/app-main) are invisible.
+        The aggregate combines every .exec against every class.
+        -->
+        <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/coverage-report/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <!--
+        Exclude generated code from coverage measurement. Annotation-based filtering
+        won't work here: the @Generated annotations in use (javax.annotation.processing.Generated,
+        emitted by openapi-generator and mapstruct) have SOURCE retention, so they
+        aren't present in the bytecode that JaCoCo/Sonar inspect. We exclude by path:
+          - openapi-generated model classes (the entire generated-model module)
+          - openapi-generated REST client (in the java-restclient module)
+          - mapstruct-generated *MapperImpl classes (under target/generated-sources)
+        -->
+        <sonar.coverage.exclusions>**/org/geoserver/acl/webapi/v1/model/**,**/org/geoserver/acl/webapi/v1/client/**,**/generated-sources/**,**/*MapperImpl.java</sonar.coverage.exclusions>
+      </properties>
     </profile>
   </profiles>
 </project>

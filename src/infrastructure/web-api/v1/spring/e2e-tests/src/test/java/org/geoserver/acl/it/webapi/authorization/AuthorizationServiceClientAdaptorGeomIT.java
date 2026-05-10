@@ -5,7 +5,7 @@
 package org.geoserver.acl.it.webapi.authorization;
 
 import org.geoserver.acl.authorization.AuthorizationService;
-import org.geoserver.acl.authorization.AuthorizationServiceGeomTest;
+import org.geoserver.acl.authorization.impl.AuthorizationServiceGeomTest;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.geoserver.acl.it.webapi.support.ClientContextSupport;
@@ -44,7 +44,7 @@ class AuthorizationServiceClientAdaptorGeomIT extends AuthorizationServiceGeomTe
 
     @Override
     @BeforeEach
-    protected void setUp() throws Exception {
+    protected void setUp() {
         clientContext = new ClientContextSupport().serverPort(serverPort).setUp();
         serverContext.setUp();
         super.setUp();

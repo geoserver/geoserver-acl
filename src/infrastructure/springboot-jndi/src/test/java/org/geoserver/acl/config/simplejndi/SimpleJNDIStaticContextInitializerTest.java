@@ -9,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Hashtable;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.naming.spi.NamingManager;
 import org.geoserver.acl.simplejndi.SimpleNamingContext;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,7 @@ class SimpleJNDIStaticContextInitializerTest {
             new ApplicationContextRunner().withInitializer(new SimpleJNDIStaticContextInitializer());
 
     @Test
-    void test() throws NamingException {
+    void test() {
         runner.run(context -> {
             InitialContext initialContext = new InitialContext();
             assertThat(initialContext).isNotNull();

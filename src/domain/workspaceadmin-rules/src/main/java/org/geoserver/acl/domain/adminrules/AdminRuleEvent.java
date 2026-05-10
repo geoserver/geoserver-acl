@@ -10,6 +10,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 
+/**
+ * Domain event published when {@link AdminRule}s are created, updated, or deleted.
+ *
+ * <p>Emitted by {@link AdminRuleAdminService} after a successful mutation. Listeners typically
+ * use these events to invalidate authorization caches and to propagate changes across nodes in
+ * clustered deployments. The event carries the {@link EventType} and the affected rule ids.
+ *
+ * @see AdminRuleAdminService#setEventPublisher(java.util.function.Consumer)
+ */
 @Data
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class AdminRuleEvent {
@@ -24,11 +33,11 @@ public class AdminRuleEvent {
     private Set<String> ruleIds;
 
     public static AdminRuleEvent created(@NonNull AdminRule rule) {
-        return new AdminRuleEvent(EventType.CREATED, Set.of(rule.getId()));
+        return new AdminRuleEvent(EventType.CREATED, Set.of(rule.id()));
     }
 
     public static AdminRuleEvent updated(@NonNull AdminRule rule) {
-        return new AdminRuleEvent(EventType.UPDATED, Set.of(rule.getId()));
+        return new AdminRuleEvent(EventType.UPDATED, Set.of(rule.id()));
     }
 
     public static AdminRuleEvent updated(@NonNull String... ids) {

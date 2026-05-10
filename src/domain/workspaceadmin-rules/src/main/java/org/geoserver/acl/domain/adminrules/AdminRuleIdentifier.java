@@ -6,8 +6,8 @@
 package org.geoserver.acl.domain.adminrules;
 
 import lombok.Builder;
-import lombok.Value;
 import lombok.With;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Matching criteria for workspace administration rules.
@@ -31,26 +31,21 @@ import lombok.With;
  *
  * <p>Immutable. Use {@code with*()} methods or {@code toBuilder()} for modifications.
  *
+ * @param username username to match (null matches any).
+ * @param rolename role name to match (null matches any).
+ * @param workspace workspace name to match (null matches any).
+ * @param addressRange IP address or CIDR range (e.g., "192.168.1.0/24"). Null matches any.
  * @since 1.0
  * @see AdminRule
  * @see org.geoserver.acl.domain.rules.RuleIdentifier
  */
-@Value
 @With
 @Builder(toBuilder = true, builderClassName = "Builder")
-public class AdminRuleIdentifier {
-
-    /** Username to match (null matches any). */
-    private String username;
-
-    /** Role name to match (null matches any). */
-    private String rolename;
-
-    /** Workspace name to match (null matches any). */
-    private String workspace;
-
-    /** IP address or CIDR range (e.g., "192.168.1.0/24"). Null matches any. */
-    private String addressRange;
+public record AdminRuleIdentifier(
+        @Nullable String username,
+        @Nullable String rolename,
+        @Nullable String workspace,
+        @Nullable String addressRange) {
 
     public String toShortString() {
         StringBuilder builder = new StringBuilder();
@@ -61,9 +56,9 @@ public class AdminRuleIdentifier {
         return builder.toString();
     }
 
-    private void addNonNull(StringBuilder builder, String prop, Object value) {
+    private void addNonNull(StringBuilder builder, String prop, @Nullable Object value) {
         if (null != value) {
-            if (builder.length() > 0) builder.append(", ");
+            if (!builder.isEmpty()) builder.append(", ");
             builder.append(prop).append(": ").append(value);
         }
     }

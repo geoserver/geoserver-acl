@@ -44,6 +44,7 @@ import org.springframework.test.context.ActiveProfiles;
             AuthorizationJPAConfiguration.class
         })
 @ActiveProfiles("test")
+@SuppressWarnings("java:S5786")
 public class JpaRuleRepositoryTest {
 
     private static final String WORLD = "MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))";
@@ -93,7 +94,7 @@ public class JpaRuleRepositoryTest {
     @Test
     void testSave_Identifier_defaultValues() {
 
-        JpaRuleIdentifier expected = entity.getIdentifier().clone();
+        JpaRuleIdentifier expected = new JpaRuleIdentifier(entity.getIdentifier());
 
         JpaRule saved = repo.saveAndFlush(entity);
         assertSame(entity, saved);
@@ -103,7 +104,7 @@ public class JpaRuleRepositoryTest {
 
     @Test
     void testSave_Identifier() {
-        JpaRuleIdentifier expected = entity.getIdentifier()
+        JpaRuleIdentifier expected = new JpaRuleIdentifier(entity.getIdentifier()
                 .setAccess(JpaGrantType.DENY)
                 .setAddressRange(new JpaIPAddressRange(1000L, 2000L, 32))
                 .setLayer("layer")
@@ -112,8 +113,7 @@ public class JpaRuleRepositoryTest {
                 .setService("WCS")
                 .setSubfield("subfield")
                 .setUsername("user")
-                .setWorkspace("workspace")
-                .clone();
+                .setWorkspace("workspace"));
 
         JpaRule saved = repo.saveAndFlush(entity);
         em.detach(saved);
@@ -132,7 +132,7 @@ public class JpaRuleRepositoryTest {
                 .setCatalogMode(JpaCatalogMode.MIXED)
                 .setSpatialFilterType(JpaSpatialFilterType.CLIP));
 
-        JpaRuleLimits expected = rule.getRuleLimits().clone();
+        JpaRuleLimits expected = new JpaRuleLimits(rule.getRuleLimits());
 
         repo.saveAndFlush(rule);
         rule = repo.findById(rule.getId()).orElseThrow();
@@ -147,7 +147,7 @@ public class JpaRuleRepositoryTest {
         final MultiPolygon<?> area = geom(WORLD);
 
         Set<JpaLayerAttribute> attributes = Set.of(latt("att1"), latt("att2"));
-        final JpaLayerDetails details = new JpaLayerDetails()
+        final JpaLayerDetails details = new JpaLayerDetails(new JpaLayerDetails()
                 .setAllowedStyles(Set.of("s1", "s2"))
                 .setArea(area)
                 .setAttributes(attributes)
@@ -156,10 +156,9 @@ public class JpaRuleRepositoryTest {
                 .setCqlFilterWrite("foo=bar")
                 .setDefaultStyle("defstyle")
                 .setSpatialFilterType(JpaSpatialFilterType.CLIP)
-                .setType(LayerType.LAYERGROUP)
-                .clone();
+                .setType(LayerType.LAYERGROUP));
 
-        JpaLayerDetails expected = details.clone();
+        JpaLayerDetails expected = new JpaLayerDetails(details);
 
         entity.setLayerDetails(details);
         entity = repo.saveAndFlush(entity);
@@ -237,7 +236,7 @@ public class JpaRuleRepositoryTest {
         Iterable<JpaRule> res = repo.findAll(predicate, Sort.by("priority"));
         List<JpaRule> actual = new ArrayList<>();
         res.forEach(actual::add);
-        assertThat(actual.size()).isEqualTo(expected.size());
+        assertThat(actual).hasSameSizeAs(expected);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -261,7 +260,7 @@ public class JpaRuleRepositoryTest {
         List<JpaRule> initial = addSamplesInReverseNaturalOrder();
         // preflight
         assertThat(initial.get(0).getPriority()).isEqualTo(1);
-        assertThat(initial.size()).isEqualTo(11);
+        assertThat(initial).hasSize(11);
 
         Set<Long> expected = initial.stream().map(JpaRule::getId).collect(Collectors.toSet());
         Set<Long> actual = repo.streamIdsByShiftPriority(1).collect(Collectors.toSet());
@@ -322,7 +321,7 @@ public class JpaRuleRepositoryTest {
         List<JpaRule> initial = addSamplesInReverseNaturalOrder();
         // preflight
         assertThat(initial.get(0).getPriority()).isEqualTo(1);
-        assertThat(initial.size()).isEqualTo(11);
+        assertThat(initial).hasSize(11);
 
         Set<Long> expected = initial.stream()
                 .filter(r -> r.getPriority() >= 5)
@@ -344,37 +343,37 @@ public class JpaRuleRepositoryTest {
         JpaRule rule = this.entity;
         List<JpaRule> expected = new ArrayList<>();
 
-        expected.add(rule.clone());
+        expected.add(new JpaRule(rule));
 
         rule.getIdentifier().setAccess(JpaGrantType.LIMIT);
-        expected.add(rule.clone());
+        expected.add(new JpaRule(rule));
 
         rule.getIdentifier().setAddressRange(new JpaIPAddressRange(1000L, 2000L, 32));
-        expected.add(rule.clone());
+        expected.add(new JpaRule(rule));
 
         rule.getIdentifier().setService("service");
-        expected.add(rule.clone());
+        expected.add(new JpaRule(rule));
 
         rule.getIdentifier().setRequest("request");
-        expected.add(rule.clone());
+        expected.add(new JpaRule(rule));
 
         rule.getIdentifier().setRolename("rolename");
-        expected.add(rule.clone());
+        expected.add(new JpaRule(rule));
 
         rule.getIdentifier().setUsername("user");
-        expected.add(rule.clone());
+        expected.add(new JpaRule(rule));
 
         rule.getIdentifier().setWorkspace("workspace");
-        expected.add(rule.clone());
+        expected.add(new JpaRule(rule));
 
         rule.getIdentifier().setLayer("layer");
-        expected.add(rule.clone());
+        expected.add(new JpaRule(rule));
 
         rule.getIdentifier().setAccess(JpaGrantType.ALLOW);
-        expected.add(rule.clone());
+        expected.add(new JpaRule(rule));
 
         rule.getIdentifier().setSubfield("subfield");
-        expected.add(rule.clone());
+        expected.add(new JpaRule(rule));
 
         IntStream.range(0, expected.size()).forEach(p -> expected.get(p).setPriority(1 + p));
 

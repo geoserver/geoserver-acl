@@ -5,7 +5,7 @@
 package org.geoserver.acl.persistence.jpa.it;
 
 import org.geoserver.acl.authorization.AuthorizationService;
-import org.geoserver.acl.authorization.AuthorizationServiceAccessSummaryTest;
+import org.geoserver.acl.authorization.impl.AuthorizationServiceAccessSummaryTest;
 import org.geoserver.acl.config.persistence.jpa.AuthorizationJPAPropertiesTestConfiguration;
 import org.geoserver.acl.config.persistence.jpa.JPAIntegrationConfiguration;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
@@ -53,7 +53,7 @@ class AuthorizationServiceImplAccessSummaryJpaIT extends AuthorizationServiceAcc
 
     @Override
     @BeforeEach
-    protected void setUp() throws Exception {
+    protected void setUp() {
         support.setUp();
         super.setUp();
     }

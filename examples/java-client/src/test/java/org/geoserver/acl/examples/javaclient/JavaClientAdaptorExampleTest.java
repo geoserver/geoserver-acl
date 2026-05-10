@@ -74,13 +74,13 @@ class JavaClientAdaptorExampleTest {
                 .build();
 
         AccessInfo accessInfo = authService.getAccessInfo(request);
-        assertThat(accessInfo.getGrant()).isEqualTo(GrantType.ALLOW);
+        assertThat(accessInfo.grant()).isEqualTo(GrantType.ALLOW);
 
         // but does not have access to layers in the editors_ws workspace
         request = request.withWorkspace("editors_ws");
 
         accessInfo = authService.getAccessInfo(request);
-        assertThat(accessInfo.getGrant()).isEqualTo(GrantType.DENY);
+        assertThat(accessInfo.grant()).isEqualTo(GrantType.DENY);
     }
 
     public List<Rule> createSampleRules() {
