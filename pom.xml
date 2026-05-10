@@ -76,7 +76,7 @@
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
     <gt.version>35-SNAPSHOT</gt.version>
     <spring-cloud.version>2025.1.1</spring-cloud.version>
-    <spring-boot.version>4.0.5</spring-boot.version>
+    <spring-boot.version>4.0.6</spring-boot.version>
     <jackson.version>3.1.2</jackson.version>
     <lombok.version>1.18.42</lombok.version>
     <flyway.version>12.1.0</flyway.version>
