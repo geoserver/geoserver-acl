@@ -1,0 +1,101 @@
+# PR build that produces inputs for the SonarCloud PR analysis workflow.
+#
+# This workflow runs once per pull request: it builds with -Dcoverage to
+# generate JaCoCo XML reports and uploads the compiled bytecode, coverage
+# data, test reports and source files as a single artifact ("sonar-pr-input").
+#
+# The companion sonarqube.yaml workflow then runs in the trusted base context
+# (via workflow_run), downloads the artifact, overlays the fork sources onto
+# the base checkout and invokes the SonarCloud scanner. The PR's own pom.xml
+# is never executed — only its sources and bytecode are analyzed.
+name: PR Build and Test
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/pr-build-and-test.yaml"
+      - ".github/workflows/sonarqube.yaml"
+      - "pom.xml"
+      - "src/**"
+      - "coverage-report/**"
+
+permissions:
+  contents: read
+
+# cancel in-progress jobs or runs for this workflow for the same PR or branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Build and Test Pull Request
+    if: github.repository == 'geoserver/geoserver-acl'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+          cache: 'maven'
+
+      - name: Test with coverage
+        run: |
+          ./mvnw verify -Dcoverage -ntp -T4
+
+      # PR fields are routed through env vars and `jq --arg` rather than
+      # interpolated as `${{ }}` directly into the shell script: head.ref is
+      # attacker-controlled and would otherwise allow expression injection.
+      - name: Write PR metadata
+        if: github.event_name == 'pull_request'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          jq -n \
+            --arg pr_number "$PR_NUMBER" \
+            --arg head_sha  "$PR_HEAD_SHA" \
+            --arg head_ref  "$PR_HEAD_REF" \
+            --arg base_ref  "$PR_BASE_REF" \
+            '{pr_number: $pr_number, head_sha: $head_sha, head_ref: $head_ref, base_ref: $base_ref}' \
+            > pr-meta.json
+
+      # The downstream sonarqube.yaml workflow refuses to overlay any artifact
+      # that contains pom.xml. Do not add pom.xml to the patterns below: it
+      # would let a fork's build script execute in the privileged context.
+      - name: Upload Sonar input artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonar-pr-input
+          path: |
+            pr-meta.json
+            src/**/target/classes/**
+            src/**/target/test-classes/**
+            src/**/target/site/jacoco/jacoco.xml
+            coverage-report/target/site/jacoco-aggregate/jacoco.xml
+            src/**/target/surefire-reports/TEST-*.xml
+            src/**/target/failsafe-reports/TEST-*.xml
+            src/**/src/main/**
+            src/**/src/test/**
+            !src/**/target/*-bin.jar
+            !src/**/target/*-sources.jar
+            !src/**/target/*-javadoc.jar
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 6
+
+      - name: Remove project jars from cached repository
+        if: always()
+        run: |
+          rm -rf ~/.m2/repository/org/geoserver/acl
+          find ~/.m2/repository -name "*SNAPSHOT*" -type d -exec rm -rf {} +

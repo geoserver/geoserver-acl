@@ -13,6 +13,9 @@ on:
       - '.gitignore'
       - 'LICENSE'
 
+permissions:
+  contents: read
+
 jobs:
   build:
     if: github.repository == 'geoserver/geoserver-acl'
