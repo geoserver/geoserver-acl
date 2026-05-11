@@ -52,7 +52,7 @@ public class AdminRuleAdminServiceImpl implements AdminRuleAdminService {
 
     @Override
     public AdminRule update(AdminRule rule) {
-        if (null == rule.getId()) {
+        if (null == rule.id()) {
             throw new IllegalArgumentException("AdminRule has no id");
         }
 

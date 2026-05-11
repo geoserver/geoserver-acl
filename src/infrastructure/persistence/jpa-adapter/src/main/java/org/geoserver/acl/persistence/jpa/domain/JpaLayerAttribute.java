@@ -11,8 +11,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import java.io.Serial;
-import java.io.Serializable;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Cache;
@@ -26,10 +24,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Accessors(chain = true)
 @Embeddable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "LayerAttribute")
-public class JpaLayerAttribute implements Serializable, Cloneable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class JpaLayerAttribute {
 
     public enum AccessType {
 
@@ -53,11 +48,11 @@ public class JpaLayerAttribute implements Serializable, Cloneable {
     @Column(name = "access_type", nullable = true /* false */)
     private AccessType access;
 
-    public @Override JpaLayerAttribute clone() {
-        try {
-            return (JpaLayerAttribute) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
+    public JpaLayerAttribute() {}
+
+    public JpaLayerAttribute(JpaLayerAttribute other) {
+        this.name = other.name;
+        this.dataType = other.dataType;
+        this.access = other.access;
     }
 }

@@ -6,10 +6,8 @@
 package org.geoserver.acl.domain.rules;
 
 import lombok.Builder;
-import lombok.Builder.Default;
-import lombok.NonNull;
-import lombok.Value;
 import lombok.With;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Matching criteria and access type for a data access rule.
@@ -32,110 +30,65 @@ import lombok.With;
  *
  * <p>Immutable. Use {@code with*()} methods or {@code toBuilder()} for modifications.
  *
+ * @param access the access grant type (ALLOW, DENY, or LIMIT). Never null; defaults to DENY.
+ * @param username username to match. If {@code null}, matches any username.
+ * @param rolename role name to match. If {@code null}, matches any role.
+ * @param service OGC service type to match (e.g., "WMS", "WFS", "WCS"). Service names are
+ *     normalized to uppercase for case-insensitive matching. If {@code null}, matches any service.
+ * @param request OGC request operation to match (e.g., "GetMap", "GetFeature"). Request names are
+ *     normalized to uppercase for case-insensitive matching. If {@code null}, matches any request.
+ * @param subfield request subfield to match for fine-grained filtering beyond service and request.
+ *     In practice primarily used to match specific WPS process names (e.g., "geo:buffer",
+ *     "vec:Reproject"); kept generic to allow future extensions to other services. If {@code
+ *     null}, matches any subfield.
+ * @param workspace GeoServer workspace name to match. If {@code null}, matches any workspace.
+ * @param layer layer name to match (without workspace prefix). If {@code null}, matches any layer.
+ *     When combined with {@code workspace}, identifies a specific layer (e.g., workspace="topp",
+ *     layer="states").
+ * @param addressRange IP address or CIDR range to match. Supports single IP addresses (e.g.,
+ *     "192.168.1.100") or CIDR notation (e.g., "192.168.1.0/24"). If {@code null}, matches any IP
+ *     address.
  * @since 1.0
  * @see Rule
  * @see GrantType
  */
-@Value
 @With
 @Builder(toBuilder = true, builderClassName = "Builder")
-public class RuleIdentifier {
+public record RuleIdentifier(
+        GrantType access,
+        @Nullable String username,
+        @Nullable String rolename,
+        @Nullable String service,
+        @Nullable String request,
+        @Nullable String subfield,
+        @Nullable String workspace,
+        @Nullable String layer,
+        @Nullable String addressRange) {
 
-    /** The access grant type (ALLOW, DENY, or LIMIT). Never null; defaults to DENY. */
-    @NonNull
-    @Default
-    private GrantType access = GrantType.DENY;
-
-    /** Username to match. If {@code null}, matches any username. */
-    private String username;
-
-    /** Role name to match. If {@code null}, matches any role. */
-    private String rolename;
-
-    /**
-     * OGC service type to match (e.g., "WMS", "WFS", "WCS").
-     *
-     * <p>Service names are normalized to uppercase for case-insensitive matching. If {@code null},
-     * matches any service.
-     */
-    private String service;
-
-    /**
-     * OGC request operation to match (e.g., "GetMap", "GetFeature").
-     *
-     * <p>Request names are normalized to uppercase for case-insensitive matching. If {@code null},
-     * matches any request.
-     */
-    private String request;
-
-    /**
-     * Request subfield to match for fine-grained filtering beyond service and request.
-     *
-     * <p>In practice, this field is primarily used to match specific <b>WPS process names</b>
-     * (e.g., "geo:buffer", "vec:Reproject"). For example, you can create rules that allow access
-     * to specific WPS processes while denying others within the WPS service.
-     *
-     * <p>The field is kept generic to allow for future extensions to other services that may
-     * require similar fine-grained filtering capabilities beyond the service/request level.
-     *
-     * <p>If {@code null}, matches any subfield (all processes, or any future subfield values).
-     *
-     * <p><b>Example for WPS:</b>
-     *
-     * <pre>{@code
-     * // Allow only specific WPS process
-     * RuleIdentifier wpsProcessRule = RuleIdentifier.builder()
-     *     .access(ALLOW)
-     *     .service("WPS")
-     *     .request("Execute")
-     *     .subfield("geo:buffer")  // Only allow the buffer process
-     *     .build();
-     * }</pre>
-     */
-    private String subfield;
-
-    /**
-     * GeoServer workspace name to match.
-     *
-     * <p>If {@code null}, matches any workspace. Rules can target specific workspaces to control
-     * access at the workspace level.
-     */
-    private String workspace;
-
-    /**
-     * Layer name to match (without workspace prefix).
-     *
-     * <p>If {@code null}, matches any layer. When combined with {@code workspace}, identifies a
-     * specific layer (e.g., workspace="topp", layer="states").
-     */
-    private String layer;
-
-    /**
-     * IP address or CIDR range to match.
-     *
-     * <p>Supports single IP addresses (e.g., "192.168.1.100") or CIDR notation (e.g.,
-     * "192.168.1.0/24"). If {@code null}, matches any IP address.
-     */
-    private String addressRange;
-
-    public String toShortString() {
-        StringBuilder builder = new StringBuilder();
-        addNonNull(builder, "access", access);
-        addNonNull(builder, "username", username);
-        addNonNull(builder, "rolename", rolename);
-        addNonNull(builder, "addressRange", addressRange);
-        addNonNull(builder, "service", service);
-        addNonNull(builder, "request", request);
-        addNonNull(builder, "subfield", subfield);
-        addNonNull(builder, "workspace", workspace);
-        addNonNull(builder, "layer", layer);
-        return builder.toString();
+    public RuleIdentifier {
+        if (access == null) access = GrantType.DENY;
     }
 
-    private void addNonNull(StringBuilder builder, String prop, Object value) {
+    public String toShortString() {
+        StringBuilder sb = new StringBuilder();
+        addNonNull(sb, "access", access);
+        addNonNull(sb, "username", username);
+        addNonNull(sb, "rolename", rolename);
+        addNonNull(sb, "addressRange", addressRange);
+        addNonNull(sb, "service", service);
+        addNonNull(sb, "request", request);
+        addNonNull(sb, "subfield", subfield);
+        addNonNull(sb, "workspace", workspace);
+        addNonNull(sb, "layer", layer);
+        return sb.toString();
+    }
+
+    private void addNonNull(StringBuilder sb, String prop, @Nullable Object value) {
         if (null != value) {
-            if (builder.length() > 0) builder.append(", ");
-            builder.append(prop).append(": ").append(value);
+            if (!sb.isEmpty()) {
+                sb.append(", ");
+            }
+            sb.append(prop).append(": ").append(value);
         }
     }
 }

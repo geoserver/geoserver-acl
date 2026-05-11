@@ -47,7 +47,7 @@ interface AdminRuleApiMapper {
     default AdminRule patch(
             org.geoserver.acl.domain.adminrules.AdminRule target, org.geoserver.acl.webapi.v1.model.AdminRule source) {
 
-        AdminRuleIdentifier identifier = updateIdentifier(target.getIdentifier().toBuilder(), source);
+        AdminRuleIdentifier identifier = updateIdentifier(target.identifier().toBuilder(), source);
 
         org.geoserver.acl.domain.adminrules.AdminRule patched = updateEntity(target.toBuilder(), source);
 

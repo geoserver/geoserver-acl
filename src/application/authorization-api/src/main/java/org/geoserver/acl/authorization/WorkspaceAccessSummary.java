@@ -8,58 +8,51 @@ import java.util.Set;
 import java.util.TreeSet;
 import lombok.Builder;
 import lombok.NonNull;
-import lombok.Value;
 import org.geoserver.acl.domain.adminrules.AdminGrantType;
 import org.geoserver.acl.domain.rules.GrantType;
+import org.jspecify.annotations.Nullable;
 
 /**
- * Represents the converged set of visible layer names of a specific workspace for for a {@link
- * AccessSummaryRequest}
+ * Represents the converged set of visible layer names of a specific workspace for an
+ * {@link AccessSummaryRequest}.
  *
+ * @param workspace the workspace name. The special value {@link #NO_WORKSPACE} represents global
+ *     entities such as global layer groups.
+ * @param adminAccess whether the user from the {@link AccessSummaryRequest} is an administrator
+ *     for {@code workspace}.
+ * @param allowed the set of visible layer names in {@code workspace} the user from the
+ *     {@link AccessSummaryRequest} can somehow see, even if only under specific circumstances like
+ *     for a given OWS/request combination, resulting from {@link GrantType#ALLOW allow} rules.
+ * @param forbidden the set of forbidden layer names in {@code workspace} the user from the
+ *     {@link AccessSummaryRequest} definitely cannot see, resulting from {@link GrantType#DENY
+ *     deny} rules. Complements {@code allowed} as there may be rules allowing access to all
+ *     layers in a workspace after rules denying access to specific layers in the same workspace.
  * @since 2.3
  * @see AccessSummaryRequest
  */
-@Value
 @Builder(builderClassName = "Builder")
-public class WorkspaceAccessSummary implements Comparable<WorkspaceAccessSummary> {
+public record WorkspaceAccessSummary(
+        String workspace, @Nullable AdminGrantType adminAccess, Set<String> allowed, Set<String> forbidden)
+        implements Comparable<WorkspaceAccessSummary> {
 
     public static final String NO_WORKSPACE = "";
     public static final String ANY = "*";
 
-    /**
-     * The workspace name. The special value {@link #NO_WORKSPACE} represents global entities such
-     * as global layer groups
-     */
-    @NonNull
-    private String workspace;
+    public WorkspaceAccessSummary {
+        if (workspace == null) workspace = ANY;
+        allowed = conflate(allowed);
+        forbidden = conflate(forbidden);
+    }
 
-    /**
-     * Whether the user from the {@link AccessSummaryRequest} is an administrator for {@link
-     * #workspace}
-     */
-    private AdminGrantType adminAccess;
-
-    /**
-     * The set of visible layer names in {@link #workspace} the user from the {@link
-     * AccessSummaryRequest} can somehow see, even if only under specific circumstances like for a
-     * given OWS/request combination, resulting from {@link GrantType#ALLOW allow} rules.
-     */
-    @NonNull
-    private Set<String> allowed;
-
-    /**
-     * The set of forbidden layer names in {@link #workspace} the user from the {@link
-     * AccessSummaryRequest} definitely cannot see, resulting from {@link GrantType#DENY deny}
-     * rules.
-     *
-     * <p>Complements the {@link #allowed} list as there may be rules allowing access all layers in
-     * a workspace after a rules denying access to specific layers in the same workspace.
-     */
-    @NonNull
-    private Set<String> forbidden;
+    private static Set<String> conflate(@Nullable Set<String> layers) {
+        if (layers == null || layers.isEmpty()) {
+            return Set.of();
+        }
+        return layers.contains(ANY) ? Set.of(ANY) : Set.copyOf(layers);
+    }
 
     public boolean hideAll() {
-        return getAllowed().isEmpty() && getForbidden().contains(ANY);
+        return allowed.isEmpty() && forbidden.contains(ANY);
     }
 
     public boolean visible() {
@@ -79,11 +72,27 @@ public class WorkspaceAccessSummary implements Comparable<WorkspaceAccessSummary
         return allowed.contains(layerName);
     }
 
-    public static class Builder {
+    @Override
+    public int compareTo(WorkspaceAccessSummary o) {
+        return workspace.compareTo(o.workspace());
+    }
 
+    public boolean isAdmin() {
+        return adminAccess == AdminGrantType.ADMIN;
+    }
+
+    public boolean isUser() {
+        return adminAccess == AdminGrantType.USER || isAdmin();
+    }
+
+    public static class Builder {
+        @SuppressWarnings({"unused", "java:S1068", "java:S1450"})
         private String workspace = ANY;
-        private AdminGrantType adminAccess;
+
+        @SuppressWarnings({"unused", "java:S1068", "java:S1450"})
         private Set<String> allowed = new TreeSet<>();
+
+        @SuppressWarnings({"unused", "java:S1068", "java:S1450"})
         private Set<String> forbidden = new TreeSet<>();
 
         public Builder allowed(@NonNull Set<String> layers) {
@@ -109,29 +118,5 @@ public class WorkspaceAccessSummary implements Comparable<WorkspaceAccessSummary
             allowed.remove(layer);
             return this;
         }
-
-        public WorkspaceAccessSummary build() {
-            Set<String> allowedLayers = conflate(allowed);
-            Set<String> forbiddenLayers = conflate(forbidden);
-
-            return new WorkspaceAccessSummary(workspace, adminAccess, allowedLayers, forbiddenLayers);
-        }
-
-        private static Set<String> conflate(Set<String> layers) {
-            return layers.contains(ANY) ? Set.of(ANY) : Set.copyOf(layers);
-        }
-    }
-
-    @Override
-    public int compareTo(WorkspaceAccessSummary o) {
-        return workspace.compareTo(o.getWorkspace());
-    }
-
-    public boolean isAdmin() {
-        return adminAccess == AdminGrantType.ADMIN;
-    }
-
-    public boolean isUser() {
-        return adminAccess == AdminGrantType.USER || adminAccess == AdminGrantType.ADMIN;
     }
 }

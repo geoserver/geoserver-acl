@@ -20,8 +20,6 @@ import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.SecondaryTable;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import java.io.Serial;
-import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Cache;
@@ -65,10 +63,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         foreignKey = @ForeignKey(name = "fk_rule_priority_rule"),
         indexes = {@Index(name = "idx_rule_priority", columnList = "priority")})
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "Rule")
-public class JpaRule extends Auditable implements Serializable, Cloneable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class JpaRule extends Auditable {
 
     @Id
     @GeneratedValue(generator = "acl_rules_sequence_generator", strategy = GenerationType.SEQUENCE)
@@ -100,16 +95,17 @@ public class JpaRule extends Auditable implements Serializable, Cloneable {
     @Embedded
     private JpaRuleLimits ruleLimits;
 
-    public @Override JpaRule clone() {
-        JpaRule clone;
-        try {
-            clone = (JpaRule) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-        clone.identifier = identifier.clone();
-        clone.layerDetails = layerDetails == null ? null : layerDetails.clone();
-        clone.ruleLimits = ruleLimits == null ? null : ruleLimits.clone();
-        return clone;
+    public JpaRule() {}
+
+    public JpaRule(JpaRule other) {
+        super(other);
+        this.id = other.id;
+        this.extId = other.extId;
+        this.name = other.name;
+        this.description = other.description;
+        this.priority = other.priority;
+        this.identifier = new JpaRuleIdentifier(other.identifier);
+        this.layerDetails = other.layerDetails == null ? null : new JpaLayerDetails(other.layerDetails);
+        this.ruleLimits = other.ruleLimits == null ? null : new JpaRuleLimits(other.ruleLimits);
     }
 }

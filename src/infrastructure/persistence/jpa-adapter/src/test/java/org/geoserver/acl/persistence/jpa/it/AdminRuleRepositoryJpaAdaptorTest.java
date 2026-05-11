@@ -50,7 +50,7 @@ class AdminRuleRepositoryJpaAdaptorTest {
         AdminRule r1Created = repo.create(r1, InsertPosition.FIXED);
         assertThat(repo.count()).isOne();
         assertThat(r1Created).isNotNull();
-        assertThat(r1Created.getId()).isNotNull();
+        assertThat(r1Created.id()).isNotNull();
         assertThat(r1Created.withId(null)).isEqualTo(r1);
     }
 
@@ -61,7 +61,7 @@ class AdminRuleRepositoryJpaAdaptorTest {
         testCreateDuplicateIdentifier(r = r.withPriority(2).withUsername("user"));
         testCreateDuplicateIdentifier(r = r.withPriority(3).withRolename("role"));
         testCreateDuplicateIdentifier(r = r.withPriority(6).withAddressRange("10.0.0.1/24"));
-        testCreateDuplicateIdentifier(r = r.withPriority(8).withWorkspace("ws"));
+        testCreateDuplicateIdentifier(r.withPriority(8).withWorkspace("ws"));
     }
 
     private void testCreateDuplicateIdentifier(AdminRule r1) {
@@ -102,8 +102,8 @@ class AdminRuleRepositoryJpaAdaptorTest {
 
         assertThat(repo.findAll().count()).isEqualTo(2);
 
-        repo.findById(r1.getId());
-        repo.findById(r2.getId());
+        repo.findById(r1.id());
+        repo.findById(r2.id());
 
         List<AdminRule> collect = repo.findAll().toList();
         assertEquals(2, collect.size());
@@ -124,14 +124,14 @@ class AdminRuleRepositoryJpaAdaptorTest {
 
         assertThat(repo.count()).isEqualTo(2);
 
-        assertThat(repo.deleteById(r2.getId())).isTrue();
+        assertThat(repo.deleteById(r2.id())).isTrue();
         assertThat(repo.count()).isOne();
-        assertThat(repo.deleteById(r2.getId())).isFalse();
+        assertThat(repo.deleteById(r2.id())).isFalse();
         assertThat(repo.count()).isOne();
 
-        assertThat(repo.deleteById(r1.getId())).isTrue();
+        assertThat(repo.deleteById(r1.id())).isTrue();
         assertThat(repo.count()).isZero();
-        assertThat(repo.deleteById(r1.getId())).isFalse();
+        assertThat(repo.deleteById(r1.id())).isFalse();
         assertThat(repo.count()).isZero();
     }
 

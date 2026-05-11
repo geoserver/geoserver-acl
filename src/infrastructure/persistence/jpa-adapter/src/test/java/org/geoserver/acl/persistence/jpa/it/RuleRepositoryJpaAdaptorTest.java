@@ -61,7 +61,7 @@ class RuleRepositoryJpaAdaptorTest {
         Rule r1Created = repo.create(r1, InsertPosition.FIXED);
         assertThat(repo.count()).isOne();
         assertThat(r1Created).isNotNull();
-        assertThat(r1Created.getId()).isNotNull();
+        assertThat(r1Created.id()).isNotNull();
         assertThat(r1Created.withId(null)).isEqualTo(r1);
     }
 
@@ -77,7 +77,7 @@ class RuleRepositoryJpaAdaptorTest {
         testCreateDuplicateIdentifier(r = r.withPriority(7).withSubfield("subfield"));
         testCreateDuplicateIdentifier(r = r.withPriority(8).withWorkspace("ws"));
         testCreateDuplicateIdentifier(r = r.withPriority(9).withLayer("layer"));
-        testCreateDuplicateIdentifier(r = r.withPriority(10).withAccess(GrantType.DENY));
+        testCreateDuplicateIdentifier(r.withPriority(10).withAccess(GrantType.DENY));
     }
 
     @Test
@@ -118,8 +118,8 @@ class RuleRepositoryJpaAdaptorTest {
 
         assertThat(repo.findAll().count()).isEqualTo(2);
 
-        repo.findById(r1.getId());
-        repo.findById(r2.getId());
+        repo.findById(r1.id());
+        repo.findById(r2.id());
 
         List<Rule> collect = repo.findAll().toList();
         assertEquals(2, collect.size());
@@ -143,7 +143,7 @@ class RuleRepositoryJpaAdaptorTest {
     private Set<LayerAttribute> sampleAttributes(Rule r) {
         return IntStream.rangeClosed(1, 5)
                 .mapToObj(i -> LayerAttribute.builder()
-                        .name(r.getId() + "-att-" + i)
+                        .name(r.id() + "-att-" + i)
                         .dataType("java.lang.String")
                         .access(AccessType.READONLY)
                         .build())
@@ -157,14 +157,14 @@ class RuleRepositoryJpaAdaptorTest {
 
         assertThat(repo.count()).isEqualTo(2);
 
-        assertThat(repo.deleteById(r2.getId())).isTrue();
+        assertThat(repo.deleteById(r2.id())).isTrue();
         assertThat(repo.count()).isOne();
-        assertThat(repo.deleteById(r2.getId())).isFalse();
+        assertThat(repo.deleteById(r2.id())).isFalse();
         assertThat(repo.count()).isOne();
 
-        assertThat(repo.deleteById(r1.getId())).isTrue();
+        assertThat(repo.deleteById(r1.id())).isTrue();
         assertThat(repo.count()).isZero();
-        assertThat(repo.deleteById(r1.getId())).isFalse();
+        assertThat(repo.deleteById(r1.id())).isFalse();
         assertThat(repo.count()).isZero();
     }
 
@@ -180,17 +180,17 @@ class RuleRepositoryJpaAdaptorTest {
 
     private void addDetails(Rule r) {
         LayerDetails ld = LayerDetails.builder()
-                .allowedStyles(Set.of(r.getId() + "-style-1", r.getId() + "-style-2"))
+                .allowedStyles(Set.of(r.id() + "-style-1", r.id() + "-style-2"))
                 .area(multiPolygon())
                 .catalogMode(CatalogMode.CHALLENGE)
                 .cqlFilterRead("1=1")
                 .cqlFilterWrite("2=2")
-                .defaultStyle(r.getId() + "-default-style")
+                .defaultStyle(r.id() + "-default-style")
                 .type(LayerType.VECTOR)
                 .spatialFilterType(SpatialFilterType.INTERSECT)
                 .attributes(sampleAttributes(r))
                 .build();
-        repo.setLayerDetails(r.getId(), ld);
+        repo.setLayerDetails(r.id(), ld);
     }
 
     private Rule createLimitsRule(int priority) {
@@ -199,7 +199,7 @@ class RuleRepositoryJpaAdaptorTest {
                 .name("p" + priority)
                 .description("desc " + priority)
                 .extId("extId-" + priority)
-                .identifier(Rule.limit().getIdentifier().toBuilder()
+                .identifier(Rule.limit().identifier().toBuilder()
                         .addressRange("10.1.1.1/32")
                         .layer("layer-" + priority)
                         .workspace("ws-" + priority)
@@ -214,7 +214,7 @@ class RuleRepositoryJpaAdaptorTest {
                 .name("p" + priority)
                 .description("desc " + priority)
                 .extId("extId-" + priority)
-                .identifier(Rule.allow().getIdentifier().toBuilder()
+                .identifier(Rule.allow().identifier().toBuilder()
                         .addressRange("10.1.1.1/32")
                         .layer("layer-" + priority)
                         .workspace("ws-" + priority)

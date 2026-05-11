@@ -10,6 +10,7 @@ import java.util.Objects;
 /**
  * @since 1.0
  */
+@SuppressWarnings("java:S2176")
 class NameClassPair extends javax.naming.NameClassPair {
 
     @Serial
@@ -20,9 +21,15 @@ class NameClassPair extends javax.naming.NameClassPair {
     }
 
     public @Override boolean equals(Object o) {
-        if (!(o instanceof javax.naming.NameClassPair)) return false;
+        if (!(o instanceof javax.naming.NameClassPair)) {
+            return false;
+        }
         javax.naming.NameClassPair p = (javax.naming.NameClassPair) o;
         return Objects.equals(getName(), p.getName()) && Objects.equals(getClassName(), p.getClassName());
+    }
+
+    public @Override int hashCode() {
+        return Objects.hash(getClass(), getName(), getClassName());
     }
 
     public @Override String toString() {

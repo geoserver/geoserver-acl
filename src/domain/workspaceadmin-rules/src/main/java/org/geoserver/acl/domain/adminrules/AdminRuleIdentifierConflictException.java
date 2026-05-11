@@ -6,6 +6,11 @@ package org.geoserver.acl.domain.adminrules;
 
 import java.io.Serial;
 
+/**
+ * Thrown when a create or update operation would result in two {@link AdminRule admin rules}
+ * sharing the same {@link AdminRuleIdentifier} (same matching criteria), which the domain
+ * disallows so that admin rule evaluation remains deterministic.
+ */
 public class AdminRuleIdentifierConflictException extends IllegalArgumentException {
 
     @Serial

@@ -9,11 +9,9 @@ package org.geoserver.acl.domain.rules;
 
 import java.util.Set;
 import lombok.Builder;
-import lombok.Builder.Default;
-import lombok.NonNull;
-import lombok.Value;
 import lombok.With;
 import org.geolatte.geom.MultiPolygon;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Detailed access constraints for ALLOW rules on layers.
@@ -50,16 +48,58 @@ import org.geolatte.geom.MultiPolygon;
  *
  * <p>Immutable. Use {@code with*()} methods or {@code toBuilder()} for modifications.
  *
+ * @param type the type of layer these details apply to. Optional; can be used for
+ *     layer-type-specific validation or processing.
+ * @param defaultStyle default style to use when no style is explicitly requested. Must be one of
+ *     the {@code allowedStyles} if that set is non-empty.
+ * @param cqlFilterRead CQL filter applied to read operations (GetMap, GetFeature, GetFeatureInfo).
+ *     Only features matching this filter are visible to the user. Supports attribute comparisons,
+ *     spatial predicates, and placeholder substitution (e.g., {@code owner = '${userName}'}).
+ * @param cqlFilterWrite CQL filter applied to write operations (Transaction: Insert, Update,
+ *     Delete). Only features matching this filter can be modified by the user. Typically more
+ *     restrictive than {@code cqlFilterRead}.
+ * @param area geographic area constraint (MultiPolygon geometry). If specified, only features
+ *     within or intersecting this area are accessible, depending on {@code spatialFilterType}.
+ *     Uses geolatte-geom for infrastructure-agnostic geometry representation. Can be {@code null}
+ *     for no spatial restriction.
+ * @param spatialFilterType how to apply the spatial area constraint. Defaults to
+ *     {@link SpatialFilterType#INTERSECT}.
+ * @param catalogMode how the layer appears in GetCapabilities responses. Defaults to
+ *     {@link CatalogMode#HIDE}.
+ * @param allowedStyles set of style names the user is permitted to use. If empty, all styles are
+ *     allowed; if non-empty, only listed styles can be requested. Useful for preventing
+ *     information disclosure through specialized styles or for enforcing consistent
+ *     visualization. Immutable, never {@code null}.
+ * @param attributes set of layer attributes with their access permissions. Defines column-level
+ *     access control: each {@link LayerAttribute} specifies whether an attribute is hidden,
+ *     read-only, or read-write. If empty, all attributes are accessible according to the CQL
+ *     filters; if non-empty, only listed attributes are visible with their specified permissions.
+ *     Immutable, never {@code null}.
  * @since 1.0
  * @see Rule
  * @see GrantType#ALLOW
  * @see LayerAttribute
  * @see SpatialFilterType
  */
-@Value
 @With
 @Builder(toBuilder = true, builderClassName = "Builder")
-public class LayerDetails {
+public record LayerDetails(
+        @Nullable LayerType type,
+        @Nullable String defaultStyle,
+        @Nullable String cqlFilterRead,
+        @Nullable String cqlFilterWrite,
+        @Nullable MultiPolygon<?> area,
+        SpatialFilterType spatialFilterType,
+        CatalogMode catalogMode,
+        Set<String> allowedStyles,
+        Set<LayerAttribute> attributes) {
+
+    public LayerDetails {
+        if (spatialFilterType == null) spatialFilterType = SpatialFilterType.INTERSECT;
+        if (catalogMode == null) catalogMode = CatalogMode.HIDE;
+        allowedStyles = allowedStyles == null ? Set.of() : Set.copyOf(allowedStyles);
+        attributes = attributes == null ? Set.of() : Set.copyOf(attributes);
+    }
 
     /**
      * Enumeration of GeoServer layer types.
@@ -76,127 +116,5 @@ public class LayerDetails {
 
         /** Layer group (collection of multiple layers). */
         LAYERGROUP
-    }
-
-    /**
-     * The type of layer these details apply to.
-     *
-     * <p>Optional. Can be used for layer-type-specific validation or processing.
-     */
-    private LayerType type;
-
-    /**
-     * Default style to use when no style is explicitly requested.
-     *
-     * <p>If specified, this style is used when the client doesn't specify a style in their
-     * request. Must be one of the {@link #allowedStyles} if that set is non-empty.
-     */
-    private String defaultStyle;
-
-    /**
-     * CQL filter applied to read operations (GetMap, GetFeature, GetFeatureInfo).
-     *
-     * <p>Only features matching this filter are visible to the user. CQL syntax supports attribute
-     * comparisons, spatial predicates, and placeholder substitution (e.g., {@code owner =
-     * '${userName}'}).
-     *
-     * <p><b>Example:</b> {@code "status IN ('public', 'published') AND region = 'north'"}
-     */
-    private String cqlFilterRead;
-
-    /**
-     * CQL filter applied to write operations (Transaction: Insert, Update, Delete).
-     *
-     * <p>Only features matching this filter can be modified by the user. Typically more
-     * restrictive than {@link #cqlFilterRead}.
-     *
-     * <p><b>Example:</b> {@code "owner = '${userName}' AND locked = false"}
-     */
-    private String cqlFilterWrite;
-
-    /**
-     * Geographic area constraint (MultiPolygon geometry).
-     *
-     * <p>If specified, only features within or intersecting this area are accessible, depending on
-     * {@link #spatialFilterType}. Uses geolatte-geom library for infrastructure-agnostic geometry
-     * representation.
-     *
-     * <p>Can be {@code null} for no spatial restriction.
-     */
-    private MultiPolygon<?> area;
-
-    /**
-     * How to apply the spatial area constraint.
-     *
-     * <p>Defaults to {@link SpatialFilterType#INTERSECT}.
-     *
-     * @see SpatialFilterType
-     */
-    @Default
-    @NonNull
-    private SpatialFilterType spatialFilterType = SpatialFilterType.INTERSECT;
-
-    /**
-     * How the layer appears in GetCapabilities responses.
-     *
-     * <p>Defaults to {@link CatalogMode#HIDE}.
-     *
-     * @see CatalogMode
-     */
-    @Default
-    @NonNull
-    private CatalogMode catalogMode = CatalogMode.HIDE;
-
-    /**
-     * Set of style names the user is permitted to use.
-     *
-     * <p>If empty, all styles are allowed. If non-empty, only listed styles can be requested.
-     * Useful for preventing information disclosure through specialized styles or for enforcing
-     * consistent visualization.
-     *
-     * <p>Immutable set. Never {@code null}.
-     */
-    @NonNull
-    private Set<String> allowedStyles;
-
-    /**
-     * Set of layer attributes with their access permissions.
-     *
-     * <p>Defines column-level access control. Each {@link LayerAttribute} specifies whether an
-     * attribute is hidden, read-only, or read-write.
-     *
-     * <p>If empty, all attributes are accessible according to the CQL filters. If non-empty, only
-     * listed attributes are visible with their specified permissions.
-     *
-     * <p>Immutable set. Never {@code null}.
-     *
-     * @see LayerAttribute
-     */
-    @NonNull
-    private Set<LayerAttribute> attributes;
-
-    public static class Builder {
-        // define (effectively overriding lombok's generated ones) only the builder methods for the
-        // collection attributes we want to ensure are immutable
-        private Set<String> allowedStyles = Set.of();
-        private Set<LayerAttribute> attributes = Set.of();
-
-        public Builder allowedStyles(Set<String> allowedStyles) {
-            if (allowedStyles == null) {
-                this.allowedStyles = Set.of();
-            } else {
-                this.allowedStyles = Set.copyOf(allowedStyles);
-            }
-            return this;
-        }
-
-        public Builder attributes(Set<LayerAttribute> attributes) {
-            if (attributes == null) {
-                this.attributes = Set.of();
-            } else {
-                this.attributes = Set.copyOf(attributes);
-            }
-            return this;
-        }
     }
 }

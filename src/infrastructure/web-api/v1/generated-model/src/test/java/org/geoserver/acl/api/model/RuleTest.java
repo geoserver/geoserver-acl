@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 class RuleTest {
 
     @Test
-    void testAddressRangeRegEx_invalid_values() throws Exception {
+    void testAddressRangeRegEx_invalid_values() {
         assertInvalidRange("192.168.0");
         assertInvalidRange("192.168.0.1/-1");
         assertInvalidRange("192.168.0.1/");
@@ -26,7 +26,7 @@ class RuleTest {
     }
 
     @Test
-    void testAddressRangeRegEx_valid_expressions() throws Exception {
+    void testAddressRangeRegEx_valid_expressions() {
         testAddressRangeRegEx("10.0.0.1", true);
         testAddressRangeRegEx("192.168.0.1", true);
         IntStream.rangeClosed(1, 32).mapToObj(i -> "192.168.0.1/" + i).forEach(this::assertValidRange);

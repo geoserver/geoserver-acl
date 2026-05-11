@@ -5,7 +5,7 @@
 package org.geoserver.acl.it.webapi.support;
 
 import org.geoserver.acl.authorization.AuthorizationService;
-import org.geoserver.acl.authorization.AuthorizationServiceImpl;
+import org.geoserver.acl.authorization.impl.AuthorizationServiceImpl;
 import org.geoserver.acl.config.domain.DomainServicesConfiguration;
 import org.geoserver.acl.config.webapi.client.ApiClientAdapterConfiguration;
 import org.geoserver.acl.config.webapi.client.ApiClientApplicationServicesConfiguration;

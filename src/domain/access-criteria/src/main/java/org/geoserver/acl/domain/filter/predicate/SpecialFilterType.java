@@ -6,6 +6,17 @@
  */
 package org.geoserver.acl.domain.filter.predicate;
 
+/**
+ * Shorthand for configuring a {@link RulePredicate} to either match any value or only default
+ * (null) values on its target field.
+ *
+ * <p>Used by rule filter constructors and by {@code setHeuristically} parsing as a high-level
+ * alternative to setting a {@link FilterType} directly: each value maps to the corresponding
+ * {@link FilterType} via {@link #getRelatedType()}.
+ *
+ * @see FilterType
+ * @see RulePredicate
+ */
 public enum SpecialFilterType {
 
     /**

@@ -11,10 +11,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import java.io.Serial;
-import java.io.Serializable;
 import lombok.Data;
-import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 
 /**
@@ -24,10 +21,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @Embeddable
-public class JpaRuleLimits implements Serializable, Cloneable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class JpaRuleLimits {
 
     @Column(name = "limits_area")
     private org.geolatte.geom.MultiPolygon<?> allowedArea;
@@ -40,12 +34,15 @@ public class JpaRuleLimits implements Serializable, Cloneable {
     @Column(name = "limits_catalog_mode", nullable = true)
     private JpaCatalogMode catalogMode;
 
-    boolean isEmpty() {
-        return allowedArea == null && spatialFilterType == null && catalogMode == null;
+    public JpaRuleLimits() {}
+
+    public JpaRuleLimits(JpaRuleLimits other) {
+        this.allowedArea = other.allowedArea;
+        this.spatialFilterType = other.spatialFilterType;
+        this.catalogMode = other.catalogMode;
     }
 
-    @SneakyThrows(CloneNotSupportedException.class)
-    public @Override JpaRuleLimits clone() {
-        return (JpaRuleLimits) super.clone();
+    boolean isEmpty() {
+        return allowedArea == null && spatialFilterType == null && catalogMode == null;
     }
 }

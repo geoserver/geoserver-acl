@@ -31,18 +31,18 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
     }
 
     public @Override long getPriority(AdminRule rule) {
-        return rule.getPriority();
+        return rule.priority();
     }
 
     @Override
     public AdminRule create(AdminRule rule, InsertPosition position) {
         priorityLock.lock();
         try {
-            if (null != rule.getId()) throw new IllegalArgumentException("Rule has id");
+            if (null != rule.id()) throw new IllegalArgumentException("Rule has id");
             checkNoDups(rule);
             rule = rule.withId(String.valueOf(idseq.incrementAndGet()));
 
-            long finalPriority = priorityResolver.resolveFinalPriority(rule.getPriority(), map(position));
+            long finalPriority = priorityResolver.resolveFinalPriority(rule.priority(), map(position));
             rule = rule.withPriority(finalPriority);
             rules.add(rule);
             return rule;
@@ -68,21 +68,20 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
     public AdminRule save(AdminRule rule) {
         priorityLock.lock();
         try {
-            if (null == rule.getId()) throw new IllegalArgumentException("Rule has no id");
+            if (null == rule.id()) throw new IllegalArgumentException("Rule has no id");
             checkNoDups(rule);
-            final AdminRule current = getOrThrow(rule.getId());
+            final AdminRule current = getOrThrow(rule.id());
 
-            final long finalPriority =
-                    priorityResolver.resolvePriorityUpdate(current.getPriority(), rule.getPriority());
+            final long finalPriority = priorityResolver.resolvePriorityUpdate(current.priority(), rule.priority());
 
-            if (current.getPriority() != finalPriority) {
+            if (current.priority() != finalPriority) {
                 rule = rule.withPriority(finalPriority);
                 Optional<AdminRule> positionOccupied =
-                        findOneByPriority(finalPriority).filter(r -> !r.getId().equals(current.getId()));
+                        findOneByPriority(finalPriority).filter(r -> !r.id().equals(current.id()));
                 if (positionOccupied.isPresent()) {
                     AdminRule other = positionOccupied.get();
                     rules.remove(current);
-                    save(other.withPriority(other.getPriority() + 1));
+                    save(other.withPriority(other.priority() + 1));
                     rules.add(rule);
                 } else {
                     replace(current, rule);
@@ -110,9 +109,9 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
      */
     private void checkNoDups(AdminRule rule) {
         rules.stream()
-                .filter(r -> !r.getId().equals(rule.getId())
-                        && r.getAccess().equals(rule.getAccess())
-                        && r.getIdentifier().equals(rule.getIdentifier()))
+                .filter(r -> !r.id().equals(rule.id())
+                        && r.access().equals(rule.access())
+                        && r.identifier().equals(rule.identifier()))
                 .findFirst()
                 .ifPresent(duplicate -> {
                     throw new AdminRuleIdentifierConflictException(
@@ -122,7 +121,7 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
 
     @Override
     public Optional<AdminRule> findById(String id) {
-        return rules.stream().filter(r -> id.equals(r.getId())).findFirst();
+        return rules.stream().filter(r -> id.equals(r.id())).findFirst();
     }
 
     @Override
@@ -141,7 +140,7 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
         if (nextId != null) {
             final AtomicBoolean nextIdFound = new AtomicBoolean();
             matches = matches.peek(r -> {
-                        if (r.getId().equals(nextId)) {
+                        if (r.id().equals(nextId)) {
                             nextIdFound.set(true);
                         }
                     })
@@ -186,8 +185,8 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
             AdminRule r1 = getOrThrow(id1);
             AdminRule r2 = getOrThrow(id2);
 
-            AdminRule s1 = r1.withPriority(r2.getPriority());
-            AdminRule s2 = r2.withPriority(r1.getPriority());
+            AdminRule s1 = r1.withPriority(r2.priority());
+            AdminRule s2 = r2.withPriority(r1.priority());
             rules.removeAll(List.of(r1, r2));
             rules.addAll(List.of(s1, s2));
         } finally {
@@ -197,7 +196,7 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
 
     @Override
     public boolean deleteById(String id) {
-        return rules.removeIf(r -> r.getId().equals(id));
+        return rules.removeIf(r -> r.id().equals(id));
     }
 
     @Override
@@ -209,7 +208,7 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
 
     @Override
     public Optional<AdminRule> findOneByPriority(long priority) {
-        return rules.stream().filter(r -> r.getPriority() == priority).findFirst();
+        return rules.stream().filter(r -> r.priority() == priority).findFirst();
     }
 
     @Override
@@ -219,6 +218,6 @@ public class MemoryAdminRuleRepository extends MemoryPriorityRepository<AdminRul
 
     @Override
     protected String getId(AdminRule rule) {
-        return rule.getId();
+        return rule.id();
     }
 }

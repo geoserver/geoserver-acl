@@ -5,7 +5,7 @@
  * Original from GeoFence 3.6 under GPL 2.0 license
  */
 
-package org.geoserver.acl.authorization;
+package org.geoserver.acl.authorization.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.geoserver.acl.domain.adminrules.AdminGrantType.ADMIN;
@@ -17,6 +17,10 @@ import static org.geoserver.acl.domain.rules.GrantType.LIMIT;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.geoserver.acl.authorization.AdminAccessInfo;
+import org.geoserver.acl.authorization.AdminAccessRequest;
+import org.geoserver.acl.authorization.AuthorizationService;
+import org.geoserver.acl.authorization.WorkspaceAccessSummary;
 import org.geoserver.acl.authorization.WorkspaceAccessSummary.Builder;
 import org.geoserver.acl.domain.adminrules.AdminRule;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
@@ -101,18 +105,18 @@ public class AuthorizationServiceImplTest extends AuthorizationServiceTest {
                 .build();
         // verify r3 takes over r4
         AdminAccessInfo ws3Auth = service.getAdminAuthorization(ws3AdminReq);
-        assertThat(ws3Auth.isAdmin()).isFalse();
+        assertThat(ws3Auth.admin()).isFalse();
 
         // conflate should give only user access
         Builder builder = WorkspaceAccessSummary.builder().workspace("ws3");
         service.conflateAdminRules(builder, List.of(r3, r4));
         WorkspaceAccessSummary wsSummary = builder.build();
-        assertThat(wsSummary.getAdminAccess()).isEqualTo(USER);
+        assertThat(wsSummary.adminAccess()).isEqualTo(USER);
 
         builder = WorkspaceAccessSummary.builder().workspace("ws3");
         service.conflateAdminRules(builder, List.of(r4, r3));
         wsSummary = builder.build();
-        assertThat(wsSummary.getAdminAccess()).isEqualTo(USER);
+        assertThat(wsSummary.adminAccess()).isEqualTo(USER);
     }
 
     @Test
@@ -157,20 +161,20 @@ public class AuthorizationServiceImplTest extends AuthorizationServiceTest {
     void conflateRules() {
         Rule r1 = insert(LIMIT, 1, "*", "ROLE_1", "ws1", "L1");
         WorkspaceAccessSummary wsSummary = conflateRules("ws1", r1);
-        assertThat(wsSummary.getAllowed()).isEmpty();
-        assertThat(wsSummary.getForbidden()).isEmpty();
+        assertThat(wsSummary.allowed()).isEmpty();
+        assertThat(wsSummary.forbidden()).isEmpty();
 
         Rule r2 = insert(ALLOW, 2, "*", "ROLE_2", "ws1", "L1");
         wsSummary = conflateRules("ws1", r1, r2);
-        assertThat(wsSummary.getAllowed()).containsOnly("L1");
-        assertThat(wsSummary.getForbidden()).isEmpty();
+        assertThat(wsSummary.allowed()).containsOnly("L1");
+        assertThat(wsSummary.forbidden()).isEmpty();
 
         Rule r3 = insert(ALLOW, 3, "user1", "*", "ws1", "*");
         Rule r4 = insert(DENY, 4, "user1", "*", "ws1", "L3");
 
         wsSummary = conflateRules("ws1", r1, r2, r3, r4);
-        assertThat(wsSummary.getAllowed()).containsOnly("*");
-        assertThat(wsSummary.getForbidden()).containsOnly("L3");
+        assertThat(wsSummary.allowed()).containsOnly("*");
+        assertThat(wsSummary.forbidden()).containsOnly("L3");
     }
 
     WorkspaceAccessSummary conflateRules(String ws, Rule... rules) {

@@ -115,11 +115,13 @@ public class SubnetV4Utils {
         }
 
         private int low() {
-            return (isInclusiveHostCount() ? network() : broadcastLong() - networkLong() > 1 ? network() + 1 : 0);
+            if (isInclusiveHostCount()) return network();
+            return broadcastLong() - networkLong() > 1 ? network() + 1 : 0;
         }
 
         private int high() {
-            return (isInclusiveHostCount() ? broadcast() : broadcastLong() - networkLong() > 1 ? broadcast() - 1 : 0);
+            if (isInclusiveHostCount()) return broadcast();
+            return broadcastLong() - networkLong() > 1 ? broadcast() - 1 : 0;
         }
 
         /**
@@ -195,30 +197,16 @@ public class SubnetV4Utils {
          * inclusive flag is false.
          *
          * @return the count of addresses, may be zero.
-         * @throws RuntimeException if the correct count is greater than {@code Integer.MAX_VALUE}
-         * @deprecated use {@link #getAddressCountLong()} instead
          */
-        @Deprecated
         public int getAddressCount() {
-            long countLong = getAddressCountLong();
-            if (countLong > Integer.MAX_VALUE) {
-                throw new RuntimeException("Count is larger than an integer: " + countLong);
-            }
-            // N.B. cannot be negative
-            return (int) countLong;
-        }
-
-        /**
-         * Get the count of available addresses. Will be zero for CIDR/31 and CIDR/32 if the
-         * inclusive flag is false.
-         *
-         * @return the count of addresses, may be zero.
-         */
-        public long getAddressCountLong() {
             long b = broadcastLong();
             long n = networkLong();
             long count = b - n + (isInclusiveHostCount() ? 1 : -1);
-            return count < 0 ? 0 : count;
+            count = count < 0 ? 0 : count;
+            if (count > Integer.MAX_VALUE) {
+                throw new IllegalStateException("Count is larger than an integer: " + count);
+            }
+            return (int) count;
         }
 
         public String getCidrSignature() {
@@ -267,6 +255,31 @@ public class SubnetV4Utils {
                     .append(getAddressCount())
                     .append("]\n");
             return buf.toString();
+        }
+
+        /*
+         * Convert a 4-element array into dotted decimal format
+         */
+        private String format(int[] octets) {
+            StringBuilder str = new StringBuilder();
+            for (int i = 0; i < octets.length; ++i) {
+                str.append(octets[i]);
+                if (i != octets.length - 1) {
+                    str.append(".");
+                }
+            }
+            return str.toString();
+        }
+
+        /*
+         * Convert a packed integer address into a 4-element array
+         */
+        private int[] toArray(int val) {
+            int[] ret = new int[4];
+            for (int j = 3; j >= 0; --j) {
+                ret[j] |= ((val >>> 8 * (3 - j)) & (0xff));
+            }
+            return ret;
         }
     }
 
@@ -352,32 +365,6 @@ public class SubnetV4Utils {
     public static boolean isAddress(String address) {
         return addressPattern.matcher(address).matches();
     }
-
-    /*
-     * Convert a packed integer address into a 4-element array
-     */
-    private int[] toArray(int val) {
-        int ret[] = new int[4];
-        for (int j = 3; j >= 0; --j) {
-            ret[j] |= ((val >>> 8 * (3 - j)) & (0xff));
-        }
-        return ret;
-    }
-
-    /*
-     * Convert a 4-element array into dotted decimal format
-     */
-    private String format(int[] octets) {
-        StringBuilder str = new StringBuilder();
-        for (int i = 0; i < octets.length; ++i) {
-            str.append(octets[i]);
-            if (i != octets.length - 1) {
-                str.append(".");
-            }
-        }
-        return str.toString();
-    }
-
     /*
      * Convenience function to check integer boundaries.
      * Checks if a value x is in the range [begin,end].

@@ -4,8 +4,6 @@
  */
 package org.geoserver.acl.domain.filter.predicate;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.function.Predicate;
 import lombok.EqualsAndHashCode;
 
@@ -30,10 +28,7 @@ import lombok.EqualsAndHashCode;
  * @see FilterType
  */
 @EqualsAndHashCode
-public abstract class RulePredicate<T> implements Predicate<T>, Serializable, Cloneable {
-
-    @Serial
-    private static final long serialVersionUID = 6565336016075974626L;
+public abstract class RulePredicate<T> implements Predicate<T> {
 
     /** Filter matching strategy (ANY, DEFAULT, or NAMEVALUE). */
     protected FilterType type;
@@ -54,6 +49,11 @@ public abstract class RulePredicate<T> implements Predicate<T>, Serializable, Cl
         this.includeDefault = includeDefault;
     }
 
+    protected RulePredicate(RulePredicate<T> other) {
+        this.type = other.type;
+        this.includeDefault = other.includeDefault;
+    }
+
     public void setType(SpecialFilterType type) {
         this.type = type.getRelatedType();
     }
@@ -68,11 +68,5 @@ public abstract class RulePredicate<T> implements Predicate<T>, Serializable, Cl
 
     public void setIncludeDefault(boolean includeDefault) {
         this.includeDefault = includeDefault;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public RulePredicate<T> clone() throws CloneNotSupportedException {
-        return (RulePredicate<T>) super.clone();
     }
 }

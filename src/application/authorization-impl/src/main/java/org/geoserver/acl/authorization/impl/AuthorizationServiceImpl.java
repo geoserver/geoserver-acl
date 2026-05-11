@@ -5,24 +5,23 @@
  * Original from GeoFence 3.6 under GPL 2.0 license
  */
 
-package org.geoserver.acl.authorization;
+package org.geoserver.acl.authorization.impl;
 
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
+import static java.util.Objects.requireNonNull;
 import static org.geoserver.acl.domain.adminrules.AdminGrantType.ADMIN;
 import static org.geoserver.acl.domain.adminrules.AdminGrantType.USER;
 import static org.geoserver.acl.domain.rules.GrantType.ALLOW;
 import static org.geoserver.acl.domain.rules.GrantType.DENY;
 import static org.geoserver.acl.domain.rules.GrantType.LIMIT;
-import static org.geoserver.acl.domain.rules.LayerAttribute.AccessType.READONLY;
-import static org.geoserver.acl.domain.rules.LayerAttribute.AccessType.READWRITE;
 import static org.geoserver.acl.domain.rules.SpatialFilterType.CLIP;
 import static org.geoserver.acl.domain.rules.SpatialFilterType.INTERSECT;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,6 +36,14 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.geoserver.acl.authorization.AccessInfo;
+import org.geoserver.acl.authorization.AccessRequest;
+import org.geoserver.acl.authorization.AccessSummary;
+import org.geoserver.acl.authorization.AccessSummaryRequest;
+import org.geoserver.acl.authorization.AdminAccessInfo;
+import org.geoserver.acl.authorization.AdminAccessRequest;
+import org.geoserver.acl.authorization.AuthorizationService;
+import org.geoserver.acl.authorization.WorkspaceAccessSummary;
 import org.geoserver.acl.domain.adminrules.AdminGrantType;
 import org.geoserver.acl.domain.adminrules.AdminRule;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
@@ -59,6 +66,7 @@ import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
+import org.jspecify.annotations.Nullable;
 import org.locationtech.jts.geom.Geometry;
 
 /**
@@ -97,14 +105,13 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     private Stream<Rule> flatten(Map<String, List<Rule>> found) {
         return found.values().stream()
                 .flatMap(List::stream)
-                .sorted((r1, r2) -> Long.compare(r1.getPriority(), r2.getPriority()))
+                .sorted((r1, r2) -> Long.compare(r1.priority(), r2.priority()))
                 .distinct();
     }
 
     @Override
     public AccessInfo getAccessInfo(@NonNull AccessRequest request) {
         request = request.validate();
-
         Map<String, List<Rule>> groupedRules = getMatchingRulesByRole(request);
 
         AccessInfo ret = null;
@@ -119,7 +126,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             ret = AccessInfo.DENY_ALL;
         }
 
-        List<String> matchingIds = flatten(groupedRules).map(Rule::getId).toList();
+        List<String> matchingIds = flatten(groupedRules).map(Rule::id).toList();
         ret = ret.withMatchingRules(matchingIds);
         log.debug("Request: {}, response: {}", request, ret);
         return ret;
@@ -129,9 +136,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     public AdminAccessInfo getAdminAuthorization(@NonNull AdminAccessRequest request) {
         Optional<AdminRule> adminAuth = getAdminAuth(request);
         boolean adminRigths = isAdminAuth(adminAuth);
-        String adminRuleId = adminAuth.map(AdminRule::getId).orElse(null);
+        String adminRuleId = adminAuth.map(AdminRule::id).orElse(null);
         return AdminAccessInfo.builder()
-                .workspace(request.getWorkspace())
+                .workspace(request.workspace())
                 .admin(adminRigths)
                 .matchingAdminRule(adminRuleId)
                 .build();
@@ -139,8 +146,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     @Override
     public AccessSummary getUserAccessSummary(AccessSummaryRequest request) {
-        String user = request.getUser();
-        Set<String> roles = request.getRoles();
+        String user = request.user();
+        Set<String> roles = request.roles();
 
         Map<String, List<AdminRule>> wsAdminRules = getAdminRulesByWorkspace(user, roles);
         Map<String, List<Rule>> wsRules = getRulesByWorkspace(user, roles);
@@ -149,12 +156,12 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
         List<WorkspaceAccessSummary> summaries = workspaces.stream()
                 .map(ws -> conflateViewables(ws, wsAdminRules, wsRules))
-                .collect(Collectors.toList());
+                .toList();
 
         return AccessSummary.of(summaries);
     }
 
-    private Set<String> union(Set<String> s1, Set<String> s2) {
+    private static Set<String> union(Set<String> s1, Set<String> s2) {
         return Stream.concat(s1.stream(), s2.stream()).collect(Collectors.toSet());
     }
 
@@ -173,11 +180,11 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     void conflateAdminRules(WorkspaceAccessSummary.Builder builder, List<AdminRule> rules) {
 
         AdminRule rule = rules.stream()
-                .sorted(Comparator.comparingLong(AdminRule::getPriority))
+                .sorted(Comparator.comparingLong(AdminRule::priority))
                 .findFirst()
                 .orElse(null);
         if (rule != null) {
-            AdminGrantType adminAccess = rule.getAccess();
+            AdminGrantType adminAccess = rule.access();
             builder.adminAccess(adminAccess);
         }
     }
@@ -185,11 +192,10 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     void conflateRules(WorkspaceAccessSummary.Builder builder, List<Rule> rules) {
 
         // LIMIT rules don't provide access level
-        Predicate<Rule> notLimitRule = r -> r.getIdentifier().getAccess() != GrantType.LIMIT;
+        Predicate<Rule> notLimitRule = r -> r.identifier().access() != GrantType.LIMIT;
         // reverse priority sort so the most important ones are added the latest and the
         // builder creates the allowed/forbidden sets correctly
-        Comparator<Rule> reversePriority =
-                Comparator.comparing(Rule::getPriority).reversed();
+        Comparator<Rule> reversePriority = Comparator.comparing(Rule::priority).reversed();
 
         // add deny rules first, and allow rules after, so allow rules prevail (i.e.
         // their layer names get removed from the summary's "forbidden" list, since this
@@ -200,8 +206,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                 Comparator.comparing(Rule::access).reversed().thenComparing(reversePriority);
 
         rules.stream().filter(notLimitRule).sorted(comparator).forEach(r -> {
-            GrantType access = r.getIdentifier().getAccess();
-            String layer = r.getIdentifier().getLayer();
+            GrantType access = r.identifier().access();
+            String layer = r.identifier().layer();
             if (null == layer) layer = WorkspaceAccessSummary.ANY;
             switch (access) {
                 case ALLOW:
@@ -211,7 +217,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                     {
                         // only add forbidden layers if they're so for all services,
                         // to comply with the "somehow can see" motto of the summary
-                        String service = r.getIdentifier().getService();
+                        String service = r.identifier().service();
                         if (null == service) {
                             builder.addForbidden(layer);
                         }
@@ -231,7 +237,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         filter.getRole().setHeuristically(roles);
 
         Function<AdminRule, String> workspaceMapper =
-                workspaceMapper(r -> r.getIdentifier().getWorkspace());
+                workspaceMapper(r -> r.identifier().workspace());
         Comparator<AdminRule> workspaceComparator = workspaceComparator(workspaceMapper);
         RuleQuery<AdminRuleFilter> query = RuleQuery.of(filter);
         BinaryOperator<List<AdminRule>> mergeFunction = mergeFunction();
@@ -251,7 +257,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         List<Rule> rules = getRulesByRoleIncludeDefault(filter);
 
         Function<Rule, String> workspaceMapper =
-                workspaceMapper(r -> r.getIdentifier().getWorkspace());
+                workspaceMapper(r -> r.identifier().workspace());
         Comparator<Rule> workspaceComparator = workspaceComparator(workspaceMapper);
 
         Function<Rule, List<Rule>> valueMapper = List::of;
@@ -259,7 +265,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         return rules.stream()
                 .sorted(workspaceComparator)
                 .distinct()
-                .sorted(Comparator.comparing(Rule::getPriority))
+                .sorted(Comparator.comparing(Rule::priority))
                 .collect(Collectors.toMap(workspaceMapper, valueMapper, mergeFunction));
     }
 
@@ -310,39 +316,43 @@ public class AuthorizationServiceImpl implements AuthorizationService {
      */
     private AccessInfo enlargeAccessInfo(AccessInfo baseAccess, AccessInfo moreAccess) {
         if (baseAccess == null) {
-            if (moreAccess == null) return null;
-            else if (moreAccess.getGrant() == ALLOW) return moreAccess;
-            else return null;
-        } else {
-            if (moreAccess == null) return baseAccess;
-            else if (moreAccess.getGrant() == DENY) return baseAccess;
-            else {
-                // ok: extending grants
-                AccessInfo.Builder ret = AccessInfo.builder().grant(ALLOW);
-
-                String cqlRead = unionCQL(baseAccess.getCqlFilterRead(), moreAccess.getCqlFilterRead());
-                ret.cqlFilterRead(cqlRead);
-                String cqlWrite = unionCQL(baseAccess.getCqlFilterWrite(), moreAccess.getCqlFilterWrite());
-                ret.cqlFilterWrite(cqlWrite);
-
-                CatalogMode catalogMode = CatalogMode.lenient(baseAccess.getCatalogMode(), moreAccess.getCatalogMode());
-                ret.catalogMode(catalogMode);
-
-                if (baseAccess.getDefaultStyle() == null || moreAccess.getDefaultStyle() == null) {
-                    ret.defaultStyle(null);
-                } else {
-                    ret.defaultStyle(baseAccess.getDefaultStyle()); // just pick one
-                }
-
-                Set<String> allowedStyles = unionAllowedStyles(baseAccess, moreAccess);
-                ret.allowedStyles(allowedStyles);
-
-                Set<LayerAttribute> attributes = unionAttributes(baseAccess, moreAccess);
-                ret.attributes(attributes);
-
-                setAllowedAreas(baseAccess, moreAccess, ret);
-                return ret.build();
+            if (moreAccess == null) {
+                return null;
+            } else if (moreAccess.grant() == ALLOW) {
+                return moreAccess;
             }
+            return null;
+        }
+        if (moreAccess == null) {
+            return baseAccess;
+        } else if (moreAccess.grant() == DENY) {
+            return baseAccess;
+        } else {
+            // ok: extending grants
+            AccessInfo.Builder ret = AccessInfo.builder().grant(ALLOW);
+
+            String cqlRead = unionCQL(baseAccess.cqlFilterRead(), moreAccess.cqlFilterRead());
+            ret.cqlFilterRead(cqlRead);
+            String cqlWrite = unionCQL(baseAccess.cqlFilterWrite(), moreAccess.cqlFilterWrite());
+            ret.cqlFilterWrite(cqlWrite);
+
+            CatalogMode catalogMode = CatalogMode.lenient(baseAccess.catalogMode(), moreAccess.catalogMode());
+            ret.catalogMode(catalogMode);
+
+            if (baseAccess.defaultStyle() == null || moreAccess.defaultStyle() == null) {
+                ret.defaultStyle(null);
+            } else {
+                ret.defaultStyle(baseAccess.defaultStyle()); // just pick one
+            }
+
+            Set<String> allowedStyles = unionAllowedStyles(baseAccess, moreAccess);
+            ret.allowedStyles(allowedStyles);
+
+            Set<LayerAttribute> attributes = union(baseAccess, moreAccess);
+            ret.attributes(attributes);
+
+            setAllowedAreas(baseAccess, moreAccess, ret);
+            return ret.build();
         }
     }
 
@@ -351,33 +361,34 @@ public class AuthorizationServiceImpl implements AuthorizationService {
      * cannot acquire visibility on geometries that neither rule allowed individually.
      */
     private void setAllowedAreas(AccessInfo baseAccess, AccessInfo moreAccess, AccessInfo.Builder ret) {
-        final Geometry baseIntersects = toJTS(baseAccess.getIntersectArea());
-        final Geometry baseClip = toJTS(baseAccess.getClipArea());
-        final Geometry moreIntersects = toJTS(moreAccess.getIntersectArea());
-        final Geometry moreClip = toJTS(moreAccess.getClipArea());
-        final Geometry unionIntersects = unionGeometry(baseIntersects, moreIntersects);
-        final Geometry unionClip = unionGeometry(baseClip, moreClip);
+        final @Nullable Geometry baseIntersects = toJTS(baseAccess.intersectArea());
+        final @Nullable Geometry baseClip = toJTS(baseAccess.clipArea());
+        final @Nullable Geometry moreIntersects = toJTS(moreAccess.intersectArea());
+        final @Nullable Geometry moreClip = toJTS(moreAccess.clipArea());
+        final @Nullable Geometry unionIntersects = unionGeometry(baseIntersects, moreIntersects);
+        final @Nullable Geometry unionClip = unionGeometry(baseClip, moreClip);
         if (unionIntersects == null) {
             if (baseIntersects != null && moreClip != null) {
-                ret.intersectArea(baseAccess.getIntersectArea());
+                ret.intersectArea(baseAccess.intersectArea());
             } else if (moreIntersects != null && baseClip != null) {
-                ret.intersectArea(moreAccess.getIntersectArea());
+                ret.intersectArea(moreAccess.intersectArea());
             }
         } else {
             ret.intersectArea(org.geolatte.geom.jts.JTS.from(unionIntersects));
         }
         if (unionClip == null) {
             if (baseClip != null && moreIntersects != null) {
-                ret.clipArea(baseAccess.getClipArea());
+                ret.clipArea(baseAccess.clipArea());
             } else if (moreClip != null && baseIntersects != null) {
-                ret.clipArea(moreAccess.getClipArea());
+                ret.clipArea(moreAccess.clipArea());
             }
         } else {
             ret.clipArea(org.geolatte.geom.jts.JTS.from(unionClip));
         }
     }
 
-    private Geometry toJTS(org.geolatte.geom.Geometry<?> geom) {
+    @Nullable
+    private Geometry toJTS(org.geolatte.geom.@Nullable Geometry<?> geom) {
         return geom == null ? null : org.geolatte.geom.jts.JTS.to(geom);
     }
 
@@ -386,9 +397,18 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         return "(%s) OR (%s)".formatted(c1, c2);
     }
 
-    private Geometry unionGeometry(Geometry g1, Geometry g2) {
-        if (g1 == null) return g2;
-        if (g2 == null) return g1;
+    /**
+     * Returns the union of two geometries, or {@code null} if either argument is {@code null}.
+     *
+     * <p>The {@code null}-on-either-null contract is what {@link #setAllowedAreas} relies on:
+     * a {@code null} result tells it "one of the two rules has no geometry of this kind (intersect|clip)" so
+     * it can decide whether to carry the surviving geometry forward or leave the field unset
+     * (the latter when the other rule has no spatial restriction at all). Returning the
+     * non-null operand here would silently restrict access that the rule with no spatial
+     * restriction was granting in full.
+     */
+    private @Nullable Geometry unionGeometry(@Nullable Geometry g1, @Nullable Geometry g2) {
+        if (g1 == null || g2 == null) return null;
 
         int targetSRID = g1.getSRID();
         Geometry result = g1.union(reprojectGeometry(targetSRID, g2));
@@ -396,43 +416,55 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         return result;
     }
 
-    private static Set<LayerAttribute> unionAttributes(AccessInfo a0, AccessInfo a1) {
-        return unionAttributes(a0.getAttributes(), a1.getAttributes());
+    private static Set<LayerAttribute> union(AccessInfo a0, AccessInfo a1) {
+        return unionAttributes(a0.attributes(), a1.attributes());
     }
 
     private static Set<LayerAttribute> unionAttributes(Set<LayerAttribute> a0, Set<LayerAttribute> a1) {
-        if (null == a0) a0 = Set.of();
-        if (null == a1) a1 = Set.of();
-        // if at least one of the two set is empty, the result will be an empty set,
-        // that means attributes are not restricted
-        if (a0.isEmpty() || a1.isEmpty()) return Set.of();
+        Set<LayerAttribute> union;
 
-        Set<LayerAttribute> ret = new HashSet<>();
-        for (LayerAttribute attr0 : a0) {
-            getAttribute(attr0.getName(), a1)
-                    .ifPresentOrElse(attr1 -> ret.add(enlargeAccess(attr0, attr1)), () -> ret.add(attr0));
+        // if either side is empty, the result is empty (no attribute restriction)
+        if (a0.isEmpty() || a1.isEmpty()) {
+            union = Set.of();
+        } else {
+            Map<String, LayerAttribute> byName0 = byName(a0);
+            Map<String, LayerAttribute> byName1 = byName(a1);
+            union = unionAttributes(byName0, byName1);
         }
-        for (LayerAttribute attr1 : a1) {
-            getAttribute(attr1.getName(), a0)
-                    .ifPresentOrElse(attr0 -> log.trace("ignoring att {}", attr0.getName()), () -> ret.add(attr1));
-        }
+        return union;
+    }
 
-        return ret;
+    private static Set<LayerAttribute> unionAttributes(
+            Map<String, LayerAttribute> byName0, Map<String, LayerAttribute> byName1) {
+
+        Set<String> allAttNames = union(byName0.keySet(), byName1.keySet());
+
+        Set<LayerAttribute> union = new HashSet<>();
+        for (String name : allAttNames) {
+            LayerAttribute attr0 = byName0.get(name);
+            LayerAttribute attr1 = byName1.get(name);
+            if (attr0 == null) {
+                union.add(attr1);
+            } else if (attr1 == null) {
+                union.add(attr0);
+            } else {
+                LayerAttribute attribute = enlargeAccess(attr0, attr1);
+                union.add(attribute);
+            }
+        }
+        return union;
+    }
+
+    private static Map<String, LayerAttribute> byName(Set<LayerAttribute> atts) {
+        return atts.stream().collect(Collectors.toMap(LayerAttribute::name, Function.identity()));
     }
 
     private static LayerAttribute enlargeAccess(LayerAttribute attr0, LayerAttribute attr1) {
-        LayerAttribute attr = attr0;
-        if (attr0.getAccess() == READWRITE || attr1.getAccess() == READWRITE) attr = attr.withAccess(READWRITE);
-        else if (attr0.getAccess() == READONLY || attr1.getAccess() == READONLY) attr = attr.withAccess(READONLY);
-        return attr;
-    }
-
-    private static Optional<LayerAttribute> getAttribute(String name, Set<LayerAttribute> set) {
-        return set.stream().filter(la -> name.equals(la.getName())).findFirst();
+        return attr0.withAccess(LayerAttribute.AccessType.lenient(attr0.access(), attr1.access()));
     }
 
     private static Set<String> unionAllowedStyles(AccessInfo a0, AccessInfo a1) {
-        return unionAllowedStyles(a0.getAllowedStyles(), a1.getAllowedStyles());
+        return unionAllowedStyles(a0.allowedStyles(), a1.allowedStyles());
     }
 
     private static Set<String> unionAllowedStyles(Set<String> a0, Set<String> a1) {
@@ -450,34 +482,59 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     }
 
     /**
-     * Evaluates a list of rules for a single role and returns the authorization decision.
+     * Resolves a per-role list of rules (already in priority order) into a single {@link
+     * AccessInfo} decision.
      *
-     * <p>Processes the rules to determine whether access is granted or denied, and if granted, what
-     * restrictions apply (spatial filters, attribute access, CQL filters, styles, catalog mode).
+     * <p>The semantics are "first decisive rule wins, with preceding LIMITs accumulated":
      *
-     * @param ruleList rules to evaluate for a single role
-     * @return resolved access info with grant decision and applicable restrictions, or {@code null}
-     *     if no conclusive decision can be made
+     * <ul>
+     *   <li>{@link GrantType#LIMIT LIMIT} rules don't decide on their own; their {@link RuleLimits}
+     *       (allowed area, spatial filter type, catalog mode) are stashed in a list to be applied
+     *       to the first subsequent ALLOW.
+     *   <li>{@link GrantType#DENY DENY} short-circuits to {@link AccessInfo#DENY_ALL}, discarding
+     *       any pending LIMITs (a DENY before any ALLOW means access is denied regardless of what
+     *       the LIMITs would have restricted).
+     *   <li>{@link GrantType#ALLOW ALLOW} hands off to {@link #buildAllowAccessInfo(Rule, List)},
+     *       which is where the accumulated LIMITs are actually consumed (intersected into the
+     *       allowed area, folded into the catalog mode, etc.).
+     * </ul>
+     *
+     * <p>Returning {@code null} means the role list contained only LIMITs (no terminating ALLOW or
+     * DENY), so this role doesn't grant or deny on its own. Callers union per-role decisions in
+     * {@link #enlargeAccessInfo}, where a {@code null} from one role just leaves the running
+     * decision unchanged; if every role returns {@code null}, {@link #getAccessInfo} falls back to
+     * {@link AccessInfo#DENY_ALL}.
+     *
+     * @param matchingRoleRules rules matched for a single role, ordered by priority
+     * @return the resolved {@link AccessInfo}, or {@code null} if the list contained only LIMITs
      */
-    private AccessInfo resolveRuleset(List<Rule> ruleList) {
+    private AccessInfo resolveRuleset(List<Rule> matchingRoleRules) {
 
         List<RuleLimits> limits = new ArrayList<>();
-        AccessInfo ret = null;
-        for (Rule rule : ruleList) {
-            final GrantType access = rule.getIdentifier().getAccess();
+
+        for (Rule rule : matchingRoleRules) {
+            final GrantType access = rule.identifier().access();
             switch (access) {
                 case ALLOW:
                     return buildAllowAccessInfo(rule, limits);
                 case DENY:
                     return AccessInfo.DENY_ALL;
                 case LIMIT:
-                    if (null != rule.getRuleLimits()) limits.add(rule.getRuleLimits());
+                    if (null != rule.ruleLimits()) {
+                        limits.add(rule.ruleLimits());
+                    }
                     break;
                 default:
                     throw new IllegalStateException("Unknown GrantType " + access);
             }
         }
-        return ret;
+        if (!limits.isEmpty()) {
+            log.warn(
+                    "{} LIMIT rule(s) with no terminating ALLOW or DENY; the accumulated limits will be discarded. Rule IDs: {}",
+                    limits.size(),
+                    matchingRoleRules.stream().map(Rule::id).toList());
+        }
+        return null;
     }
 
     /**
@@ -513,7 +570,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         // first intersects geometry of same type
         Geometry area = intersect(limits);
         boolean atLeastOneClip =
-                limits.stream().map(RuleLimits::getSpatialFilterType).anyMatch(CLIP::equals);
+                limits.stream().map(RuleLimits::spatialFilterType).anyMatch(CLIP::equals);
         CatalogMode cmode = resolveCatalogMode(limits);
         final LayerDetails details = getLayerDetails(rule);
         if (null != details) {
@@ -521,15 +578,15 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             SpatialFilterType spatialFilterType = getSpatialFilterType(rule, details);
             atLeastOneClip = spatialFilterType == CLIP;
 
-            area = intersect(area, toJTS(details.getArea()));
+            area = intersect(area, toJTS(details.area()));
 
-            cmode = CatalogMode.stricter(cmode, details.getCatalogMode());
+            cmode = CatalogMode.stricter(cmode, details.catalogMode());
 
-            accessInfo.attributes(details.getAttributes());
-            accessInfo.cqlFilterRead(details.getCqlFilterRead());
-            accessInfo.cqlFilterWrite(details.getCqlFilterWrite());
-            accessInfo.defaultStyle(details.getDefaultStyle());
-            accessInfo.allowedStyles(details.getAllowedStyles());
+            accessInfo.attributes(details.attributes());
+            accessInfo.cqlFilterRead(details.cqlFilterRead());
+            accessInfo.cqlFilterWrite(details.cqlFilterWrite());
+            accessInfo.defaultStyle(details.defaultStyle());
+            accessInfo.allowedStyles(details.allowedStyles());
         }
 
         accessInfo.catalogMode(cmode);
@@ -548,31 +605,35 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     }
 
     private LayerDetails getLayerDetails(Rule rule) {
-        final boolean hasLayer = null != rule.getIdentifier().getLayer();
+        final boolean hasLayer = null != rule.identifier().layer();
         if (hasLayer) {
-            return ruleService.getLayerDetails(rule.getId()).orElse(null);
+            return ruleService.getLayerDetails(requireNonNull(rule.id())).orElse(null);
         }
         return null;
     }
 
     private SpatialFilterType getSpatialFilterType(Rule rule, LayerDetails details) {
         SpatialFilterType spatialFilterType = null;
-        if (LIMIT.equals(rule.getIdentifier().getAccess()) && null != rule.getRuleLimits()) {
-            spatialFilterType = rule.getRuleLimits().getSpatialFilterType();
+
+        @Nullable RuleLimits ruleLimits = rule.ruleLimits();
+        if (LIMIT == rule.access() && null != ruleLimits) {
+            spatialFilterType = ruleLimits.spatialFilterType();
         } else if (null != details) {
-            spatialFilterType = details.getSpatialFilterType();
+            spatialFilterType = details.spatialFilterType();
         }
-        if (null == spatialFilterType) spatialFilterType = INTERSECT;
+        if (null == spatialFilterType) {
+            spatialFilterType = INTERSECT;
+        }
 
         return spatialFilterType;
     }
 
     private Geometry intersect(List<RuleLimits> limits) {
         List<Geometry> geoms = limits.stream()
-                .map(RuleLimits::getAllowedArea)
+                .map(RuleLimits::allowedArea)
                 .filter(Objects::nonNull)
                 .map(this::toJTS)
-                .collect(Collectors.toList());
+                .toList();
         if (geoms.isEmpty()) return null;
         if (1 == geoms.size()) return geoms.get(0);
 
@@ -597,7 +658,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     private CatalogMode resolveCatalogMode(List<RuleLimits> limits) {
         CatalogMode ret = null;
         for (RuleLimits limit : limits) {
-            ret = CatalogMode.stricter(ret, limit.getCatalogMode());
+            ret = CatalogMode.stricter(ret, limit.catalogMode());
         }
         return ret;
     }
@@ -640,27 +701,27 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     protected Map<String, List<Rule>> getMatchingRulesByRole(AccessRequest request) throws IllegalArgumentException {
 
         RuleFilter filter = new RuleFilter(SpecialFilterType.DEFAULT);
-        filter.getUser().setHeuristically(request.getUser());
+        filter.getUser().setHeuristically(request.user());
 
-        Set<String> userRoles = request.getRoles();
+        Set<String> userRoles = request.roles();
         filter.getRole().setHeuristically(userRoles);
 
-        filter.getSourceAddress().setHeuristically(request.getSourceAddress());
-        filter.getService().setHeuristically(request.getService());
-        filter.getRequest().setHeuristically(request.getRequest());
-        filter.getSubfield().setHeuristically(request.getSubfield());
-        filter.getWorkspace().setHeuristically(request.getWorkspace());
-        filter.getLayer().setHeuristically(request.getLayer());
+        filter.getSourceAddress().setHeuristically(request.sourceAddress());
+        filter.getService().setHeuristically(request.service());
+        filter.getRequest().setHeuristically(request.request());
+        filter.getSubfield().setHeuristically(request.subfield());
+        filter.getWorkspace().setHeuristically(request.workspace());
+        filter.getLayer().setHeuristically(request.layer());
 
-        Map<String, List<Rule>> ret = new HashMap<>();
+        Map<String, List<Rule>> ret = new LinkedHashMap<>();
 
         final Set<String> finalRoleFilter = filter.getRole().getValues();
         if (finalRoleFilter.isEmpty()) {
             if (filter.getRole().getType() != FilterType.ANY) {
-                filter = filter.clone();
+                filter = new RuleFilter(filter);
                 filter.getRole().setType(SpecialFilterType.DEFAULT);
             }
-            List<Rule> found = ruleService.getAll(RuleQuery.of(filter)).collect(Collectors.toList());
+            List<Rule> found = ruleService.getAll(RuleQuery.of(filter)).toList();
             ret.put(null, found);
         } else {
             // used to be: for(role: finalRoleFilter) getRulesByRole(filter, role);,
@@ -668,7 +729,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             List<Rule> rules = getRulesByRoleIncludeDefault(filter);
             finalRoleFilter.forEach(r -> ret.put(r, new ArrayList<>()));
             for (Rule rule : rules) {
-                String rolename = rule.getIdentifier().getRolename();
+                String rolename = rule.identifier().rolename();
                 boolean isdefault = null == rolename;
                 if (isdefault) {
                     finalRoleFilter.forEach(role -> ret.get(role).add(rule));
@@ -681,22 +742,22 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     }
 
     private List<Rule> getRulesByRoleIncludeDefault(RuleFilter filter) {
-        filter = filter.clone();
+        filter = new RuleFilter(filter);
         filter.getRole().setIncludeDefault(true);
-        return ruleService.getAll(RuleQuery.of(filter)).collect(Collectors.toList());
+        return ruleService.getAll(RuleQuery.of(filter)).toList();
     }
 
     private boolean isAdminAuth(Optional<AdminRule> rule) {
-        return rule.map(AdminRule::getAccess).orElse(USER) == ADMIN;
+        return rule.map(AdminRule::access).orElse(USER) == ADMIN;
     }
 
     private Optional<AdminRule> getAdminAuth(AdminAccessRequest request) {
         request = request.validate();
         AdminRuleFilter adminRuleFilter = new AdminRuleFilter();
-        adminRuleFilter.getSourceAddress().setHeuristically(request.getSourceAddress());
-        adminRuleFilter.getUser().setHeuristically(request.getUser());
-        adminRuleFilter.getRole().setHeuristically(request.getRoles());
-        adminRuleFilter.getWorkspace().setHeuristically(request.getWorkspace());
+        adminRuleFilter.getSourceAddress().setHeuristically(request.sourceAddress());
+        adminRuleFilter.getUser().setHeuristically(request.user());
+        adminRuleFilter.getRole().setHeuristically(request.roles());
+        adminRuleFilter.getWorkspace().setHeuristically(request.workspace());
 
         Set<String> finalRoleFilter = adminRuleFilter.getRole().getValues();
 

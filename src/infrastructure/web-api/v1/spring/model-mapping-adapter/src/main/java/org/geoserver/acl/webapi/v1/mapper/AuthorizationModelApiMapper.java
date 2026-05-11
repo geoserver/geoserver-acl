@@ -6,7 +6,6 @@ package org.geoserver.acl.webapi.v1.mapper;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.geoserver.acl.authorization.AccessSummary;
 import org.geoserver.acl.authorization.WorkspaceAccessSummary;
 import org.geoserver.acl.webapi.v1.model.AccessInfo;
@@ -57,7 +56,7 @@ interface AuthorizationModelApiMapper {
         List<WorkspaceAccessSummary> workspaces =
                 Optional.ofNullable(apiResponse.getWorkspaces()).orElse(List.of()).stream()
                         .map(this::workspaceAccessSummary)
-                        .collect(Collectors.toList());
+                        .toList();
         return AccessSummary.of(workspaces);
     }
 

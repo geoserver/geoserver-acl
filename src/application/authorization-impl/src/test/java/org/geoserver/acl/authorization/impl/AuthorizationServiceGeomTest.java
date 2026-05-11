@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.acl.authorization;
+package org.geoserver.acl.authorization.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.geoserver.acl.domain.rules.CatalogMode.HIDE;
@@ -21,6 +21,9 @@ import org.geolatte.geom.Geometry;
 import org.geolatte.geom.MultiPolygon;
 import org.geolatte.geom.codec.Wkt;
 import org.geolatte.geom.jts.JTS;
+import org.geoserver.acl.authorization.AccessInfo;
+import org.geoserver.acl.authorization.AccessRequest;
+import org.geoserver.acl.authorization.AuthorizationService;
 import org.geoserver.acl.domain.rules.CatalogMode;
 import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleLimits;
@@ -107,7 +110,7 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
                 .layer("l1")
                 .build();
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-        Geometry<?> area = accessInfo.getIntersectArea();
+        Geometry<?> area = accessInfo.intersectArea();
         assertEquals(3857, area.getCoordinateReferenceSystem().getCrsId().getCode());
     }
 
@@ -124,7 +127,7 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
                 .spatialFilterType(spatialFilterType)
                 .catalogMode(catalogMode)
                 .build();
-        ruleAdminService.setLimits(rule.getId(), limits);
+        ruleAdminService.setLimits(rule.id(), limits);
         return limits;
     }
 
@@ -150,7 +153,7 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
                 .build();
 
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-        Geometry<?> area = accessInfo.getIntersectArea();
+        Geometry<?> area = accessInfo.intersectArea();
         assertEquals(3003, area.getCoordinateReferenceSystem().getCrsId().getCode());
     }
 
@@ -177,20 +180,19 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
                 .withLayer("l1");
 
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-        assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
-        assertThat(accessInfo.getMatchingRules())
-                .isEqualTo(List.of(p10.getId(), p11.getId(), p9999.getId(), p10k.getId()));
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.matchingRules()).isEqualTo(List.of(p10.id(), p11.id(), p9999.id(), p10k.id()));
 
         // area in same group, the result should the itersection of the two allowed area
         // as a clip
         // geometry.
         org.locationtech.jts.geom.Geometry testArea =
-                JTS.to(limitsp10.getAllowedArea()).intersection(JTS.to(llimitsp11.getAllowedArea()));
+                JTS.to(limitsp10.allowedArea()).intersection(JTS.to(llimitsp11.allowedArea()));
         testArea.normalize();
-        assertNull(accessInfo.getIntersectArea());
-        assertNotNull(accessInfo.getClipArea());
+        assertNull(accessInfo.intersectArea());
+        assertNotNull(accessInfo.clipArea());
 
-        org.locationtech.jts.geom.Geometry resultArea = JTS.to(accessInfo.getClipArea());
+        org.locationtech.jts.geom.Geometry resultArea = JTS.to(accessInfo.clipArea());
         resultArea.normalize();
         assertTrue(testArea.equalsExact(resultArea, 10.0E-15));
     }
@@ -216,18 +218,18 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
                 .withWorkspace("w11")
                 .withLayer("l11");
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-        assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
-        assertThat(accessInfo.getMatchingRules()).isEqualTo(List.of(p13.getId(), p14.getId(), p9999.getId()));
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.matchingRules()).isEqualTo(List.of(p13.id(), p14.id(), p9999.id()));
 
         // area in same group, the result should be the
         // two allowed area as an intersects geometry.
         org.locationtech.jts.geom.Geometry testArea =
-                JTS.to(limitsp13.getAllowedArea()).intersection(JTS.to(limitsp14.getAllowedArea()));
+                JTS.to(limitsp13.allowedArea()).intersection(JTS.to(limitsp14.allowedArea()));
         testArea.normalize();
-        assertNull(accessInfo.getClipArea());
-        assertNotNull(accessInfo.getIntersectArea());
+        assertNull(accessInfo.clipArea());
+        assertNotNull(accessInfo.intersectArea());
 
-        org.locationtech.jts.geom.Geometry resultArea = JTS.to(accessInfo.getIntersectArea());
+        org.locationtech.jts.geom.Geometry resultArea = JTS.to(accessInfo.intersectArea());
         resultArea.normalize();
         assertTrue(testArea.equalsExact(resultArea, 10.0E-15));
     }
@@ -255,23 +257,23 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
                 .withLayer("l22");
 
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-        assertEquals(ALLOW, accessInfo.getGrant());
+        assertEquals(ALLOW, accessInfo.grant());
 
         // we got a user in two groups one with an intersect spatialFilterType
         // and the other with a clip spatialFilterType. The two area should haven
         // been kept separated
-        assertNotNull(accessInfo.getIntersectArea());
-        assertNotNull(accessInfo.getClipArea());
+        assertNotNull(accessInfo.intersectArea());
+        assertNotNull(accessInfo.clipArea());
 
         // the intersects should be equal to the originally defined
         // allowed area
-        org.locationtech.jts.geom.Geometry intersects = JTS.to(accessInfo.getIntersectArea());
+        org.locationtech.jts.geom.Geometry intersects = JTS.to(accessInfo.intersectArea());
         intersects.normalize();
-        assertTrue(intersects.equalsExact(JTS.to(lp15.getAllowedArea()), 10.0E-15));
+        assertTrue(intersects.equalsExact(JTS.to(lp15.allowedArea()), 10.0E-15));
 
-        org.locationtech.jts.geom.Geometry clip = JTS.to(accessInfo.getClipArea());
+        org.locationtech.jts.geom.Geometry clip = JTS.to(accessInfo.clipArea());
         clip.normalize();
-        org.locationtech.jts.geom.MultiPolygon area2Jts = JTS.to(lp16.getAllowedArea());
+        org.locationtech.jts.geom.MultiPolygon area2Jts = JTS.to(lp16.allowedArea());
         area2Jts.normalize();
         assertTrue(clip.equalsExact(area2Jts, 10.0E-15));
     }
@@ -306,19 +308,19 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
                 .withWorkspace("w22")
                 .withLayer("l22");
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-        assertEquals(ALLOW, accessInfo.getGrant());
+        assertEquals(ALLOW, accessInfo.grant());
 
         // we should have only the clip geometry
-        assertNull(accessInfo.getIntersectArea());
-        assertNotNull(accessInfo.getClipArea());
+        assertNull(accessInfo.intersectArea());
+        assertNotNull(accessInfo.clipArea());
 
         // the intersects should be equal to the originally defined
         // allowed area
-        org.locationtech.jts.geom.Geometry expectedResult = JTS.to(lp17.getAllowedArea())
-                .intersection(JTS.to(lp18.getAllowedArea()))
-                .union(JTS.to(lp19.getAllowedArea()).intersection(JTS.to(lp20.getAllowedArea())));
+        org.locationtech.jts.geom.Geometry expectedResult = JTS.to(lp17.allowedArea())
+                .intersection(JTS.to(lp18.allowedArea()))
+                .union(JTS.to(lp19.allowedArea()).intersection(JTS.to(lp20.allowedArea())));
         expectedResult.normalize();
-        org.locationtech.jts.geom.Geometry clip = JTS.to(accessInfo.getClipArea());
+        org.locationtech.jts.geom.Geometry clip = JTS.to(accessInfo.clipArea());
         clip.normalize();
         assertTrue(clip.equalsExact(expectedResult, 10.0E-15));
     }
@@ -352,37 +354,171 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
                 .withLayer("l22");
 
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-        assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
         // we should have both
-        assertThat(accessInfo.getIntersectArea()).isNotNull();
-        assertThat(accessInfo.getClipArea()).isNotNull();
+        assertThat(accessInfo.intersectArea()).isNotNull();
+        assertThat(accessInfo.clipArea()).isNotNull();
 
         // the intersects should be equal to the originally defined
         // allowed area
         org.locationtech.jts.geom.Geometry expectedIntersects =
-                JTS.to(lp23.getAllowedArea()).intersection(JTS.to(lp24.getAllowedArea()));
+                JTS.to(lp23.allowedArea()).intersection(JTS.to(lp24.allowedArea()));
         expectedIntersects.normalize();
-        org.locationtech.jts.geom.Geometry intersects = JTS.to(accessInfo.getIntersectArea());
+        org.locationtech.jts.geom.Geometry intersects = JTS.to(accessInfo.intersectArea());
         intersects.normalize();
 
         assertTrue(expectedIntersects.equalsExact(intersects, 10.0E-15));
 
-        org.locationtech.jts.geom.Geometry clip = JTS.to(accessInfo.getClipArea());
+        org.locationtech.jts.geom.Geometry clip = JTS.to(accessInfo.clipArea());
         clip.normalize();
         org.locationtech.jts.geom.Geometry expectedClip =
-                JTS.to(lp21.getAllowedArea()).intersection(JTS.to(lp22.getAllowedArea()));
+                JTS.to(lp21.allowedArea()).intersection(JTS.to(lp22.allowedArea()));
         expectedClip.normalize();
         assertTrue(expectedClip.equalsExact(clip, 10.0E-15));
     }
 
+    /**
+     * Mirror of {@link #testRuleSpatialFilterTypeEnlargeAccess()}: two roles, one CLIP-only and
+     * one INTERSECT-only, with role names chosen so that the per-role iteration order makes the
+     * CLIP role become {@code baseAccess} and the INTERSECT role become {@code moreAccess} in
+     * {@code setAllowedAreas}. Hits the {@code moreIntersects != null && baseClip != null} and
+     * {@code baseClip != null && moreIntersects != null} fall-through branches.
+     *
+     * <p>Result is symmetric with the original test and not interesting on its own; the test
+     * exists for branch coverage of the symmetric path.
+     */
     @Test
-    public void testLimitAndAllowRuleEnlargementLayerGroup() throws Exception {
+    public void testRuleSpatialFilterTypeEnlargeAccess_clipBaseIntersectMore() {
+        Rule pClip = insert(15, null, "z_grpClip", null, "s22", "r22", null, "w22", "l22", LIMIT);
+        RuleLimits lpClip = setRuleLimits(pClip, WKT_WGS84_3, CLIP, HIDE);
+
+        Rule pIntersect = insert(16, null, "a_grpInt", null, "s22", "r22", null, "w22", "l22", LIMIT);
+        RuleLimits lpIntersect = setRuleLimits(pIntersect, WKT_WGS84_1, INTERSECT, HIDE);
+
+        insert(999, null, null, null, "s22", "r22", null, "w22", "l22", ALLOW);
+
+        AccessRequest request = createRequest("auth_mirror", "z_grpClip", "a_grpInt")
+                .withService("s22")
+                .withRequest("r22")
+                .withWorkspace("w22")
+                .withLayer("l22");
+
+        AccessInfo accessInfo = authorizationService.getAccessInfo(request);
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.intersectArea()).isNotNull();
+        assertThat(accessInfo.clipArea()).isNotNull();
+
+        org.locationtech.jts.geom.Geometry intersect = JTS.to(accessInfo.intersectArea());
+        intersect.normalize();
+        assertTrue(intersect.equalsExact(JTS.to(lpIntersect.allowedArea()), 10.0E-15));
+
+        org.locationtech.jts.geom.Geometry clip = JTS.to(accessInfo.clipArea());
+        clip.normalize();
+        org.locationtech.jts.geom.MultiPolygon clipExpected = JTS.to(lpClip.allowedArea());
+        clipExpected.normalize();
+        assertTrue(clip.equalsExact(clipExpected, 10.0E-15));
+    }
+
+    /**
+     * Two roles, each contributing an INTERSECT-only allowed area. {@code unionIntersects} is the
+     * real JTS union; exercises the {@code else} arm that calls {@code ret.intersectArea(...)}
+     * with the unioned geometry.
+     */
+    @Test
+    public void testEnlargeAccess_intersectUnionedAcrossRoles() {
+        Rule pA = insert(20, null, "groupA", null, "s33", "r33", null, "w33", "l33", LIMIT);
+        RuleLimits lpA = setRuleLimits(pA, WKT_WGS84_1, INTERSECT, HIDE);
+
+        Rule pB = insert(21, null, "groupB", null, "s33", "r33", null, "w33", "l33", LIMIT);
+        RuleLimits lpB = setRuleLimits(pB, WKT_WGS84_3, INTERSECT, HIDE);
+
+        insert(999, null, null, null, "s33", "r33", null, "w33", "l33", ALLOW);
+
+        AccessRequest request = createRequest("auth_inter_union", "groupA", "groupB")
+                .withService("s33")
+                .withRequest("r33")
+                .withWorkspace("w33")
+                .withLayer("l33");
+
+        AccessInfo accessInfo = authorizationService.getAccessInfo(request);
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.intersectArea()).isNotNull();
+        assertThat(accessInfo.clipArea()).isNull();
+
+        org.locationtech.jts.geom.Geometry expected = JTS.to(lpA.allowedArea()).union(JTS.to(lpB.allowedArea()));
+        expected.normalize();
+        org.locationtech.jts.geom.Geometry actual = JTS.to(accessInfo.intersectArea());
+        actual.normalize();
+        assertTrue(expected.equalsExact(actual, 10.0E-15));
+    }
+
+    /**
+     * One role has an INTERSECT-only spatial restriction, another role has no spatial restriction
+     * at all. Since the second role on its own grants unrestricted access, the union must not
+     * restrict spatially: the more permissive rule wins.
+     *
+     * <p>Exercises the {@code unionIntersects == null} fall-through path in
+     * {@code AuthorizationServiceImpl#setAllowedAreas}: after geometry-union honors the GeoFence
+     * "null when either side is null" semantics, this case enters the {@code if} block but neither
+     * inner branch matches, leaving the result without a spatial restriction.
+     */
+    @Test
+    public void testEnlargeAccess_intersectVsNoSpatialRestriction() {
+        // group_alpha: LIMIT INTERSECT + matches the general ALLOW
+        Rule limit = insert(1, null, "group_alpha", null, "s1", "r1", null, "w1", "l1", LIMIT);
+        setRuleLimits(limit, WKT_WGS84_1, INTERSECT, HIDE);
+        // shared ALLOW for any role; group_beta has no LIMIT, so it produces no spatial restriction
+        insert(999, null, null, null, "s1", "r1", null, "w1", "l1", ALLOW);
+
+        AccessRequest request = createRequest("user", "group_alpha", "group_beta")
+                .withService("s1")
+                .withRequest("r1")
+                .withWorkspace("w1")
+                .withLayer("l1");
+
+        AccessInfo accessInfo = authorizationService.getAccessInfo(request);
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.intersectArea())
+                .as("group_beta has no spatial restriction; the union must not restrict spatially")
+                .isNull();
+        assertThat(accessInfo.clipArea()).isNull();
+    }
+
+    /**
+     * Mirror of {@link #testEnlargeAccess_intersectVsNoSpatialRestriction()} for the CLIP path:
+     * one role restricts via CLIP, another has no spatial restriction. The union must not restrict
+     * spatially.
+     */
+    @Test
+    public void testEnlargeAccess_clipVsNoSpatialRestriction() {
+        Rule limit = insert(1, null, "group_alpha", null, "s1", "r1", null, "w1", "l1", LIMIT);
+        setRuleLimits(limit, WKT_WGS84_1, CLIP, HIDE);
+        insert(999, null, null, null, "s1", "r1", null, "w1", "l1", ALLOW);
+
+        AccessRequest request = createRequest("user", "group_alpha", "group_beta")
+                .withService("s1")
+                .withRequest("r1")
+                .withWorkspace("w1")
+                .withLayer("l1");
+
+        AccessInfo accessInfo = authorizationService.getAccessInfo(request);
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.intersectArea()).isNull();
+        assertThat(accessInfo.clipArea())
+                .as("group_beta has no spatial restriction; the union must not restrict spatially")
+                .isNull();
+    }
+
+    @Test
+    public void testLimitAndAllowRuleEnlargementLayerGroup() {
         Rule limit = insert(1, null, "ROLE_ONE", null, "wms", null, null, null, "lakes_and_places", LIMIT);
         RuleLimits geomLimits = setRuleLimits(limit, WKT_WGS84_3, INTERSECT, HIDE);
 
         Rule allow = insert(2, null, null, null, null, null, null, null, null, ALLOW);
 
-        // ROLE_ONE matches both rules, ROLE_TWO only the allow rule, ROLE_ONE wins with the stricter settings
+        // ROLE_ONE matches both rules; ROLE_TWO only the allow rule. ROLE_TWO has no spatial
+        // restriction at all, so the union of the two roles must not restrict spatially: the
+        // more permissive rule wins.
         AccessRequest request = createRequest("gabe", "ROLE_ONE", "ROLE_TWO")
                 .withService("WMS")
                 .withRequest("GetMap")
@@ -390,9 +526,10 @@ public abstract class AuthorizationServiceGeomTest extends BaseAuthorizationServ
                 .withLayer("lakes_and_places");
 
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-        assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
-        // we should have both
-        assertThat(accessInfo.getIntersectArea()).isNotNull();
-        assertThat(accessInfo.getClipArea()).isNull();
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.intersectArea())
+                .as("ROLE_TWO grants unrestricted access; the union must not restrict spatially")
+                .isNull();
+        assertThat(accessInfo.clipArea()).isNull();
     }
 }

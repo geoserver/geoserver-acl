@@ -34,28 +34,28 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
     }
 
     public @Override long getPriority(Rule rule) {
-        return rule.getPriority();
+        return rule.priority();
     }
 
     @Override
     public Optional<Rule> findById(String id) {
-        return rules.stream().filter(r -> id.equals(r.getId())).findFirst();
+        return rules.stream().filter(r -> id.equals(r.id())).findFirst();
     }
 
     @Override
     public boolean existsById(String id) {
-        return rules.stream().anyMatch(r -> id.equals(r.getId()));
+        return rules.stream().anyMatch(r -> id.equals(r.id()));
     }
 
     @Override
     public Rule create(Rule rule, InsertPosition position) {
         priorityLock.lock();
         try {
-            if (null != rule.getId()) throw new IllegalArgumentException("Rule has id");
+            if (null != rule.id()) throw new IllegalArgumentException("Rule has id");
             checkNoDups(rule);
             rule = rule.withId(String.valueOf(idseq.incrementAndGet()));
 
-            long finalPriority = priorityResolver.resolveFinalPriority(rule.getPriority(), map(position));
+            long finalPriority = priorityResolver.resolveFinalPriority(rule.priority(), map(position));
             rule = rule.withPriority(finalPriority);
             rules.add(rule);
             return rule;
@@ -81,21 +81,20 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
     public Rule save(Rule rule) {
         priorityLock.lock();
         try {
-            if (null == rule.getId()) throw new IllegalArgumentException("Rule has no id");
+            if (null == rule.id()) throw new IllegalArgumentException("Rule has no id");
             checkNoDups(rule);
-            final Rule current = getOrThrow(rule.getId());
+            final Rule current = getOrThrow(rule.id());
 
-            final long finalPriority =
-                    priorityResolver.resolvePriorityUpdate(current.getPriority(), rule.getPriority());
+            final long finalPriority = priorityResolver.resolvePriorityUpdate(current.priority(), rule.priority());
 
-            if (current.getPriority() != finalPriority) {
+            if (current.priority() != finalPriority) {
                 rule = rule.withPriority(finalPriority);
                 Optional<Rule> positionOccupied =
-                        findOneByPriority(finalPriority).filter(r -> !r.getId().equals(current.getId()));
+                        findOneByPriority(finalPriority).filter(r -> !r.id().equals(current.id()));
                 if (positionOccupied.isPresent()) {
                     Rule other = positionOccupied.get();
                     rules.remove(current);
-                    save(other.withPriority(other.getPriority() + 1));
+                    save(other.withPriority(other.priority() + 1));
                     rules.add(rule);
                 } else {
                     replace(current, rule);
@@ -114,9 +113,9 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
      */
     private void checkNoDups(Rule rule) {
         rules.stream()
-                .filter(r -> r.getIdentifier().getAccess() != GrantType.LIMIT
-                        && !r.getId().equals(rule.getId())
-                        && r.getIdentifier().equals(rule.getIdentifier()))
+                .filter(r -> r.identifier().access() != GrantType.LIMIT
+                        && !r.id().equals(rule.id())
+                        && r.identifier().equals(rule.identifier()))
                 .findFirst()
                 .ifPresent(duplicate -> {
                     throw new RuleIdentifierConflictException(
@@ -127,7 +126,7 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
     @Override
     public boolean deleteById(@NonNull String id) {
         layerDetails.remove(id);
-        return rules.removeIf(r -> id.equals(r.getId()));
+        return rules.removeIf(r -> id.equals(r.id()));
     }
 
     @Override
@@ -162,7 +161,7 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
         if (nextId != null) {
             final AtomicBoolean nextIdFound = new AtomicBoolean();
             matches = matches.peek(r -> {
-                        if (r.getId().equals(nextId)) {
+                        if (r.id().equals(nextId)) {
                             nextIdFound.set(true);
                         }
                     })
@@ -177,7 +176,7 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
 
     @Override
     public Optional<Rule> findOneByPriority(long priority) {
-        return rules.stream().filter(r -> r.getPriority() == priority).findFirst();
+        return rules.stream().filter(r -> r.priority() == priority).findFirst();
     }
 
     @Override
@@ -197,8 +196,8 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
             Rule r1 = getOrThrow(id1);
             Rule r2 = getOrThrow(id2);
 
-            Rule s1 = r1.withPriority(r2.getPriority());
-            Rule s2 = r2.withPriority(r1.getPriority());
+            Rule s1 = r1.withPriority(r2.priority());
+            Rule s2 = r2.withPriority(r1.priority());
             rules.removeAll(List.of(r1, r2));
             rules.addAll(List.of(s1, s2));
         } finally {
@@ -218,7 +217,7 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
     @Override
     public void setAllowedStyles(String ruleId, Set<String> styles) {
         Rule rule = getOrThrow(ruleId);
-        if (null == rule.getIdentifier().getLayer()) {
+        if (null == rule.identifier().layer()) {
             throw new IllegalArgumentException("Rule has no layer, can't set allowed styles");
         }
 
@@ -232,7 +231,7 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
     @Override
     public void setLimits(String ruleId, RuleLimits limits) {
         Rule rule = getOrThrow(ruleId);
-        if (limits != null && rule.getIdentifier().getAccess() != GrantType.LIMIT) {
+        if (limits != null && rule.identifier().access() != GrantType.LIMIT) {
             throw new IllegalArgumentException("Rule is not of LIMIT type");
         }
         replace(rule, rule.withRuleLimits(limits));
@@ -243,10 +242,10 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
         Rule rule = getOrThrow(ruleId);
         if (detailsNew == null) layerDetails.remove(ruleId);
         else {
-            if (rule.getIdentifier().getAccess() != GrantType.ALLOW) {
+            if (rule.identifier().access() != GrantType.ALLOW) {
                 throw new IllegalArgumentException("Rule is not of ALLOW type");
             }
-            if (rule.getIdentifier().getLayer() == null) {
+            if (rule.identifier().layer() == null) {
                 throw new IllegalArgumentException("Rule does not refer to a fixed layer");
             }
             layerDetails.put(ruleId, detailsNew);
@@ -255,7 +254,7 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
 
     @Override
     public Optional<LayerDetails> findLayerDetailsByRuleId(String ruleId) {
-        return Optional.ofNullable(layerDetails.get(getOrThrow(ruleId).getId()));
+        return Optional.ofNullable(layerDetails.get(getOrThrow(ruleId).id()));
     }
 
     protected @Override Rule withPriority(Rule rule, long priority) {
@@ -263,6 +262,6 @@ public class MemoryRuleRepository extends MemoryPriorityRepository<Rule> impleme
     }
 
     protected @Override String getId(Rule rule) {
-        return rule.getId();
+        return rule.id();
     }
 }

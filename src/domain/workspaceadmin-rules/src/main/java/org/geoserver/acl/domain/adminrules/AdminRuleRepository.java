@@ -8,6 +8,18 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import org.geoserver.acl.domain.filter.RuleQuery;
 
+/**
+ * Persistence port for {@link AdminRule}s.
+ *
+ * <p>Repository abstraction in the hexagonal architecture: the domain defines the contract,
+ * infrastructure modules (for example the JPA adapter) provide the implementation. Exposes
+ * CRUD, priority-ordered queries, priority management (shift, swap), and filtered lookups
+ * driven by {@link AdminRuleFilter}. {@link AdminRuleAdminService} sits on top of this port
+ * and adds business rules and event publishing.
+ *
+ * @see AdminRule
+ * @see AdminRuleAdminService
+ */
 public interface AdminRuleRepository {
 
     /**

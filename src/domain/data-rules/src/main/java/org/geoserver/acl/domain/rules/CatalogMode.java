@@ -7,6 +7,8 @@
 
 package org.geoserver.acl.domain.rules;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * The security mode in which the GeoServer Catalog should respond to requests for a specific resource (layer/feature type/coverage).
  * <p>
@@ -38,7 +40,7 @@ public enum CatalogMode {
      */
     MIXED;
 
-    public static CatalogMode stricter(CatalogMode m1, CatalogMode m2) {
+    public static @Nullable CatalogMode stricter(@Nullable CatalogMode m1, @Nullable CatalogMode m2) {
 
         if (m1 == null) return m2;
         if (m2 == null) return m1;
@@ -50,7 +52,7 @@ public enum CatalogMode {
         return CHALLENGE;
     }
 
-    public static CatalogMode lenient(CatalogMode m1, CatalogMode m2) {
+    public static @Nullable CatalogMode lenient(@Nullable CatalogMode m1, @Nullable CatalogMode m2) {
 
         if (m1 == null) return m2;
         if (m2 == null) return m1;

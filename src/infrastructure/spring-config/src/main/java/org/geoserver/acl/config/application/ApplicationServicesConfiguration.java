@@ -5,7 +5,7 @@
 package org.geoserver.acl.config.application;
 
 import org.geoserver.acl.authorization.AuthorizationService;
-import org.geoserver.acl.authorization.AuthorizationServiceImpl;
+import org.geoserver.acl.authorization.impl.AuthorizationServiceImpl;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.springframework.context.annotation.Bean;

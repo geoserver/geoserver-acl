@@ -5,7 +5,6 @@
 package org.geoserver.acl.domain.filter.predicate;
 
 import java.io.Serial;
-import java.io.Serializable;
 
 /**
  * Predicate for filtering rules by IP address or CIDR ranges.
@@ -36,7 +35,7 @@ import java.io.Serializable;
  * @since 1.0
  * @see RulePredicate
  */
-public class IPAddressRangeFilter extends RulePredicate<String> implements Serializable, Cloneable {
+public class IPAddressRangeFilter extends RulePredicate<String> {
 
     @Serial
     private static final long serialVersionUID = 4180011525571457537L;
@@ -60,6 +59,11 @@ public class IPAddressRangeFilter extends RulePredicate<String> implements Seria
     public IPAddressRangeFilter(String ipAddress) {
         super(FilterType.NAMEVALUE);
         this.ipAddress = ipAddress;
+    }
+
+    public IPAddressRangeFilter(IPAddressRangeFilter other) {
+        super(other);
+        this.ipAddress = other.ipAddress;
     }
 
     public void setHeuristically(String ipAddress) {
@@ -97,11 +101,6 @@ public class IPAddressRangeFilter extends RulePredicate<String> implements Seria
             default:
                 throw new AssertionError();
         }
-    }
-
-    @Override
-    public IPAddressRangeFilter clone() throws CloneNotSupportedException {
-        return (IPAddressRangeFilter) super.clone();
     }
 
     @Override

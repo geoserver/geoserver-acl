@@ -8,11 +8,9 @@
 package org.geoserver.acl.domain.rules;
 
 import lombok.Builder;
-import lombok.Builder.Default;
-import lombok.NonNull;
-import lombok.Value;
 import lombok.With;
 import org.geolatte.geom.MultiPolygon;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Access restrictions for LIMIT grant type rules.
@@ -24,11 +22,11 @@ import org.geolatte.geom.MultiPolygon;
  * <p>Comparison:
  * <table border="1">
  * <tr><th>Feature</th><th>RuleLimits</th><th>LayerDetails</th></tr>
- * <tr><td>Spatial constraint</td><td>✓</td><td>✓</td></tr>
- * <tr><td>Catalog mode</td><td>✓</td><td>✓</td></tr>
- * <tr><td>CQL filters</td><td>-</td><td>✓</td></tr>
- * <tr><td>Allowed styles</td><td>-</td><td>✓</td></tr>
- * <tr><td>Attribute permissions</td><td>-</td><td>✓</td></tr>
+ * <tr><td>Spatial constraint</td><td>X</td><td>X</td></tr>
+ * <tr><td>Catalog mode</td><td>X</td><td>X</td></tr>
+ * <tr><td>CQL filters</td><td>-</td><td>X</td></tr>
+ * <tr><td>Allowed styles</td><td>-</td><td>X</td></tr>
+ * <tr><td>Attribute permissions</td><td>-</td><td>X</td></tr>
  * </table>
  *
  * <p>Example:
@@ -42,6 +40,15 @@ import org.geolatte.geom.MultiPolygon;
  *     .withPriority(100);
  * }</pre>
  *
+ * @param allowedArea geographic area constraint (MultiPolygon geometry). If specified, access is
+ *     restricted to features within or intersecting this area, depending on
+ *     {@code spatialFilterType}. Uses geolatte-geom for infrastructure-agnostic geometry
+ *     representation. Can be {@code null} for no spatial restriction (limit rule affects only
+ *     catalog visibility).
+ * @param spatialFilterType how to apply the spatial area constraint. Defaults to
+ *     {@link SpatialFilterType#INTERSECT}.
+ * @param catalogMode how the layer appears in GetCapabilities responses. Defaults to
+ *     {@link CatalogMode#HIDE}.
  * @since 1.0
  * @see Rule
  * @see GrantType#LIMIT
@@ -50,50 +57,21 @@ import org.geolatte.geom.MultiPolygon;
  * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
  * @author Gabriel Roldan - Camptocamp
  */
-@Value
 @With
 @Builder(toBuilder = true, builderClassName = "Builder")
-public class RuleLimits {
+public record RuleLimits(
+        @Nullable MultiPolygon<?> allowedArea, SpatialFilterType spatialFilterType, CatalogMode catalogMode) {
+
+    public RuleLimits {
+        if (spatialFilterType == null) spatialFilterType = DEFAULT_SPATIAL_FILTERTYPE;
+        if (catalogMode == null) catalogMode = DEFAULT_CATALOG_MODE;
+    }
 
     /** Default spatial filter type for rules with spatial constraints. */
     public static final SpatialFilterType DEFAULT_SPATIAL_FILTERTYPE = SpatialFilterType.INTERSECT;
 
     /** Default catalog mode for layer visibility in GetCapabilities. */
     public static final CatalogMode DEFAULT_CATALOG_MODE = CatalogMode.HIDE;
-
-    /**
-     * Geographic area constraint (MultiPolygon geometry).
-     *
-     * <p>If specified, access is restricted to features within or intersecting this area,
-     * depending on {@link #spatialFilterType}. Uses geolatte-geom library for
-     * infrastructure-agnostic geometry representation.
-     *
-     * <p>Can be {@code null} for no spatial restriction (limit rule affects only catalog
-     * visibility).
-     */
-    private MultiPolygon<?> allowedArea;
-
-    /**
-     * How to apply the spatial area constraint.
-     *
-     * <p>Defaults to {@link SpatialFilterType#INTERSECT}.
-     *
-     * @see SpatialFilterType
-     */
-    @Default
-    @NonNull
-    private SpatialFilterType spatialFilterType = DEFAULT_SPATIAL_FILTERTYPE;
-
-    /**
-     * How the layer appears in GetCapabilities responses.
-     *
-     * <p>Defaults to {@link CatalogMode#HIDE}.
-     *
-     * @see CatalogMode
-     */
-    @Default
-    @NonNull
-    private CatalogMode catalogMode = DEFAULT_CATALOG_MODE;
 
     public static RuleLimits clip() {
         return RuleLimits.builder().spatialFilterType(SpatialFilterType.CLIP).build();

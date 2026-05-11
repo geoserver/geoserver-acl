@@ -29,7 +29,7 @@ class AdminRuleRepositoryClientAdaptor implements AdminRuleRepository {
 
     @Override
     public AdminRule create(AdminRule rule, InsertPosition position) {
-        if (null != rule.getId()) throw new IllegalArgumentException("AdminRule must have no id");
+        if (null != rule.id()) throw new IllegalArgumentException("AdminRule must have no id");
 
         try {
             org.geoserver.acl.webapi.v1.model.AdminRule result = apiClient.createAdminRule(map(rule), map(position));
@@ -41,10 +41,10 @@ class AdminRuleRepositoryClientAdaptor implements AdminRuleRepository {
 
     @Override
     public AdminRule save(AdminRule rule) {
-        Objects.requireNonNull(rule.getId(), "AdminRule has no id");
+        Objects.requireNonNull(rule.id(), "AdminRule has no id");
         try {
             org.geoserver.acl.webapi.v1.model.AdminRule response;
-            response = apiClient.updateAdminRule(rule.getId(), mapper.toApi(rule));
+            response = apiClient.updateAdminRule(rule.id(), mapper.toApi(rule));
             return mapper.toModel(response);
         } catch (HttpClientErrorException.Conflict c) {
             throw new AdminRuleIdentifierConflictException(reason(c), c);

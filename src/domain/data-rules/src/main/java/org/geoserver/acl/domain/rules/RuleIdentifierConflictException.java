@@ -6,6 +6,11 @@ package org.geoserver.acl.domain.rules;
 
 import java.io.Serial;
 
+/**
+ * Thrown when a create or update operation would result in two {@link Rule rules} sharing the
+ * same {@link RuleIdentifier} (same matching criteria and access type), which the domain
+ * disallows so that rule evaluation remains deterministic.
+ */
 public class RuleIdentifierConflictException extends IllegalArgumentException {
 
     @Serial

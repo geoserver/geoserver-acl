@@ -6,14 +6,11 @@
 package org.geoserver.acl.persistence.jpa.domain;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import java.io.Serial;
-import java.io.Serializable;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
@@ -28,10 +25,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @Embeddable
-public class JpaRuleIdentifier implements Serializable, Cloneable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class JpaRuleIdentifier {
 
     public static final String ANY = "*";
 
@@ -54,11 +48,9 @@ public class JpaRuleIdentifier implements Serializable, Cloneable {
 
     @NonNull
     @Embedded
-    @AttributeOverrides({
-        @AttributeOverride(name = "low", column = @Column(name = "ip_low")),
-        @AttributeOverride(name = "high", column = @Column(name = "ip_high")),
-        @AttributeOverride(name = "size", column = @Column(name = "ip_size"))
-    })
+    @AttributeOverride(name = "low", column = @Column(name = "ip_low"))
+    @AttributeOverride(name = "high", column = @Column(name = "ip_high"))
+    @AttributeOverride(name = "size", column = @Column(name = "ip_size"))
     private JpaIPAddressRange addressRange = new JpaIPAddressRange();
 
     @NonNull
@@ -77,15 +69,18 @@ public class JpaRuleIdentifier implements Serializable, Cloneable {
     @Column(nullable = false)
     private String layer = ANY;
 
-    public @Override JpaRuleIdentifier clone() {
-        JpaRuleIdentifier clone;
-        try {
-            clone = (JpaRuleIdentifier) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-        clone.addressRange = addressRange.clone();
-        return clone;
+    public JpaRuleIdentifier() {}
+
+    public JpaRuleIdentifier(JpaRuleIdentifier other) {
+        this.access = other.access;
+        this.username = other.username;
+        this.rolename = other.rolename;
+        this.service = other.service;
+        this.addressRange = new JpaIPAddressRange(other.addressRange);
+        this.request = other.request;
+        this.subfield = other.subfield;
+        this.workspace = other.workspace;
+        this.layer = other.layer;
     }
 
     public String username() {

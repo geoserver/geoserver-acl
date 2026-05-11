@@ -5,7 +5,7 @@
  * Original from GeoFence 3.6 under GPL 2.0 license
  */
 
-package org.geoserver.acl.authorization;
+package org.geoserver.acl.authorization.impl;
 
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,12 +17,15 @@ import static org.geoserver.acl.domain.rules.LayerAttribute.AccessType.READWRITE
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+import org.geoserver.acl.authorization.AccessInfo;
+import org.geoserver.acl.authorization.AccessRequest;
+import org.geoserver.acl.authorization.AdminAccessInfo;
+import org.geoserver.acl.authorization.AdminAccessRequest;
+import org.geoserver.acl.authorization.AuthorizationService;
 import org.geoserver.acl.domain.adminrules.AdminRule;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.filter.predicate.SpecialFilterType;
@@ -73,9 +76,9 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
 
         final AccessRequest u3 = createRequest("TestUser3", "g3a", "g3b");
 
-        Rule p10 = insert(10, u1.getUser(), "p1", null, "s1", "r1", null, "w1", "l1", ALLOW);
-        Rule p20 = insert(20, u2.getUser(), "p2", null, "s1", "r2", null, "w2", "l2", ALLOW);
-        Rule p30 = insert(30, u1.getUser(), "p1", null, "s3", null, null, "w3", null, ALLOW);
+        Rule p10 = insert(10, u1.user(), "p1", null, "s1", "r1", null, "w1", "l1", ALLOW);
+        Rule p20 = insert(20, u2.user(), "p2", null, "s1", "r2", null, "w2", "l2", ALLOW);
+        Rule p30 = insert(30, u1.user(), "p1", null, "s3", null, null, "w3", null, ALLOW);
         Rule p40 = insert(40, null, "p1", null, null, null, null, null, null, ALLOW);
         Rule p50 = insert(50, null, "g3a", null, null, null, null, null, null, ALLOW);
         Rule p60 = insert(60, null, "g3b", null, null, null, null, null, null, ALLOW);
@@ -158,7 +161,7 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
                     2, authorizationService.getMatchingRules(req.withUser(null)).size());
             assertEquals(
                     ALLOW,
-                    authorizationService.getAccessInfo(req.withUser(null)).getGrant());
+                    authorizationService.getAccessInfo(req.withUser(null)).grant());
         }
         {
             assertEquals(
@@ -168,17 +171,17 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
                             .size());
             assertEquals(
                     ALLOW,
-                    authorizationService.getAccessInfo(req.withRoles(Set.of())).getGrant());
+                    authorizationService.getAccessInfo(req.withRoles(Set.of())).grant());
         }
         {
             AccessRequest unmatch = req.withUser(null).withService("UNMATCH");
             assertEquals(1, authorizationService.getMatchingRules(unmatch).size());
-            assertEquals(DENY, authorizationService.getAccessInfo(unmatch).getGrant());
+            assertEquals(DENY, authorizationService.getAccessInfo(unmatch).grant());
         }
         {
             AccessRequest unmatch = req.withRoles(Set.of()).withService("UNMATCH");
             assertEquals(1, authorizationService.getMatchingRules(unmatch).size());
-            assertEquals(DENY, authorizationService.getAccessInfo(unmatch).getGrant());
+            assertEquals(DENY, authorizationService.getAccessInfo(unmatch).grant());
         }
     }
 
@@ -198,8 +201,8 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         assertThat(matchingRules).isEqualTo(of(r2));
 
         AccessInfo accessInfo = getAccessInfo(req);
-        assertEquals(ALLOW, accessInfo.getGrant());
-        assertNull(accessInfo.getIntersectArea());
+        assertEquals(ALLOW, accessInfo.grant());
+        assertNull(accessInfo.intersectArea());
     }
 
     @Test
@@ -212,26 +215,26 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         assertEquals(
                 1, getMatchingRules("u0", null, null, "WCS", null, "W0", "l0").size());
         assertEquals(
-                ALLOW, getAccessInfo("u0", null, null, "WCS", null, "W0", "l0").getGrant());
+                ALLOW, getAccessInfo("u0", null, null, "WCS", null, "W0", "l0").grant());
 
         assertEquals(
                 1, getMatchingRules(null, "p0", null, "WCS", null, "W0", "l0").size());
         assertEquals(
-                ALLOW, getAccessInfo(null, "p0", null, "WCS", null, "W0", "l0").getGrant());
+                ALLOW, getAccessInfo(null, "p0", null, "WCS", null, "W0", "l0").grant());
 
         assertEquals(
                 0,
                 getMatchingRules("u0", null, null, "UNMATCH", null, "W0", "l0").size());
         assertEquals(
                 DENY,
-                getAccessInfo("u0", null, null, "UNMATCH", null, "W0", "l0").getGrant());
+                getAccessInfo("u0", null, null, "UNMATCH", null, "W0", "l0").grant());
 
         assertEquals(
                 0,
                 getMatchingRules(null, "p0", null, "UNMATCH", null, "W0", "l0").size());
         assertEquals(
                 DENY,
-                getAccessInfo(null, "p0", null, "UNMATCH", null, "W0", "l0").getGrant());
+                getAccessInfo(null, "p0", null, "UNMATCH", null, "W0", "l0").grant());
     }
 
     @Test
@@ -256,17 +259,17 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         final AccessRequest req2 = createRequest("u2", "p2");
 
         assertThat(getMatchingRules(req1)).isEqualTo(of(r1, r2));
-        assertThat(getAccessInfo(req1).getGrant()).isEqualByComparingTo(ALLOW);
+        assertThat(getAccessInfo(req1).grant()).isEqualByComparingTo(ALLOW);
 
         assertThat(getMatchingRules(req1.withService("s2"))).isEqualTo(of(r2));
-        assertThat(getAccessInfo(req1.withService("s2")).getGrant()).isEqualByComparingTo(DENY);
+        assertThat(getAccessInfo(req1.withService("s2")).grant()).isEqualByComparingTo(DENY);
 
         assertThat(getMatchingRules(req2)).isEmpty();
-        assertThat(getAccessInfo(req2).getGrant()).isEqualByComparingTo(DENY);
+        assertThat(getAccessInfo(req2).grant()).isEqualByComparingTo(DENY);
     }
 
     @Test
-    public void testGroupOrder01() throws UnknownHostException {
+    public void testGroupOrder01() {
         assertEquals(0, ruleAdminService.count());
 
         final AccessRequest req1 = createRequest("u1", "p1");
@@ -281,8 +284,8 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         assertEquals(1, authorizationService.getMatchingRules(req1).size());
         assertEquals(1, authorizationService.getMatchingRules(req2).size());
 
-        assertEquals(ALLOW, authorizationService.getAccessInfo(req1).getGrant());
-        assertEquals(DENY, authorizationService.getAccessInfo(req2).getGrant());
+        assertEquals(ALLOW, authorizationService.getAccessInfo(req1).grant());
+        assertEquals(DENY, authorizationService.getAccessInfo(req2).grant());
     }
 
     @Test
@@ -301,8 +304,8 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         assertEquals(1, authorizationService.getMatchingRules(req1).size());
         assertEquals(1, authorizationService.getMatchingRules(req2).size());
 
-        assertEquals(ALLOW, authorizationService.getAccessInfo(req1).getGrant());
-        assertEquals(DENY, authorizationService.getAccessInfo(req2).getGrant());
+        assertEquals(ALLOW, authorizationService.getAccessInfo(req1).grant());
+        assertEquals(DENY, authorizationService.getAccessInfo(req2).grant());
     }
 
     @Test
@@ -331,30 +334,58 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
 
         AccessInfo accessInfo;
         accessInfo = getAccessInfo(g1);
-        assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
-        assertThat(accessInfo.getMatchingRules()).isEqualTo(of(r1.getId()));
-        assertThat(accessInfo.getAttributes()).isEqualTo(r1Atts);
-        assertThat(accessInfo.getAllowedStyles()).isEqualTo(r1Styles);
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.matchingRules()).isEqualTo(of(r1.id()));
+        assertThat(accessInfo.attributes()).isEqualTo(r1Atts);
+        assertThat(accessInfo.allowedStyles()).isEqualTo(r1Styles);
 
         accessInfo = getAccessInfo(g2);
-        assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
-        assertThat(accessInfo.getMatchingRules()).isEqualTo(of(r2.getId()));
-        assertThat(accessInfo.getAttributes()).isEqualTo(r2Atts);
-        assertThat(accessInfo.getAllowedStyles()).isEqualTo(r2Styles);
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.matchingRules()).isEqualTo(of(r2.id()));
+        assertThat(accessInfo.attributes()).isEqualTo(r2Atts);
+        assertThat(accessInfo.allowedStyles()).isEqualTo(r2Styles);
 
         accessInfo = getAccessInfo(g12);
-        assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
-        assertThat(accessInfo.getMatchingRules()).isEqualTo(of(r1.getId(), r2.getId()));
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.matchingRules()).isEqualTo(of(r1.id(), r2.id()));
         Set<LayerAttribute> expected =
                 Set.of(attrib("att1", READONLY), attrib("att2", READWRITE), attrib("att3", READWRITE));
-        assertThat(accessInfo.getAttributes()).isEqualTo(expected);
-        assertThat(accessInfo.getAllowedStyles()).isEqualTo(Set.of("style01", "style02", "style03"));
+        assertThat(accessInfo.attributes()).isEqualTo(expected);
+        assertThat(accessInfo.allowedStyles()).isEqualTo(Set.of("style01", "style02", "style03"));
 
         accessInfo = getAccessInfo(g13);
-        assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
-        assertThat(accessInfo.getMatchingRules()).isEqualTo(of(r1.getId(), r3.getId()));
-        assertThat(accessInfo.getAttributes()).isEmpty();
-        assertThat(accessInfo.getAllowedStyles()).isEmpty();
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.matchingRules()).isEqualTo(of(r1.id(), r3.id()));
+        assertThat(accessInfo.attributes()).isEmpty();
+        assertThat(accessInfo.allowedStyles()).isEmpty();
+    }
+
+    /**
+     * Each of the two roles contributes attribute names that the other does not, plus one shared
+     * name. Exercises the single-side branches in {@code unionAttributes} (name only on one side
+     * is carried through unchanged) alongside the merge branch for the shared name.
+     */
+    @Test
+    public void testAttrib_unionAcrossRolesWithUniqueAndSharedNames() {
+        assertEquals(0, ruleAdminService.count());
+
+        Rule r1 = insert(Rule.allow().withRolename("g1").withLayer("l1"));
+        Set<LayerAttribute> r1Atts = Set.of(attrib("a_only", READONLY), attrib("shared", READONLY));
+        setLayerDetails(r1, Set.of(), r1Atts);
+
+        Rule r2 = insert(Rule.allow().withRolename("g2").withLayer("l1"));
+        Set<LayerAttribute> r2Atts = Set.of(attrib("b_only", READWRITE), attrib("shared", NONE));
+        setLayerDetails(r2, Set.of(), r2Atts);
+
+        AccessRequest request = createRequest("u12", "g1", "g2").withLayer("l1");
+        AccessInfo accessInfo = getAccessInfo(request);
+
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.matchingRules()).isEqualTo(of(r1.id(), r2.id()));
+        // a_only carried from r1, b_only from r2, shared merged via lenient (READONLY + NONE = READONLY)
+        Set<LayerAttribute> expected =
+                Set.of(attrib("a_only", READONLY), attrib("b_only", READWRITE), attrib("shared", READONLY));
+        assertThat(accessInfo.attributes()).isEqualTo(expected);
     }
 
     private AccessInfo getAccessInfo(AccessRequest request) {
@@ -374,7 +405,7 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
                 .allowedStyles(allowedStyles)
                 .attributes(attributes)
                 .build();
-        ruleAdminService.setLayerDetails(rule.getId(), d1);
+        ruleAdminService.setLayerDetails(rule.id(), d1);
     }
 
     /** Added for issue #23 */
@@ -387,7 +418,7 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
             LayerDetails d1 = LayerDetails.builder()
                     .allowedStyles(Set.of("style01", "style02"))
                     .build();
-            ruleAdminService.setLayerDetails(p40.getId(), d1);
+            ruleAdminService.setLayerDetails(p40.id(), d1);
         }
         assertEquals(2, ruleAdminService.count());
 
@@ -395,10 +426,10 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         assertThat(getMatchingRules(request)).isEqualTo(of(p30, p40));
 
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-        assertEquals(ALLOW, accessInfo.getGrant());
-        assertThat(accessInfo.getMatchingRules()).isEqualTo(of(p30.getId(), p40.getId()));
+        assertEquals(ALLOW, accessInfo.grant());
+        assertThat(accessInfo.matchingRules()).isEqualTo(of(p30.id(), p40.id()));
 
-        assertThat(accessInfo.getAllowedStyles()).isEmpty();
+        assertThat(accessInfo.allowedStyles()).isEmpty();
     }
 
     @Test
@@ -496,38 +527,36 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
         Rule r20 = insert(20, "auth00", null, null, null, null, null, "w1", null, ALLOW);
 
         AccessInfo accessInfo = authorizationService.getAccessInfo(request);
-        assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
-        assertThat(accessInfo.getMatchingRules()).isEqualTo(of(r20.getId()));
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.matchingRules()).isEqualTo(of(r20.id()));
 
         accessInfo = authorizationService.getAccessInfo(fullRequest);
-        assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
-        assertThat(accessInfo.getMatchingRules()).isEqualTo(of(r10.getId(), r20.getId()));
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.matchingRules()).isEqualTo(of(r10.id(), r20.id()));
 
         AdminAccessInfo adminAuth = authorizationService.getAdminAuthorization(adminReq);
-        assertThat(adminAuth.isAdmin()).isFalse();
+        assertThat(adminAuth.admin()).isFalse();
 
-        AdminRule userAdminRule = insert(AdminRule.user().withPriority(20).withUsername(request.getUser()));
-
-        accessInfo = authorizationService.getAccessInfo(fullRequest);
-        assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
-        assertThat(accessInfo.getMatchingRules()).isEqualTo(of(r10.getId(), r20.getId()));
-
-        adminAuth = authorizationService.getAdminAuthorization(adminReq);
-        assertThat(adminAuth.isAdmin()).isFalse();
-        assertThat(adminAuth.getMatchingAdminRule()).isEqualTo(userAdminRule.getId());
-
-        AdminRule adminRule = adminruleAdminService.insert(AdminRule.admin()
-                .withPriority(10)
-                .withUsername(request.getUser())
-                .withWorkspace(request.getWorkspace()));
+        AdminRule userAdminRule = insert(AdminRule.user().withPriority(20).withUsername(request.user()));
 
         accessInfo = authorizationService.getAccessInfo(fullRequest);
-        assertThat(accessInfo.getGrant()).isEqualTo(ALLOW);
-        assertThat(accessInfo.getMatchingRules()).isEqualTo(of(r10.getId(), r20.getId()));
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.matchingRules()).isEqualTo(of(r10.id(), r20.id()));
 
         adminAuth = authorizationService.getAdminAuthorization(adminReq);
-        assertThat(adminAuth.isAdmin()).isTrue();
-        assertThat(adminAuth.getMatchingAdminRule()).isEqualTo(adminRule.getId());
+        assertThat(adminAuth.admin()).isFalse();
+        assertThat(adminAuth.matchingAdminRule()).isEqualTo(userAdminRule.id());
+
+        AdminRule adminRule = adminruleAdminService.insert(
+                AdminRule.admin().withPriority(10).withUsername(request.user()).withWorkspace(request.workspace()));
+
+        accessInfo = authorizationService.getAccessInfo(fullRequest);
+        assertThat(accessInfo.grant()).isEqualTo(ALLOW);
+        assertThat(accessInfo.matchingRules()).isEqualTo(of(r10.id(), r20.id()));
+
+        adminAuth = authorizationService.getAdminAuthorization(adminReq);
+        assertThat(adminAuth.admin()).isTrue();
+        assertThat(adminAuth.matchingAdminRule()).isEqualTo(adminRule.id());
     }
 
     @Test
@@ -594,10 +623,10 @@ public abstract class AuthorizationServiceTest extends BaseAuthorizationServiceT
     private void assertMatchingRules(AccessRequest request, Integer... expectedPriorities) {
         List<Rule> rules = authorizationService.getMatchingRules(request);
 
-        List<Long> pri = rules.stream().map(r -> r.getPriority()).sorted().collect(Collectors.toList());
+        List<Long> pri = rules.stream().map(Rule::priority).sorted().toList();
         List<Long> exp = Arrays.asList(expectedPriorities).stream()
-                .map(i -> i.longValue())
-                .collect(Collectors.toList());
+                .map(Integer::longValue)
+                .toList();
         assertEquals(exp, pri, "Bad rule set selected for filter " + request);
     }
 

@@ -5,7 +5,7 @@
 package org.geoserver.acl.persistence.jpa.it;
 
 import org.geoserver.acl.authorization.AuthorizationService;
-import org.geoserver.acl.authorization.AuthorizationServiceGeomTest;
+import org.geoserver.acl.authorization.impl.AuthorizationServiceGeomTest;
 import org.geoserver.acl.config.persistence.jpa.JPAIntegrationConfiguration;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.rules.RuleAdminService;
@@ -29,7 +29,7 @@ class AuthorizationServiceImplJpaGeomIT extends AuthorizationServiceGeomTest {
 
     @Override
     @BeforeEach
-    protected void setUp() throws Exception {
+    protected void setUp() {
         support.setUp();
         super.setUp();
     }

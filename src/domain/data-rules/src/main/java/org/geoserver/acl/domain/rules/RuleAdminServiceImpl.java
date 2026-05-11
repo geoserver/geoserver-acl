@@ -12,12 +12,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.geoserver.acl.domain.filter.RuleQuery;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Domain service for managing data access {@link Rule}s.
@@ -52,8 +52,7 @@ public class RuleAdminServiceImpl implements RuleAdminService {
 
     @Override
     public Rule insert(@NonNull Rule rule, @NonNull InsertPosition position) {
-        if (null != rule.getId())
-            throw new IllegalArgumentException("a new Rule must not have id, got " + rule.getId());
+        if (null != rule.id()) throw new IllegalArgumentException("a new Rule must not have id, got " + rule.id());
 
         rule = sanitizeFields(rule);
         Rule created = ruleRepository.create(rule, position);
@@ -64,7 +63,7 @@ public class RuleAdminServiceImpl implements RuleAdminService {
 
     @Override
     public Rule update(@NonNull Rule rule) {
-        if (null == rule.getId()) {
+        if (null == rule.id()) {
             throw new IllegalArgumentException("Rule has no id");
         }
 
@@ -94,18 +93,23 @@ public class RuleAdminServiceImpl implements RuleAdminService {
      * AuthorizationService}.
      */
     protected Rule sanitizeFields(Rule rule) {
-        if (rule.getPriority() < 0)
-            throw new IllegalArgumentException("Negative priority is not allowed: " + rule.getPriority());
+        if (rule.priority() < 0) {
+            throw new IllegalArgumentException("Negative priority is not allowed: " + rule.priority());
+        }
+        RuleIdentifier identifier = rule.identifier();
+        String service = upperCase(identifier.service());
+        String request = upperCase(identifier.request());
 
-        // read class' javadoc
-        RuleIdentifier identifier = rule.getIdentifier();
-        if (identifier.getService() != null) {
-            identifier = identifier.withService(identifier.getService().toUpperCase());
+        if (service != null || request != null) {
+            identifier =
+                    identifier.toBuilder().service(service).request(request).build();
+            rule = rule.withIdentifier(identifier);
         }
-        if (identifier.getRequest() != null) {
-            identifier = identifier.withRequest(identifier.getRequest().toUpperCase());
-        }
-        return rule.withIdentifier(identifier);
+        return rule;
+    }
+
+    private @Nullable String upperCase(@Nullable String s) {
+        return s == null ? null : s.toUpperCase();
     }
 
     @Override
@@ -140,7 +144,7 @@ public class RuleAdminServiceImpl implements RuleAdminService {
     @Override
     public Optional<Rule> getRule(@NonNull RuleFilter filter) throws IllegalArgumentException {
         RuleQuery<RuleFilter> query = RuleQuery.of(filter).setLimit(2);
-        List<Rule> found = ruleRepository.findAll(query).collect(Collectors.toList());
+        List<Rule> found = ruleRepository.findAll(query).toList();
         if (found.size() > 1) {
             throw new IllegalArgumentException("Unexpected rule count for filter " + filter + " : " + found.size());
         }
@@ -180,8 +184,7 @@ public class RuleAdminServiceImpl implements RuleAdminService {
 
     @Override
     public Optional<LayerDetails> getLayerDetails(@NonNull Rule rule) {
-        Objects.requireNonNull(rule.getId());
-        return getLayerDetails(rule.getId());
+        return getLayerDetails(Objects.requireNonNull(rule.id()));
     }
 
     @Override
@@ -203,7 +206,7 @@ public class RuleAdminServiceImpl implements RuleAdminService {
 
     @Override
     public Set<String> getAllowedStyles(@NonNull String ruleId) {
-        return getLayerDetails(ruleId).map(LayerDetails::getAllowedStyles).orElse(Set.of());
+        return getLayerDetails(ruleId).map(LayerDetails::allowedStyles).orElse(Set.of());
     }
 
     // ==========================================================================

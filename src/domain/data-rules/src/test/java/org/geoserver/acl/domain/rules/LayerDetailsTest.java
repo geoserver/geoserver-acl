@@ -5,34 +5,41 @@
 package org.geoserver.acl.domain.rules;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.HashSet;
 import java.util.Set;
-import org.junit.jupiter.api.BeforeEach;
+import org.geoserver.acl.domain.rules.LayerAttribute.AccessType;
 import org.junit.jupiter.api.Test;
 
 class LayerDetailsTest {
-
-    @BeforeEach
-    void setUp() throws Exception {}
 
     @Test
     void testBuilder_allowedStyles_immutable() {
         LayerDetails ld = LayerDetails.builder()
                 .allowedStyles(new HashSet<>(Set.of("s1", "s2")))
                 .build();
-        assertThat(ld.getAllowedStyles()).isEqualTo(Set.of("s1", "s2"));
-        assertThrows(
-                UnsupportedOperationException.class, () -> ld.getAllowedStyles().add("nono"));
+        Set<String> allowedStyles = ld.allowedStyles();
+        assertThat(allowedStyles).isEqualTo(Set.of("s1", "s2"));
+        assertThatThrownBy(() -> allowedStyles.add("nono")).isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
     void testBuilder_attributes_immutable() {
-        Set<LayerAttribute> atts = Set.of(LayerAttribute.read().withName("att1"));
+        LayerAttribute ro = LayerAttribute.builder()
+                .name("att1")
+                .access(AccessType.READONLY)
+                .build();
+        LayerAttribute rw = LayerAttribute.builder()
+                .name("att2")
+                .access(AccessType.READWRITE)
+                .build();
+
+        Set<LayerAttribute> atts = Set.of(ro);
         LayerDetails ld = LayerDetails.builder().attributes(new HashSet<>(atts)).build();
-        assertThat(ld.getAttributes()).isEqualTo(atts);
-        assertThrows(UnsupportedOperationException.class, () -> ld.getAttributes()
-                .add(LayerAttribute.write().withName("att2")));
+        Set<LayerAttribute> attributes = ld.attributes();
+        assertThat(attributes).isEqualTo(atts);
+
+        assertThatThrownBy(() -> attributes.add(rw)).isInstanceOf(UnsupportedOperationException.class);
     }
 }

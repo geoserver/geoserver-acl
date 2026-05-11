@@ -6,8 +6,6 @@ package org.geoserver.acl.persistence.jpa.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedBy;
@@ -17,10 +15,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 @Data
 @MappedSuperclass
-public abstract class Auditable implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 141481953116476081L;
+public abstract class Auditable {
 
     @CreatedBy
     @Column(updatable = false, nullable = true)
@@ -37,4 +32,13 @@ public abstract class Auditable implements Serializable {
     @LastModifiedDate
     @Column(updatable = true, nullable = true)
     private LocalDateTime lastModifiedDate;
+
+    protected Auditable() {}
+
+    protected Auditable(Auditable other) {
+        this.createdBy = other.createdBy;
+        this.createdDate = other.createdDate;
+        this.lastModifiedBy = other.lastModifiedBy;
+        this.lastModifiedDate = other.lastModifiedDate;
+    }
 }

@@ -44,9 +44,9 @@ class RuleRepositoryClientAdaptor implements RuleRepository {
 
     @Override
     public Rule save(Rule rule) {
-        Objects.requireNonNull(rule.getId(), "Rule has no id");
+        Objects.requireNonNull(rule.id(), "Rule has no id");
         try {
-            String id = rule.getId();
+            String id = rule.id();
             org.geoserver.acl.webapi.v1.model.Rule apiRule = mapper.toApi(rule);
 
             org.geoserver.acl.webapi.v1.model.Rule response;
@@ -61,7 +61,7 @@ class RuleRepositoryClientAdaptor implements RuleRepository {
 
     @Override
     public Rule create(Rule rule, InsertPosition position) {
-        if (null != rule.getId()) throw new IllegalArgumentException("Rule must have no id");
+        if (null != rule.id()) throw new IllegalArgumentException("Rule must have no id");
         org.geoserver.acl.webapi.v1.model.Rule response;
         try {
             org.geoserver.acl.webapi.v1.model.Rule apiRule = mapper.toApi(rule);

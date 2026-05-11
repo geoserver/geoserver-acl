@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.geoserver.acl.domain.filter.RuleQuery;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +33,7 @@ class RuleAdminServiceImplTest {
     private RuleAdminService service;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         repository = mock(RuleRepository.class);
         service = new RuleAdminServiceImpl(repository);
     }
@@ -48,10 +47,10 @@ class RuleAdminServiceImplTest {
     void insertRule() {
         Rule rule = Rule.allow();
         Rule expected = rule.withId("1");
-        when(repository.create(eq(rule), eq(InsertPosition.FIXED))).thenReturn(expected);
+        when(repository.create(rule, InsertPosition.FIXED)).thenReturn(expected);
 
         Rule created = service.insert(rule);
-        verify(repository, times(1)).create(eq(rule), eq(InsertPosition.FIXED));
+        verify(repository, times(1)).create(rule, InsertPosition.FIXED);
         verifyNoMoreInteractions(repository);
         assertSame(expected, created);
     }
@@ -69,10 +68,10 @@ class RuleAdminServiceImplTest {
         Rule expected = rule.withService("WMS").withRequest("GETCAPABILITIES");
         Rule returned = expected.withId("1");
 
-        when(repository.create(eq(expected), eq(InsertPosition.FIXED))).thenReturn(returned);
+        when(repository.create(expected, InsertPosition.FIXED)).thenReturn(returned);
 
         assertSame(returned, service.insert(rule));
-        verify(repository, times(1)).create(eq(expected), eq(InsertPosition.FIXED));
+        verify(repository, times(1)).create(expected, InsertPosition.FIXED);
         verifyNoMoreInteractions(repository);
     }
 
@@ -80,12 +79,12 @@ class RuleAdminServiceImplTest {
     void insertRuleInsertPosition() {
         Rule rule = Rule.allow();
 
-        when(repository.create(eq(rule), eq(InsertPosition.FROM_START))).thenReturn(rule.withId("1"));
+        when(repository.create(rule, InsertPosition.FROM_START)).thenReturn(rule.withId("1"));
 
         Rule created = service.insert(rule, InsertPosition.FROM_START);
         assertThat(created).isEqualTo(rule.withId("1"));
 
-        verify(repository, times(1)).create(eq(rule), eq(InsertPosition.FROM_START));
+        verify(repository, times(1)).create(rule, InsertPosition.FROM_START);
         verifyNoMoreInteractions(repository);
     }
 
@@ -113,10 +112,10 @@ class RuleAdminServiceImplTest {
         Rule rule = Rule.allow().withId("1").withPriority(10).withService("wms").withRequest("getcapabilities");
         Rule expected = rule.withService("WMS").withRequest("GETCAPABILITIES");
 
-        when(repository.save(eq(expected))).thenReturn(expected);
+        when(repository.save(expected)).thenReturn(expected);
 
         service.update(rule);
-        verify(repository, times(1)).save(eq(expected));
+        verify(repository, times(1)).save(expected);
         verifyNoMoreInteractions(repository);
     }
 
@@ -136,7 +135,7 @@ class RuleAdminServiceImplTest {
     @Test
     void swapPriority() {
         service.swapPriority("1", "2");
-        verify(repository, times(1)).swap(eq("1"), eq("2"));
+        verify(repository, times(1)).swap("1", "2");
         verifyNoMoreInteractions(repository);
     }
 
@@ -166,7 +165,7 @@ class RuleAdminServiceImplTest {
         List<Rule> expected = List.of(Rule.allow(), Rule.deny(), Rule.limit());
         when(repository.findAll()).thenReturn(expected.stream());
 
-        List<Rule> actual = service.getAll().collect(Collectors.toList());
+        List<Rule> actual = service.getAll().toList();
         verify(repository, times(1)).findAll();
         verifyNoMoreInteractions(repository);
         assertThat(actual).isEqualTo(expected);
@@ -185,8 +184,8 @@ class RuleAdminServiceImplTest {
 
         when(repository.findAll(query)).thenReturn(expected.stream());
 
-        List<Rule> actual = service.getAll(query).collect(Collectors.toList());
-        verify(repository, times(1)).findAll(eq(query));
+        List<Rule> actual = service.getAll(query).toList();
+        verify(repository, times(1)).findAll(query);
         verifyNoMoreInteractions(repository);
         assertThat(actual).isEqualTo(expected);
     }
@@ -201,7 +200,7 @@ class RuleAdminServiceImplTest {
         RuleFilter filter = new RuleFilter().setLayer("states");
         RuleQuery<RuleFilter> query = RuleQuery.of(filter).setLimit(2);
 
-        when(repository.findAll(eq(query))).thenReturn(List.of(Rule.allow(), Rule.deny()).stream());
+        when(repository.findAll(query)).thenReturn(List.of(Rule.allow(), Rule.deny()).stream());
 
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> service.getRule(filter));
         assertThat(expected.getMessage()).contains("Unexpected rule count for filter");
@@ -212,7 +211,7 @@ class RuleAdminServiceImplTest {
         RuleFilter filter = new RuleFilter().setLayer("states");
         RuleQuery<RuleFilter> query = RuleQuery.of(filter).setLimit(2);
 
-        when(repository.findAll(eq(query))).thenReturn(Stream.of());
+        when(repository.findAll(query)).thenReturn(Stream.of());
         assertThat(service.getRule(filter)).isEmpty();
     }
 
@@ -222,7 +221,7 @@ class RuleAdminServiceImplTest {
         RuleQuery<RuleFilter> query = RuleQuery.of(filter).setLimit(2);
 
         Rule match = Rule.allow().withId("10L");
-        when(repository.findAll(eq(query))).thenReturn(Stream.of(match));
+        when(repository.findAll(query)).thenReturn(Stream.of(match));
 
         assertThat(service.getRule(filter)).isPresent().get().isEqualTo(match);
     }
@@ -230,10 +229,10 @@ class RuleAdminServiceImplTest {
     @Test
     void getRuleByPriority() {
         Optional<Rule> expected = Optional.of(Rule.deny());
-        when(repository.findOneByPriority(eq(0L))).thenReturn(expected);
+        when(repository.findOneByPriority(0L)).thenReturn(expected);
 
         Optional<Rule> ret = service.getRuleByPriority(0L);
-        verify(repository, times(1)).findOneByPriority(eq(0L));
+        verify(repository, times(1)).findOneByPriority(0L);
         assertThat(ret).isSameAs(expected);
     }
 
@@ -249,9 +248,9 @@ class RuleAdminServiceImplTest {
     void countFilter() {
         RuleFilter filter = new RuleFilter().setLayer("L1");
 
-        when(repository.count(eq(filter))).thenReturn(1_000_000);
+        when(repository.count(filter)).thenReturn(1_000_000);
         assertThat(service.count(filter)).isEqualTo(1_000_000);
-        verify(repository, times(1)).count(eq(filter));
+        verify(repository, times(1)).count(filter);
         verifyNoMoreInteractions(repository);
     }
 
@@ -276,10 +275,10 @@ class RuleAdminServiceImplTest {
         Rule rule = withNullId.withId("100");
         LayerDetails ld = LayerDetails.builder().allowedStyles(Set.of("s1")).build();
 
-        when(repository.findLayerDetailsByRuleId(eq("100"))).thenReturn(Optional.of(ld));
+        when(repository.findLayerDetailsByRuleId("100")).thenReturn(Optional.of(ld));
 
         Optional<LayerDetails> actual = service.getLayerDetails(rule);
-        verify(repository, times(1)).findLayerDetailsByRuleId(eq("100"));
+        verify(repository, times(1)).findLayerDetailsByRuleId("100");
         assertThat(actual).isPresent().get().isEqualTo(ld);
     }
 
@@ -287,10 +286,10 @@ class RuleAdminServiceImplTest {
     void getLayerDetailsLong() {
         LayerDetails ld = LayerDetails.builder().allowedStyles(Set.of("s1")).build();
 
-        when(repository.findLayerDetailsByRuleId(eq("100"))).thenReturn(Optional.of(ld));
+        when(repository.findLayerDetailsByRuleId("100")).thenReturn(Optional.of(ld));
 
         Optional<LayerDetails> actual = service.getLayerDetails("100");
-        verify(repository, times(1)).findLayerDetailsByRuleId(eq("100"));
+        verify(repository, times(1)).findLayerDetailsByRuleId("100");
         assertThat(actual).isPresent().get().isEqualTo(ld);
     }
 
@@ -313,18 +312,18 @@ class RuleAdminServiceImplTest {
         clearInvocations(repository);
 
         service.setAllowedStyles("1", Set.of("s1", "s2"));
-        verify(repository, times(1)).setAllowedStyles(eq("1"), eq(Set.of("s1", "s2")));
+        verify(repository, times(1)).setAllowedStyles("1", Set.of("s1", "s2"));
         verifyNoMoreInteractions(repository);
     }
 
     @Test
     void getAllowedStyles() {
         LayerDetails ld = LayerDetails.builder().allowedStyles(Set.of("s1")).build();
-        when(repository.findLayerDetailsByRuleId(eq("1"))).thenReturn(Optional.of(ld));
+        when(repository.findLayerDetailsByRuleId("1")).thenReturn(Optional.of(ld));
 
         Set<String> actual = service.getAllowedStyles("1");
-        verify(repository, times(1)).findLayerDetailsByRuleId(eq("1"));
+        verify(repository, times(1)).findLayerDetailsByRuleId("1");
         verifyNoMoreInteractions(repository);
-        assertThat(actual).isEqualTo(ld.getAllowedStyles());
+        assertThat(actual).isEqualTo(ld.allowedStyles());
     }
 }

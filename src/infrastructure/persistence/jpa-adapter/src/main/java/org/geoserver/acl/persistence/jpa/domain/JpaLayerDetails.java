@@ -19,8 +19,6 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.UniqueConstraint;
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,10 +34,7 @@ import org.hibernate.annotations.FetchMode;
 @Data
 @Accessors(chain = true)
 @Embeddable
-public class JpaLayerDetails implements Serializable, Cloneable {
-
-    @Serial
-    private static final long serialVersionUID = 1;
+public class JpaLayerDetails {
 
     public enum LayerType {
         VECTOR,
@@ -91,22 +86,20 @@ public class JpaLayerDetails implements Serializable, Cloneable {
     @Fetch(FetchMode.SELECT)
     private Set<JpaLayerAttribute> attributes;
 
-    public @Override JpaLayerDetails clone() {
-        JpaLayerDetails clone;
+    public JpaLayerDetails() {}
 
-        try {
-            clone = (JpaLayerDetails) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-        if (allowedStyles != null) {
-            clone.allowedStyles = new HashSet<>(allowedStyles);
-        }
-        if (attributes != null) {
-            clone.attributes =
-                    attributes.stream().map(JpaLayerAttribute::clone).collect(Collectors.toCollection(HashSet::new));
-        }
-        return clone;
+    public JpaLayerDetails(JpaLayerDetails other) {
+        this.type = other.type;
+        this.defaultStyle = other.defaultStyle;
+        this.cqlFilterRead = other.cqlFilterRead;
+        this.cqlFilterWrite = other.cqlFilterWrite;
+        this.area = other.area;
+        this.spatialFilterType = other.spatialFilterType;
+        this.catalogMode = other.catalogMode;
+        this.allowedStyles = other.allowedStyles == null ? null : new HashSet<>(other.allowedStyles);
+        this.attributes = other.attributes == null
+                ? null
+                : other.attributes.stream().map(JpaLayerAttribute::new).collect(Collectors.toCollection(HashSet::new));
     }
 
     public boolean isEmpty() {

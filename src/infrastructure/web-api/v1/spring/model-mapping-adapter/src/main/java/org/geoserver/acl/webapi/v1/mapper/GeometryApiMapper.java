@@ -71,10 +71,6 @@ interface GeometryApiMapper {
 
     default String geolatteToWKT(org.geolatte.geom.Geometry<? extends Position> geom) {
         if (null == geom) return null;
-        // int srid = geom.getSRID();
-        String wkt = Wkt.toWkt(geom); // already has SRID prefix, uses postgis EWKT dialect
-        // if (0 == srid) srid = 4326;
-        // return String.format("SRID=%d;%s", srid, wkt);
-        return wkt;
+        return Wkt.toWkt(geom);
     }
 }

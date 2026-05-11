@@ -10,24 +10,62 @@ package org.geoserver.acl.authorization;
 import java.util.List;
 import java.util.Set;
 import lombok.Builder;
-import lombok.Builder.Default;
-import lombok.NonNull;
-import lombok.Value;
 import lombok.With;
 import org.geolatte.geom.Geometry;
 import org.geoserver.acl.domain.rules.CatalogMode;
 import org.geoserver.acl.domain.rules.GrantType;
 import org.geoserver.acl.domain.rules.LayerAttribute;
+import org.geoserver.acl.domain.rules.SpatialFilterType;
+import org.jspecify.annotations.Nullable;
 
 /**
- * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of
- *         GeoFence)
+ * Resolved data access decision produced by
+ * {@link AuthorizationService#getAccessInfo(AccessRequest)}.
+ *
+ * <p>Carries the effective grant for an {@link AccessRequest} together with the restrictions that
+ * apply to it: spatial intersect and clip areas, catalog mode, default and allowed styles, read
+ * and write CQL filters, attribute-level permissions, and the identifiers of the rules that
+ * contributed to the decision. Two well-known constants, {@link #ALLOW_ALL} and {@link #DENY_ALL},
+ * represent unrestricted access and full denial.
+ *
+ * @param grant the effective {@link GrantType} for the request; {@link GrantType#ALLOW} permits
+ *     access subject to the other restrictions, {@link GrantType#DENY} forbids it.
+ * @param intersectArea the allowed area applied with {@link SpatialFilterType#INTERSECT} semantics,
+ *     returning whole features that intersect this geometry. {@code null} when no intersect
+ *     spatial restriction applies.
+ * @param clipArea the allowed area applied with {@link SpatialFilterType#CLIP} semantics, clipping
+ *     features to this geometry's boundary. {@code null} when no clip spatial restriction
+ *     applies.
+ * @param catalogMode the {@link CatalogMode} controlling how the catalog responds for the targeted
+ *     resource (e.g., HIDE, CHALLENGE, MIXED). {@code null} when no catalog mode is enforced.
+ * @param defaultStyle the name of the default style to render the layer with. {@code null} when
+ *     no default style is imposed.
+ * @param cqlFilterRead the CQL filter to apply to read operations for row-level security.
+ *     {@code null} when no read filter applies.
+ * @param cqlFilterWrite the CQL filter to apply to write operations for row-level security.
+ *     {@code null} when no write filter applies.
+ * @param attributes the per-attribute read/write permissions ({@link LayerAttribute}) that
+ *     restrict feature attribute visibility; empty when no attribute-level restriction applies.
+ * @param allowedStyles the set of style names the user is allowed to use for the layer; empty
+ *     when all styles are allowed.
+ * @param matchingRules the identifiers of the {@link org.geoserver.acl.domain.rules.Rule}s that
+ *     contributed to this decision, in evaluation order.
+ * @author Emanuele Tajariol (etj at geo-solutions.it) (originally as part of GeoFence)
  * @author Gabriel Roldan - Camptocamp
  */
-@Value
 @With
 @Builder(toBuilder = true, builderClassName = "Builder")
-public class AccessInfo {
+public record AccessInfo(
+        GrantType grant,
+        @Nullable Geometry<?> intersectArea,
+        @Nullable Geometry<?> clipArea,
+        @Nullable CatalogMode catalogMode,
+        @Nullable String defaultStyle,
+        @Nullable String cqlFilterRead,
+        @Nullable String cqlFilterWrite,
+        Set<LayerAttribute> attributes,
+        Set<String> allowedStyles,
+        List<String> matchingRules) {
 
     /** Default "allow everything" AccessInfo */
     public static final AccessInfo ALLOW_ALL =
@@ -37,29 +75,14 @@ public class AccessInfo {
     public static final AccessInfo DENY_ALL =
             AccessInfo.builder().grant(GrantType.DENY).build();
 
-    /** The resulting grant: allow or deny. */
-    @Default
-    private GrantType grant = GrantType.DENY;
-
-    private Geometry<?> intersectArea;
-
-    private Geometry<?> clipArea;
-
-    private CatalogMode catalogMode;
-
-    private String defaultStyle;
-
-    private String cqlFilterRead;
-
-    private String cqlFilterWrite;
-
-    private Set<LayerAttribute> attributes;
-
-    private Set<String> allowedStyles;
-
-    @Default
-    @NonNull
-    private List<String> matchingRules = List.of();
+    public AccessInfo {
+        if (grant == null) {
+            grant = GrantType.DENY;
+        }
+        attributes = attributes == null ? Set.of() : Set.copyOf(attributes);
+        allowedStyles = allowedStyles == null ? Set.of() : Set.copyOf(allowedStyles);
+        matchingRules = matchingRules == null ? List.of() : List.copyOf(matchingRules);
+    }
 
     @Override
     public String toString() {
@@ -68,34 +91,11 @@ public class AccessInfo {
         if (intersectArea != null) sb.append(", intersectArea: yes");
         if (clipArea != null) sb.append(", clipArea: yes");
         if (defaultStyle != null) sb.append(", def style: ").append(defaultStyle);
-        if (null != allowedStyles && !allowedStyles.isEmpty())
-            sb.append("allowed styles: ").append(allowedStyles);
+        if (!allowedStyles.isEmpty()) sb.append("allowed styles: ").append(allowedStyles);
         if (cqlFilterRead != null) sb.append(", cql read filter: present");
         if (cqlFilterWrite != null) sb.append(", cql write filter: present");
-        if (null != attributes && !attributes.isEmpty())
-            sb.append(", attributes: ").append(attributes.size());
+        if (!attributes.isEmpty()) sb.append(", attributes: ").append(attributes.size());
         sb.append(", matchingRules: ").append(matchingRules);
         return sb.append("]").toString();
-    }
-
-    public static class Builder {
-        // explicitly implement only mutators that need to ensure immutability
-        // Ignore squid:S1068, private field required for the lombok-generated build()
-        // method
-        @SuppressWarnings("squid:S1068")
-        private Set<LayerAttribute> attributes = Set.of();
-
-        @SuppressWarnings("squid:S1068")
-        private Set<String> allowedStyles = Set.of();
-
-        public Builder attributes(Set<LayerAttribute> value) {
-            this.attributes = value == null ? null : Set.copyOf(value);
-            return this;
-        }
-
-        public Builder allowedStyles(Set<String> value) {
-            this.allowedStyles = value == null ? null : Set.copyOf(value);
-            return this;
-        }
     }
 }

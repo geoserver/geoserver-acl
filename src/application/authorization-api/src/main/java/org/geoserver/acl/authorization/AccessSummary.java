@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.geoserver.acl.domain.adminrules.AdminGrantType;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents the converged set of visible layer names of a specific workspace for for a {@link
@@ -49,7 +50,7 @@ public class AccessSummary {
 
     public static AccessSummary of(List<WorkspaceAccessSummary> workspaces) {
         Map<String, WorkspaceAccessSummary> summaries = new LinkedHashMap<>();
-        workspaces.forEach(ws -> summaries.put(ws.getWorkspace(), ws));
+        workspaces.forEach(ws -> summaries.put(ws.workspace(), ws));
         return new AccessSummary(summaries);
     }
 
@@ -62,35 +63,39 @@ public class AccessSummary {
     }
 
     public boolean hasAdminReadAccess(@NonNull String workspaceName) {
-        boolean user = workspaceSummaries.getOrDefault(ANY, HIDE_ALL).isUser();
-        return user
-                ? user
-                : workspaceSummaries.getOrDefault(workspaceName, HIDE_ALL).isUser();
+        boolean userForAllWorkspaces =
+                workspaceSummaries.getOrDefault(ANY, HIDE_ALL).isUser();
+        return userForAllWorkspaces
+                || workspaceSummaries.getOrDefault(workspaceName, HIDE_ALL).isUser();
     }
 
     public boolean hasAdminWriteAccess(@NonNull String workspaceName) {
-        boolean admin = workspaceSummaries.getOrDefault(ANY, HIDE_ALL).isAdmin();
-        return admin
-                ? admin
-                : workspaceSummaries.getOrDefault(workspaceName, HIDE_ALL).isAdmin();
+        boolean adminForAllWorkspaces =
+                workspaceSummaries.getOrDefault(ANY, HIDE_ALL).isAdmin();
+        return adminForAllWorkspaces
+                || workspaceSummaries.getOrDefault(workspaceName, HIDE_ALL).isAdmin();
     }
 
-    public boolean canSeeLayer(String workspaceName, @NonNull String layerName) {
-        if (null == workspaceName) workspaceName = WorkspaceAccessSummary.NO_WORKSPACE;
+    public boolean canSeeLayer(@Nullable String workspaceName, @NonNull String layerName) {
+        if (null == workspaceName) {
+            workspaceName = WorkspaceAccessSummary.NO_WORKSPACE;
+        }
         WorkspaceAccessSummary summary = summary(workspaceName);
         return summary.canSeeLayer(layerName);
     }
 
     private WorkspaceAccessSummary summary(@NonNull String workspaceName) {
         WorkspaceAccessSummary summary = workspaceSummaries.get(workspaceName);
-        if (null == summary) summary = workspaceSummaries.getOrDefault(ANY, HIDE_ALL);
+        if (null == summary) {
+            summary = workspaceSummaries.getOrDefault(ANY, HIDE_ALL);
+        }
         return summary;
     }
 
     public Set<String> visibleWorkspaces() {
         return workspaceSummaries.values().stream()
                 .filter(WorkspaceAccessSummary::visible)
-                .map(WorkspaceAccessSummary::getWorkspace)
+                .map(WorkspaceAccessSummary::workspace)
                 .filter(name -> !NO_WORKSPACE.equals(name))
                 .collect(Collectors.toCollection(TreeSet::new));
     }
@@ -109,7 +114,7 @@ public class AccessSummary {
 
     public boolean hasAdminRightsToAnyWorkspace() {
         return workspaceSummaries.values().stream()
-                .map(WorkspaceAccessSummary::getAdminAccess)
+                .map(WorkspaceAccessSummary::adminAccess)
                 .anyMatch(AdminGrantType.ADMIN::equals);
     }
 }

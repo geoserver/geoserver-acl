@@ -32,15 +32,15 @@ import org.springframework.test.context.ActiveProfiles;
         })
 @ActiveProfiles("test") // see config props in src/test/resource/application-test.yaml
 @DirtiesContext
-public class RuleAdminServiceJpaIT extends RuleAdminServiceIT {
+class RuleAdminServiceJpaIT extends RuleAdminServiceIT {
 
     private @Autowired JpaRuleRepository jpaRepo;
     private @Autowired RuleEventCollector eventCollector;
-    private @Autowired RuleAdminService service;
+    private @Autowired RuleAdminService ruleService;
 
     @Override
     @BeforeEach
-    protected void setUp() throws Exception {
+    protected void setUp() {
         jpaRepo.deleteAll();
         eventCollector.getRuleEvents().clear();
         eventCollector.getAdminRuleEvents().clear();
@@ -49,7 +49,7 @@ public class RuleAdminServiceJpaIT extends RuleAdminServiceIT {
 
     @Override
     protected RuleAdminService getRuleAdminService() {
-        return service;
+        return ruleService;
     }
 
     @Test
@@ -58,18 +58,17 @@ public class RuleAdminServiceJpaIT extends RuleAdminServiceIT {
         List<RuleEvent> captured = eventCollector.getRuleEvents();
 
         Rule allow = service.insert(Rule.allow());
-        assertThat(captured.size()).isEqualTo(1);
-        assertThat(captured).contains(created(allow));
+        assertThat(captured).hasSize(1).contains(created(allow));
 
         captured.clear();
         Rule limit1 = service.insert(Rule.limit().withLayer("l1"));
         Rule limit2 = service.insert(Rule.limit().withLayer("l2"));
         Rule limit3 = service.insert(Rule.limit().withLayer("l3"));
-        assertThat(captured.size()).isEqualTo(3);
-
-        assertThat(captured).contains(created(limit1));
-        assertThat(captured).contains(created(limit2));
-        assertThat(captured).contains(created(limit3));
+        assertThat(captured)
+                .hasSize(3)
+                .contains(created(limit1))
+                .contains(created(limit2))
+                .contains(created(limit3));
     }
 
     @Test

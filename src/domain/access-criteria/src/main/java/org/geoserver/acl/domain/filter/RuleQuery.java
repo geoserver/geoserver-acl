@@ -52,47 +52,47 @@ public class RuleQuery<F extends Filter<?>> {
     /**
      * Creates an empty query.
      *
-     * @param <RF> the filter type
+     * @param <F> the filter type
      * @return new RuleQuery with no filter or pagination
      */
-    public static <RF extends Filter<?>> RuleQuery<RF> of() {
-        return new RuleQuery<RF>();
+    public static <F extends Filter<?>> RuleQuery<F> of() {
+        return new RuleQuery<>();
     }
 
     /**
      * Creates a query with pagination.
      *
-     * @param <RF> the filter type
+     * @param <F> the filter type
      * @param limit max results
      * @param nextId continuation token from previous page
      * @return new RuleQuery
      */
-    public static <RF extends Filter<?>> RuleQuery<RF> of(Integer limit, String nextId) {
-        return new RuleQuery<RF>().setLimit(limit).setNextId(nextId);
+    public static <F extends Filter<?>> RuleQuery<F> of(Integer limit, String nextId) {
+        return new RuleQuery<F>().setLimit(limit).setNextId(nextId);
     }
 
     /**
      * Creates a query with a filter.
      *
-     * @param <RF> the filter type
+     * @param <F> the filter type
      * @param filter the filter
      * @return new RuleQuery
      */
-    public static <RF extends Filter<?>> RuleQuery<RF> of(RF filter) {
-        return new RuleQuery<RF>().setFilter(filter);
+    public static <F extends Filter<?>> RuleQuery<F> of(F filter) {
+        return new RuleQuery<F>().setFilter(filter);
     }
 
     /**
      * Creates a query with filter and pagination.
      *
-     * @param <RF> the filter type
+     * @param <F> the filter type
      * @param filter the filter
      * @param limit max results
      * @param nextId continuation token from previous page
      * @return new RuleQuery
      */
-    public static <RF extends Filter<?>> RuleQuery<RF> of(RF filter, Integer limit, String nextId) {
-        return new RuleQuery<RF>().setLimit(limit).setNextId(nextId).setFilter(filter);
+    public static <F extends Filter<?>> RuleQuery<F> of(F filter, Integer limit, String nextId) {
+        return new RuleQuery<F>().setLimit(limit).setNextId(nextId).setFilter(filter);
     }
 
     /**
