@@ -86,7 +86,10 @@ class AclSpringCloudBusAutoConfigurationIT {
 
     private ConfigurableApplicationContext app1Context;
     private ConfigurableApplicationContext app2Context;
+
+    @SuppressWarnings("unused")
     private EventCapture app1CapturedEvents;
+
     private EventCapture app2CapturedEvents;
 
     @BeforeEach

@@ -35,7 +35,7 @@ public class RequestBodyBufferingServletFilter implements jakarta.servlet.Filter
     }
 
     public static class RequestBodyBufferingServletRequest extends HttpServletRequestWrapper {
-        protected byte[] buffer;
+        protected byte[] cachedBuffer;
         protected ServletInputStream myStream;
 
         public RequestBodyBufferingServletRequest(HttpServletRequest request) {
@@ -50,7 +50,9 @@ public class RequestBodyBufferingServletFilter implements jakarta.servlet.Filter
                     return buffer.read();
                 }
 
-                public @Override void setReadListener(ReadListener readListener) {}
+                public @Override void setReadListener(ReadListener readListener) {
+                    // unused
+                }
 
                 public @Override boolean isReady() {
                     return true;
@@ -67,10 +69,10 @@ public class RequestBodyBufferingServletFilter implements jakarta.servlet.Filter
         }
 
         private ByteArrayInputStream getBuffer() throws IOException {
-            if (this.buffer == null) {
-                this.buffer = readFully(super.getInputStream());
+            if (this.cachedBuffer == null) {
+                this.cachedBuffer = readFully(super.getInputStream());
             }
-            return new ByteArrayInputStream(this.buffer);
+            return new ByteArrayInputStream(this.cachedBuffer);
         }
 
         private byte[] readFully(ServletInputStream inputStream) throws IOException {

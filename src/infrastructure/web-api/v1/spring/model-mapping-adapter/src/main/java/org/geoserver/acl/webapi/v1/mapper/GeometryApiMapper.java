@@ -16,6 +16,7 @@ import org.geoserver.acl.webapi.v1.model.Geom;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
+@SuppressWarnings("java:S1452") // wildcard types in return types
 interface GeometryApiMapper {
 
     Pattern pattern = Pattern.compile("((SRID=(\\d+))\\s*;)?\\s*(MULTIPOLYGON.*)");
@@ -52,7 +53,6 @@ interface GeometryApiMapper {
 
     default org.geolatte.geom.MultiPolygon<? extends Position> apiToMultiPolygon(
             Geometry<? extends Position> geometry) {
-        // Geometry<? extends Position> geometry = apiToGeometry(geom);
         if (geometry == null) return null;
         if (!(geometry instanceof org.geolatte.geom.MultiPolygon)) {
             throw new IllegalArgumentException(

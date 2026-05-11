@@ -30,6 +30,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EqualsAndHashCode(callSuper = true)
 @Entity(name = "Rule")
 @EntityListeners(AuditingEntityListener.class)
+@SuppressWarnings("java:S125") // commented out uniqueConstraints
 @Table(
         name = "acl_rule",
         // NOTE unique constraints don't work with null values, so all RuleIdentifier attributes

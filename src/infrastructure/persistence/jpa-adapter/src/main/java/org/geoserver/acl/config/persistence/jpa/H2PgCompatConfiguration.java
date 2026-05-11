@@ -43,6 +43,7 @@ public class H2PgCompatConfiguration {
      * on any database - only executes the DDL when H2 is detected.
      */
     @Bean
+    @SuppressWarnings("java:S2077") // formatted(className)
     SmartInitializingSingleton h2PgAdvisoryLockCompat(@Qualifier("authorizationDataSource") DataSource dataSource) {
         return () -> {
             try (Connection conn = dataSource.getConnection()) {

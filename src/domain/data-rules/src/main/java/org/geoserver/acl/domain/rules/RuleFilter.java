@@ -106,6 +106,7 @@ public class RuleFilter implements Filter<Rule> {
      *   <LI>any other string will match literally
      * </UL>
      */
+    @SuppressWarnings("java:S107") // too many args
     public RuleFilter(
             String userName,
             String groupName,

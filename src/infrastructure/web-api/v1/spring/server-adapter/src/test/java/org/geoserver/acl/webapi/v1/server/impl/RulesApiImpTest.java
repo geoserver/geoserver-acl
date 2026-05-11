@@ -5,7 +5,6 @@
 package org.geoserver.acl.webapi.v1.server.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doThrow;
@@ -31,9 +30,10 @@ import org.geoserver.acl.domain.rules.Rule;
 import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.geoserver.acl.domain.rules.RuleFilter;
 import org.geoserver.acl.domain.rules.RuleIdentifierConflictException;
+import org.geoserver.acl.webapi.v1.model.SetFilter;
+import org.geoserver.acl.webapi.v1.model.TextFilter;
 import org.geoserver.acl.webapi.v1.server.DataRulesApiDelegateImpl;
 import org.geoserver.acl.webapi.v1.server.DataRulesApiSupport;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -115,12 +115,44 @@ class RulesApiImpTest {
         return response.getBody().stream().map(support::toModel).toList();
     }
 
-    @Disabled("Filter mapping not yet implemented")
     @Test
     void testQueryRules() {
-        // org.geoserver.acl.webapi.v1.model.RuleFilter filter;
-        // api.queryRules(1, 10, 1000, filter);
-        fail("Not yet implemented");
+        org.geoserver.acl.webapi.v1.model.RuleFilter apiFilter = new org.geoserver.acl.webapi.v1.model.RuleFilter();
+        apiFilter.setUser(new TextFilter().value("alice"));
+        apiFilter.setRoles(new SetFilter().values(Set.of("ROLE_USER")));
+        apiFilter.setWorkspace(new TextFilter().value("ws1"));
+        apiFilter.setLayer(new TextFilter().value("layer1"));
+
+        RuleFilter expectedFilter = support.map(apiFilter);
+        RuleQuery<RuleFilter> expectedQuery = RuleQuery.of(expectedFilter);
+
+        List<Rule> expected = List.of(Rule.allow().withId("r1"), Rule.deny().withId("r2"));
+        when(rules.getAll(expectedQuery)).thenReturn(expected.stream());
+
+        List<Rule> actual = assertList(() -> api.queryRules(null, null, apiFilter), OK);
+        assertThat(actual).isEqualTo(expected);
+        verify(rules, times(1)).getAll(expectedQuery);
+    }
+
+    @Test
+    void testQueryRules_nullFilterMatchesAll() {
+        RuleQuery<RuleFilter> expectedQuery = RuleQuery.of((RuleFilter) null);
+        List<Rule> expected = List.of(Rule.allow().withId("r1"));
+        when(rules.getAll(expectedQuery)).thenReturn(expected.stream());
+
+        List<Rule> actual = assertList(() -> api.queryRules(null, null, null), OK);
+        assertThat(actual).isEqualTo(expected);
+        verify(rules, times(1)).getAll(expectedQuery);
+    }
+
+    @Test
+    void testQueryRules_propagatesBadRequest() {
+        when(rules.getAll(any())).thenThrow(new IllegalArgumentException("bad query"));
+
+        ResponseEntity<List<org.geoserver.acl.webapi.v1.model.Rule>> response = api.queryRules(null, null, null);
+        assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
+        assertThat(response.getHeaders().get("X-Reason")).singleElement();
+        assertThat(response.getHeaders().get("X-Reason").get(0)).contains("bad query");
     }
 
     @Test
@@ -151,10 +183,30 @@ class RulesApiImpTest {
         assertThat(api.countAllRules().getBody()).isEqualByComparingTo(37);
     }
 
-    @Disabled("Filter mapping not yet implemented")
     @Test
     void testCountRules() {
-        fail("Not yet implemented");
+        org.geoserver.acl.webapi.v1.model.RuleFilter apiFilter = new org.geoserver.acl.webapi.v1.model.RuleFilter();
+        apiFilter.setUser(new TextFilter().value("alice"));
+        apiFilter.setRoles(new SetFilter().values(Set.of("ROLE_USER")));
+        apiFilter.setWorkspace(new TextFilter().value("ws1"));
+
+        RuleFilter expectedFilter = support.map(apiFilter);
+        when(rules.count(expectedFilter)).thenReturn(42);
+
+        ResponseEntity<Integer> response = api.countRules(apiFilter);
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody()).isEqualByComparingTo(42);
+        verify(rules, times(1)).count(expectedFilter);
+    }
+
+    @Test
+    void testCountRules_nullFilterMatchesAll() {
+        when(rules.count((RuleFilter) null)).thenReturn(7);
+
+        ResponseEntity<Integer> response = api.countRules(null);
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody()).isEqualByComparingTo(7);
+        verify(rules, times(1)).count((RuleFilter) null);
     }
 
     @Test

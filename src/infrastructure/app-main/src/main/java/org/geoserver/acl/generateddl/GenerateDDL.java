@@ -17,6 +17,7 @@ import org.springframework.util.FileCopyUtils;
 
 @SpringBootApplication
 @Slf4j
+@SuppressWarnings({"java:S5443", "java:S106", "java:S899", "java:S4042", "java:S2696"})
 public class GenerateDDL implements CommandLineRunner {
 
     private static File tmpfile;
@@ -33,12 +34,14 @@ public class GenerateDDL implements CommandLineRunner {
 
         SpringApplication cliApp = new SpringApplication(GenerateDDL.class);
         cliApp.setEnvironment(environment);
-        cliApp.run(args);
-        System.exit(exitCode);
+        try {
+            cliApp.run(args);
+        } finally {
+            System.exit(exitCode);
+        }
     }
 
     @Override
-    @SuppressWarnings("java:S106")
     public void run(String... args) throws Exception {
         try (FileInputStream in = new FileInputStream(tmpfile)) {
             FileCopyUtils.copy(in, System.out);

@@ -12,6 +12,7 @@ import org.geoserver.acl.webapi.v1.model.AddressRangeFilter;
 import org.geoserver.acl.webapi.v1.model.AdminGrantType;
 import org.geoserver.acl.webapi.v1.model.SetFilter;
 import org.geoserver.acl.webapi.v1.model.TextFilter;
+import org.jspecify.annotations.Nullable;
 
 class RuleFilterApiMapper {
 
@@ -120,11 +121,12 @@ class RuleFilterApiMapper {
 
         if (source == null) return;
 
-        if (null != source.getIncludeDefault()) {
-            target.setIncludeDefault(source.getIncludeDefault().booleanValue());
+        @Nullable Boolean includeDefault = source.getIncludeDefault();
+        if (null != includeDefault) {
+            target.setIncludeDefault(includeDefault.booleanValue());
         }
-        if (null != source.getValues()) {
-            Set<String> values = source.getValues();
+        @Nullable Set<String> values = source.getValues();
+        if (null != values) {
             if (values.contains("*")) {
                 target.setType(SpecialFilterType.ANY);
             } else if (!values.isEmpty()) {

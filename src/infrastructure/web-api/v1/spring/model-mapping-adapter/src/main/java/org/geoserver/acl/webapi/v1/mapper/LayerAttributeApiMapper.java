@@ -34,8 +34,11 @@ abstract class LayerAttributeApiMapper {
                 .collect(Collectors.toSet());
     }
 
+    @SuppressWarnings("java:S1168") // we do need to return null if value is null
     Set<org.geoserver.acl.webapi.v1.model.LayerAttribute> wrapAttributes(Set<LayerAttribute> value) {
-        if (value == null || value.isEmpty()) return null;
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
 
         return value.stream().map(this::map).collect(Collectors.toSet());
     }

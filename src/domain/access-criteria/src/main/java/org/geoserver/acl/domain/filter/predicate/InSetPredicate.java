@@ -13,6 +13,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 
 /** Contains a fixed text OR a special filtering condition (i.e. ANY, DEFAULT). */
 @EqualsAndHashCode(callSuper = true)
@@ -23,7 +24,7 @@ public class InSetPredicate<V> extends RulePredicate<Set<V>> {
 
     private static final String COLLECTION_VALUE_SEPARATOR = ",";
 
-    private Set<V> values = Set.of();
+    private @NonNull Set<V> values = Set.of();
 
     public InSetPredicate(FilterType type) {
         super(type);

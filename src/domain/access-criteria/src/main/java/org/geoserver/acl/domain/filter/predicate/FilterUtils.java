@@ -7,6 +7,7 @@
 
 package org.geoserver.acl.domain.filter.predicate;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author Gabriel Roldan - Camptocamp
  */
 @Slf4j
+@UtilityClass
 class FilterUtils {
 
     /**

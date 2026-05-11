@@ -51,14 +51,9 @@ class PredicateMapper {
         Predicate grantType = map(filter.getGrantType(), QJpaAdminRule.jpaAdminRule.access);
         Predicate user = map(filter.getUser(), qIdentifier.username);
         Predicate role = map(filter.getRole(), qIdentifier.rolename);
-        // Predicate address = map(filter.getSourceAddress(), identifier.addressRange);
         Predicate ws = map(filter.getWorkspace(), qIdentifier.workspace);
-        BooleanBuilder predicate = new BooleanBuilder()
-                .and(grantType)
-                .and(user)
-                .and(role)
-                // .and(address)
-                .and(ws);
+        BooleanBuilder predicate =
+                new BooleanBuilder().and(grantType).and(user).and(role).and(ws);
 
         log.debug("Filter    : {}", filter);
         log.debug("Predicate : {}", predicate);
@@ -98,8 +93,6 @@ class PredicateMapper {
         Predicate service = map(filter.getService(), qIdentifier.service);
         Predicate request = map(filter.getRequest(), qIdentifier.request);
         Predicate subfield = map(filter.getSubfield(), qIdentifier.subfield);
-
-        // Predicate address = map(filter.getSourceAddress(), identifier.addressRange);
 
         Predicate ws = map(filter.getWorkspace(), qIdentifier.workspace);
         Predicate layer = map(filter.getLayer(), qIdentifier.layer);

@@ -104,36 +104,25 @@ public class TextFilter extends RulePredicate<String> {
 
     @Override
     public String toString() {
-        switch (type) {
-            case ANY:
-            case DEFAULT:
-                return type.toString();
-
-            case NAMEVALUE:
-                return (text == null ? "(null)" : text.isEmpty() ? "(empty)" : '"' + text + '"')
-                        + (includeDefault ? "+" : "");
-
-            case IDVALUE:
-            default:
-                throw new AssertionError();
-        }
+        return switch (type) {
+            case ANY, DEFAULT -> type.toString();
+            case NAMEVALUE -> nullEmptyOrValue(text, includeDefault);
+            default -> throw new AssertionError();
+        };
     }
 
     @Override
     public boolean test(String value) {
-        switch (type) {
-            case ANY:
-                return true;
-            case DEFAULT:
-                return value == null;
-            case NAMEVALUE:
-                if (this.isIncludeDefault()) {
-                    return value == null || value.equals(getText());
+        return switch (type) {
+            case ANY -> true;
+            case DEFAULT -> value == null;
+            case NAMEVALUE -> {
+                if (isIncludeDefault()) {
+                    yield value == null || value.equals(getText());
                 }
-                return value != null && value.equals(getText());
-            case IDVALUE:
-            default:
-                throw new IllegalArgumentException();
-        }
+                yield value != null && value.equals(getText());
+            }
+            default -> throw new IllegalArgumentException();
+        };
     }
 }

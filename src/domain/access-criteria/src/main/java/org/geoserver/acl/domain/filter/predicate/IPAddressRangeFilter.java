@@ -5,6 +5,7 @@
 package org.geoserver.acl.domain.filter.predicate;
 
 import java.io.Serial;
+import lombok.EqualsAndHashCode;
 
 /**
  * Predicate for filtering rules by IP address or CIDR ranges.
@@ -35,6 +36,7 @@ import java.io.Serial;
  * @since 1.0
  * @see RulePredicate
  */
+@EqualsAndHashCode(callSuper = true)
 public class IPAddressRangeFilter extends RulePredicate<String> {
 
     @Serial
@@ -88,19 +90,11 @@ public class IPAddressRangeFilter extends RulePredicate<String> {
 
     @Override
     public String toString() {
-        switch (type) {
-            case ANY:
-            case DEFAULT:
-                return type.toString();
-
-            case NAMEVALUE:
-                return (ipAddress == null ? "(null)" : ipAddress.isEmpty() ? "(empty)" : '"' + ipAddress + '"')
-                        + (includeDefault ? "+" : "");
-
-            case IDVALUE:
-            default:
-                throw new AssertionError();
-        }
+        return switch (type) {
+            case ANY, DEFAULT -> type.toString();
+            case NAMEVALUE -> nullEmptyOrValue(ipAddress, includeDefault);
+            default -> throw new AssertionError();
+        };
     }
 
     @Override

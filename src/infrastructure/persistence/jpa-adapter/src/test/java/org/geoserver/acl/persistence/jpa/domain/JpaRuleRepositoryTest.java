@@ -236,8 +236,7 @@ public class JpaRuleRepositoryTest {
         Iterable<JpaRule> res = repo.findAll(predicate, Sort.by("priority"));
         List<JpaRule> actual = new ArrayList<>();
         res.forEach(actual::add);
-        assertThat(actual).hasSameSizeAs(expected);
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).hasSameSizeAs(expected).isEqualTo(expected);
     }
 
     @Test

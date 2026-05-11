@@ -166,11 +166,11 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     @Override
     @TransactionRequired
     public Rule save(Rule rule) {
+        final String id = Objects.requireNonNull(rule.id(), "id");
         lockPrioritiesForUpdate();
-        Objects.requireNonNull(rule.id());
         findDup(rule).ifPresent(this::throwConflict);
 
-        org.geoserver.acl.persistence.jpa.domain.JpaRule entity = getOrThrowIAE(rule.id());
+        org.geoserver.acl.persistence.jpa.domain.JpaRule entity = getOrThrowIAE(id);
         removeLayerDetailsIfNotApplicableAnyMore(rule, entity);
 
         PriorityResolver<org.geoserver.acl.persistence.jpa.domain.JpaRule> priorityResolver = priorityResolver();
@@ -362,10 +362,6 @@ public class RuleRepositoryJpaAdaptor implements RuleRepository {
     public Optional<org.geoserver.acl.domain.rules.LayerDetails> findLayerDetailsByRuleId(@NonNull String ruleId) {
 
         org.geoserver.acl.persistence.jpa.domain.JpaRule jparule = getOrThrowIAE(ruleId);
-
-        // if (RuleIdentifier.ANY.equals(jparule.getIdentifier().getLayer())) {
-        // throw new IllegalArgumentException("Rule " + ruleId + " has not layer set");
-        // }
 
         JpaLayerDetails jpadetails = jparule.getLayerDetails();
         if (jpadetails.isEmpty()) {

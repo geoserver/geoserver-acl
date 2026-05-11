@@ -7,6 +7,7 @@ package org.geoserver.acl.autoconfigure.security;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -85,7 +86,7 @@ public class PreAuthenticationSecurityAutoConfiguration {
          */
         @Override
         public UserDetails loadUserDetails(PreAuthenticatedAuthenticationToken token) throws UsernameNotFoundException {
-            final String principal = (String) token.getPrincipal();
+            final String principal = Objects.requireNonNull((String) token.getPrincipal());
             final Set<String> credentials = givenCredentials((String) token.getCredentials());
             Collection<String> rolesConsideredAdmin = adminRoles.get();
             boolean isAdmin = rolesConsideredAdmin.stream().anyMatch(credentials::contains);

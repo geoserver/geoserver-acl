@@ -15,6 +15,7 @@ interface OptionalApiMapper {
         return Optional.ofNullable(object);
     }
 
+    @SuppressWarnings("java:S2789") // mapper doesn't know if Optional can or cannot be null
     default <T> T unwrapOptional(Optional<T> object) {
         return object == null ? null : object.orElse(null);
     }

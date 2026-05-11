@@ -40,11 +40,11 @@ public abstract class RulePredicate<T> implements Predicate<T> {
      */
     protected boolean includeDefault = true;
 
-    public RulePredicate(FilterType type) {
+    protected RulePredicate(FilterType type) {
         this.type = type;
     }
 
-    public RulePredicate(FilterType type, boolean includeDefault) {
+    protected RulePredicate(FilterType type, boolean includeDefault) {
         this.type = type;
         this.includeDefault = includeDefault;
     }
@@ -68,5 +68,14 @@ public abstract class RulePredicate<T> implements Predicate<T> {
 
     public void setIncludeDefault(boolean includeDefault) {
         this.includeDefault = includeDefault;
+    }
+
+    protected String nullEmptyOrValue(String s, boolean incDefault) {
+        if (s == null) {
+            return "(null)";
+        }
+        String v = s.isEmpty() ? "(empty)" : "'%s'".formatted(s);
+        String def = incDefault ? "+" : "";
+        return v + def;
     }
 }

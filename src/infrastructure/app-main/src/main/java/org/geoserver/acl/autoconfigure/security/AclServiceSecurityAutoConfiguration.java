@@ -29,6 +29,7 @@ import org.springframework.security.web.authentication.preauth.RequestHeaderAuth
 public class AclServiceSecurityAutoConfiguration {
 
     @Bean
+    @SuppressWarnings("java:S4502") // see CSRF comment below
     SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             AuthenticationManager authenticationManager,
@@ -36,6 +37,12 @@ public class AclServiceSecurityAutoConfiguration {
             Optional<RequestHeaderAuthenticationFilter> preAuthFilter)
             throws Exception {
 
+        // CSRF protection is disabled: this is a stateless REST API
+        // (SessionCreationPolicy.STATELESS, no cookie-based sessions). Authentication is
+        // either pre-authentication request headers (set by an upstream reverse proxy and
+        // not auto-sent cross-site by browsers) or HTTP Basic (admin/server-to-server use,
+        // not intended for browser-based interactive logins). With no auto-sent
+        // session credential there is no classic CSRF vector to protect against.
         http.csrf(csrf -> csrf.disable());
 
         if (!config.enabled()) {
