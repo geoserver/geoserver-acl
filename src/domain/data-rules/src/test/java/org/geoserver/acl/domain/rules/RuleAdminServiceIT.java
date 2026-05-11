@@ -10,7 +10,6 @@ import static org.geoserver.acl.domain.rules.InsertPosition.FROM_START;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +20,14 @@ import org.assertj.core.api.AbstractObjectAssert;
 import org.geolatte.geom.MultiPolygon;
 import org.geolatte.geom.codec.Wkt;
 import org.geoserver.acl.domain.filter.RuleQuery;
+import org.geoserver.acl.domain.filter.predicate.SpecialFilterType;
 import org.geoserver.acl.domain.rules.LayerAttribute.AccessType;
 import org.geoserver.acl.domain.rules.LayerDetails.LayerType;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
+@SuppressWarnings("java:S5786")
 public class RuleAdminServiceIT {
 
     protected RuleAdminService ruleAdminService;
@@ -280,10 +280,39 @@ public class RuleAdminServiceIT {
         }
     }
 
-    @Disabled("not yet implemented")
     @Test
     void testQueryRules() {
-        fail("Not yet implemented");
+        Rule r1 = ruleAdminService.insert(Rule.allow().withWorkspace("ws1").withLayer("l1"));
+        Rule r2 = ruleAdminService.insert(Rule.allow().withWorkspace("ws1").withLayer("l2"));
+        Rule r3 = ruleAdminService.insert(Rule.allow().withWorkspace("ws2").withLayer("l1"));
+        Rule rCatchAll = ruleAdminService.insert(Rule.allow());
+
+        assertThat(query(RuleFilter.any())).containsExactly(r1, r2, r3, rCatchAll);
+
+        RuleFilter byWs1 = new RuleFilter(SpecialFilterType.ANY).setWorkspace("ws1");
+        assertThat(query(byWs1))
+                .as("default includeDefault=true: matches ws1 plus catch-all (workspace=null)")
+                .containsExactly(r1, r2, rCatchAll);
+
+        RuleFilter byWs1Strict = new RuleFilter(SpecialFilterType.ANY).setWorkspace("ws1");
+        byWs1Strict.getWorkspace().setIncludeDefault(false);
+        assertThat(query(byWs1Strict))
+                .as("includeDefault=false: only exact workspace matches")
+                .containsExactly(r1, r2);
+
+        RuleFilter byWs1AndL1 =
+                new RuleFilter(SpecialFilterType.ANY).setWorkspace("ws1").setLayer("l1");
+        assertThat(query(byWs1AndL1))
+                .as("workspace AND layer, both including default")
+                .containsExactly(r1, rCatchAll);
+
+        RuleFilter unmatched = new RuleFilter(SpecialFilterType.ANY).setWorkspace("nope");
+        unmatched.getWorkspace().setIncludeDefault(false);
+        assertThat(query(unmatched)).isEmpty();
+    }
+
+    private List<Rule> query(RuleFilter filter) {
+        return ruleAdminService.getAll(RuleQuery.of(filter)).toList();
     }
 
     @Test
@@ -345,10 +374,35 @@ public class RuleAdminServiceIT {
         return ruleAdminService.insert(Rule.limit().withWorkspace("ws").withLayer("l_" + i));
     }
 
-    @Disabled("not yet implemented")
     @Test
     void testCountRules_Filter() {
-        fail("Not yet implemented");
+        ruleAdminService.insert(Rule.allow().withWorkspace("ws1").withLayer("l1"));
+        ruleAdminService.insert(Rule.allow().withWorkspace("ws1").withLayer("l2"));
+        ruleAdminService.insert(Rule.allow().withWorkspace("ws2").withLayer("l1"));
+        ruleAdminService.insert(Rule.allow()); // catch-all (no workspace, no layer)
+
+        assertThat(ruleAdminService.count(RuleFilter.any())).isEqualTo(4);
+
+        RuleFilter byWs1 = new RuleFilter(SpecialFilterType.ANY).setWorkspace("ws1");
+        assertThat(ruleAdminService.count(byWs1))
+                .as("default includeDefault=true: matches ws1 plus catch-all")
+                .isEqualTo(3);
+
+        RuleFilter byWs1Strict = new RuleFilter(SpecialFilterType.ANY).setWorkspace("ws1");
+        byWs1Strict.getWorkspace().setIncludeDefault(false);
+        assertThat(ruleAdminService.count(byWs1Strict))
+                .as("includeDefault=false: only exact workspace matches")
+                .isEqualTo(2);
+
+        RuleFilter byWs1AndL1 =
+                new RuleFilter(SpecialFilterType.ANY).setWorkspace("ws1").setLayer("l1");
+        assertThat(ruleAdminService.count(byWs1AndL1))
+                .as("workspace AND layer, both including default")
+                .isEqualTo(2);
+
+        RuleFilter unmatched = new RuleFilter(SpecialFilterType.ANY).setWorkspace("nope");
+        unmatched.getWorkspace().setIncludeDefault(false);
+        assertThat(ruleAdminService.count(unmatched)).isZero();
     }
 
     @Test
@@ -575,6 +629,7 @@ public class RuleAdminServiceIT {
     }
 
     @Test
+    @SuppressWarnings("java:S5778")
     void testSetLimits() {
         final RuleLimits limits = sampleLimits();
 
@@ -647,6 +702,7 @@ public class RuleAdminServiceIT {
     }
 
     @Test
+    @SuppressWarnings("java:S5778")
     void testSwapPriority() {
         Rule r1 = addOneForLayer(1);
         Rule r2 = addOneForLayer(2);

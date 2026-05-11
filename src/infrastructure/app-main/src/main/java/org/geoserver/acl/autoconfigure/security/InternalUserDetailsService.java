@@ -62,11 +62,20 @@ class InternalUserDetailsService extends InMemoryUserDetailsManager {
     }
 
     private static String ensurePrefixed(@NonNull String password) {
-        if (!password.matches("(\\{.+\\}).+")) {
-            return "{noop}%s".formatted(password);
-        }
+        return hasEncoderPrefix(password) ? password : "{noop}%s".formatted(password);
+    }
 
-        return password;
+    /**
+     * Returns whether {@code password} starts with a Spring Security delegating
+     * password encoder prefix of the form {@code {id}rest}, where {@code id} and
+     * {@code rest} are both non-empty.
+     */
+    private static boolean hasEncoderPrefix(String password) {
+        if (!password.startsWith("{")) {
+            return false;
+        }
+        int close = password.indexOf('}');
+        return close >= 2 && close < password.length() - 1;
     }
 
     private static void validate(final String name, SecurityConfigProperties.Internal.UserInfo info) {

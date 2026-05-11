@@ -8,7 +8,7 @@
 # (via workflow_run), downloads the artifact, overlays the fork sources onto
 # the base checkout and invokes the SonarCloud scanner. The PR's own pom.xml
 # is never executed — only its sources and bytecode are analyzed.
-name: PR Build and Test
+name: SonarCloud artifacts
 
 on:
   pull_request:
@@ -31,7 +31,7 @@ concurrency:
 
 jobs:
   test:
-    name: Build and Test Pull Request
+    name: Test and upload
     if: github.repository == 'geoserver/geoserver-acl'
     runs-on: ubuntu-latest
     timeout-minutes: 60

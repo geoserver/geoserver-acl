@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import org.geoserver.acl.autoconfigure.security.SecurityConfigProperties.PreauthHeaders;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -21,9 +20,6 @@ class PreAuthenticationSecurityAutoConfigurationTest {
     private ApplicationContextRunner runner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
                     AuthenticationManagerAutoConfiguration.class, PreAuthenticationSecurityAutoConfiguration.class));
-
-    @BeforeEach
-    void setUp() throws Exception {}
 
     @Test
     void testConditionalOnPreAuthenticationEnabledIsDisabledByDefault() {

@@ -2,17 +2,23 @@ package org.geoserver.acl.webapi.v1.server;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import lombok.experimental.UtilityClass;
 import org.springframework.web.context.request.NativeWebRequest;
 
-public class ApiUtil {
+@UtilityClass
+class ApiUtil {
     public static void setExampleResponse(NativeWebRequest req, String contentType, String example) {
         try {
             HttpServletResponse res = req.getNativeResponse(HttpServletResponse.class);
-            res.setCharacterEncoding("UTF-8");
-            res.addHeader("Content-Type", contentType);
-            res.getWriter().print(example);
+            if (res != null) {
+                res.setCharacterEncoding(StandardCharsets.UTF_8);
+                res.addHeader("Content-Type", contentType);
+                res.getWriter().print(example);
+            }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 }

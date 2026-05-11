@@ -57,8 +57,8 @@ class RuleAdminServiceImplTest {
 
     @Test
     void insertRuleNonNullId() {
-        IllegalArgumentException expected = assertThrows(
-                IllegalArgumentException.class, () -> service.insert(Rule.deny().withId("100")));
+        Rule rule = Rule.deny().withId("100");
+        IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> service.insert(rule));
         assertThat(expected.getMessage()).contains("a new Rule must not have id, got 100");
     }
 
