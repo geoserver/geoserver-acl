@@ -75,8 +75,12 @@
     <java.sdk.version>17</java.sdk.version>
     <!-- GeoTools version used by gs-acl-authorization, doesn't need to match any version used by GeoServer -->
     <gt.version>35.0</gt.version>
-    <spring-cloud.version>2025.1.1</spring-cloud.version>
-    <spring-boot.version>4.0.6</spring-boot.version>
+    <!-- Keep aligned with geoserver-cloud. Notably spring-boot 4.0.7 pulls spring-amqp 4.0.4,
+         whose AnonymousQueue uses the modern x-queue-leader-locator argument; 4.0.6 ships
+         spring-amqp 4.0.3, which still emits the deprecated x-queue-master-locator that RabbitMQ
+         4.x rejects, breaking the Spring Cloud Bus anonymous consumer queues. -->
+    <spring-cloud.version>2025.1.2</spring-cloud.version>
+    <spring-boot.version>4.0.7</spring-boot.version>
     <jackson.version>3.1.2</jackson.version>
     <lombok.version>1.18.46</lombok.version>
     <flyway.version>12.1.0</flyway.version>
