@@ -47,10 +47,6 @@
       <artifactId>jackson-dataformat-smile</artifactId>
     </dependency>
     <dependency>
-      <groupId>tools.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jsr310</artifactId>
-    </dependency>
-    <dependency>
       <!-- this is just to avoid compiler warnings like "unknown enum constant org.mapstruct.ReportingPolicy.ERROR", not needed at runtime -->
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct</artifactId>

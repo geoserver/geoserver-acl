@@ -11,14 +11,12 @@ import org.geoserver.acl.webapi.v1.server.AuthorizationApiDelegateImpl;
 import org.geoserver.acl.webapi.v1.server.AuthorizationApiSupport;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.web.context.request.NativeWebRequest;
 
 /**
  * Provides the {@link AuthorizationApiController}
  */
 @Configuration(proxyBeanMethods = false)
-@Import({ObjectMapperConfiguration.class})
 class WebapiServerApplicationServicesConfiguration {
 
     @Bean

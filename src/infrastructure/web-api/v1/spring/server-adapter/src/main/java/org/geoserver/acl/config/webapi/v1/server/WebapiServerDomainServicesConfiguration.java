@@ -26,7 +26,7 @@ import org.springframework.web.context.request.NativeWebRequest;
  * Provides the {@link DataRulesApiController} and {@link WorkspaceAdminRulesApiController}
  */
 @Configuration(proxyBeanMethods = false)
-@Import({ObjectMapperConfiguration.class, DomainServicesConfiguration.class, ApplicationServicesConfiguration.class})
+@Import({DomainServicesConfiguration.class, ApplicationServicesConfiguration.class})
 class WebapiServerDomainServicesConfiguration {
 
     @Bean

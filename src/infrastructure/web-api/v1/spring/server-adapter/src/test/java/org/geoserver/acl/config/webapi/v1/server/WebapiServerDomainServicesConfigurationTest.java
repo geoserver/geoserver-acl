@@ -18,7 +18,6 @@ import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.web.context.request.NativeWebRequest;
-import tools.jackson.datatype.jsr310.JavaTimeModule;
 
 class WebapiServerDomainServicesConfigurationTest {
 
@@ -43,8 +42,7 @@ class WebapiServerDomainServicesConfigurationTest {
                     .hasSingleBean(DataRulesApiController.class)
                     .hasSingleBean(DataRulesApiDelegate.class)
                     .hasSingleBean(WorkspaceAdminRulesApiController.class)
-                    .hasSingleBean(WorkspaceAdminRulesApiDelegate.class)
-                    .hasSingleBean(JavaTimeModule.class);
+                    .hasSingleBean(WorkspaceAdminRulesApiDelegate.class);
         });
     }
 

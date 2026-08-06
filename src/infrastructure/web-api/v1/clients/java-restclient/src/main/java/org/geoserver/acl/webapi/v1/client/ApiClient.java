@@ -52,7 +52,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
-import tools.jackson.datatype.jsr310.JavaTimeModule;
 
 @jakarta.annotation.Generated(
         value = "org.openapitools.codegen.languages.JavaClientCodegen",
@@ -127,7 +126,6 @@ public class ApiClient extends JavaTimeFormatter {
         }
         JsonMapper mapper = JsonMapper.builder()
                 .defaultDateFormat(dateFormat)
-                .addModule(new JavaTimeModule())
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .build();
 

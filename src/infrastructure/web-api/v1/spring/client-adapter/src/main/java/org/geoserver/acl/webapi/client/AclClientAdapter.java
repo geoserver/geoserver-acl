@@ -165,7 +165,6 @@ public class AclClientAdapter {
     }
 
     static RestClient createRestClient() {
-        // Create ObjectMapper with JavaTimeModule for proper date/time serialization
         JsonMapper defaultObjectMapper = ApiClient.createDefaultObjectMapper(null);
 
         // Build RestClient with custom ObjectMapper and HTTPS support
