@@ -1,7 +1,10 @@
-# Builds and pushes multi-arch docker images on main and tags.
+# Builds and pushes multi-arch docker images on main and tags, or manually
+# through workflow dispatch on any ref (the image tag comes from `make show-version`,
+# which resolves the exact tag when the ref is a release tag).
 # Each architecture builds natively (no QEMU) so the JVM AOT cache is correct.
 name: Build and Push Docker image
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
