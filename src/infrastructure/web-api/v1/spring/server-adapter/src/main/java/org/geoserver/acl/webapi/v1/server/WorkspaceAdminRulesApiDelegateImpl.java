@@ -6,6 +6,7 @@ package org.geoserver.acl.webapi.v1.server;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -46,7 +47,7 @@ public class WorkspaceAdminRulesApiDelegateImpl implements WorkspaceAdminRulesAp
             } else {
                 rule = service.insert(support.toModel(adminRule), support.toAdminRulesModel(position));
             }
-            return ResponseEntity.ok(support.toApi(rule));
+            return ResponseEntity.status(CREATED).body(support.toApi(rule));
         } catch (AdminRuleIdentifierConflictException e) {
             return support.error(CONFLICT, e.getMessage());
         } catch (IllegalArgumentException e) {
