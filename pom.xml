@@ -83,7 +83,6 @@
     <spring-boot.version>4.1.1</spring-boot.version>
     <jackson.version>3.2.2</jackson.version>
     <lombok.version>1.18.46</lombok.version>
-    <flyway.version>12.1.0</flyway.version>
     <mapstruct.version>1.6.3</mapstruct.version>
     <geolatte.version>1.10</geolatte.version>
     <querydsl.version>7.1</querydsl.version>
@@ -215,16 +214,6 @@
         <artifactId>querydsl-apt</artifactId>
         <version>${querydsl.version}</version>
         <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.flywaydb</groupId>
-        <artifactId>flyway-core</artifactId>
-        <version>${flyway.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.flywaydb</groupId>
-        <artifactId>flyway-database-postgresql</artifactId>
-        <version>${flyway.version}</version>
       </dependency>
       <!-- for project dependencies use the BOM (gs-acl-bom) -->
     </dependencies>
