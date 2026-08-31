@@ -5,7 +5,9 @@ WORKDIR /builder
 
 COPY ${JAR_FILE} application.jar
 
-RUN java -Djarmode=layertools -jar application.jar extract
+# --layers takes one comma-separated list, and the destination must be an empty directory of its own
+RUN java -Djarmode=tools -jar application.jar extract --launcher --destination extracted \
+ --layers dependencies,spring-boot-loader,snapshot-dependencies,application
 
 ##########
 FROM eclipse-temurin:25-jre
@@ -45,10 +47,10 @@ EXPOSE 8081
 RUN mkdir /etc/geoserver && chmod 0777 /etc/geoserver
 COPY src/main/resources/values.yml /etc/geoserver/acl-service.yml
 
-COPY --from=builder /builder/dependencies/ ./
-COPY --from=builder /builder/snapshot-dependencies/ ./
-COPY --from=builder /builder/spring-boot-loader/ ./
-COPY --from=builder /builder/application/ ./
+COPY --from=builder /builder/extracted/dependencies/ ./
+COPY --from=builder /builder/extracted/snapshot-dependencies/ ./
+COPY --from=builder /builder/extracted/spring-boot-loader/ ./
+COPY --from=builder /builder/extracted/application/ ./
 
 HEALTHCHECK \
 --interval=10s \
