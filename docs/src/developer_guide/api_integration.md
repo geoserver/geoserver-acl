@@ -3,8 +3,9 @@
 The GeoServer ACL Service exposes a RESTful API for rule management and authorization.
 
 **Base URL**: `http://<host>:8080/acl`
-**OpenAPI Spec**: `/api-docs`
-**Swagger UI**: `/swagger-ui.html`
+**API base path**: `/acl/api`
+**OpenAPI Spec**: `/acl/openapi`
+**Swagger UI**: `/acl/openapi/swagger-ui/index.html`
 
 ## Authentication
 
@@ -18,10 +19,12 @@ Authorization: Basic YWRtaW46Z2Vvc2VydmVy
 ```
 
 ### 2. Pre-Authentication (Headers)
-When running behind a trusted gateway (e.g., OAuth2 Proxy), the service trusts identity headers.
+When running behind a trusted gateway, the service can trust identity headers. This mode is disabled by default (`acl.security.headers.enabled`), and the header names are configurable:
 
-*   `X-Forwarded-User`: The username.
-*   `X-Forwarded-Roles`: Comma-separated list of roles.
+*   `sec-username`: The username (`acl.security.headers.user-header`).
+*   `sec-roles`: Comma-separated list of roles (`acl.security.headers.roles-header`).
+
+Requests presenting a role listed in `acl.security.headers.admin-roles` (default `ROLE_ADMINISTRATOR`) get administrative access.
 
 ## Core Endpoints
 
@@ -34,7 +37,7 @@ When running behind a trusted gateway (e.g., OAuth2 Proxy), the service trusts i
 {
   "priority": 100,
   "access": "ALLOW",
-  "userName": "jsmith",
+  "user": "jsmith",
   "workspace": "public",
   "layer": "roads",
   "service": "WMS"
@@ -44,10 +47,13 @@ When running behind a trusted gateway (e.g., OAuth2 Proxy), the service trusts i
 #### List Rules
 **GET** `/api/rules`
 
-*   Query Params: `page`, `size`, `sort`
+*   Query Params: `limit`, `nextCursor` (cursor-based pagination)
+
+#### Update Rule
+**PATCH** `/api/rules/id/{id}`
 
 #### Delete Rule
-**DELETE** `/api/rules/{id}`
+**DELETE** `/api/rules/id/{id}`
 
 ### 2. Admin Rule Management (`/api/adminrules`)
 
@@ -58,16 +64,16 @@ When running behind a trusted gateway (e.g., OAuth2 Proxy), the service trusts i
 {
   "priority": 50,
   "access": "ADMIN",
-  "userName": "city_manager",
+  "user": "city_manager",
   "workspace": "city_data"
 }
 ```
 
-### 3. Authorization Check (`/api/authorization`)
+### 3. Authorization (`/api/authorization`)
 
-Test if a user has access to a resource.
+Evaluate what access a request gets. Fields left absent match any value; the domain rejects `*` in authorization requests.
 
-**POST** `/api/authorization`
+**POST** `/api/authorization/resources`
 
 ```json
 {
@@ -80,27 +86,28 @@ Test if a user has access to a resource.
 }
 ```
 
-**Response**:
+**Response** (`AccessInfo`):
 ```json
 {
-  "grant": true,
-  "ruleLimits": null,
-  "layerDetails": null
+  "grant": "ALLOW",
+  "catalogMode": null,
+  "defaultStyle": null,
+  "allowedStyles": null,
+  "cqlFilterRead": null,
+  "cqlFilterWrite": null,
+  "matchingRules": ["<rule-id>"]
 }
 ```
 
-## Batch Operations
+Related endpoints:
 
-For bulk migration or backup/restore.
+*   **POST /api/authorization/admin**: Evaluate workspace administration access (`AdminAccessRequest` -> `AdminAccessInfo`).
+*   **POST /api/authorization/resources/matchingrules**: Return the rules that match an access request.
+*   **POST /api/authorization/accesssummary**: Summarize a user's access across workspaces.
 
-#### Import Rules
-**POST** `/api/rules/batch`
+## Bulk Queries
 
-Accepts a JSON array of Rule objects.
+There is no bulk import endpoint; create rules individually with `POST /api/rules`. For querying at scale, use the filter endpoints with cursor-based pagination:
 
-```json
-[
-  { "priority": 10, "access": "DENY", "workspace": "secure" },
-  { "priority": 20, "access": "ALLOW", "workspace": "public" }
-]
-```
+*   **POST /api/rules/query**: Search rules matching a `RuleFilter`.
+*   **POST /api/rules/query/count**: Count rules matching a `RuleFilter`.

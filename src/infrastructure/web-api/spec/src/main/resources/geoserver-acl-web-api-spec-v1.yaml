@@ -991,7 +991,8 @@ components:
           type: string
           nullable: true
           description: |
-            Username to match. Null matches any user. Use "*" to explicitly match anonymous users.
+            Username to match. Null matches any user. Anonymous requests are matched by role,
+            ROLE_ANONYMOUS by GeoServer convention.
           example: "john.doe"
         addressRange:
           $ref: '#/components/schemas/AddressRange'

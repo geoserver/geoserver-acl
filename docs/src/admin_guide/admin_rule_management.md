@@ -8,32 +8,30 @@ An Admin Rule is a JSON object with the following schema:
 
 | Field | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
-| `priority` | Integer | **Yes** | Evaluation order (0 is highest priority). Unique per rule. |
-| `access` | Enum | **Yes** | `ADMIN`, `USER`, or `GROUP`. |
-| `roleName` | String | No | The role this rule applies to. (Use `*` for all roles). |
-| `userName` | String | No | The specific user this rule applies to. (Use `*` for all users). |
-| `workspace` | String | **Yes** | The workspace scope for the permissions. `*` matches all workspaces. |
+| `priority` | Integer | **Yes** | Evaluation order. Lower values are evaluated first. Unique per rule. |
+| `access` | Enum | **Yes** | `ADMIN` or `USER`. |
+| `role` | String | No | The role this rule applies to. When absent, the rule applies to any role. |
+| `user` | String | No | The specific user this rule applies to. When absent, the rule applies to any user. |
+| `workspace` | String | No | The workspace scope for the permissions. When absent, the rule applies to any workspace. |
 | `addressRange` | CIDR | No | IP address range restriction. |
 
 ### Access Levels
 
-*   **ADMIN**: Grants full administrative privileges within the scope.
-    *   If `workspace` is `*`: User is a global administrator.
-    *   If `workspace` is specific (e.g., `topp`): User is a Workspace Administrator for `topp`.
-*   **USER**: Grants read-only access to the administrative configuration.
-*   **GROUP**: Grants permission to manage users within a specific group (requires Group Service configuration).
+*   **ADMIN**: Grants administrative privileges within the scope.
+    *   If `workspace` is absent: the rule grants administration on any workspace.
+    *   If `workspace` is specific (e.g., `topp`): the rule grants Workspace Administrator rights for `topp`.
+*   **USER**: Grants read-only user access to the workspace (can view but not modify).
 
 ## JSON Examples
 
-### 1. Global System Administrator
-Grants full control over the entire GeoServer instance.
+### 1. Administrator for All Workspaces
+Grants workspace administration rights on every workspace.
 
 ```json
 {
   "priority": 0,
   "access": "ADMIN",
-  "roleName": "ROLE_SYSADMIN",
-  "workspace": "*"
+  "role": "ROLE_SYSADMIN"
 }
 ```
 
@@ -44,7 +42,7 @@ Allows a user to manage data, layers, and styles *only* within the `engineering`
 {
   "priority": 100,
   "access": "ADMIN",
-  "userName": "eng_lead",
+  "user": "eng_lead",
   "workspace": "engineering"
 }
 ```
@@ -56,19 +54,21 @@ Allows an auditor to view configurations for all workspaces but change nothing.
 {
   "priority": 500,
   "access": "USER",
-  "roleName": "ROLE_AUDITOR",
-  "workspace": "*"
+  "role": "ROLE_AUDITOR"
 }
 ```
 
 ## Management API
 
-Admin Rules are managed via the REST API at `/api/adminrules`.
+Admin Rules are managed via the REST API under `/api/adminrules`.
 
-*   **GET /api/adminrules**: List all admin rules.
-*   **POST /api/adminrules**: Create a new admin rule.
-*   **PUT /api/adminrules/{id}**: Update an existing admin rule.
-*   **DELETE /api/adminrules/{id}**: Delete an admin rule.
+*   **GET /api/adminrules**: List all admin rules in priority order. Cursor-based pagination via the `limit` and `nextCursor` parameters.
+*   **POST /api/adminrules**: Create a new admin rule. The optional `position` parameter controls how `priority` is interpreted.
+*   **PATCH /api/adminrules/id/{id}**: Update an existing admin rule.
+*   **DELETE /api/adminrules/id/{id}**: Delete an admin rule.
+*   **DELETE /api/adminrules**: Delete all admin rules, returning the removed count.
+*   **POST /api/adminrules/query**: Search admin rules with a filter.
+*   **POST /api/adminrules/shift**, **POST /api/adminrules/id/{id}/swapwith/{id2}**: Re-prioritize admin rules.
 
 ## Differences from Data Rules
 
