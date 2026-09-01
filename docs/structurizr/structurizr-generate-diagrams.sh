@@ -19,7 +19,7 @@ EXPORTS_SUCCEEDED=false
 # Export workspace.dsl to PlantUML (required)
 if [ -f "${SCRIPT_DIR}/workspace.dsl" ]; then
     echo "Exporting workspace.dsl to PlantUML..."
-    if docker run --rm -v "${SCRIPT_DIR}:/usr/local/structurizr" ${STRUCTURIZR_IMAGE} export \
+    if docker run --rm --user "$(id -u):$(id -g)" -v "${SCRIPT_DIR}:/usr/local/structurizr" ${STRUCTURIZR_IMAGE} export \
       -workspace /usr/local/structurizr/workspace.dsl \
       -format plantuml/c4plantuml \
       -output /usr/local/structurizr/exports; then
@@ -37,7 +37,7 @@ fi
 # Export dynamic-views.dsl to PlantUML (must be valid if present)
 if [ -f "${SCRIPT_DIR}/dynamic-views.dsl" ]; then
     echo "Exporting dynamic-views.dsl to PlantUML..."
-    if docker run --rm -v "${SCRIPT_DIR}:/usr/local/structurizr" ${STRUCTURIZR_IMAGE} export \
+    if docker run --rm --user "$(id -u):$(id -g)" -v "${SCRIPT_DIR}:/usr/local/structurizr" ${STRUCTURIZR_IMAGE} export \
       -workspace /usr/local/structurizr/dynamic-views.dsl \
       -format plantuml/c4plantuml \
       -output /usr/local/structurizr/exports; then
