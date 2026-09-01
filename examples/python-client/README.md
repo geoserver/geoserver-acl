@@ -26,7 +26,7 @@ Uses the published client and any published image tag:
 
 ```bash
 pip install -r requirements.txt
-ACL_IMAGE=geoservercloud/geoserver-acl:3.0.2 python -m pytest -v
+ACL_IMAGE=geoservercloud/geoserver-acl:3.0.3 python -m pytest -v
 ```
 
 Docker must be running in both cases.

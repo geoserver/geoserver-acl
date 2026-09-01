@@ -15,7 +15,7 @@ Run it from the repository with `make test-python-example`, or standalone
 against any published image:
 
     pip install -r requirements.txt
-    ACL_IMAGE=geoservercloud/geoserver-acl:3.0.2 python -m pytest -v
+    ACL_IMAGE=geoservercloud/geoserver-acl:3.0.3 python -m pytest -v
 """
 
 import os
