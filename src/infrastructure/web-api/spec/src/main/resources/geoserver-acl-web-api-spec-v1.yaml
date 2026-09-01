@@ -1128,7 +1128,6 @@ components:
         - ALLOW: Grant full access to the matched resource
         - DENY: Completely deny access to the matched resource
         - LIMIT: Grant access but apply restrictions defined in RuleLimits or LayerDetails
-      nullable: true
       enum:
         - ALLOW
         - DENY
@@ -1140,7 +1139,6 @@ components:
         The level of workspace administration access:
         - ADMIN: Full administrative access to the workspace (can modify configuration and content)
         - USER: Read-only user access to the workspace (can view but not modify)
-      nullable: true
       enum:
         - ADMIN
         - USER
@@ -1315,7 +1313,7 @@ components:
         a specific user has for a given operation on a workspace/layer combination. The system matches
         this request against configured rules to determine the access decision and any applicable restrictions.
 
-        Properties default to wildcards ('*') which match any value when evaluating rules.
+        Properties left absent match any value when evaluating rules.
       properties:
         user:
           description: |
@@ -1335,36 +1333,30 @@ components:
           type: string
           description: |
             The IP address the request originates from. Matched against rule address range filters.
-          default: '*'
           example: "192.168.1.100"
         service:
           type: string
           description: |
-            The OWS service type (WMS, WFS, WCS, WPS, etc.). Wildcard '*' matches any service.
-          default: '*'
+            The OWS service type (WMS, WFS, WCS, WPS, etc.). When absent, any service matches.
           example: "WMS"
         request:
           type: string
           description: |
-            The OWS operation being requested (GetMap, GetFeature, GetCoverage, etc.). Wildcard '*' matches any operation.
-          default: '*'
+            The OWS operation being requested (GetMap, GetFeature, GetCoverage, etc.). When absent, any operation matches.
           example: "GetMap"
         subfield:
           type: string
           description: |
-            Additional operation-specific qualifier for fine-grained control. Wildcard '*' matches any subfield.
-          default: '*'
+            Additional operation-specific qualifier for fine-grained control. When absent, any subfield matches.
         workspace:
           type: string
           description: |
-            The workspace being accessed. Wildcard '*' matches any workspace.
-          default: '*'
+            The workspace being accessed. When absent, any workspace matches.
           example: "topp"
         layer:
           type: string
           description: |
-            The layer being accessed within the workspace. Wildcard '*' matches any layer.
-          default: '*'
+            The layer being accessed within the workspace. When absent, any layer matches.
           example: "roads"
 
     AdminAccessRequest:
@@ -1392,13 +1384,11 @@ components:
           type: string
           description: |
             The IP address the request originates from.
-          default: '*'
           example: "192.168.1.50"
         workspace:
           type: string
           description: |
-            The workspace for which admin access is being evaluated. Wildcard '*' evaluates across all workspaces.
-          default: '*'
+            The workspace for which admin access is being evaluated. When absent, all workspaces are evaluated.
           example: "cartography"
 
     AccessInfo:

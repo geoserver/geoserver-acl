@@ -165,7 +165,7 @@ public class AclClientAdapter {
     }
 
     static RestClient createRestClient() {
-        JsonMapper defaultObjectMapper = ApiClient.createDefaultObjectMapper(null);
+        JsonMapper defaultObjectMapper = ApiClient.createDefaultMapper(null);
 
         // Build RestClient with custom ObjectMapper and HTTPS support
         HttpComponentsClientHttpRequestFactory requestFactory = getClientHttpRequestFactoryForHttps();

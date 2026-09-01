@@ -14,9 +14,7 @@
   </parent>
   <artifactId>gs-acl-webapi-v1-restclient</artifactId>
   <description>Generated "Dumb" Client for SpringWeb: Raw RestClient, depends only on generated-model</description>
-  <properties>
-    <openapi-codegen-skip>true</openapi-codegen-skip>
-  </properties>
+  <properties></properties>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.acl.infrastructure</groupId>
@@ -98,7 +96,8 @@
               <generateModelTests>false</generateModelTests>
               <configOptions>
                 <useJakartaEe>true</useJakartaEe>
-                <useSpringBoot3>true</useSpringBoot3>
+                <useSpringBoot4>true</useSpringBoot4>
+                <useJackson3>true</useJackson3>
                 <library>restclient</library>
                 <serializationLibrary>jackson</serializationLibrary>
                 <useTags>true</useTags>
