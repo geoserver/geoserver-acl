@@ -1,0 +1,5 @@
+# The published GeoServer ACL API client
+geoserver-acl-client
+# Starts the geoservercloud/geoserver-acl docker image for the example
+testcontainers
+pytest

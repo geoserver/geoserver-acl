@@ -76,8 +76,12 @@ jobs:
       run: |
         make build-image
 
-    - name: Build and run examples
+    - name: Test python example
+      if: matrix.java-version == 21
       run: |
-        make test-examples
+        make test-python-example
 
-        
+    - name: Build and run java example
+      run: |
+        make test-java-example
+

@@ -13,7 +13,9 @@ help:
 	@echo "  install        - Build, test, and install all modules"
 	@echo "  package        - Build all modules without tests"
 	@echo "  test           - Run unit and integration tests"
-	@echo "  test-examples  - Install testcontainer module and run example tests"
+	@echo "  test-examples  - Run the java and python client examples"
+	@echo "  test-java-example - Install testcontainer module and run the java client example"
+	@echo "  test-python-example - Run the python client example against the docker image (run 'make build-image' first)"
 	@echo "  test-python-client - Run python client smoke tests against a local dev-profile app (run 'make package' first)"
 	@echo "  dist-python-client - Build the python client sdist and wheel into target/dist (run 'make package' first)"
 	@echo ""
@@ -47,10 +49,16 @@ package:
 test:
 	./mvnw -Drevision=$(VERSION) verify -ntp -T4
 
-test-examples:
+test-examples: test-java-example test-python-example
+
+test-java-example:
 	./mvnw -Drevision=$(VERSION) install -pl :gs-acl-webapi-v1-client-adapter -am -ntp -nsu -DskipTests
 	./mvnw -Drevision=$(VERSION) install -DskipTests -ntp -nsu -pl :gs-acl-testcontainer
 	./mvnw -Drevision=$(VERSION) install -ntp -nsu -T4 -f examples/
+
+# Requires the docker image: run `make build-image` first if anything changed
+test-python-example: dist-python-client
+	ACL_IMAGE=$(DOCKER_REPO):$(VERSION) examples/python-client/run-example.sh
 
 # Requires the app jar and the generated client: run `make package` first if anything changed
 test-python-client:
