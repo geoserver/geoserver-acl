@@ -16,6 +16,11 @@ if [ ! -f "$CLIENT_DIR/pyproject.toml" ]; then
   exit 1
 fi
 
+# The generated README links to files PyPI does not host; ship the curated
+# one instead, with the release version filled in
+VERSION="$(grep -m1 '^version' "$CLIENT_DIR/pyproject.toml" | sed 's/.*"\(.*\)".*/\1/')"
+sed "s/@VERSION@/${VERSION}/g" "$MODULE_DIR/README-pypi.md" > "$CLIENT_DIR/README.md"
+
 python3 -m venv "$VENV_DIR"
 "$VENV_DIR/bin/pip" install --quiet build
 
