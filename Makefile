@@ -14,6 +14,8 @@ help:
 	@echo "  package        - Build all modules without tests"
 	@echo "  test           - Run unit and integration tests"
 	@echo "  test-examples  - Install testcontainer module and run example tests"
+	@echo "  test-python-client - Run python client smoke tests against a local dev-profile app (run 'make package' first)"
+	@echo "  dist-python-client - Build the python client sdist and wheel into target/dist (run 'make package' first)"
 	@echo ""
 	@echo "Code quality:"
 	@echo "  lint           - Verify code formatting and pom.xml file ordering"
@@ -49,6 +51,14 @@ test-examples:
 	./mvnw -Drevision=$(VERSION) install -pl :gs-acl-webapi-v1-client-adapter -am -ntp -nsu -DskipTests
 	./mvnw -Drevision=$(VERSION) install -DskipTests -ntp -nsu -pl :gs-acl-testcontainer
 	./mvnw -Drevision=$(VERSION) install -ntp -nsu -T4 -f examples/
+
+# Requires the app jar and the generated client: run `make package` first if anything changed
+test-python-client:
+	src/infrastructure/web-api/v1/clients/python/run-tests.sh
+
+# Requires the generated client: run `make package` first if anything changed
+dist-python-client:
+	src/infrastructure/web-api/v1/clients/python/build-dist.sh
 
 # Make sure `make package` was run before if anything changed since the last build
 # Consecutive COPY commands in Dockerfile fail on github runners

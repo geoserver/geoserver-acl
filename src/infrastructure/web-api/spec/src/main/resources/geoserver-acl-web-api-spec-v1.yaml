@@ -2,6 +2,13 @@ openapi: 3.0.0
 info:
   title: GeoServer Access Control List (ACL) API
   version: 1.0.0
+  contact:
+    name: GeoServer ACL
+    url: https://github.com/geoserver/geoserver-acl
+    email: geoserver-user@discourse.osgeo.org
+  license:
+    name: GPL-2.0
+    url: https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
   description: |
     This API provides comprehensive control over the GeoServer Access Control List (ACL) system.
     It allows for the management of fine-grained access rules and provides endpoints to query authorization decisions.

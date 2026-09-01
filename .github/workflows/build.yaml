@@ -61,6 +61,17 @@ jobs:
       run: |
         make test
 
+    - name: Setup Python
+      if: matrix.java-version == 21
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Test python client
+      if: matrix.java-version == 21
+      run: |
+        make test-python-client
+
     - name: Build docker image
       run: |
         make build-image
