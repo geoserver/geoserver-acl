@@ -14,9 +14,7 @@
   </parent>
   <artifactId>gs-acl-webapi-v1-server-adapter</artifactId>
   <description>Adapter Implementation: code-generates and implements server interfaces</description>
-  <properties>
-    <openapi-codegen-skip>true</openapi-codegen-skip>
-  </properties>
+  <properties></properties>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.acl.infrastructure</groupId>
@@ -155,7 +153,9 @@
               <configOptions>
                 <library>spring-boot</library>
                 <useJakartaEe>true</useJakartaEe>
-                <useSpringBoot3>true</useSpringBoot3>
+                <useSpringBoot4>true</useSpringBoot4>
+                <useJackson3>true</useJackson3>
+                <useJspecify>true</useJspecify>
                 <useTags>true</useTags>
                 <reactive>false</reactive>
                 <delegatePattern>true</delegatePattern>

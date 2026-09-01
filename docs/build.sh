@@ -48,6 +48,16 @@ fi
 echo "Activating virtual environment: $VENV_DIR"
 source "$VENV_DIR/bin/activate"
 
+# A venv records its creation path; after a worktree move activation
+# points elsewhere. Recreate it instead of failing.
+if [[ "$VIRTUAL_ENV" != "$VENV_DIR" ]]; then
+    echo "Recreating stale virtual environment (created at a different path)..."
+    deactivate 2>/dev/null || true
+    rm -rf "$VENV_DIR"
+    python3 -m venv "$VENV_DIR"
+    source "$VENV_DIR/bin/activate"
+fi
+
 # Verify we're in the virtual environment
 if [[ "$VIRTUAL_ENV" != "$VENV_DIR" ]]; then
     echo "❌ Failed to activate virtual environment"

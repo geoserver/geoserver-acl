@@ -14,9 +14,7 @@
   </parent>
   <artifactId>gs-acl-webapi-v1-model</artifactId>
   <description>Generated DTOs: From the OpenAPI specification</description>
-  <properties>
-    <openapi-codegen-skip>true</openapi-codegen-skip>
-  </properties>
+  <properties></properties>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.acl.infrastructure</groupId>
@@ -97,7 +95,11 @@
               <enablePostProcessFile>true</enablePostProcessFile>
               <configOptions>
                 <useJakartaEe>true</useJakartaEe>
-                <useSpringBoot3>true</useSpringBoot3>
+                <useSpringBoot4>true</useSpringBoot4>
+                <useJackson3>true</useJackson3>
+                <useJspecify>true</useJspecify>
+                <generateJsonIncludeAnnotations>false</generateJsonIncludeAnnotations>
+                <generateJsonSetterNullsAnnotations>false</generateJsonSetterNullsAnnotations>
                 <dateLibrary>java8-localdatetime</dateLibrary>
                 <openApiNullable>false</openApiNullable>
                 <serializationLibrary>jackson</serializationLibrary>
