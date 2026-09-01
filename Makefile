@@ -75,7 +75,9 @@ push-image:
 
 deploy:
 	./mvnw -Drevision=$(VERSION) clean package -ntp -T1C -fae -Dspotless.skip -U -DskipTests
-	./mvnw -Drevision=$(VERSION) deploy -s $$MAVEN_SETTINGS -ntp -T1 -fae -Dspotless.skip -DskipTests
+	./mvnw -Drevision=$(VERSION) deploy -s $$MAVEN_SETTINGS -ntp -T1 -fae -Dspotless.skip -DskipTests \
+	  -DdeployAtEnd=true -DretryFailedDeploymentCount=3 \
+	  -Dmaven.wagon.rto=120000 -Dmaven.wagon.http.retryHandler.count=3
 
 show-version:
 	@echo ${VERSION}
