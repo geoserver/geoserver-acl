@@ -14,7 +14,7 @@
   </parent>
   <artifactId>acl-java-client-example</artifactId>
   <properties>
-    <testcontainers.version>1.19.3</testcontainers.version>
+    <testcontainers.version>1.21.4</testcontainers.version>
   </properties>
   <dependencyManagement>
     <dependencies>
