@@ -12,9 +12,11 @@ import static org.junit.Assert.assertNull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 import org.geoserver.acl.authorization.AccessRequest;
 import org.geoserver.ows.Request;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -79,6 +81,34 @@ public class AccessRequestBuilderTest {
         // no value provided should be set to default null
         assertNull(request.getLayer());
         assertNull(request.getWorkspace());
+    }
+
+    @Test
+    public void testSourceAddressIsRemoteAddr() {
+        MockHttpServletRequest httpRequest = new MockHttpServletRequest();
+        httpRequest.setRemoteAddr("10.0.0.1");
+        httpRequest.addHeader("X-Forwarded-For", "192.168.1.1");
+
+        AccessRequest request = buildWithHttpRequest(httpRequest);
+        assertEquals("10.0.0.1", request.getSourceAddress());
+    }
+
+    @Test
+    public void testSourceAddressNormalizesIPv6() {
+        MockHttpServletRequest httpRequest = new MockHttpServletRequest();
+        httpRequest.setRemoteAddr("[::1]");
+
+        AccessRequest request = buildWithHttpRequest(httpRequest);
+        assertEquals("0:0:0:0:0:0:0:1", request.getSourceAddress());
+    }
+
+    private AccessRequest buildWithHttpRequest(HttpServletRequest httpRequest) {
+        Request owsRequest = getRequest();
+        owsRequest.setHttpRequest(httpRequest);
+        AccessRequestBuilder builder = new AccessRequestBuilder(getAccessManagerConfiguration())
+                .user(getAuthentication())
+                .request(owsRequest);
+        return builder.build();
     }
 
     private Request getRequest() {
