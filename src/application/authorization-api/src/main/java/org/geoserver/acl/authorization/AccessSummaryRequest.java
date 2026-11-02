@@ -5,7 +5,6 @@
 package org.geoserver.acl.authorization;
 
 import java.util.Set;
-import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -17,7 +16,7 @@ import lombok.Value;
  * @see AuthorizationService#getUserAccessSummary(AccessSummaryRequest)
  */
 @Value
-@Builder(builderClassName = "Builder")
+@lombok.Builder(builderClassName = "Builder")
 public class AccessSummaryRequest {
 
     /**

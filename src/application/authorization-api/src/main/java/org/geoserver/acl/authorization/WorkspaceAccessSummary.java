@@ -6,7 +6,6 @@ package org.geoserver.acl.authorization;
 
 import java.util.Set;
 import java.util.TreeSet;
-import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import org.geoserver.acl.domain.adminrules.AdminGrantType;
@@ -20,7 +19,7 @@ import org.geoserver.acl.domain.rules.GrantType;
  * @see AccessSummaryRequest
  */
 @Value
-@Builder(builderClassName = "Builder")
+@lombok.Builder(builderClassName = "Builder")
 public class WorkspaceAccessSummary implements Comparable<WorkspaceAccessSummary> {
 
     public static final String NO_WORKSPACE = "";

@@ -9,7 +9,6 @@ package org.geoserver.acl.authorization;
 
 import java.util.List;
 import java.util.Set;
-import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.NonNull;
 import lombok.Value;
@@ -24,7 +23,7 @@ import org.geoserver.acl.domain.rules.LayerAttribute;
  */
 @Value
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public class AccessInfo {
 
     /** Default "allow everything" AccessInfo */
