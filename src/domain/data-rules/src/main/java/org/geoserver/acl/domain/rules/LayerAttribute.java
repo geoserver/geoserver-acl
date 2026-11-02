@@ -7,7 +7,6 @@
 
 package org.geoserver.acl.domain.rules;
 
-import lombok.Builder;
 import lombok.With;
 import org.jspecify.annotations.Nullable;
 
@@ -23,7 +22,7 @@ import org.jspecify.annotations.Nullable;
  * @author Gabriel Roldan - Camptocamp
  */
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public record LayerAttribute(String name, @Nullable String dataType, @Nullable AccessType access) {
 
     public enum AccessType {

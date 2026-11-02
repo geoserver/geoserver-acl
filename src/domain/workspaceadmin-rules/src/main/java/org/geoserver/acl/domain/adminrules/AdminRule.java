@@ -7,7 +7,6 @@
 
 package org.geoserver.acl.domain.adminrules;
 
-import lombok.Builder;
 import lombok.With;
 import org.jspecify.annotations.Nullable;
 
@@ -64,7 +63,7 @@ import org.jspecify.annotations.Nullable;
  * @author Gabriel Roldan (adapted to GeoServer ACL)
  */
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public record AdminRule(
         @Nullable String id,
         @Nullable String extId,

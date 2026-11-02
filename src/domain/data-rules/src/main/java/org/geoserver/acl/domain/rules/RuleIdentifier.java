@@ -5,7 +5,6 @@
 
 package org.geoserver.acl.domain.rules;
 
-import lombok.Builder;
 import lombok.With;
 import org.jspecify.annotations.Nullable;
 
@@ -53,7 +52,7 @@ import org.jspecify.annotations.Nullable;
  * @see GrantType
  */
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public record RuleIdentifier(
         GrantType access,
         @Nullable String username,

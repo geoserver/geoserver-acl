@@ -7,7 +7,6 @@
 
 package org.geoserver.acl.domain.rules;
 
-import lombok.Builder;
 import lombok.With;
 import org.jspecify.annotations.Nullable;
 
@@ -79,7 +78,7 @@ import org.jspecify.annotations.Nullable;
  * @see LayerDetails
  */
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public record Rule(
         @Nullable String id,
         @Nullable String extId,

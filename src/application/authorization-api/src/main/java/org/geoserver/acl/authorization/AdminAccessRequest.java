@@ -5,7 +5,6 @@
 package org.geoserver.acl.authorization;
 
 import java.util.Set;
-import lombok.Builder;
 import lombok.With;
 import org.jspecify.annotations.Nullable;
 
@@ -30,7 +29,7 @@ import org.jspecify.annotations.Nullable;
  *     address-range constraint. {@code null} when the address is unknown or not applicable.
  */
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public record AdminAccessRequest(
         @Nullable String user, Set<String> roles, @Nullable String workspace, @Nullable String sourceAddress) {
 

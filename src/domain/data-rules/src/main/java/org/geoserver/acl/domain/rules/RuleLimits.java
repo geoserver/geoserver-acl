@@ -7,7 +7,6 @@
 
 package org.geoserver.acl.domain.rules;
 
-import lombok.Builder;
 import lombok.With;
 import org.geolatte.geom.MultiPolygon;
 import org.jspecify.annotations.Nullable;
@@ -58,7 +57,7 @@ import org.jspecify.annotations.Nullable;
  * @author Gabriel Roldan - Camptocamp
  */
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public record RuleLimits(
         @Nullable MultiPolygon<?> allowedArea, SpatialFilterType spatialFilterType, CatalogMode catalogMode) {
 

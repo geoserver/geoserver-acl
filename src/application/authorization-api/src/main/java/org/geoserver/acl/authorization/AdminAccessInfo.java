@@ -5,7 +5,6 @@
 
 package org.geoserver.acl.authorization;
 
-import lombok.Builder;
 import lombok.With;
 import org.jspecify.annotations.Nullable;
 
@@ -25,5 +24,5 @@ import org.jspecify.annotations.Nullable;
  *     {@code null} when no admin rule matched.
  */
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public record AdminAccessInfo(@Nullable String workspace, boolean admin, @Nullable String matchingAdminRule) {}
