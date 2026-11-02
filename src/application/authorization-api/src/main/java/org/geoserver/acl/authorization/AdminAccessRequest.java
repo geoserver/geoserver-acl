@@ -4,7 +4,6 @@
  */
 package org.geoserver.acl.authorization;
 
-import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.With;
@@ -13,7 +12,7 @@ import java.util.Set;
 
 @Value
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public class AdminAccessRequest {
 
     private String user;

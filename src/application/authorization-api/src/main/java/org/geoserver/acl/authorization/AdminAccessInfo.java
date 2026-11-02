@@ -5,13 +5,12 @@
 
 package org.geoserver.acl.authorization;
 
-import lombok.Builder;
 import lombok.Value;
 import lombok.With;
 
 @Value
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public class AdminAccessInfo {
 
     private String workspace;
