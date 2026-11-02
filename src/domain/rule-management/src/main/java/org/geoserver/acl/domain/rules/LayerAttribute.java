@@ -7,7 +7,6 @@
 
 package org.geoserver.acl.domain.rules;
 
-import lombok.Builder;
 import lombok.Value;
 import lombok.With;
 
@@ -16,7 +15,7 @@ import lombok.With;
  */
 @Value
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public class LayerAttribute {
 
     public enum AccessType {

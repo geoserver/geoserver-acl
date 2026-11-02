@@ -6,14 +6,13 @@ package org.geoserver.acl.authorization;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.With;
 
 @Value
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public class AccessRequest {
 
     private String user;

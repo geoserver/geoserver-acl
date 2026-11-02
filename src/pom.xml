@@ -30,16 +30,16 @@
     <spring.version>5.3.39</spring.version>
     <spring.security.version>5.8.16</spring.security.version>
     <spring-boot-3.version>3.2.4</spring-boot-3.version>
-    <lombok.version>1.18.42</lombok.version>
+    <lombok.version>1.18.48</lombok.version>
     <mapstruct.version>1.6.3</mapstruct.version>
     <testcontainers.version>1.21.4</testcontainers.version>
     <geolatte.version>1.9.1</geolatte.version>
     <querydsl.version>5.1.0</querydsl.version>
     <springdoc.version>1.8.0</springdoc.version>
-    <caffeine.version>3.1.8</caffeine.version>
+    <caffeine.version>3.3.1</caffeine.version>
     <snakeyaml.version>2.2</snakeyaml.version>
     <flyway.version>11.1.0</flyway.version>
-    <h2.version>2.2.224</h2.version>
+    <h2.version>2.5.252</h2.version>
     <fork.javac>true</fork.javac>
     <javac.maxHeapSize>256M</javac.maxHeapSize>
   </properties>
