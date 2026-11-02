@@ -80,17 +80,17 @@
          argument; up to spring-amqp 4.0.3 it emitted the deprecated x-queue-master-locator that
          RabbitMQ 4.x rejects, breaking the Spring Cloud Bus anonymous consumer queues. -->
     <spring-cloud.version>2025.1.3</spring-cloud.version>
-    <spring-boot.version>4.1.1</spring-boot.version>
-    <jackson.version>3.2.2</jackson.version>
-    <lombok.version>1.18.46</lombok.version>
+    <spring-boot.version>4.1.2</spring-boot.version>
+    <jackson.version>3.2.4</jackson.version>
+    <lombok.version>1.18.48</lombok.version>
     <mapstruct.version>1.6.3</mapstruct.version>
     <geolatte.version>1.10</geolatte.version>
     <querydsl.version>7.1</querydsl.version>
     <springdoc.version>3.1.0</springdoc.version>
-    <caffeine.version>3.2.3</caffeine.version>
-    <h2.version>2.2.224</h2.version>
+    <caffeine.version>3.3.1</caffeine.version>
+    <h2.version>2.5.252</h2.version>
     <jts.version>1.20.0</jts.version>
-    <testcontainers.version>2.0.3</testcontainers.version>
+    <testcontainers.version>2.0.5</testcontainers.version>
     <swagger-annotations-jakarta.version>2.2.52</swagger-annotations-jakarta.version>
     <openapi-generator-maven-plugin.version>7.25.0</openapi-generator-maven-plugin.version>
     <!-- build setings -->
@@ -576,31 +576,6 @@
             <groupId>javax.measure</groupId>
             <artifactId>unit-api</artifactId>
             <version>2.2</version>
-          </dependency>
-          <dependency>
-            <!--
-            [ERROR] Dependency convergence error for org.jetbrains:annotations:jar:13.0. Paths to dependency are:
-            [ERROR] +-org.geoserver.acl.infrastructure:gs-acl-spring-cloud-bus-adapter:jar:3.0-SNAPSHOT
-            [ERROR]   +-org.springframework.cloud:spring-cloud-starter-bus-amqp:jar:5.0.1:provided
-            [ERROR]     +-org.springframework.cloud:spring-cloud-starter-stream-rabbit:jar:5.0.1:provided
-            [ERROR]       +-org.springframework.cloud:spring-cloud-stream-binder-rabbit:jar:5.0.1:provided
-            [ERROR]         +-org.springframework.cloud:spring-cloud-stream:jar:5.0.1:provided
-            [ERROR]           +-org.jetbrains.kotlin:kotlin-reflect:jar:2.2.21:provided
-            [ERROR]             +-org.jetbrains.kotlin:kotlin-stdlib:jar:2.2.21:provided
-            [ERROR]               +-org.jetbrains:annotations:jar:13.0:provided
-            [ERROR] and
-            [ERROR] +-org.geoserver.acl.infrastructure:gs-acl-spring-cloud-bus-adapter:jar:3.0-SNAPSHOT
-            [ERROR]   +-org.springframework.cloud:spring-cloud-starter-bus-amqp:jar:5.0.1:provided
-            [ERROR]     +-org.springframework.cloud:spring-cloud-starter-stream-rabbit:jar:5.0.1:provided
-            [ERROR]       +-org.springframework.cloud:spring-cloud-stream-binder-rabbit:jar:5.0.1:provided
-            [ERROR]         +-org.springframework.cloud:spring-cloud-stream:jar:5.0.1:provided
-            [ERROR]           +-org.jetbrains.kotlinx:kotlinx-coroutines-reactor:jar:1.10.2:provided
-            [ERROR]             +-org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:jar:1.10.2:provided
-            [ERROR]               +-org.jetbrains:annotations:jar:23.0.0:provided
-            -->
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>23.0.0</version>
           </dependency>
         </dependencies>
       </dependencyManagement>

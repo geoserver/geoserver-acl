@@ -6,7 +6,6 @@ package org.geoserver.acl.authorization;
 
 import java.util.Set;
 import java.util.TreeSet;
-import lombok.Builder;
 import lombok.NonNull;
 import org.geoserver.acl.domain.adminrules.AdminGrantType;
 import org.geoserver.acl.domain.rules.GrantType;
@@ -30,7 +29,7 @@ import org.jspecify.annotations.Nullable;
  * @since 2.3
  * @see AccessSummaryRequest
  */
-@Builder(builderClassName = "Builder")
+@lombok.Builder(builderClassName = "Builder")
 public record WorkspaceAccessSummary(
         String workspace, @Nullable AdminGrantType adminAccess, Set<String> allowed, Set<String> forbidden)
         implements Comparable<WorkspaceAccessSummary> {

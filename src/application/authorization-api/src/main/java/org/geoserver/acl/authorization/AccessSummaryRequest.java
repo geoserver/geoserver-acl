@@ -5,7 +5,6 @@
 package org.geoserver.acl.authorization;
 
 import java.util.Set;
-import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -19,7 +18,7 @@ import org.jspecify.annotations.Nullable;
  * @see WorkspaceAccessSummary
  * @see AuthorizationService#getUserAccessSummary(AccessSummaryRequest)
  */
-@Builder(builderClassName = "Builder")
+@lombok.Builder(builderClassName = "Builder")
 public record AccessSummaryRequest(@Nullable String user, Set<String> roles) {
 
     public AccessSummaryRequest {

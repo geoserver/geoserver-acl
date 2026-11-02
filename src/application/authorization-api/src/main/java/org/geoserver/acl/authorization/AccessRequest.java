@@ -6,7 +6,6 @@ package org.geoserver.acl.authorization;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.Builder;
 import lombok.With;
 import org.jspecify.annotations.Nullable;
 
@@ -39,7 +38,7 @@ import org.jspecify.annotations.Nullable;
  *     the layer.
  */
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public record AccessRequest(
         @Nullable String user,
         Set<String> roles,

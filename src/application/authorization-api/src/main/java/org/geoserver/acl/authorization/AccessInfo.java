@@ -9,7 +9,6 @@ package org.geoserver.acl.authorization;
 
 import java.util.List;
 import java.util.Set;
-import lombok.Builder;
 import lombok.With;
 import org.geolatte.geom.Geometry;
 import org.geoserver.acl.domain.rules.CatalogMode;
@@ -54,7 +53,7 @@ import org.jspecify.annotations.Nullable;
  * @author Gabriel Roldan - Camptocamp
  */
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public record AccessInfo(
         GrantType grant,
         @Nullable Geometry<?> intersectArea,

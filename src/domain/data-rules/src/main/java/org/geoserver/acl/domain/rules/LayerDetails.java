@@ -8,7 +8,6 @@
 package org.geoserver.acl.domain.rules;
 
 import java.util.Set;
-import lombok.Builder;
 import lombok.With;
 import org.geolatte.geom.MultiPolygon;
 import org.jspecify.annotations.Nullable;
@@ -82,7 +81,7 @@ import org.jspecify.annotations.Nullable;
  * @see SpatialFilterType
  */
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public record LayerDetails(
         @Nullable LayerType type,
         @Nullable String defaultStyle,
