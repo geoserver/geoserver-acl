@@ -7,7 +7,6 @@
 
 package org.geoserver.acl.domain.rules;
 
-import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.NonNull;
 import lombok.Value;
@@ -20,7 +19,7 @@ import org.geolatte.geom.MultiPolygon;
  */
 @Value
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public class RuleLimits {
 
     public static final SpatialFilterType DEFAULT_SPATIAL_FILTERTYPE = SpatialFilterType.INTERSECT;

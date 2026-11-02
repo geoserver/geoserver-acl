@@ -7,7 +7,6 @@
 
 package org.geoserver.acl.domain.rules;
 
-import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.NonNull;
 import lombok.Value;
@@ -22,7 +21,7 @@ import java.util.Set;
  */
 @Value
 @With
-@Builder(toBuilder = true, builderClassName = "Builder")
+@lombok.Builder(toBuilder = true, builderClassName = "Builder")
 public class LayerDetails {
 
     public enum LayerType {
