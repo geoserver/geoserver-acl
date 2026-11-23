@@ -15,6 +15,8 @@
   <artifactId>gs-acl-api-client-spring6</artifactId>
   <properties>
     <spring-boot.version>${spring-boot-3.version}</spring-boot.version>
+    <!-- Spring Boot 3 requires Logback 1.4, src/pom.xml sets the 1.2 line used by Spring Boot 2.7 -->
+    <logback.version>1.4.14</logback.version>
   </properties>
   <dependencies>
     <dependency>
