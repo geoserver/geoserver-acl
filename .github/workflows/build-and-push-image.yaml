@@ -1,9 +1,12 @@
-# Builds and pushes docker images on main and tags
+# Builds and pushes docker images on main, on stable branches such as 2.4.x, and on tags,
+# or manually through workflow dispatch on any ref. The image tag is the project version at that ref.
 name: Build and Push Docker image
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
+      - '[0-9]+.[0-9]+.x'
     tags:
       - '*'
 
@@ -39,14 +42,12 @@ jobs:
       # https://github.com/docker/setup-buildx-action
       with:
         platforms: linux/amd64,linux/arm64
-        # Sets up docker build command as an alias to docker buildx
-        install: true
 
     - name: Package
       run: ./mvnw clean package -DskipTests -U -ntp -pl :gs-acl-service -am
 
     - name: Set version tag
-      run: echo "TAG=$(./mvnw help:evaluate -q -DforceStdout -Dexpression=project.version)" >> $GITHUB_ENV
+      run: echo "TAG=$(./mvnw help:evaluate -q -DforceStdout -Dexpression=project.version)" >> "$GITHUB_ENV"
 
     - name: Build and push
       uses: docker/build-push-action@v6
